@@ -1,51 +1,44 @@
-import { useState } from 'react';
-import { D100Icon, D20Icon, D12Icon, D10Icon, D8Icon, D6Icon, D4Icon } from 'assets/dice';
-import styles from 'styles/storyPage/dicePanel.module.scss'
+import { useContext, useMemo, useState } from 'react';
+import { Context } from 'components/contexts/storyContext';
+import Dice from 'utils/data/dice';
+import DiceCollection from 'utils/data/diceCollection';
+import styles from 'styles/storyPage/dicePanel.module.scss';
 
 /**
  * 
- * @param {{ }}
+ * @param {{ close: () => void }}
  * @returns {JSX.Element}
  */
 const DicePanel = ({ close }) => {
-    
-    const [state, setState] = useState({
-        '4': { num: 0, icon: D4Icon },
-        '6': { num: 0, icon: D6Icon },
-        '8': { num: 0, icon: D8Icon },
-        '10': { num: 0, icon: D10Icon },
-        '12': { num: 0, icon: D12Icon },
-        '20': { num: 0, icon: D20Icon },
-        '100': { num: 0, icon: D100Icon },
-    });
+    const [_, dispatch] = useContext(Context);
+    const [state, setState] = useState({ collection: new DiceCollection() });
+    const dice = [new Dice(100), new Dice(20), new Dice(12), new Dice(10), new Dice(8), new Dice(6), new Dice(4)];
 
-    const handleClick = (dice, num) => {
-        setState({ ...state, [dice]: { ...state[dice], num: num + 1 } })
+    const handleClick = (dice) => {
+        state.collection.add(dice, 1);
+        setState({ ...state })
     }
 
     const handleRoll = () => {
-        // TODO: Roll
-        close();
+        dispatch.roll(state.collection)
+        setState({ ...state, collection: new DiceCollection() })
     }
 
     return (
         <div className={styles.holder}>
             <div className={styles.main}>
                 {
-                    Object.keys(state)
-                        .sort((a, b) => b - a)
-                        .map((key, index) => (
-                        <DiceIcon 
+                    dice.map((dice, index) => (
+                        <DiceItem 
                             key={index} 
-                            text={key} 
-                            num={state[key].num} 
-                            icon={state[key].icon}
+                            dice={dice} 
+                            num={state.collection.getNum(dice)} 
                             onClick={handleClick}
                         />
                     ))
                 }
             </div>
-            { Object.values(state).some((x) => x.num > 0) &&  (
+            { state.collection.some((x) => x.num > 0) &&  (
                 <div 
                     className={styles.roll}
                     onClick={handleRoll}
@@ -59,16 +52,16 @@ const DicePanel = ({ close }) => {
 }
 
 /**
- * @param {{ text: string, num: number, icon: JSX.Element }} 
+ * @param {{ dice: Dice, num: number, onClick: (dice: Dice) => void }} 
  * @returns {JSX.Element}
  */
-const DiceIcon = ({ text, num, icon, onClick }) => {
-    const Icon = icon;
+const DiceItem = ({ dice, num, icon, onClick }) => {
+    const Icon = dice.icon;
     return (
         <div
             className={styles.dice} 
-            tooltips={`d${text}`}
-            onClick={() => onClick(text, num)}
+            tooltips={dice.text}
+            onClick={() => onClick(dice)}
         >
             <Icon/>
             {num > 0 && <div className={styles.number}>{num}</div>}

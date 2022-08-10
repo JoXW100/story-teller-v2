@@ -78,7 +78,7 @@ const File = ({ file }) => {
                 <Icon/>  
                 { state.inEditMode 
                     ?  <FileInput state={state} setState={setState}/>
-                    : `${file.name}.${file.type}`
+                    : <div className={styles.text}> {`${file.name}.${file.type}`} </div>
                 }
             </div>
         </Link>

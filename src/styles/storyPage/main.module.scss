@@ -1,6 +1,7 @@
 @import '../colors.scss';
 
 $headerHeight: 40px;
+$entryWidth: 249px;
 
 .main {
     display: block;
@@ -48,23 +49,16 @@ $headerHeight: 40px;
 
     & > .recompile {
         @extend .headerButton;
-        right: $headerHeight;
-        height: 100%;
-        padding: 0 $headerHeight / 2 0 5px;
-        font-weight: 500;
+        height: $headerHeight - 1;
+        font-weight: 800;
         font-size: 16px;
+        padding: 0 10px 0 5px;
     }
 
     & > .home {
         @extend .headerButton;
         height: $headerHeight - 1;
         width: $headerHeight;
-    }
-
-    & > .diceHolder {
-        width: $headerHeight;
-        height: $headerHeight;
-        position: relative;
     }
 }
 
@@ -98,6 +92,20 @@ $headerHeight: 40px;
     padding: 3px;
     height: $headerHeight - 1;
     width: $headerHeight;
+}
+
+.rollHistory {
+    @extend .headerButton;
+    height: $headerHeight - 1;
+    width: $headerHeight;
+
+    &[open] {
+        width: $entryWidth;
+    }
+}
+
+.holder {
+    position: relative;
 }
 
 .content {

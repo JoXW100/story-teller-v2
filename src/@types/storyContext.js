@@ -6,8 +6,8 @@
  */
 
 /**
- * @typedef ContextDispatch
- * @property {() => void} init
+ * @typedef StoryContextDispatch
+ * @property {(collection: import('utils/data/diceCollection').default) => void} roll
  */
 
 /**
@@ -25,8 +25,9 @@
  * @property {boolean} loading
  * @property {?Story} story
  * @property {?string} fileId
+ * @property {import('utils/data/queue').default} rollHistory
  */
 
 /**
- * @typedef {[ context: StoryContextState, dispatch: ContextDispatch ]} StoryContextProvider
+ * @typedef {[ context: StoryContextState, dispatch: StoryContextDispatch ]} StoryContextProvider
  */

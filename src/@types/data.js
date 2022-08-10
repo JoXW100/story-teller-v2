@@ -9,3 +9,11 @@
 /**
  * @typedef {Object.<string, TextData>} LocalizationTextData
  */
+
+/**
+ * @typedef {[{ 
+ *  dice: import('utils/data/dice').default, 
+ *  num: number, 
+ *  result: [number] 
+ * }]} RollResult
+ */

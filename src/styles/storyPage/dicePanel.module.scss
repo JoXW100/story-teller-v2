@@ -1,7 +1,7 @@
 @import '../colors.scss';
 
-$width: 41px;
-$diceWidth: 35px;
+$width: 37px;
+$diceWidth: 31px;
 $numWidth: 15px;
 
 .holder {
@@ -15,7 +15,7 @@ $numWidth: 15px;
     display: flex;
     flex-direction: column;
     top: 3px;
-    left: -1px;
+    left: 1px;
     background: map-get($cobalt-palette, lightest);
     border: 1px solid map-get($cobalt-palette, border);
     border-radius: $width / 2;
@@ -56,8 +56,8 @@ $numWidth: 15px;
 
     position: absolute;
     z-index: -1;
-    right: 2px;
-    top: 4px;
+    right: 3px;
+    top: 3px;
     border: 1px solid map-get($cobalt-palette, border);
     border-radius: 20px;
     height: $diceWidth;

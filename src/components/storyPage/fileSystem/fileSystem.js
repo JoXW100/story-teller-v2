@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import UploadIcon from '@mui/icons-material/Upload';
@@ -12,7 +13,7 @@ import CreateFilePopup from "./createFilePopup";
 import ConfirmationPopup from "../../common/confirmationPopup";
 import Folder from "./folder";
 import File from "./file";
-import styles from 'styles/storyPage/filesystem.module.scss';
+import styles from 'styles/storyPage/fileSystem.module.scss';
 import '@types/fileSystem';
 
 /** @type {React.Context<FileSystemContextProvider>} */
@@ -23,6 +24,7 @@ export const FileSystemContext = React.createContext({})
  */
 const FileSystem = ({ style }) => {
     const [context] = useContext(Context);
+    const router = useRouter();
 
     /** @type {[state: FileSystemState, setState: React.Dispatch<FileSystemState>]} */
     const [state, setState] = useState({
@@ -62,6 +64,7 @@ const FileSystem = ({ style }) => {
     const openRemoveFileMenu = (file) => {
         const optionYes = Localization.toText('create-confirmationYes');
         const optionNo = Localization.toText('create-confirmationNo');
+        const selected = context.fileId === file.id;
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
@@ -73,7 +76,10 @@ const FileSystem = ({ style }) => {
                             body: JSON.stringify({ fileId: file.id })
                         })
                         .then((res) => res.json())
-                        .then((res) => !res.success && console.warn(res.result))
+                        .then((res) => {
+                            !res.success && console.warn(res.result);
+                            res.success && selected && router.push('../' + context.story.id)
+                        })
                         .finally(() => setState({ ...state, fetching: true}))
                         .catch(console.error);
                     }

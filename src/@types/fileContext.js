@@ -15,7 +15,7 @@
  * @property {FileState} state
  * @property {boolean} editEnabled
  * @property {import('@types/database').File<*>} file
- * @property {import('utils/requestQueue').default} queue
+ * @property {import('utils/data/requestQueue').default} queue
  */
 
 /**

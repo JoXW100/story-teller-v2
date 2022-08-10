@@ -1,0 +1,48 @@
+@import '../colors.scss';
+
+$width: 41px;
+$entryWidth: 250px;
+
+.main {
+    z-index: 1000;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 39px;
+    right: -1px;
+    background: map-get($cobalt-palette, border);
+    width: $entryWidth;
+    padding: 1px 1px 0 1px;
+}
+
+.entry {
+    @extend .interactive;
+    display: flex;
+    flex-direction: column;
+    font-size: normal;
+    color: map-get($cobalt-palette, font);
+    background: map-get($cobalt-palette, font-light);
+    overflow: hidden;
+    padding: 2px;
+    margin-bottom: 1px;
+    
+    & > * {
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    & > * > svg {
+        display: inline;
+    }
+}
+
+.interactive {
+    cursor: pointer;
+
+    &:hover {
+        background: map-get($cobalt-palette, lightest);
+    }
+}

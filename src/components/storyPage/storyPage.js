@@ -1,17 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Context as StoryContext } from 'components/contexts/storyContext';
+import { Context, Context as StoryContext } from 'components/contexts/storyContext';
 import { D20Icon } from 'assets/dice';
 import RecompileIcon from '@mui/icons-material/CachedSharp';
 import HomeIcon from '@mui/icons-material/HomeSharp';
+import HistoryIcon from '@mui/icons-material/HistorySharp';
 import Logo from '@mui/icons-material/MenuBookSharp';
 import Divider from 'components/divider'
 import FileView from './fileView';
 import FileSystem from "./fileSystem/fileSystem";
-import styles from 'styles/storyPage/main.module.scss'
-import Localization from 'classes/localization';
-import '@types/fileContext'
 import DicePanel from './dicePanel';
+import RollHistoryPanel from './rollHistoryPanel';
+import Localization from 'classes/localization';
+import styles from 'styles/storyPage/main.module.scss'
+import '@types/fileContext'
 
 /**
  * @returns {JSX.Element}
@@ -24,6 +26,7 @@ const StoryPage = () => {
                 <div className={styles.headerMenu}>
                     <RecompileButton/>
                     <DiceButton/>
+                    <RollHistoryButton/>
                     <HomeButton/>
                 </div>
             </div>
@@ -58,14 +61,51 @@ const RecompileButton = () => {
     )
 }
 
+const RollHistoryButton = () => {
+    const [context] = useContext(Context)
+    const [open, setOpen] = useState(false); 
+    const [toggled, setToggled] = useState(false);
+
+    const disabled = context.rollHistory.length > 0 ? undefined : true;
+    const isOpen = (toggled || open) ? true : undefined;
+
+    const HandleClick = () => setToggled((toggled) => !toggled);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    return (
+        <div className={styles.holder}>
+            <div 
+                className={styles.rollHistory}
+                disabled={disabled}
+                open={isOpen}
+                tooltips={toggled 
+                    ? Localization.toText('storyPage-closeRollHistoryMenu')
+                    : Localization.toText('storyPage-openRollHistoryMenu')}
+                onClick={HandleClick}
+            >
+                <HistoryIcon sx={{ height: "100%", width: "100%" }}/>
+                { Localization.toText('storyPage-rollHistory')}
+            </div>
+            <RollHistoryPanel 
+                open={handleOpen} 
+                close={handleClose} 
+                isOpen={toggled}
+            />
+        </div>
+    )
+}
+
 const DiceButton = () => {
     const [open, setOpen] = useState(false); 
 
     return (
-        <div className={styles.diceHolder}>
+        <div className={styles.holder}>
             <div 
                 className={styles.dice} 
-                tooltips={open ? "Close dice menu" : "Open dice menu"}
+                tooltips={open 
+                    ? Localization.toText('storyPage-closeDiceMenu')
+                    : Localization.toText('storyPage-openDiceMenu')}
                 onClick={() => setOpen(!open)}
             >
                 <D20Icon/>

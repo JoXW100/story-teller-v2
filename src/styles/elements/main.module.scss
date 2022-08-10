@@ -11,14 +11,9 @@
 }
 
 .save {
-    font-weight: bold;
-    font-size: medium;
-    text-align: center;
-    color: map-get($cobalt-palette, darkest);
-    border: 2px solid map-get($cobalt-palette, darkest);
-    border-radius: 10px;
-    background-color: map-get($cobalt-palette, lightest);
-    padding: 0 5px;
+    @extend .fontExtension;
+    @extend .roundedExtension;
+    
     user-select: none;
     cursor: pointer;
 }
@@ -45,4 +40,34 @@
     &[vertical] {
         flex-direction: column;
     }
+}
+
+.dice {
+    @extend .fontExtension;
+    @extend .roundedExtension;
+
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: map-get($cobalt-palette, light);
+    }
+
+    &:active {
+        background-color: map-get($cobalt-palette, main);
+    }
+}
+
+.fontExtension {
+    font-weight: bold;
+    font-size: medium;
+    text-align: center;
+    color: map-get($cobalt-palette, darkest);
+}
+
+.roundedExtension {
+    border: 2px solid map-get($cobalt-palette, darkest);
+    border-radius: 10px;
+    background-color: map-get($cobalt-palette, lightest);
+    padding: 0 5px;
 }

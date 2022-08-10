@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
+import 'utils/data/queue';
 import '@types/storyContext'
+import Queue from 'utils/data/queue';
 
 /** @type {React.Context<StoryContextProvider>} */
 export const Context = React.createContext({})
@@ -50,7 +52,10 @@ const StoryContext = ({ storyId, fileId, children }) => {
                 return state
             
             case 'setFile': 
-                return { ...state, fileId: fileId }
+                return { ...state, fileId: fileId ?? null }
+                
+            case 'roll':
+                return { ...state };
 
             default:
                 return state
@@ -61,14 +66,20 @@ const StoryContext = ({ storyId, fileId, children }) => {
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         story: null,
-        fileId: null
+        fileId: null,
+        rollHistory: new Queue(10)
     })
 
     useEffect(() => storyId && dispatch({ type: 'init' }), [storyId]);
     useEffect(() => storyId && dispatch({ type: 'setFile' }), [fileId]);
 
     return (
-        <Context.Provider value={[state, {} ]}>
+        <Context.Provider value={[state, { 
+            roll: (collection) => { 
+                state.rollHistory.add({ result: collection.roll(), mod: collection.modifier, time: Date.now() })
+                dispatch({ type: 'roll' });
+            }
+        }]}>
             { !state.loading && state.story && children }
         </Context.Provider>
     )

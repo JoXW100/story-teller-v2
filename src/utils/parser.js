@@ -121,7 +121,7 @@ class Parser
         var results = [];
         var hit = null;
         while(null != (hit = expr.exec(options))){
-            var option = { option: hit[1], value: hit[2] };
+            var option = { option: hit[1]?.trim(), value: hit[2]?.trim() };
             results.push(option);
         }
 

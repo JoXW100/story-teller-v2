@@ -5,15 +5,14 @@ import Divider from 'components/divider'
 import Editor from './editor'
 import Renderer from './renderer'
 import styles from 'styles/storyPage/main.module.scss'
+import Localization from 'classes/localization'
 import '@types/fileContext'
-import Localization from 'classes/localization';
 
 /**
  * @returns {JSX.Element}
  */
 const FileView = () => {
-    const [context] = useContext(StoryContext)
-
+    const [context] = useContext(StoryContext);
     return (
         <FileContext storyId={context.story.id} fileId={context.fileId}>
             <FileContent/>

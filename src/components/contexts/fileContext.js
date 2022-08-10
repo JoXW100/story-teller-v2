@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer } from 'react'
-import { useRouter } from 'next/router'
-import RequestQueue from 'utils/requestQueue'
+import RequestQueue from 'utils/data/requestQueue'
 import '@types/fileContext'
 
 /** @type {React.Context<FileContextProvider>} */
@@ -16,8 +15,7 @@ export const Context = React.createContext({})
  * @returns {JSX.Element}
  */
 const FileContext = ({ storyId, fileId, children }) => {
-    const router = useRouter()
-    
+
     const fetchFile = (storyId, fileId) => {
         fetch(`/api/database/getFile?storyId=${storyId}&fileId=${fileId}`)
         .then((res) => res.json())
@@ -50,11 +48,23 @@ const FileContext = ({ storyId, fileId, children }) => {
     const reducer = (state, action) => {
         switch (action.type) {
             case 'init':
-                !state.fetching && fetchFile(storyId, fileId)
+                if (state.fetching)
+                    return state;
+
+                if (!fileId) 
+                    return { 
+                        ...state, 
+                        loading: false, 
+                        fetching: false, 
+                        fileSelected: false, 
+                        file: null 
+                    }
+
+                fetchFile(storyId, fileId)
                 return { 
                     ...state, 
                     fileSelected: Boolean(fileId), 
-                    fetching: true 
+                    fetching: Boolean(fileId) 
                 }
 
             case 'initSet':
@@ -95,7 +105,7 @@ const FileContext = ({ storyId, fileId, children }) => {
         queue: new RequestQueue()
     })
 
-    useEffect(() => { fileId && dispatch({ type: 'init' }) }, [fileId])
+    useEffect(() => { dispatch({ type: 'init' }) }, [fileId])
     
     return (
         <Context.Provider value={[state, {
