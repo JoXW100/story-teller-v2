@@ -33,9 +33,9 @@ const LinkElement = ({ options, children }) => {
 
     return (
         <Link href={href}>
-            <div className={styles.link}>
+            <span className={styles.link}>
                 { children }
-            </div>
+            </span>
         </Link>
     )
 }
