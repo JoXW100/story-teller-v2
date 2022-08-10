@@ -1,0 +1,79 @@
+@import '../colors.scss';
+
+.file {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: map-get($cobalt-palette, font);
+    user-select: none;
+    font-weight: 400;
+    height: fit-content;
+    cursor: pointer;
+
+    & > SVG {
+        padding: 4px 0 1px 0;
+        width: 1em;
+        height: 1em;
+    }
+
+    & > .text {
+        flex: 1;
+        height: 1em;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    & > input {
+        display: block;
+        flex: 1;
+        width: 100%;
+        height: 1em;
+        border: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background-color: map-get($cobalt-palette, lightest);
+        margin-top: 5px;
+        margin-left: -2px;
+        color: inherit;
+        font: inherit;
+    }
+
+    &:hover {
+        color: map-get($cobalt-palette, darkest);
+    }
+}
+
+.folder {
+    @extend .file;
+    position: relative;
+
+    &[open]::after {
+        position: absolute;
+        right: 3px;
+        top: calc(50% - 6px);
+        border-color: transparent map-get($cobalt-palette, darkest) transparent transparent;
+        border-width: 6px;
+        border-style: solid;
+        content: " ";
+    }
+
+    &:not([open])::after {
+        position: absolute;
+        right: -3px;
+        top: calc(50% - 6px);
+        border-color: transparent transparent transparent map-get($cobalt-palette, darkest);
+        border-width: 6px;
+        border-style: solid;
+        content: " ";
+    }
+}
+
+.content {
+    display: block;
+    margin-left: 4px;
+    border-left: 2px solid map-get($cobalt-palette, font-light);
+}
+
+.selected {
+    background: map-get($cobalt-palette, lightest);
+}

@@ -1,0 +1,8 @@
+@import '../colors.scss';
+
+.main {
+    border: 1px solid map-get($cobalt-palette, border);
+    background: map-get($cobalt-palette, lightest);
+    padding: 5px;
+    flex: 1;
+}

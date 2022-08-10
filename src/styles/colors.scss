@@ -1,0 +1,36 @@
+
+$coral-palette: (
+    main: rgb(255, 163, 163),
+    light: rgb(250, 181, 181),
+    lighter: rgb(255, 198, 198),
+    dark: rgb(255, 147, 147),
+    darker: rgb(255, 138, 138),
+    darkest: rgb(241, 116, 116),
+    font: rgb(143, 63, 63),
+    font-light: rgb(189, 116, 116)
+);
+
+$cobalt-palette: (
+    main: #77aaff,
+    light: #99c2ff,
+    lighter: #aeceff,
+    lightest: #c8daff,
+    dark: #5588ff,
+    darker: #3366ff,
+    darkest: #2953d1,
+    font: #1d388a,
+    font-light: #e4efff,
+    font-dark: #0b1e42,
+    border: #111830
+);
+
+$gray-palette: (
+    main: #9b9b9b,
+    light: #b6b6b6,
+    lighter: #e6e6e6,
+    dark: #727272,
+    darker: #474747,
+    font: #0e0e0e,
+    font-light: #ffffff,
+    border: #1f1f1f
+)

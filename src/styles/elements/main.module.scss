@@ -1,0 +1,47 @@
+@import '../colors.scss';
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bold {
+    color: map-get($cobalt-palette, font);
+}
+
+.save {
+    font-weight: bold;
+    font-size: medium;
+    text-align: center;
+    color: map-get($cobalt-palette, darkest);
+    border: 2px solid map-get($cobalt-palette, darkest);
+    border-radius: 10px;
+    background-color: map-get($cobalt-palette, lightest);
+    padding: 0 5px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.link {
+    color: map-get($cobalt-palette, darkest);
+
+    &:hover {
+        color: map-get($cobalt-palette, dark);
+    }
+}
+
+.line {
+    border-bottom: 2px solid map-get($cobalt-palette, border);
+    margin: 5px 0;
+}
+
+.align {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    &[vertical] {
+        flex-direction: column;
+    }
+}

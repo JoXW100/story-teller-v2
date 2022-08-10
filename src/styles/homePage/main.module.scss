@@ -1,0 +1,112 @@
+@import '../colors.scss';
+
+.main {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    align-items: flex-start;
+    justify-content: center;
+    background: map-get($coral-palette, lighter);
+
+    & > .userPanel {
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        flex: 1;
+    }
+
+    & > .container {
+        margin: 50px;
+        max-width: 30cm;
+        flex: 1;
+    }
+}
+
+.container {
+    display: block;
+    overflow: hidden;
+
+    & > .headerBox {
+        @extend .box;
+        height: 100px;
+        margin-bottom: 20px;
+        background: map-get($coral-palette, dark);
+
+        & > .text {
+            height: 100%;
+            font-size: 50px;
+        }
+    }
+
+    & > *:not(.headerBox) {
+        max-height: calc(100vh - 220px)
+    }
+}
+
+.box {
+    border: 1px solid black;
+}
+
+.text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: map-get($coral-palette, font);
+    font-weight: 1;
+    user-select: none;
+}
+
+.reconnect {
+    @extend .box;
+    @extend .text;
+    
+    flex-direction: column;
+    background: map-get($coral-palette, main);
+    padding: 10px;
+    height: 100px;
+    margin: 3px;
+    cursor: pointer;
+
+    &:hover {
+        box-shadow: 0 0 3px 3px map-get($coral-palette, darker);
+    }
+
+    &:active {
+        box-shadow: 0 0 3px 3px map-get($coral-palette, darkest);
+        background: map-get($coral-palette, dark);
+    }
+    & > .icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.loading {
+    width: 100%;
+    height: 100px;
+}
+
+.userPanel {
+    background: map-get($coral-palette, dark);
+    border-bottom: 1px solid map-get($coral-palette, border);
+    display: flex;
+    justify-content: right;
+
+    .logoutButton {
+        color: map-get($coral-palette, font);
+        padding: 3px 10px;
+        display: flex;
+        cursor: pointer;
+        user-select: none;
+
+        & > svg {
+            margin-left: 5px;
+        }
+
+        &:hover {
+            background: map-get($coral-palette, darker);
+        }
+    }
+}

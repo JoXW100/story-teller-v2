@@ -1,0 +1,79 @@
+html {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+div, p, span, textarea {
+    tab-size: 4;
+ }
+
+#__next {
+    height: 100%;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', 
+    monospace;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+input:focus {
+    outline: none;
+}
+
+code {
+    outline: none;
+}
+
+[tooltips] {
+    position: relative;
+
+    &:hover {
+        /* Arrow above */
+        &::before {
+            display: block;
+            position: absolute;
+            z-index: 9000;
+            border-color: transparent transparent white transparent ;
+            border-width: 4px;
+            border-style: solid;
+            top: calc(100% - 8px);
+            pointer-events: none;
+            content: " ";
+        }
+
+        /* Text box */
+        &::after {
+            display: block;
+            position: absolute;
+            z-index: 9000;
+            background-color: white;
+            box-shadow: 0 0 60px rgba(0,0,0,.2);
+            color: black;
+            top: 100%;
+            padding: 2px 4px;
+            font-size: 12px;
+            font-weight: 10;
+            white-space: pre;
+            pointer-events: none;
+            user-select: none;
+            content: attr(tooltips);
+        }
+    }
+}

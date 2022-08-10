@@ -1,0 +1,39 @@
+@import '../colors.scss';
+
+.main {
+    display: block;
+    position: absolute;
+    border: 1px solid rgb(107, 107, 107);
+    z-index: 1000;
+    background-color: rgb(82, 82, 82);
+    width: 150px;
+    height: auto;
+
+    & > * {
+        position: relative;
+        padding: 2.5px 10px 2.5px 2px;
+        height: 26px;
+        user-select: none;
+        color: white;
+        width: 100%;
+
+        &:hover {
+            background-color: rgb(107, 107, 107);
+        }
+        
+        & > SVG {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+
+        & > div {
+            position: absolute;
+            left: 25px;
+            width: calc(100% - 20px);
+            font-weight: 100;
+            white-space: pre;
+            text-overflow: clip;
+        }
+    }
+}

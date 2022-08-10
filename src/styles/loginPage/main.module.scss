@@ -1,0 +1,53 @@
+@import '../colors.scss';
+
+.main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: map-get($coral-palette, lighter);
+}
+
+.panel {
+    border: 1px solid map-get($coral-palette, border);
+    color: 1px solid map-get($coral-palette, font);;
+
+    & > .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        background: map-get($coral-palette, dark);
+        border-bottom: 1px solid map-get($coral-palette, border);
+        padding: 10px 5px;
+    }
+
+    & > .body {
+        background: map-get($coral-palette, light);
+        width: 300px;
+
+        & > .logoutButton {
+            height: 40px;
+        }
+    }
+}
+
+.logoutButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    color: map-get($coral-palette, font);
+    padding: 3px 10px;
+    user-select: none;
+    cursor: pointer;
+
+    & > svg {
+        margin-left: 5px;
+    }
+
+    &:hover {
+        background: map-get($coral-palette, main);
+    }
+}

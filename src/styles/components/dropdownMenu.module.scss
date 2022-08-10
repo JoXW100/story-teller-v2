@@ -1,0 +1,66 @@
+$size: 30px;
+
+.main {
+    display: flex;
+    height: $size;
+    min-width: $size;
+    background-color: inherit;
+    user-select: none;
+    cursor: pointer;
+    flex: 1;
+
+    & > .button {
+        width: $size;
+        height: $size;
+
+        & > SVG {
+            height: 100%;
+        }
+    }
+
+    & > .content {
+        display: block;
+        position: relative;
+        background-color: inherit;
+        flex: 1;
+
+        & > .menu {
+            display: block;
+            position: absolute;
+            background-color: inherit;
+            white-space: normal;
+            top: 0;
+            left: 0;
+            width: 100%;
+            max-height: $size * 5;
+            overflow-y: auto;
+    
+            & > .menuRow {
+                display: flex;
+                align-items: center;
+                height: $size;
+                background-color: inherit;
+            }
+        }
+    }
+    
+    &[disabled] {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+
+    &:hover {
+        background-color: #dadada;
+    }
+
+    &:active {
+        background-color: #b8b8b8;
+    }
+}

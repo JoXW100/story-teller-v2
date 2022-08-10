@@ -1,0 +1,108 @@
+@import '../colors.scss';
+
+$headerHeight: 40px;
+
+.main {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background-color: map-get($cobalt-palette, lighter);
+    width: 100%;
+    height: 100%;
+
+    & > .header {
+        padding-left: 10px;
+        height: $headerHeight;
+    }
+
+    & > .divider {
+        height: calc(100% - $headerHeight);
+        width: 100%;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: left;
+    background-color: map-get($cobalt-palette, main);
+    border-bottom: 1px solid map-get($cobalt-palette, border);
+
+    & > .name {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        font-weight: 700;
+        font-size: 20px;
+        color: map-get($cobalt-palette, font);
+        user-select: none;
+    }
+}
+
+.headerMenu {
+    display: flex;
+    position: relative;
+    justify-content: right;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+
+    & > .recompile {
+        @extend .headerButton;
+        right: $headerHeight;
+        height: 100%;
+        padding: 0 $headerHeight / 2 0 5px;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    & > .home {
+        @extend .headerButton;
+        height: $headerHeight - 1;
+        width: $headerHeight;
+    }
+
+    & > .diceHolder {
+        width: $headerHeight;
+        height: $headerHeight;
+        position: relative;
+    }
+}
+
+.headerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: map-get($cobalt-palette, darker);
+    color: map-get($cobalt-palette, font-light);
+    border-left: 1px solid map-get($cobalt-palette, border);
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background-color: map-get($cobalt-palette, dark);
+    }
+
+    &:active {
+        background-color: map-get($cobalt-palette, main);
+    }
+
+    &[disabled] {
+        cursor: default;
+        pointer-events: none;
+        background-color: map-get($cobalt-palette, main);
+    }
+}
+
+.dice {
+    @extend .headerButton;
+    padding: 3px;
+    height: $headerHeight - 1;
+    width: $headerHeight;
+}
+
+.content {
+    display: block;
+    position: relative;
+    height: 100%;
+    background-color: white;
+}

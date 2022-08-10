@@ -1,0 +1,226 @@
+import React, { useContext, useEffect, useState } from "react";
+import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
+import FolderIcon from '@mui/icons-material/FolderSharp';
+import UploadIcon from '@mui/icons-material/Upload';
+import { openContext } from "components/contextMenu";
+import { openPopup } from "components/popupHolder";
+import { Context } from "components/contexts/storyContext";
+import { InputType } from "@types/storyPage";
+import { FileType } from "@types/database";
+import Localization from "classes/localization";
+import CreateFilePopup from "./createFilePopup";
+import ConfirmationPopup from "../../common/confirmationPopup";
+import Folder from "./folder";
+import File from "./file";
+import styles from 'styles/storyPage/filesystem.module.scss';
+import '@types/fileSystem';
+
+/** @type {React.Context<FileSystemContextProvider>} */
+export const FileSystemContext = React.createContext({})
+
+/**
+ * @returns {JSX.Element}
+ */
+const FileSystem = ({ style }) => {
+    const [context] = useContext(Context);
+
+    /** @type {[state: FileSystemState, setState: React.Dispatch<FileSystemState>]} */
+    const [state, setState] = useState({
+        loading: false,
+        fetching: true,
+        files: []
+    })
+
+    /**
+     * @param {InputType} type 
+     * @param {string} holder 
+     */
+    const openCreateFileMenu = (type, holder = context.story.root) => {
+        openPopup(
+            <CreateFilePopup 
+                type={type} 
+                callback={(response) => {
+                    fetch('/api/database/addFile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ 
+                            storyId: context.story.id, 
+                            holderId: holder,
+                            name: response.data.name, 
+                            type: response.data.type
+                        })
+                    })
+                    .then((res) => res.json())
+                    .then((res) => !res.success && console.warn(res.result))
+                    .finally(() => setState({ ...state, fetching: true}))
+                    .catch(console.error);
+                }}
+            />
+        );
+    }
+
+    /** @param {StructureFile} file */
+    const openRemoveFileMenu = (file) => {
+        const optionYes = Localization.toText('create-confirmationYes');
+        const optionNo = Localization.toText('create-confirmationNo');
+        openPopup(
+            <ConfirmationPopup 
+                header={Localization.toText('create-confirmationHeader')} 
+                options={[optionYes, optionNo]} 
+                callback={(response) => {
+                    if (response === optionYes) {
+                        fetch('/api/database/deleteFile', {
+                            method: 'DELETE',
+                            body: JSON.stringify({ fileId: file.id })
+                        })
+                        .then((res) => res.json())
+                        .then((res) => !res.success && console.warn(res.result))
+                        .finally(() => setState({ ...state, fetching: true}))
+                        .catch(console.error);
+                    }
+                }}  
+            />
+        )
+    }
+
+    /**
+     * @param {StructureFile} file 
+     * @param {string} name 
+     * @param {Callback<?>} callback
+     */
+    const renameFile = (file, name, callback) => {
+        fetch('/api/database/renameFile', {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                fileId: file.id,
+                name: name
+            })
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            if (!res.success) {
+                console.warn(res.result);
+            }
+            callback(res);
+        })
+        .catch(console.error);
+    }
+
+    /**
+     * 
+     * @param {StructureFile} file 
+     * @param {bool} state 
+     * @param {Callback<?>} callback
+     */
+    const setFileState = (file, state, callback) => {
+        fetch('/api/database/setFileState', {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                fileId: file.id,
+                state: state
+            })
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            if (!res.success) {
+                console.warn(res.result);
+            }
+            callback(res);
+        })
+        .catch(console.error);
+    }
+
+    /**
+     * @param {[StructureFile]} files
+     * @returns {JSX.Element} 
+     */
+    const filesToComponent = (files) => {
+        return files?.sort((a, b) => b.type.localeCompare(a.type))
+        .map((file, index) => {
+            let Component = file.type === FileType.Folder
+                ? Folder
+                : File
+            return <Component key={index} file={file}/>
+        })
+    }
+
+    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
+    const handleContext = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openContext([
+            { 
+                text: Localization.toText('create-fileTooltips'), 
+                icon: FileIcon, 
+                action: () => openCreateFileMenu(InputType.File)
+            },
+            { 
+                text: Localization.toText('create-folderTooltips'), 
+                icon: FolderIcon, 
+                action: () => openCreateFileMenu(InputType.Folder)
+            },
+            { 
+                text: Localization.toText('create-uploadTooltips'), 
+                icon: UploadIcon, 
+                action: () => openCreateFileMenu(InputType.Upload)
+            }
+        ], { x: e.pageX, y: e.pageY }, true)
+    }
+
+    useEffect(() => {
+        if (state.fetching) {
+            !state.loading && setState({ ...state, loading: true})
+            fetch(`/api/database/getFileStructure?storyId=${context.story.id}`, { method: 'GET' })
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.success) {
+                    setState((state) => ({ ...state, files: res.result }));
+                    return;
+                }
+                throw new Error(res.result);
+            })
+            .finally(() => setState((state) => ({ ...state, loading: false, fetching: false})))
+            .catch(console.error)
+        }
+    }, [state.fetching])
+
+    return (
+        <div className={styles.main} style={style}>
+            <div className={styles.header}> 
+                <div 
+                    className={styles.file}
+                    onClick={() => openCreateFileMenu(InputType.File)}
+                    tooltips={Localization.toText('create-fileTooltips')}
+                > 
+                    <FileIcon/> 
+                </div>
+                <div 
+                    className={styles.folder}
+                    onClick={() => openCreateFileMenu(InputType.Folder)}
+                    tooltips={Localization.toText('create-folderTooltips')}
+                > 
+                    <FolderIcon/> 
+                </div>
+                <div 
+                    className={styles.upload}
+                    onClick={() => openCreateFileMenu(InputType.Upload)}
+                    tooltips={Localization.toText('create-uploadTooltips')}
+                > 
+                    <UploadIcon/> 
+                </div>
+            </div>
+            <div className={styles.body} onContextMenu={handleContext}>
+                <FileSystemContext.Provider value={[ state, { 
+                    filesToComponent: filesToComponent,
+                    openCreateFileMenu: openCreateFileMenu,
+                    openRemoveFileMenu: openRemoveFileMenu,
+                    renameFile: renameFile,
+                    setFileState: setFileState
+                }]}>
+                    { !state.loading && filesToComponent(state.files) }
+                </FileSystemContext.Provider>
+            </div>
+        </div>
+    )
+}
+
+export default FileSystem;

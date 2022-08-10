@@ -1,0 +1,35 @@
+@import '../colors.scss';
+
+$width: 8px;
+
+.main {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+
+    & > .divider {
+        z-index: 5;
+        height: 100%;
+        margin-left: -$width/2;
+        width: $width;
+        user-select: none;
+        cursor: ew-resize;
+
+        &:hover {
+            background-color: rgb(226, 226, 226);
+        }
+
+        &:active {
+            background-color: rgb(226, 226, 226);
+            cursor: ew-resize;
+        }
+    }
+
+    & > * {
+        position: absolute;
+        z-index: 3;
+        height: 100%;
+    }
+}

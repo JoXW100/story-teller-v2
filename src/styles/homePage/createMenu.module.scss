@@ -1,0 +1,128 @@
+@import '../colors.scss';
+
+.createMenu {
+    @extend .box;
+
+    & > .text {
+        position: relative;
+        border-bottom: 1px solid black;
+        height: 50px;
+        padding-left: 30px;
+
+        & > .backButton {
+            @extend .button;
+            @extend .box;
+
+            width: 70px;
+            right: 5px;
+        }
+
+        & > .confirmButton {
+            @extend .button;
+            @extend .box;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            width: 90px;
+            right: 80px;
+        }
+    }
+}
+
+.editMenu {
+    @extend .box;
+
+    width: min(60%, 600px);
+
+    & > .text {
+        position: relative;
+        border-bottom: 1px solid black;
+        height: 50px;
+        padding-left: 15px;
+
+        & > .backButton {
+            @extend .button;
+            @extend .box;
+
+            width: 70px;
+            right: 5px;
+        }
+
+        & > .confirmButton {
+            @extend .button;
+            @extend .box;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            width: 90px;
+            right: 80px;
+        }
+    }
+}
+
+.inputRow {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-bottom: 2px solid map-get($coral-palette, main);
+    padding-left: 10px;
+    background-color: map-get($coral-palette, light);
+    font-weight: 200;
+    height: 40px;
+
+    & > input {
+        position: absolute;
+        left: 180px;
+        height: calc(100% - 6px);
+        width: calc(100% - 183px);
+        padding-left: 10px;
+        background-color: map-get($coral-palette, lighter);
+        border: none;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.box {
+    border: 1px solid black;
+}
+
+.text {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    user-select: none;
+    background-color: map-get($coral-palette, dark);
+    color: map-get($coral-palette, font);
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.button {
+    position: absolute;
+    height: 35px;
+    padding: 3px;
+    cursor: pointer;
+    background-color: map-get($coral-palette, light);
+
+    &:hover {
+        box-shadow: 0 0 3px 3px map-get($coral-palette, darker);
+    }
+
+    &:active {
+        background-color: map-get($coral-palette, dark);
+    }
+
+    &[disabled] {
+        opacity: 0.6;
+        border: 1px solid rgba(0, 0, 0, 0.6);
+        pointer-events: none;
+    }
+}
+

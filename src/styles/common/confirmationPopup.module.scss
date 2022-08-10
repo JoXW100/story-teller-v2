@@ -1,0 +1,70 @@
+@import '../colors.scss';
+
+$headerHeight: 35px;
+
+.main {
+    position: absolute;
+    top: 80px;
+    background-color: map-get($gray-palette, light);
+    border: 1px solid map-get($gray-palette, border);
+    width: min(60%, 600px);
+
+    & > .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        height: $headerHeight;
+        color: map-get($gray-palette, font);
+        background-color: map-get($gray-palette, dark);
+        border-bottom: 1px solid map-get($gray-palette, border);
+        user-select: none;
+
+        & > SVG {
+            height: $headerHeight;
+            width: $headerHeight;
+            padding: 3px;
+            margin-right: 6px;
+        }
+    }
+
+    & > .body {
+        display: flex;
+        
+        & > .buttonOk {
+            @extend .button;
+        }
+
+        & > .buttonCancel {
+            @extend .button;
+
+        }
+    }
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: map-get($gray-palette, main);
+    border: 1px solid map-get($gray-palette, border);
+    cursor: pointer;
+    user-select: none;
+    height: 30px;
+    margin: 3px;
+    flex: 1;
+
+    &:hover {
+        border: 1px solid map-get($gray-palette, dark);
+    }
+
+    &:active {
+        border: 1px solid map-get($gray-palette, main);
+    }
+
+    &[disabled] {
+        background-color: rgba(map-get($gray-palette, main), 0.5);
+        pointer-events: none;
+    }
+}

@@ -1,0 +1,20 @@
+<svg 
+    fill='currentColor' 
+    viewBox='0 0 32 32'
+    xmlns='http://www.w3.org/2000/svg'
+>
+<!-- 
+    <path
+        d='M0,0 L0,32 L32,32 L32,0 Z' 
+        stroke='#e0a3a3' 
+        stroke-width='1'
+    />
+-->
+    <path 
+        d="M16,2 l-11.7,7.2 v11.7 l11.7,9 l11.7,-9 v-11.7 Z
+           m0,1.8 l10.08,16.2 h-20.16 Z
+           m0,23.85 l-8.1,-5.85 h16.2 Z
+           m3.6,-21.69 l6.3,4.05 v6.3 Z
+           m-7.2,0 l-6.3,10.35 v-6.3 Z"
+    />
+</svg>

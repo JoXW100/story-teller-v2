@@ -1,0 +1,34 @@
+@import '../colors.scss';
+
+$pageWidth: 8.5in; /* A4 */
+$pageHeight: 14in; /* A4 */
+
+.main {
+    display: flex;
+    position: relative;
+    flex-flow: column;
+    justify-content: center;
+    background: map-get($cobalt-palette, lightest);
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+    margin: auto;
+}
+
+.innerPage {
+    flex-shrink: 0;
+    min-width: 0;
+    overflow: hidden;
+    transform-origin: top left;
+    background: white;
+    width: $pageWidth;
+    padding: 5px;
+    height: 100%;
+    margin: auto;
+}
+
+.error {
+    margin: 10px;
+    color: red;
+    font-weight: bold;
+}

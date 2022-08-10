@@ -1,0 +1,38 @@
+@import '../colors.scss';
+
+.main {
+    display: flex;
+    flex-direction: column;
+    background-color: map-get($cobalt-palette, lighter);
+    height: 100%;
+    border-right: 1px solid map-get($cobalt-palette, border);
+
+    & > .header {
+        width: 100%;
+        border-bottom: 1px solid map-get($cobalt-palette, border);
+        background-color: map-get($cobalt-palette, light);
+
+        & > * {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 30px;
+            width: 30px;
+            color: map-get($cobalt-palette, darkest);
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+                color: map-get($cobalt-palette, dark);
+            }
+
+            &:active {
+                color: map-get($cobalt-palette, main);
+            }
+        }
+    }
+
+    & > .body {
+        height: 100%;
+    }
+}

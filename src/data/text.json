@@ -1,0 +1,39 @@
+{
+    "eng": {
+        "language": "English",
+        "icon": "eng",
+        "content": {
+            "home-title": "Story Teller 2.0",
+            "storyCard-create-story": "Create a new story",
+            "reconnect-button": "Retry connection",
+            "createStory-header": "Create Story",
+            "createStory-namePrompt": "Story name",
+            "createStory-namePlaceholder": "A good name...",
+            "createStory-descPrompt": "Story description",
+            "createStory-descPlaceholder": "A story about...",
+            "createStory-confirmation": "Create",
+            "editStoryPopup-header": "Edit Story",
+            "editStoryPopup-confirmation": "Apply",
+            "fileSystem-tooltip-file": "New file",
+            "storyPage-recompile": "Recompile",
+            "create-fileTooltips": "New File",
+            "create-folderTooltips": "New Folder",
+            "create-uploadTooltips": "Upload",
+            "create-rename": "Rename",
+            "create-edit": "Edit",
+            "create-delete": "Delete",
+            "create-confirmationHeader": "Are you sure",
+            "create-confirmationYes": "Yes",
+            "create-confirmationNo": "No",
+            "createFilePopup-header": "Add File",
+            "createFilePopup-fileNamePrompt": "File name",
+            "createFilePopup-fileNamePlaceholder": "The name of the file...",
+            "createFilePopup-folderNamePrompt": "Folder name",
+            "createFilePopup-folderNamePlaceholder": "The name of the folder...",
+            "createFilePopup-typePrompt": "File type",
+            "createFilePopup-typePlaceholder": "The type of the file...",
+            "createFilePopup-button": "Create",
+            "createFilePopup-closeTooltips": "Close"
+        }
+    }
+}

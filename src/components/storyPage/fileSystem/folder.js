@@ -1,0 +1,103 @@
+import { useContext, useEffect, useMemo, useState } from 'react';
+import IconClosed from '@mui/icons-material/FolderSharp';
+import IconOpen from '@mui/icons-material/FolderOpenSharp';
+import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
+import UploadIcon from '@mui/icons-material/Upload';
+import RemoveIcon from '@mui/icons-material/Remove';
+import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Context } from 'components/contexts/storyContext';
+import { FileSystemContext } from './fileSystem';
+import { openContext } from 'components/contextMenu';
+import { InputType } from '@types/storyPage';
+import Localization from 'classes/localization';
+import styles from 'styles/storyPage/file.module.scss';
+import '@types/fileSystem';
+
+const hasSelectedChild = (file, fileId) => {
+    return file.id === fileId || file.children?.some((x) => hasSelectedChild(x, fileId)) 
+}
+
+/**
+ * @param {{ file: StructureFile }}
+ * @returns {JSX.Element}
+ */
+const Folder = ({ file }) => {
+    const [context] = useContext(Context);
+    const [_, dispatch] = useContext(FileSystemContext);
+    const [state, setState] = useState({
+        open: Boolean(file.open),
+        selected: false, 
+    });
+
+    const Icon = useMemo(() => state.open ? IconOpen : IconClosed, [state.open])
+
+    const changeState = () => {
+        dispatch.setFileState(file, !state.open, () => {
+            setState((state) => ({ ...state, open: !state.open }));
+        });
+    }
+
+    useEffect(() => {
+        setState((state) => ({ ...state, selected: hasSelectedChild(file, context.fileId)}));
+    }, [context.fileId])
+
+    /**
+     * @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e 
+     */
+    const handleContext = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openContext([
+            { 
+                text: Localization.toText('create-fileTooltips'), 
+                icon: FileIcon, 
+                action: () => dispatch.openCreateFileMenu(InputType.File, file.id)
+            },
+            { 
+                text: Localization.toText('create-folderTooltips'), 
+                icon: IconClosed, 
+                action: () => dispatch.openCreateFileMenu(InputType.Folder, file.id)
+            },
+            { 
+                text: Localization.toText('create-uploadTooltips'), 
+                icon: UploadIcon, 
+                action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
+            },
+            { 
+                text: Localization.toText('create-rename'), 
+                icon: RenameIcon, 
+                action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
+            },
+            { 
+                text: Localization.toText('create-delete'), 
+                icon: RemoveIcon, 
+                action: () => dispatch.openRemoveFileMenu(file)
+            }
+        ], { x: e.pageX, y: e.pageY }, true)
+    }
+
+    const className = !state.open && state.selected
+        ? `${styles.folder} ${styles.selected}` 
+        : styles.folder;
+
+    return (
+        <>
+            <div 
+                className={className} 
+                onClick={changeState}
+                onContextMenu={handleContext}
+                open={state.open}
+            >
+                <Icon/>
+                <div className={styles.text}> {file.name} </div>
+            </div>
+            { state.open && file.children && (
+                <div className={styles.content}>
+                    { dispatch.filesToComponent(file.children)}
+                </div>
+            )}
+        </>
+    )
+}
+
+export default Folder;

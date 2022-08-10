@@ -1,0 +1,19 @@
+<svg  
+    fill='none' 
+    viewBox='0 0 32 32'
+    xmlns='http://www.w3.org/2000/svg'
+>
+<!--
+    <path
+        d='M0,0 L0,32 L32,32 L32,0 Z' 
+        stroke='#e0a3a3' 
+        stroke-width='1'
+    />
+-->
+    <path 
+        d="M16,2 l-11.7,7.2 v11.7 l11.7,9 l11.7,-9 v-11.7 Z
+           m0,0.6 l11,17.8 h-22 Z"
+        stroke='currentColor' 
+        stroke-width='1.8'
+    />
+</svg>

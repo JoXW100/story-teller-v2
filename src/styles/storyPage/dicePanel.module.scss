@@ -1,0 +1,82 @@
+@import '../colors.scss';
+
+$width: 41px;
+$diceWidth: 35px;
+$numWidth: 15px;
+
+.holder {
+    position: absolute;
+    color:  map-get($cobalt-palette, font-light);
+    z-index: 100;
+}
+
+.main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: 3px;
+    left: -1px;
+    background: map-get($cobalt-palette, lightest);
+    border: 1px solid map-get($cobalt-palette, border);
+    border-radius: $width / 2;
+    width: $width;
+}
+
+.dice {
+    @extend .interactive;
+
+    position: relative;
+    border: 1px solid map-get($cobalt-palette, border);
+    border-radius: $width / 2;
+    margin: 2px;
+    padding: 4px;
+    width: $diceWidth;
+    height: $diceWidth;
+
+    & > .number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        padding: 0 3px;
+        right: -1px;
+        bottom: -1px;
+        height: $numWidth;
+        width: fit-content;
+        font-size: small;
+        background: map-get($cobalt-palette, border);
+        border: 1px solid map-get($cobalt-palette, border);
+        border-radius: 100%;
+        user-select: none;
+    }
+}
+
+.roll {
+    @extend .interactive;
+
+    position: absolute;
+    z-index: -1;
+    right: 2px;
+    top: 4px;
+    border: 1px solid map-get($cobalt-palette, border);
+    border-radius: 20px;
+    height: $diceWidth;
+    padding: 0  $width + 12 0 8px;
+}
+
+.interactive {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: map-get($cobalt-palette, darkest);
+
+    &:hover {
+        background: map-get($cobalt-palette, dark);
+    }
+
+    &:active {
+        background: map-get($cobalt-palette, main);
+    }
+}
