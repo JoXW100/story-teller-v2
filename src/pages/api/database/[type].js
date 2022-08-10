@@ -34,7 +34,7 @@ export default withApiAuthRequired(async function handler(req, res) {
                     return res.status(200).json(await Database.stories.get(userId, params.storyId));
 
                 case 'getFile':
-                    return res.status(200).json(await Database.files.get(userId, params.fileId));
+                    return res.status(200).json(await Database.files.get(userId, params.storyId, params.fileId));
 
                 case 'getFileStructure':
                     return res.status(200).json(await Database.files.getStructure(userId, params.storyId));

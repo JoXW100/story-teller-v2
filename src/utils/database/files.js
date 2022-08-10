@@ -49,17 +49,19 @@ class FilesInterface
 
     /**
      * Adds a file to the database
+     * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {string} fileId The story that holds the file
      * @returns {Promise<import('@types/database').DBResponse<import('@types/database').File<?>>>}
      */
-    async get(userId, fileId) {
-        console.log("GET", userId, fileId);
+    async get(userId, storyId, fileId) {
+        console.log("GET", userId, storyId, fileId);
         try
         {
             let result = (await this.#collection.aggregate([
                 { $match: {
                     _userId: userId,
+                    _storyId: ObjectId(storyId),
                     _id: ObjectId(fileId)
                 }},
                 { $project: {
@@ -71,8 +73,8 @@ class FilesInterface
                 }},
                 { $limit: 1 }
             ]).toArray())[0];
-            console.log(`Get File: => ${result.name}.${result.type}`);
-            return success(result);
+            console.log(`Get File: => ${result?.name}.${result?.type}`);
+            return result ? success(result) : failure("Could not find any matching file");
         }
         catch (error)
         {
@@ -92,7 +94,8 @@ class FilesInterface
             let result = await this.#collection.deleteOne({
                 _userId: userId,
                 _id: ObjectId(fileId)
-            })
+            });
+            console.log(`Delete File: => ${result.deletedCount === 1}`);
             return success(result.deletedCount === 1);
         }
         catch (error)
@@ -141,6 +144,7 @@ class FilesInterface
                     dateUpdated: Date.now()
                 }
             })
+            console.log(`Rename File: => ${result.deletedCount === 1 && name}`);
             return success(result.modifiedCount === 1);
         }
         catch (error)

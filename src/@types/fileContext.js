@@ -12,7 +12,7 @@
 
 /**
  * @typedef FileContextState
- * @property {boolean} loading
+ * @property {FileState} state
  * @property {boolean} editEnabled
  * @property {import('@types/database').File<*>} file
  * @property {import('utils/requestQueue').default} queue

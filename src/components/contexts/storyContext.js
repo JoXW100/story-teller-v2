@@ -60,7 +60,6 @@ const StoryContext = ({ storyId, fileId, children }) => {
     /** @type {[state: StoryContextState, dispatch: React.Dispatch<DispatchAction>]} */
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
-        editEnabled: true,
         story: null,
         fileId: null
     })

@@ -23,7 +23,6 @@
 /**
  * @typedef StoryContextState
  * @property {boolean} loading
- * @property {boolean} editEnabled
  * @property {?Story} story
  * @property {?string} fileId
  */
