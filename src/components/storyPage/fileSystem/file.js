@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Icon from '@mui/icons-material/InsertDriveFileSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
+import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import Link from 'next/link';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
@@ -31,6 +32,11 @@ const File = ({ file }) => {
         e.preventDefault()
         e.stopPropagation()
         openContext([
+            {
+                text: Localization.toText('create-copyId'), 
+                icon: CopyIcon, 
+                action: () => navigator.clipboard.writeText(file.id)
+            },
             { 
                 text: Localization.toText('create-rename'), 
                 icon: RenameIcon, 

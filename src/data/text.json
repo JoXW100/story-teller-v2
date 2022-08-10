@@ -22,6 +22,7 @@
             "create-rename": "Rename",
             "create-edit": "Edit",
             "create-delete": "Delete",
+            "create-copyId": "Copy ID",
             "create-confirmationHeader": "Are you sure",
             "create-confirmationYes": "Yes",
             "create-confirmationNo": "No",

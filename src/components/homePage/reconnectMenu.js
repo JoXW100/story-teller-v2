@@ -11,7 +11,7 @@ import '@types/homePage'
 const ReconnectMenu = ({ state, setState }) => {
 
     const handleClick = () => {
-        setState({ ...state, status: PageStatus.Loading })
+        setState({ ...state, status: PageStatus.Connecting })
     }
 
     return (

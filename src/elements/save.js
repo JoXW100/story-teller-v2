@@ -9,9 +9,12 @@ const validateOptions = (options) => {
             throw new ParseError(`Unexpected save option: '${key}'`);
     })
 
-    var num = parseInt(options.value)
-    if (num === NaN || num < 0)
-        throw new ParseError(`Invalid save value: '${options.value}', must be a number > 0`);
+    if (options.value) {
+        var num = parseInt(options.value)
+        if (num === NaN || num < 0)
+            throw new ParseError(`Invalid save value: '${options.value}', must be a number > 0`);
+    }
+    
 }
 
 /**
