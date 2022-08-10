@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import LoginIcon from '@mui/icons-material/LoginSharp';
+import Localization from 'classes/localization';
 import styles from 'styles/loginPage/main.module.scss';
 
 const LoginPage = () => {
@@ -8,13 +10,12 @@ const LoginPage = () => {
             <div className={styles.panel}>
                 <div className={styles.header}> Login Required </div>
                 <div className={styles.body}>
-                    <a 
-                        className={styles.logoutButton}
-                        href="/api/auth/login"
-                    >
-                        Login
-                        <LoginIcon/>
-                    </a>
+                    <Link href="/api/auth/login">
+                        <div className={styles.loginButton}>
+                            { Localization.toText('loginPage-prompt') }
+                            <LoginIcon/>
+                        </div>
+                    </Link>
                 </div>
             </div>
         </div>

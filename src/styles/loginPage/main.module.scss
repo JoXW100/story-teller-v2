@@ -27,13 +27,13 @@
         background: map-get($coral-palette, light);
         width: 300px;
 
-        & > .logoutButton {
+        & > .loginButton {
             height: 40px;
         }
     }
 }
 
-.logoutButton {
+.loginButton {
     display: flex;
     justify-content: center;
     align-items: center;

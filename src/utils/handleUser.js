@@ -12,7 +12,7 @@ const useValidation = (router) => {
         if (!user && !isLoading) {
             router?.push('/login')
         }
-    }, [user, isLoading])
+    }, [user, isLoading, router])
 
     return user && !isLoading;
 }

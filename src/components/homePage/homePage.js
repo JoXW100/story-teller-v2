@@ -9,6 +9,7 @@ import ReconnectMenu from './reconnectMenu';
 import Localization from 'classes/localization';
 import styles from 'styles/homePage/main.module.scss'
 import '@types/homePage'
+import { Link } from '@mui/material';
 
 /**
  * @typedef {import('@types/homePage').HomePageState} State
@@ -79,7 +80,7 @@ const HomePage = () => {
         switch (state.status) {
             case PageStatus.Loading:
             case PageStatus.Connecting:
-                return () => (<Loading className={styles.loading}/>)
+                return LoadingMenu
             case PageStatus.Create:
                 return CreateStoryMenu
             case PageStatus.Select:
@@ -94,13 +95,12 @@ const HomePage = () => {
     return (
         <div className={styles.main}>
             <div className={styles.userPanel}>
-                <a 
-                    className={styles.logoutButton}
-                    href="/api/auth/logout"
-                >
-                    { `Logout ${user?.name}` }
-                    <LogoutIcon/>
-                </a>
+                <Link href="/api/auth/logout" style={{ textDecoration: 'none' }}>
+                    <div className={styles.logoutButton}>
+                        { `Logout ${user?.name}` }
+                        <LogoutIcon/>
+                    </div>
+                </Link>
             </div>
             <div className={styles.container}>
                 <div className={styles.headerBox}>
@@ -112,6 +112,10 @@ const HomePage = () => {
             </div>
         </div>
     )
+}
+
+const LoadingMenu = () => {
+    return <Loading className={styles.loading}/>
 }
 
 export default HomePage;

@@ -33,7 +33,8 @@
             "createFilePopup-typePrompt": "File type",
             "createFilePopup-typePlaceholder": "The type of the file...",
             "createFilePopup-button": "Create",
-            "createFilePopup-closeTooltips": "Close"
+            "createFilePopup-closeTooltips": "Close",
+            "loginPage-prompt": "Login"
         }
     }
 }

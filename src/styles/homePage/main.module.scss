@@ -93,20 +93,22 @@
     border-bottom: 1px solid map-get($coral-palette, border);
     display: flex;
     justify-content: right;
+}
 
-    .logoutButton {
-        color: map-get($coral-palette, font);
-        padding: 3px 10px;
-        display: flex;
-        cursor: pointer;
-        user-select: none;
+.logoutButton {
+    color: map-get($coral-palette, font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 10px 0 10px;
+    cursor: pointer;
+    user-select: none;
 
-        & > svg {
-            margin-left: 5px;
-        }
+    & > svg {
+        margin-left: 5px;
+    }
 
-        &:hover {
-            background: map-get($coral-palette, darker);
-        }
+    &:hover {
+        background: map-get($coral-palette, darker);
     }
 }
