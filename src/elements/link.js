@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/main.module.scss';
+import Link from 'next/link';
 
 const validOptions = ['href'];
 const validateOptions = (options) => {
@@ -31,9 +32,11 @@ const LinkElement = ({ options, children }) => {
     }, [options]);
 
     return (
-        <a className={styles.link} href={href}>
-            { children }
-        </a>
+        <Link href={href}>
+            <div className={styles.link}>
+                { children }
+            </div>
+        </Link>
     )
 }
 

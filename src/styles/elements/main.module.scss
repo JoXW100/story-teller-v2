@@ -25,6 +25,7 @@
 
 .link {
     color: map-get($cobalt-palette, darkest);
+    cursor: pointer;
 
     &:hover {
         color: map-get($cobalt-palette, dark);
