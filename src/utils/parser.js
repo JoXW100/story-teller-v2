@@ -82,8 +82,8 @@ class Parser
      * @returns {ParserObject}
      */
     static #parseFunction(part, current) {
-        const splitExpr = /( *\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi;
-        const expr = / *\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]]*)\])?/i;
+        const splitExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi;
+        const expr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]]*)\])?/i;
         
         if (current.type === 'text') {
             current.content = part;
@@ -136,6 +136,8 @@ class Parser
         var element = ElementDictionary[tree.type];
         if (!element)
             throw new ParseError(`Unknown command '${tree.type}'`);
+        if (tree.type === 'text' && tree.content.trim() == '')
+            return null;
 
         var options = {};
         tree.options.forEach((x) => {

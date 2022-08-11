@@ -1,4 +1,5 @@
 import styles from 'styles/elements/main.module.scss';
+import { ParseError } from 'utils/parser';
 
 /**
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 

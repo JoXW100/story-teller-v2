@@ -2,6 +2,7 @@ import * as align from './align';
 import * as bold from './bold';
 import * as box from './box';
 import * as center from './center';
+import * as fill from './fill';
 import * as header from './header';
 import * as line from './line';
 import * as link from './link';
@@ -16,6 +17,7 @@ const ElementDictionary = {
     ...bold.element,
     ...box.element,
     ...center.element,
+    ...fill.element,
     ...header.element,
     ...line.element,
     ...link.element,
@@ -31,6 +33,7 @@ export {
     bold,
     box,
     center,
+    fill,
     header,
     line,
     link,

@@ -18,10 +18,12 @@ const validateOptions = (options) => {
  * @returns {JSX.Element}
  */
 const AlignElement = ({ options, children }) => {
+    const vertical = ['v', 'vertical'].includes(options.direction);
+
     return (
         <div 
             className={styles.align} 
-            vertical={['v', 'vertical'].includes(options.vertical) ? true : undefined}
+            direction={vertical ? "V" : "H"}
         >
             { children }
         </div>

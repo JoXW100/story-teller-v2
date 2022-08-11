@@ -40,15 +40,13 @@ const validateOptions = (options) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const RollElement = ({ options }) => {
+const RollElement = ({ children, options }) => {
     const [context, dispatch] = useContext(Context);
 
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
     const num = options.num ? parseInt(options.num) : 1;
     const mod = options.mod ? parseInt(options.mod) : 0;
     const show = options.showDice === 'true';
-
-    console.log(options, isNaN(parseInt(options.mod)));
 
     const handleClick = () => {
         var collection = new DiceCollection();
@@ -57,7 +55,7 @@ const RollElement = ({ options }) => {
         dispatch.roll(collection);
     }
 
-    const modText = !show && mod === 0 ? '' 
+    const modText = (show && mod === 0) ? '' 
         : mod < 0 ? `- ${Math.abs(mod)}`
         : `+ ${mod}`;
 
@@ -66,8 +64,9 @@ const RollElement = ({ options }) => {
             className={styles.dice}
             onClick={handleClick}
         >
-            { show ? modText
+            { !show ? modText
                 : `${num}${dice.text} ${modText} `}
+            { children }
         </span>
     )
 }

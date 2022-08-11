@@ -7,6 +7,7 @@
 }
 
 .bold {
+    font-weight: bold;
     color: map-get($cobalt-palette, font);
 }
 
@@ -14,6 +15,7 @@
     @extend .fontExtension;
     @extend .roundedExtension;
     
+    display: inline-flex;
     user-select: none;
     cursor: pointer;
 }
@@ -34,19 +36,33 @@
 
 .align {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    flex: 1;
 
-    &[vertical] {
+    & > *:not(:last-child) {
+        margin-right: 5px;
+    }
+
+    &[direction=V] {
         flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &[direction=H] {
+        flex-direction: row;
     }
 }
+
+
 
 .dice {
     @extend .fontExtension;
     @extend .roundedExtension;
 
+    display: inline-flex;
     user-select: none;
+    width: fit-content;
     cursor: pointer;
 
     &:hover {
@@ -55,6 +71,10 @@
 
     &:active {
         background-color: map-get($cobalt-palette, main);
+    }
+
+    & > span, & > svg {
+        margin-left: 5px;
     }
 }
 
@@ -67,7 +87,15 @@
 
 .roundedExtension {
     border: 2px solid map-get($cobalt-palette, darkest);
-    border-radius: 10px;
+    border-radius: 5px;
     background-color: map-get($cobalt-palette, lightest);
     padding: 0 5px;
+}
+
+.fill {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    flex: 1;
 }

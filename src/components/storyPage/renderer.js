@@ -24,7 +24,6 @@ const Renderer = () => {
                 }));
             }
             else {
-                console.log(error.code);
                 throw error;
             }
         })

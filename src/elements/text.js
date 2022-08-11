@@ -3,7 +3,7 @@
  * @returns {JSX.Element}
  */
  const TextElement = ({ options, children }) => {
-    return children
+    return <span> {children} </span>
 }
 
 /**
@@ -17,7 +17,7 @@
         toComponent: TextElement,
         validateOptions: (options) => {
             if (Object.keys(options).length > 0)
-                throw new ParseError(`'line' command does not accept any options`);
+                throw new ParseError(`'text' command does not accept any options`);
         }
     }
 }

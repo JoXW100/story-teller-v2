@@ -1,3 +1,4 @@
+import { ParseError } from 'utils/parser';
 
 /**
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
@@ -14,7 +15,7 @@ const x = {
     toComponent: NewLineElement,
     validateOptions: (options) => {
         if (Object.keys(options).length > 0)
-            throw new ParseError(`'line' command does not accept any options`);
+            throw new ParseError(`'newline' command does not accept any options`);
     }
 }
 
