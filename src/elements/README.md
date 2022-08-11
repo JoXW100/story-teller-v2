@@ -29,6 +29,11 @@ Elements are the available commands that can be used within the editor.
     - `\center` Align content to the center, both vertically and horizontally
 
 
+* `\fill`
+    - Default option: `none`
+    - `\fill` Fills the rest of the parent element
+
+
 * `\h1` [`underline`]
     - Default option: `underline`
     - If no `underline` is specified, it will default to `false`
@@ -82,6 +87,19 @@ Elements are the available commands that can be used within the editor.
 * `\n` or `\newline`
     - Default option: `none`
     - `\n` or `\newline` Insert line
+
+
+* `\roll` [`dice`, `num`, `mod`, `showDice`]
+    - Default option: `dice`
+    - If no `dice` is specified, it will default to `20`
+    - Valid `dice` values: Any integer value greater than zero
+    - If no `num` is specified, it will default to `1`
+    - Valid `num` values: Any integer value greater than zero
+    - If no `mod` is specified, it will default to `0`
+    - Valid `mod` values: Any integer value
+    - If no `showDice` is specified, it will default to `false`
+    - Valid `showDice` values: `true` or `false`
+    - `\roll [10, num: 2, mod: -1]` Draws a dice roll figure with 2d10 - 1
 
 
 * `\save` [`value`, `attr`]

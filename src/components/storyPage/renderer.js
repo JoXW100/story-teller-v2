@@ -8,7 +8,7 @@ import styles from 'styles/storyPage/renderer.module.scss';
  * @returns {JSX.Element}
  */
 const Renderer = () => {
-    const [context, dispatch] = useContext(Context);
+    const [context] = useContext(Context);
     const [state, setState] = useState({
         content: null
     })
@@ -30,9 +30,7 @@ const Renderer = () => {
     }, [context.file])
 
     return (
-        <div 
-            className={styles.main} 
-        >
+        <div className={styles.main}>
             <div className={styles.innerPage}>
                 { state.content }
             </div>
