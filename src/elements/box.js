@@ -1,4 +1,4 @@
-import styles from 'styles/elements/boxElement.module.scss';
+import styles from 'styles/elements/main.module.scss';
 
 const validOptions = ['color'];
 const validateOptions = (options) => {
@@ -16,7 +16,7 @@ const BoxElement = ({ options, children }) => {
     return (
         <div 
             style={options.color ? { background: options.color } : undefined}
-            className={styles.main}
+            className={styles.box}
         >
             { children }
         </div>
