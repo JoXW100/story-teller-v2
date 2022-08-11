@@ -73,7 +73,10 @@ const FileSystem = ({ style }) => {
                     if (response === optionYes) {
                         fetch('/api/database/deleteFile', {
                             method: 'DELETE',
-                            body: JSON.stringify({ fileId: file.id })
+                            body: JSON.stringify({ 
+                                storyId: context.story.id, 
+                                fileId: file.id 
+                            })
                         })
                         .then((res) => res.json())
                         .then((res) => {
@@ -97,6 +100,7 @@ const FileSystem = ({ style }) => {
         fetch('/api/database/renameFile', {
             method: 'PUT',
             body: JSON.stringify({ 
+                storyId: context.story.id, 
                 fileId: file.id,
                 name: name
             })
@@ -112,7 +116,6 @@ const FileSystem = ({ style }) => {
     }
 
     /**
-     * 
      * @param {StructureFile} file 
      * @param {bool} state 
      * @param {Callback<?>} callback
@@ -120,7 +123,8 @@ const FileSystem = ({ style }) => {
     const setFileState = (file, state, callback) => {
         fetch('/api/database/setFileState', {
             method: 'PUT',
-            body: JSON.stringify({ 
+            body: JSON.stringify({
+                storyId: context.story.id, 
                 fileId: file.id,
                 state: state
             })
@@ -131,6 +135,29 @@ const FileSystem = ({ style }) => {
                 console.warn(res.result);
             }
             callback(res);
+        })
+        .catch(console.error);
+    }
+
+    /**
+     * @param {StructureFile} file 
+     * @param {StructureFile} target 
+     */
+    const moveFile = (file, target) => {
+        fetch('/api/database/moveFile', {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                storyId: context.story.id, 
+                fileId: file.id,
+                targetId: target?.id ?? context.story.root
+            })
+        })
+        .then((res) => res.json())
+        .then((res) => {
+            if (!res.success) {
+                console.warn(res.result);
+            }
+            setState({ ...state, fetching: true})
         })
         .catch(console.error);
     }
@@ -170,6 +197,33 @@ const FileSystem = ({ style }) => {
                 action: () => openCreateFileMenu(InputType.Upload)
             }
         ], { x: e.pageX, y: e.pageY }, true)
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.dragData.target = null;
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var file = window.dragData?.file;
+        if (file && (file.holderId !== context.story.root)) {
+            moveFile(file, null)
+        }
+
+        window.dragData.target = null;
+        window.dragData.file = null;
     }
 
     useEffect(() => {
@@ -214,12 +268,20 @@ const FileSystem = ({ style }) => {
                     <UploadIcon/> 
                 </div>
             </div>
-            <div className={styles.body} onContextMenu={handleContext}>
-                <FileSystemContext.Provider value={[ state, { 
+            <div 
+                className={styles.body} 
+                onContextMenu={handleContext}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+            >
+                <FileSystemContext.Provider value={[state, { 
                     filesToComponent: filesToComponent,
                     openCreateFileMenu: openCreateFileMenu,
                     openRemoveFileMenu: openRemoveFileMenu,
                     renameFile: renameFile,
+                    moveFile: moveFile,
                     setFileState: setFileState
                 }]}>
                     { !state.loading && filesToComponent(state.files) }

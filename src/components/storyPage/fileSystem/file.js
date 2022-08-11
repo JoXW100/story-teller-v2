@@ -22,12 +22,25 @@ const File = ({ file }) => {
     const [state, setState] = useState({ 
         inEditMode: false, 
         selected: context.fileId === file.id, 
-        text: file.name 
+        text: file.name
     });
 
-    /**
-     * @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e 
-     */
+    useEffect(() => {
+        if (!state.inEditMode && state.text !== file.name) {
+            dispatch.renameFile(file, state.text, (res) => {
+                if (res.success) {
+                    file.name = state.text;
+                }
+                setState((state) => ({ ...state, inEditMode: false }))
+            })
+        }
+    }, [state.inEditMode])
+
+    useEffect(() => {
+        setState((state) => ({ ...state, selected: context.fileId === file.id }))
+    }, [context.fileId, file.id])
+
+    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
     const handleContext = (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -50,20 +63,10 @@ const File = ({ file }) => {
         ], { x: e.pageX, y: e.pageY }, true)
     }
 
-    useEffect(() => {
-        if (!state.inEditMode && state.text !== file.name) {
-            dispatch.renameFile(file, state.text, (res) => {
-                if (res.success) {
-                    file.name = state.text;
-                }
-                setState({ ...state, inEditMode: false })
-            })
-        }
-    }, [state.inEditMode])
-
-    useEffect(() => {
-        setState((state) => ({ ...state, selected: context.fileId === file.id }))
-    }, [context.fileId, file.id])
+    /** @param {React.DragEvent<HTMLDivElement> e} */
+    const handleDrag = (e) => {
+        window.dragData = { file: file }
+    }
 
     const className = state.selected 
         ? `${styles.file} ${styles.selected}` 
@@ -73,7 +76,9 @@ const File = ({ file }) => {
         <Link href={`/story/${context.story.id}/${file.id}`}>        
             <div 
                 className={className} 
+                onDragStart={handleDrag}
                 onContextMenu={handleContext}
+                draggable
             >
                 <Icon/>  
                 { state.inEditMode 

@@ -85,18 +85,21 @@ class FilesInterface
     /**
      * Removes a file from the database
      * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
-    async delete(userId, fileId) {
+    async delete(userId, storyId, fileId) {
         try
         {
             let result = await this.#collection.deleteOne({
                 _userId: userId,
+                _storyId: ObjectId(storyId),
                 _id: ObjectId(fileId)
             });
-            console.log(`Delete File: => ${result.deletedCount === 1}`);
-            return success(result.deletedCount === 1);
+            var x = result.deletedCount === 1;
+            console.log(`Delete File: => ${x}`);
+            return x ? success(x) : failure("Could not find file to delete");
         }
         catch (error)
         {
@@ -128,15 +131,17 @@ class FilesInterface
     /**
      * Changes the filename of a file in the database
      * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} name The new name of the file
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
-    async rename(userId, fileId, name) {
+    async rename(userId, storyId, fileId, name) {
         try
         {
             let result = await this.#collection.updateOne({
                 _userId: userId,
+                _storyId: ObjectId(storyId),
                 _id: ObjectId(fileId)                
             }, { 
                 $set: {
@@ -144,8 +149,56 @@ class FilesInterface
                     dateUpdated: Date.now()
                 }
             })
-            console.log(`Rename File: => ${result.deletedCount === 1 && name}`);
-            return success(result.modifiedCount === 1);
+            var x = result.modifiedCount === 1;
+            console.log(`Rename File: => ${x && name}`);
+            return x ? success(x) : failure("Could not find file to rename");
+        }
+        catch (error)
+        {
+            return failure(error.message);
+        }
+    }
+
+    /**
+     * Moves a file in the database from one holder to another
+     * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
+     * @param {string} fileId The id of the file
+     * @param {string} targetId The id of the new holder file
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     */
+    async move(userId, storyId, fileId, targetId) {
+        try
+        {
+            console.log("move", storyId, fileId, targetId);
+            await this.#collection.aggregate([
+                { $match: { 
+                    _userId: userId, 
+                    _storyId: ObjectId(storyId),
+                    _id: ObjectId(fileId) 
+                }},
+                { $lookup: {
+                    from: 'files',
+                    pipeline: [
+                        { $match: { 
+                            _userId: userId,
+                            _storyId: ObjectId(storyId),
+                            _id: ObjectId(targetId)
+                        }},
+                        { $limit: 1 }
+                    ],
+                    as: 'holder' 
+                }},
+                { $addFields: {
+                    _holderId: { $ifNull: [{ $first: '$holder._id' }, '$_holderId']}
+                }}, 
+                { $merge: {
+                    into: 'files',
+                    whenMatched: 'replace',
+                    whenNotMatched: 'discard'
+                }}
+            ]).toArray()
+            return success(true);
         }
         catch (error)
         {
@@ -156,15 +209,17 @@ class FilesInterface
     /**
      * Changes the open state of a folder in the database
      * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
      * @param {string} fileId The id of the folder
      * @param {bool} state The new state of the folder
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
-    async setOpenState(userId, fileId, state) {
+    async setOpenState(userId, storyId, fileId, state) {
         try
         {
             let result = await this.#collection.updateOne({
                 _userId: userId,
+                _storyId: ObjectId(storyId),
                 _id: ObjectId(fileId),
                 type: "folder"           
             }, { 
@@ -172,7 +227,8 @@ class FilesInterface
                     'content.open': Boolean(state)
                 }
             })
-            return success(result.modifiedCount === 1);
+            var x = result.modifiedCount === 1;
+            return x ? success(x) : failure("Could not find file to change state");
         }
         catch (error)
         {
@@ -183,15 +239,17 @@ class FilesInterface
     /**
      * Changes the text content of a file in the database
      * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} text The new text
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
-     async setText(userId, fileId, text) {
+     async setText(userId, storyId, fileId, text) {
         try
         {
             let result = await this.#collection.updateOne({
                 _userId: userId,
+                _storyId: ObjectId(storyId),
                 _id: ObjectId(fileId),
                 type: { $not: /folder/ }  
             }, { 
@@ -200,7 +258,8 @@ class FilesInterface
                     dateUpdated: Date.now()
                 }
             })
-            return success(result.modifiedCount === 1);
+            var x = result.modifiedCount === 1;
+            return x ? success(x) : failure("Could not find file to set text");
         }
         catch (error)
         {

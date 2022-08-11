@@ -58,13 +58,16 @@ export default withApiAuthRequired(async function handler(req, res) {
                     return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body)));
 
                 case 'renameFile':
-                    return res.status(200).json(await Database.files.rename(userId, body.fileId, body.name));
+                    return res.status(200).json(await Database.files.rename(userId, body.storyId, body.fileId, body.name));
+                
+                case 'moveFile':
+                    return res.status(200).json(await Database.files.move(userId, body.storyId, body.fileId, body.targetId));
 
                 case 'setFileState':
-                    return res.status(200).json(await Database.files.setOpenState(userId, body.fileId, body.state));
+                    return res.status(200).json(await Database.files.setOpenState(userId, body.storyId, body.fileId, body.state));
 
                 case 'setFileText':
-                    return res.status(200).json(await Database.files.setText(userId, body.fileId, body.text));
+                    return res.status(200).json(await Database.files.setText(userId, body.storyId, body.fileId, body.text));
 
                 default:
                     return res.status(400).json(failure("Missing"));
@@ -76,7 +79,7 @@ export default withApiAuthRequired(async function handler(req, res) {
                     return res.status(200).json(await Database.stories.delete(userId, body.storyId));
 
                 case 'deleteFile':
-                    return res.status(200).json(await Database.files.delete(userId, body.fileId));
+                    return res.status(200).json(await Database.files.delete(userId, body.storyId, body.fileId));
 
                 default:
                     return res.status(400).json(failure("Missing"));

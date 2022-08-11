@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import IconClosed from '@mui/icons-material/FolderSharp';
 import IconOpen from '@mui/icons-material/FolderOpenSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
@@ -9,6 +9,7 @@ import { Context } from 'components/contexts/storyContext';
 import { FileSystemContext } from './fileSystem';
 import { openContext } from 'components/contextMenu';
 import { InputType } from '@types/storyPage';
+import FileInput from './fileInput';
 import Localization from 'classes/localization';
 import styles from 'styles/storyPage/file.module.scss';
 import '@types/fileSystem';
@@ -26,7 +27,10 @@ const Folder = ({ file }) => {
     const [_, dispatch] = useContext(FileSystemContext);
     const [state, setState] = useState({
         open: Boolean(file.open),
-        selected: false, 
+        selected: false,
+        highlight: false,
+        inEditMode: false,
+        text: file.name
     });
 
     const Icon = useMemo(() => state.open ? IconOpen : IconClosed, [state.open])
@@ -38,12 +42,21 @@ const Folder = ({ file }) => {
     }
 
     useEffect(() => {
+        if (!state.inEditMode && state.text !== file.name) {
+            dispatch.renameFile(file, state.text, (res) => {
+                if (res.success) {
+                    file.name = state.text;
+                }
+                setState((state) => ({ ...state, inEditMode: false }))
+            })
+        }
+    }, [state.inEditMode])
+
+    useEffect(() => {
         setState((state) => ({ ...state, selected: hasSelectedChild(file, context.fileId)}));
     }, [context.fileId])
 
-    /**
-     * @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e 
-     */
+    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
     const handleContext = (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -66,7 +79,7 @@ const Folder = ({ file }) => {
             { 
                 text: Localization.toText('create-rename'), 
                 icon: RenameIcon, 
-                action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
+                action: () => setState((state) => ({ ...state, inEditMode: true }))
             },
             { 
                 text: Localization.toText('create-delete'), 
@@ -76,27 +89,89 @@ const Folder = ({ file }) => {
         ], { x: e.pageX, y: e.pageY }, true)
     }
 
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var drag = window.dragData?.file;
+        if (drag && (drag.holderId !== file.id)) {
+            dispatch.moveFile(drag, file)
+        }
+
+        window.dragData.target = null;
+        window.dragData.file = null;
+        setState((state) => ({ ...state, highlight: false }));
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var drag = window.dragData?.file;
+        if (window.dragData.target !== file.id 
+            && drag 
+            && drag.holderId !== file.id
+        ) {
+            window.dragData.target = file.id;
+            setState((state) => ({ ...state, highlight: true }));
+        }
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement> e} */
+    const handleDrag = (e) => {
+        window.dragData = { file: file }
+    }
+
+    /** @param {React.DragEvent<HTMLDivElement>} e */
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        if (window.dragData.target !== file.id) {
+            setState((state) => ({ ...state, highlight: false }));
+        }
+    }
+
     const className = !state.open && state.selected
         ? `${styles.folder} ${styles.selected}` 
         : styles.folder;
 
     return (
-        <>
+        <div 
+            className={styles.folderHolder} 
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDragEnter={handleDragEnter}
+            onDrop={handleDrop}
+            highlight={state.highlight.toString()}
+        >
             <div 
                 className={className} 
                 onClick={changeState}
+                onDragStart={handleDrag}
                 onContextMenu={handleContext}
                 open={state.open}
+                draggable
             >
                 <Icon/>
-                <div className={styles.text}> {file.name} </div>
+                { state.inEditMode 
+                    ?  <FileInput state={state} setState={setState}/> 
+                    : <div className={styles.text}> {file.name} </div>
+                }
             </div>
+            
             { state.open && file.children && (
                 <div className={styles.content}>
                     { dispatch.filesToComponent(file.children)}
                 </div>
             )}
-        </>
+        </div>
     )
 }
 

@@ -27,11 +27,12 @@ const FileContext = ({ storyId, fileId, children }) => {
         .catch(console.error)
     }
 
-    const setFileText = (fileId, text) => {
+    const setFileText = (storyId, fileId, text) => {
         fetch('/api/database/setFileText', {
             method: 'PUT',
             body: JSON.stringify({ 
                 fileId: fileId,
+                storyId: storyId,
                 text: text
             })
         })
@@ -77,7 +78,7 @@ const FileContext = ({ storyId, fileId, children }) => {
 
             case 'setText':
                 if (state.file) {
-                    state.queue.addRequest(setFileText, state.file.id, action.data);
+                    state.queue.addRequest(setFileText, storyId, state.file.id, action.data);
                     return  { 
                         ...state,
                         file: {

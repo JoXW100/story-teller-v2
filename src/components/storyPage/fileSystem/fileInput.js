@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import styles from 'styles/storyPage/file.module.scss';
 import '@types/fileSystem';
 
 const FileInput = ({ state, setState }) => {
@@ -29,6 +30,7 @@ const FileInput = ({ state, setState }) => {
 
     return (
         <input 
+            className={styles.input}
             ref={ref}
             value={state.text} 
             onSelect={() => setState({ ...state, selected: true })}
