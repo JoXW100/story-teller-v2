@@ -1,9 +1,14 @@
 import { useContext } from 'react';
 import { Context } from 'components/contexts/storyContext';
+import { openContext } from 'components/contextMenu';
 import Dice from 'utils/data/dice';
-import { ParseError } from 'utils/parser';
-import styles from 'styles/elements/main.module.scss';
 import DiceCollection from 'utils/data/diceCollection';
+import { ParseError } from 'utils/parser';
+import { D20Icon } from 'assets/dice';
+import Localization from 'classes/localization';
+import styles from 'styles/elements/main.module.scss';
+import { AdvantageIcon, DisadvantageIcon } from 'assets/icons';
+import { RollMethod } from '@enums/data';
 
 const validOptions = ['dice', 'num', 'mod', 'showDice'];
 const validateOptions = (options) => {
@@ -48,11 +53,35 @@ const RollElement = ({ children, options }) => {
     const mod = options.mod ? parseInt(options.mod) : 0;
     const show = options.showDice === 'true';
 
-    const handleClick = () => {
+    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
+    const handleContext = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openContext([
+            {
+                text: Localization.toText('roll-normal'), 
+                icon: D20Icon, 
+                action: () => Roll(RollMethod.Normal)
+            },
+            { 
+                text: Localization.toText('roll-advantage'), 
+                icon: AdvantageIcon, 
+                action: () => Roll(RollMethod.Advantage)
+            },
+            { 
+                text: Localization.toText('roll-disadvantage'), 
+                icon: DisadvantageIcon, 
+                action: () => Roll(RollMethod.Disadvantage)
+            }
+        ], { x: e.pageX, y: e.pageY }, true)
+    }
+
+    /** @param {RollMethod} method  */
+    const Roll = (method) => {
         var collection = new DiceCollection();
         collection.add(dice, num);
         collection.modifier = mod;
-        dispatch.roll(collection);
+        dispatch.roll(collection, method);
     }
 
     const modText = (show && mod === 0) ? '' 
@@ -62,7 +91,8 @@ const RollElement = ({ children, options }) => {
     return (
         <span 
             className={styles.dice}
-            onClick={handleClick}
+            onClick={() => Roll(RollMethod.Normal)}
+            onContextMenu={handleContext}
         >
             { !show ? modText
                 : `${num}${dice.text} ${modText} `}

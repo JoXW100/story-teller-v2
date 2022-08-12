@@ -1,5 +1,6 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/storyContext';
+import { RollMethod } from '@enums/data';
 import styles from 'styles/storyPage/rollHistory.module.scss'
 
 /**
@@ -52,28 +53,50 @@ const RollHistoryPanel = ({ open, close, isOpen }) => {
 
 /**
  * 
- * @param {{ entry: { result: RollResult, mod: number time: number } }} 
+ * @param {{ entry: { result: RollResult, time: number } }} 
  * @returns {JSX.Element}
  */
 const HistoryRollEntry = ({ entry }) => {
-    const sum = entry.result
-        .flatMap(x => x.result)
-        .reduce((sum, val) => sum + val, 0);
+    
+    
+    const Content = useMemo(() => {
+        var result = entry.result;
+        var selected = result.results[result.selectedIndex];
+        var mod = result.modifier;
+        var modText = mod === 0 ? null :  mod < 0 
+            ? `${selected.sum} - ${Math.abs(mod)} ⟶`
+            : `${selected.sum} + ${mod} ⟶`;
+        
+        var content = result.results.map((res, index) => (
+            <div key={index} chosen={(result.selectedIndex === index).toString()}>
+                { res.values.map((res, key) => (
+                    <div key={key}>
+                        {`${res.num}${res.dice.text} ⟶ ${res.result}`}
+                    </div>
+                ))}
+            </div>
+        ));
 
-    const modText = entry.mod === 0 ? '' 
-        :  entry.mod < 0 
-        ? `- ${Math.abs(entry.mod)} ⟶ ${Math.max(sum + entry.mod, 0)}`
-        : `+ ${entry.mod} ⟶ ${Math.max(sum + entry.mod, 0)}`;
+        return <>
+            <div className={styles.entryHeader}>
+                <b>Rolled: </b> 
+                { result.method === RollMethod.Advantage && <b type='adv'>+ADV</b> }
+                { result.method === RollMethod.Disadvantage && <b type='dis'>-DIS</b> }
+            </div>
+            <div className={styles.entryContent}>
+                { content }
+            </div>
+            <div className={styles.entryTotal}>
+                <b> Total: </b>
+                { modText && <span>{modText}</span>}
+                <b> {Math.max(0, selected.sum + mod)} </b>
+            </div>
+        </>
+    }, [entry])
 
     return (
         <div className={styles.entry}>
-            <b>Rolled:</b> 
-            { entry.result.map((res, key) => (
-                <div key={key}>
-                    {`${res.num}${res.dice.text} ⟶ ${res.result}`}
-                </div>
-            ))}
-            {`Total: ${sum} ${modText}`}
+            { Content }
         </div>
     )
 }

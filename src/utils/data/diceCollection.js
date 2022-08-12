@@ -1,4 +1,7 @@
+import { RollMethod } from '@enums/data';
 import Dice from 'utils/data/dice';
+
+
 
 class DiceCollection {
     /** @type {Object.<string, number>} */
@@ -26,13 +29,40 @@ class DiceCollection {
         this.#collection[dice.num] = value + num;
     }
 
-    /** @returns {RollResult} */
-    roll() {
-        return this.map((value) => ({ 
-            dice: value.dice, 
-            num: value.num, 
-            result: value.dice.roll(value.num)
-        }));
+    /** 
+     * @param {RollMethod?} method
+     * @returns {RollResult} 
+     */
+    roll(method = RollMethod.Normal) {
+        switch (method) {
+            case RollMethod.Disadvantage:
+            case RollMethod.Advantage:
+                var roll1 = this.roll(RollMethod.Normal);
+                var roll2 = this.roll(RollMethod.Normal);
+                var res1 = roll1.results[roll1.selectedIndex];
+                var res2 = roll2.results[roll2.selectedIndex]
+                return {
+                    method: method,
+                    results: [res1, res2],
+                    selectedIndex: +((res1.sum < res2.sum) === (method === RollMethod.Advantage)),
+                    modifier: this.#modifier
+                }
+
+            case RollMethod.Normal:
+            default:
+                var result = this.map((value) => ({ 
+                    dice: value.dice, 
+                    num: value.num, 
+                    result: value.dice.roll(value.num)
+                }));
+                var sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
+                return {
+                    method: method,
+                    results: [{ values: result, sum: sum }],
+                    selectedIndex: 0,
+                    modifier: this.#modifier
+                }
+        }
     }
 
     /**

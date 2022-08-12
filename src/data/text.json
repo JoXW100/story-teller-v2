@@ -42,7 +42,10 @@
             "createFilePopup-typePlaceholder": "The type of the file...",
             "createFilePopup-button": "Create",
             "createFilePopup-closeTooltips": "Close",
-            "loginPage-prompt": "Login"
+            "loginPage-prompt": "Login",
+            "roll-normal": "Flat",
+            "roll-advantage": "Advantage",
+            "roll-disadvantage": "Disadvantage"
         }
     }
 }

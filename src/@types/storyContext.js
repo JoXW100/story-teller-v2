@@ -7,7 +7,10 @@
 
 /**
  * @typedef StoryContextDispatch
- * @property {(collection: import('utils/data/diceCollection').default) => void} roll
+ * @property {(
+ *      collection: import('utils/data/diceCollection').default, 
+ *      method: import('@enums/data').RollMethod
+ *  ) => void} roll
  */
 
 /**

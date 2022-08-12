@@ -1,8 +1,9 @@
 import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
+import { RollMethod } from '@enums/data';
+import Queue from 'utils/data/queue';
 import 'utils/data/queue';
 import '@types/storyContext'
-import Queue from 'utils/data/queue';
 
 /** @type {React.Context<StoryContextProvider>} */
 export const Context = React.createContext({})
@@ -81,8 +82,8 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
 
     return (
         <Context.Provider value={[state, { 
-            roll: (collection) => { 
-                state.rollHistory.add({ result: collection.roll(), mod: collection.modifier, time: Date.now() })
+            roll: (collection, method = RollMethod.Normal) => { 
+                state.rollHistory.add({ result: collection.roll(method), time: Date.now() })
                 dispatch({ type: 'roll' });
             }
         }]}>

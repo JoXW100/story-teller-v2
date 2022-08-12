@@ -9,11 +9,23 @@
 /**
  * @typedef {Object.<string, TextData>} LocalizationTextData
  */
+/**
+ * @typedef DiceResult
+ * @property {import('utils/data/dice').default} dice
+ * @property {number} num
+ * @property {[number]} result
+ */ 
 
 /**
- * @typedef {[{ 
- *  dice: import('utils/data/dice').default, 
- *  num: number, 
- *  result: [number] 
- * }]} RollResult
+ * @typedef RollValue
+ * @property {number} sum
+ * @property {[DiceResult]} values
+ */
+
+/**
+ * @typedef RollResult
+ * @property {import('@enums/data').RollMethod} method
+ * @property {[RollValue]} results
+ * @property {number} selectedIndex
+ * @property {number} modifier
  */

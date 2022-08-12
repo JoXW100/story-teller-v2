@@ -1,4 +1,4 @@
-const { DXIcon, D4Icon, D6Icon, D8Icon, D10Icon, D12Icon, D20Icon, D100Icon } = require("assets/dice");
+import { DXIcon, D4Icon, D6Icon, D8Icon, D10Icon, D12Icon, D20Icon, D100Icon } from "assets/dice";
 
 class Dice {
     #type;
@@ -45,10 +45,10 @@ class Dice {
      * @param {number} num
      * @returns {[number]}
      */
-    roll(num) {
-        var results = [];
+    roll(num = 1) {
+        var results = new Array(num)
         for (let index = 0; index < num; index++) {
-            results.push(Math.ceil(Math.random() * this.#type));
+            results[index] = Math.ceil(Math.random() * this.#type);
         }
         return results;
     }
