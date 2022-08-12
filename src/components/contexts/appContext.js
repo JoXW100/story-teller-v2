@@ -34,7 +34,7 @@ const AppContext = ({ children }) => {
         loading: true
     })
 
-    useEffect(() => state.loading && dispatch({ type: 'init' }), [])
+    useEffect(() => { state.loading && dispatch({ type: 'init' }) }, [])
 
     return (
         <Context.Provider value={[ state, {} ]}>

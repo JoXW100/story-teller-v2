@@ -1,17 +1,21 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Context, Context as StoryContext } from 'components/contexts/storyContext';
+import { Context } from 'components/contexts/storyContext';
 import { D20Icon } from 'assets/dice';
 import RecompileIcon from '@mui/icons-material/CachedSharp';
 import HomeIcon from '@mui/icons-material/HomeSharp';
 import HistoryIcon from '@mui/icons-material/HistorySharp';
 import Logo from '@mui/icons-material/MenuBookSharp';
+import EnableEditIcon from '@mui/icons-material/EditSharp';
+import DisableEditIcon from '@mui/icons-material/EditOffSharp';
 import Divider from 'components/divider'
 import FileView from './fileView';
 import FileSystem from "./fileSystem/fileSystem";
 import DicePanel from './dicePanel';
 import RollHistoryPanel from './rollHistoryPanel';
 import Localization from 'classes/localization';
+import Navigation from 'utils/navigation';
 import styles from 'styles/storyPage/main.module.scss'
 import '@types/fileContext'
 
@@ -24,7 +28,8 @@ const StoryPage = () => {
             <div className={styles.header}>
                 <StoryName/>
                 <div className={styles.headerMenu}>
-                    <RecompileButton/>
+                    { /** <RecompileButton/> */}
+                    <EditModeButton/>
                     <DiceButton/>
                     <RollHistoryButton/>
                     <HomeButton/>
@@ -43,7 +48,7 @@ const StoryPage = () => {
 }
 
 const StoryName = () => {
-    const [context] = useContext(StoryContext);
+    const [context] = useContext(Context);
     return (
         <div className={styles.name}>
             <Logo sx={{ height: "100%", margin: "0 5px 0 0" }}/>
@@ -116,17 +121,42 @@ const DiceButton = () => {
 }
 
 const HomeButton = () => {
-    const router = useRouter()
     return (
-        <div 
-            className={styles.home} 
-            tooltips="Back to select story"
-            onClick={() => router.push('../.')}
-        >
-            <HomeIcon sx={{ height: "100%" }}/>
-        </div>
+        <Link href={Navigation.OriginURL()}>
+            <div 
+                className={styles.home} 
+                tooltips="Back to select story"
+            >
+                <HomeIcon sx={{ height: "100%" }}/>
+            </div>
+        </Link>
     )
 }
 
+const EditModeButton = () => {
+    const [context] = useContext(Context)
+    const data = useMemo(() => {
+        var data = {};
+        if (context.editEnabled) {
+            data.tooltips = Localization.toText('storyPage-disableEditMode')
+            data.icon = DisableEditIcon
+        }
+        else {
+            data.tooltips = Localization.toText('storyPage-enableEditMode')
+            data.icon = EnableEditIcon
+        }
+        return data;
+    }, [context.editEnabled])
+    return (
+        <Link href={Navigation.EditModeURL(!context.editEnabled)}>
+            <div 
+                className={styles.editMode} 
+                tooltips={data.tooltips}
+            >
+                <data.icon sx={{ height: "100%" }}/>
+            </div>
+        </Link>
+    )
+}
 
 export default StoryPage

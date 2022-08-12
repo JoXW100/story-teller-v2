@@ -101,7 +101,6 @@ const FileContext = ({ storyId, fileId, children }) => {
         loading: true,
         fetching: false,
         fileSelected: false,
-        editEnabled: true,
         file: null,
         queue: new RequestQueue()
     })

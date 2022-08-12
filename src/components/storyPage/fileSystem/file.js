@@ -11,6 +11,7 @@ import FileInput from './fileInput';
 import Localization from 'classes/localization';
 import styles from 'styles/storyPage/file.module.scss';
 import '@types/fileSystem';
+import Navigation from 'utils/navigation';
 
 /**
  * @param {{ file: StructureFile }}
@@ -73,7 +74,7 @@ const File = ({ file }) => {
         : styles.file;
 
     return (
-        <Link href={`/story/${context.story.id}/${file.id}`}>        
+        <Link href={Navigation.FileURL(file.id)}>        
             <div 
                 className={className} 
                 onDragStart={handleDrag}

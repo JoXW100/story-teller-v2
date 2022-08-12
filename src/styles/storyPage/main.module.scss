@@ -60,6 +60,12 @@ $entryWidth: 249px;
         height: $headerHeight - 1;
         width: $headerHeight;
     }
+
+    & > .editMode {
+        @extend .headerButton;
+        height: $headerHeight - 1;
+        width: $headerHeight;
+    }
 }
 
 .headerButton {

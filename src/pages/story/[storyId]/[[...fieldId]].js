@@ -7,7 +7,7 @@ import styles from 'styles/home.module.scss'
 
 /**
  * 
- * @param {{ props: { storyId: string, fieldId: [string] }}} 
+ * @param {{ props: { storyId: string, fieldId: [string], edit: ?string }}} 
  * @returns {JSX.Element}
  */
 
@@ -26,6 +26,7 @@ const Page = ({ props }) => {
             <main>
                 { valid && 
                     <StoryContext 
+                        editMode={props.edit === 'true'}
                         storyId={props.storyId} 
                         fileId={props.fieldId?.find(() => true)}
                     >

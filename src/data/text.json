@@ -21,6 +21,8 @@
             "storyPage-openRollHistoryMenu": "Open roll history menu",
             "storyPage-closeRollHistoryMenu": "Close roll history menu",
             "storyPage-failedLoadFIle": "Could not load file",
+            "storyPage-disableEditMode": "Disable edit mode",
+            "storyPage-enableEditMode": "Enable edit mode",
             "create-fileTooltips": "New File",
             "create-folderTooltips": "New Folder",
             "create-uploadTooltips": "Upload",

@@ -29,7 +29,7 @@ const LinkElement = ({ options, children }) => {
             console.warn("Invalid URL", options.href)
             return undefined;
         }
-    }, [options]);
+    }, [options, location.href]);
 
     return (
         <Link href={href}>

@@ -22,12 +22,13 @@ const FileView = () => {
 
 const FileContent = () => {
     const [context] = useContext(Context)
+    const [storyContext] = useContext(StoryContext);
 
     const Content = useMemo(() => {
         if (context.fileSelected && !context.file)
             return <InvalidFileView/>
 
-        return context.editEnabled 
+        return storyContext.editEnabled 
             ? <Divider 
                 className={styles.content}
                 minLeft={70}
@@ -36,7 +37,7 @@ const FileContent = () => {
                 right={<Renderer/>}
               />  
             : <Renderer/>
-    }, [context]);
+    }, [context, storyContext.editEnabled]);
 
     return Content;
 }

@@ -58,21 +58,22 @@ const RollHistoryPanel = ({ open, close, isOpen }) => {
 const HistoryRollEntry = ({ entry }) => {
     const sum = entry.result
         .flatMap(x => x.result)
-        .reduce((sum, val) => sum + val, entry.mod);
+        .reduce((sum, val) => sum + val, 0);
 
     const modText = entry.mod === 0 ? '' 
-        :  entry.mod < 0 ? `- ${Math.abs(entry.mod)}`
-        : `+ ${entry.mod}`;
+        :  entry.mod < 0 
+        ? `- ${Math.abs(entry.mod)} ⟶ ${Math.max(sum + entry.mod, 0)}`
+        : `+ ${entry.mod} ⟶ ${Math.max(sum + entry.mod, 0)}`;
 
     return (
         <div className={styles.entry}>
-            Rolled: 
+            <b>Rolled:</b> 
             { entry.result.map((res, key) => (
                 <div key={key}>
-                    {`${res.num}${res.dice.text} ${modText} ⟶ ${res.result}`}
+                    {`${res.num}${res.dice.text} ⟶ ${res.result}`}
                 </div>
             ))}
-            {`Total: ${Math.max(sum, 0)}`}
+            {`Total: ${sum} ${modText}`}
         </div>
     )
 }
