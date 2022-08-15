@@ -18,7 +18,6 @@ const AppContext = ({ children }) => {
      * @returns {AppContextState} The updated state
      */
     const reducer = (state, action) => {
-        console.log("reducer", action)
         switch (action.type) {
             case 'init':
                 Localization.initialize();

@@ -1,3 +1,5 @@
+import { ParseError } from "utils/parser";
+
 /**
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}

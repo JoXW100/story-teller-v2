@@ -8,6 +8,7 @@
 /**
  * @typedef FileContextDispatch
  * @property {(text: string) => void} setText
+ * @property {(key: string, value: any) => void} setMetadata
  */
 
 /**

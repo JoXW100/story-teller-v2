@@ -1,26 +1,28 @@
 
 class RequestQueue {
     #waitTime = 1000;
-    #requestWorkerTimeout = null;
+    #requestWorkerTimeout = {};
 
     /**
      * @param {(params: [?]) => ?} action 
+     * @param {string} id
      */
-    addRequest(action, ...params) {
-        clearTimeout(this.#requestWorkerTimeout);
-        this.#requestWorkerTimeout = setTimeout(
+    addRequest(action, id, ...params) {
+        clearTimeout(this.#requestWorkerTimeout[id]);
+        this.#requestWorkerTimeout[id] = setTimeout(
             this.#handleRequest, 
             this.#waitTime, 
             action, 
+            id,
             ...params
         );
     }
     
     get requestIsQueued() {
-        return this.#requestWorkerTimeout != null;
+        return Object.values(this.#requestWorkerTimeout).some(x => x !== null);
     } 
 
-    #handleRequest = (action, ...params) => {
+    #handleRequest = (action, id, ...params) => {
         var res = null;
         var success = false;
     
@@ -36,7 +38,7 @@ class RequestQueue {
             console.warn(res);
         }
 
-        this.#requestWorkerTimeout = null;
+        this.#requestWorkerTimeout[id] = null;
     }
 }
 

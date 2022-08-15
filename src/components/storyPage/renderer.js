@@ -14,7 +14,7 @@ const Renderer = () => {
     })
 
     useEffect(() => {
-        Parser.parse(context.file?.content.text)
+        Parser.parse(context.file?.content.text, context.file?.content.metadata ?? {})
         .then((value) => setState((state) => ({ ...state, content: value })))
         .catch((error) => {
             if (error.type === ParseError.type) {

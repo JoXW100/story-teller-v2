@@ -42,6 +42,7 @@
  * @typedef DBDocumentContent
  * @property {string} name
  * @property {string} text
+ * @property {Object<string,any>} meta
  */
 
 /**

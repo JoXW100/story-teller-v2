@@ -91,50 +91,53 @@ const Folder = ({ file }) => {
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        if (window.dragData?.file) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        var drag = window.dragData?.file;
-        if (drag && (drag.holderId !== file.id)) {
-            dispatch.moveFile(drag, file)
+            var drag = window.dragData?.file;
+            if (drag && (drag.holderId !== file.id)) {
+                dispatch.moveFile(drag, file)
+            }
+
+            window.dragData.target = null;
+            window.dragData.file = null;
+            setState((state) => ({ ...state, highlight: false }));
         }
-
-        window.dragData.target = null;
-        window.dragData.file = null;
-        setState((state) => ({ ...state, highlight: false }));
     }
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        if (window.dragData?.file) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     }
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDragEnter = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var drag = window.dragData?.file;
-        if (window.dragData.target !== file.id 
-            && drag 
-            && drag.holderId !== file.id
-        ) {
-            window.dragData.target = file.id;
-            setState((state) => ({ ...state, highlight: true }));
+        if (window.dragData?.file) {
+            e.preventDefault();
+            e.stopPropagation();
+            var drag = window.dragData?.file;
+            if (window.dragData.target !== file.id && drag.holderId !== file.id) {
+                window.dragData.target = file.id;
+                setState((state) => ({ ...state, highlight: true }));
+            }
         }
     }
 
-    /** @param {React.DragEvent<HTMLDivElement> e} */
-    const handleDrag = (e) => {
+    const handleDrag = () => {
         window.dragData = { file: file }
     }
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDragLeave = (e) => {
-        e.preventDefault();
-        if (window.dragData.target !== file.id) {
-            setState((state) => ({ ...state, highlight: false }));
+        if (window.dragData?.file) {
+            e.preventDefault();
+            if (window.dragData.target !== file.id) {
+                setState((state) => ({ ...state, highlight: false }));
+            }
         }
     }
 

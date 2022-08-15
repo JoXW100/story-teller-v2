@@ -5,7 +5,6 @@ import '@types/fileContext'
 /** @type {React.Context<FileContextProvider>} */
 export const Context = React.createContext({})
 
-
 /**
  * @param {{ 
  *  storyId: import('@types/database').ObjectId, 
@@ -26,7 +25,7 @@ const FileContext = ({ storyId, fileId, children }) => {
         })
         .catch(console.error)
     }
-
+    
     const setFileText = (storyId, fileId, text) => {
         fetch('/api/database/setFileText', {
             method: 'PUT',
@@ -40,10 +39,24 @@ const FileContext = ({ storyId, fileId, children }) => {
         .then((res) => !res.success && console.warn(res.result))
         .catch(console.error);
     }
+    
+    const setFileMetadata = (storyId, fileId, metadata) => {
+        fetch('/api/database/setFileMetadata', {
+            method: 'PUT',
+            body: JSON.stringify({ 
+                fileId: fileId,
+                storyId: storyId,
+                metadata: metadata
+            })
+        })
+        .then((res) => res.json())
+        .then((res) => !res.success && console.warn(res.result))
+        .catch(console.error);
+    }
 
     /**
      * @param {FileContextState} state
-     * @param {DispatchAction} action
+     * @param {DispatchAction<any>} action
      * @returns {FileContextState}
      */
     const reducer = (state, action) => {
@@ -52,7 +65,7 @@ const FileContext = ({ storyId, fileId, children }) => {
                 if (state.fetching)
                     return state;
 
-                if (!fileId) 
+                if (!action.data) 
                     return { 
                         ...state, 
                         loading: false, 
@@ -61,11 +74,11 @@ const FileContext = ({ storyId, fileId, children }) => {
                         file: null 
                     }
 
-                fetchFile(storyId, fileId)
+                fetchFile(storyId, action.data)
                 return { 
                     ...state, 
-                    fileSelected: Boolean(fileId), 
-                    fetching: Boolean(fileId) 
+                    fileSelected: Boolean(action.data), 
+                    fetching: Boolean(action.data) 
                 }
 
             case 'initSet':
@@ -78,17 +91,27 @@ const FileContext = ({ storyId, fileId, children }) => {
 
             case 'setText':
                 if (state.file) {
-                    state.queue.addRequest(setFileText, storyId, state.file.id, action.data);
+                    state.queue.addRequest(setFileText, "text", storyId, state.file.id, action.data);
                     return  { 
                         ...state,
                         file: {
                             ...state.file,
-                            content: {
-                                ...state.file.content,
-                                text: action.data
-                            }
+                            content: { ...state.file.content, text: action.data }
                         }
                     };
+                }
+            
+            case 'setMetadata':
+                if (state.file && action.data?.key) {
+                    var data = { ...state.file.content.metadata, [action.data.key]: action.data.value }
+                    state.queue.addRequest(setFileMetadata, "metadata", storyId, state.file.id, data);
+                    return { 
+                        ...state, 
+                        file: { 
+                            ...state.file, 
+                            content: { ...state.file.content, metadata: data }
+                        } 
+                    }
                 }
 
             default:
@@ -96,7 +119,7 @@ const FileContext = ({ storyId, fileId, children }) => {
         }
     }
 
-    /** @type {[state: FileContextState, dispatch: React.Dispatch<DispatchAction>]} */
+    /** @type {[state: FileContextState, dispatch: React.Dispatch<DispatchAction<any>>]} */
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         fetching: false,
@@ -105,11 +128,12 @@ const FileContext = ({ storyId, fileId, children }) => {
         queue: new RequestQueue()
     })
 
-    useEffect(() => { dispatch({ type: 'init' }) }, [fileId])
+    useEffect(() => { dispatch({ type: 'init', data: fileId }) }, [fileId])
     
     return (
         <Context.Provider value={[state, {
-            setText: (text) => dispatch({ type: 'setText', data: text })
+            setText: (text) => dispatch({ type: 'setText', data: text }),
+            setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } })
         } ]}>
             { !state.loading && children }
         </Context.Provider>

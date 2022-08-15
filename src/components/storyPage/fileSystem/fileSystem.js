@@ -207,23 +207,28 @@ const FileSystem = ({ style }) => {
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDrag = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.dragData.target = null;
+        if (window.dragData?.file) {
+            e.preventDefault();
+            e.stopPropagation();
+    
+            window.dragData && (window.dragData.target = null);
+        }
     }
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var file = window.dragData?.file;
-        if (file && (file.holderId !== context.story.root)) {
-            moveFile(file, null)
-        }
+        if (window.dragData?.file) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            var file = window.dragData?.file;
+            if (file && (file.holderId !== context.story.root)) {
+                moveFile(file, null)
+            }
 
-        window.dragData.target = null;
-        window.dragData.file = null;
+            window.dragData.target = null;
+            window.dragData.file = null;
+        }
     }
 
     useEffect(() => {

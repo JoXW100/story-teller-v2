@@ -18,7 +18,6 @@ $entryWidth: 250px;
 .entry {
     display: flex;
     flex-direction: column;
-    font-size: normal;
     color: map-get($cobalt-palette, font);
     background: map-get($cobalt-palette, font-light);
     overflow: hidden;
@@ -29,29 +28,21 @@ $entryWidth: 250px;
 .entryHeader {
     display: inline-flex;
 
-    & > *[type] {
+    & > [type] {
         margin-left: auto;
         margin-right: 10px;
-    }
 
-    & > *[type=adv] {
-        color: green;
-    }
-
-    & > *[type=dis] {
-        color: red;
+        &[type=adv] { color: green; }
+        &[type=dis] { color: red; }
     }
 }
 
 .entryContent {
     margin: 0 4px;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 
     & > * {
         white-space: nowrap;
-        text-overflow: ellipsis;
         background-color: map-get($cobalt-palette, lightest);
 
         &:not(:last-child) {

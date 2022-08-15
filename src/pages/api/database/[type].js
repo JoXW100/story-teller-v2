@@ -6,7 +6,7 @@ import { failure, success } from "utils/database/functions";
 export default withApiAuthRequired(async function handler(req, res) {
     const { user } = getSession(req, res);
     const { type, ...params } = req.query;
-    const userId = user.sub; ///\|(\d+)$/.exec(user.sub)?.find(() => true);
+    const userId = user.sub;
 
     if (!userId) {
         return res.status(404).json(failure("Could not parse user id"));
@@ -18,7 +18,7 @@ export default withApiAuthRequired(async function handler(req, res) {
             return res.status(400).json(failure("Not connected to database"));
         }
     }
-    console.log("Database", type, params);
+    console.log("Database", type, JSON.stringify(params));
 
     let body;
     switch (req.method) {
@@ -68,6 +68,9 @@ export default withApiAuthRequired(async function handler(req, res) {
 
                 case 'setFileText':
                     return res.status(200).json(await Database.files.setText(userId, body.storyId, body.fileId, body.text));
+
+                case 'setFileMetadata':
+                    return res.status(200).json(await Database.files.setMetadata(userId, body.storyId, body.fileId, body.metadata));
 
                 default:
                     return res.status(400).json(failure("Missing"));

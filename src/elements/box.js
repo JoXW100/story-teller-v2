@@ -1,3 +1,4 @@
+import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/main.module.scss';
 
 const validOptions = ['color'];

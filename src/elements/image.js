@@ -1,42 +1,48 @@
 import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
-import Link from 'next/link';
 import styles from 'styles/elements/main.module.scss';
 
-const validOptions = ['href'];
+const validOptions = ['href', 'width', 'border'];
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.some((x) => x === key))
             throw new ParseError(`Unexpected link option: '${key}'`);
     });
+
+    if (options.border) {
+        if (options.border !== 'true' && options.border != 'false')
+            throw new ParseError(`Invalid image option value. border: '${options.border}', must be true or false`);
+    }
 }
 
 /**
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const LinkElement = ({ options, children }) => {
+const ImageElement = ({ options }) => {
     const href = useMemo(() => {
         try {
             if (!options.href) 
                 return undefined;
             if (options.href.includes('http'))
-                return new URL(options.href);
-            if (/^[0-9a-f]{24}$/i.test(options.href))
-                return new URL(location.href.replace(/[^/]*$/, options.href))
+                return options.href;
             return undefined;
         } catch (error) {
-            console.warn("Invalid URL", options.href)
             return undefined;
         }
-    }, [options, location.href]);
+    }, [options]);
+
+    const border = options.border ?? "false";
+    const width = options.width ?? "100%";
 
     return (
-        <Link href={href}>
-            <span className={styles.link}>
-                { children }
-            </span>
-        </Link>
+        <div
+            className={styles.image} 
+            style={{ width: width }}
+            border={border}
+        >
+            <img src={href}/>
+        </div>
     )
 }
 
@@ -44,13 +50,13 @@ const LinkElement = ({ options, children }) => {
  * @type {Object.<string, RenderElement>}
  */
  export const element = {
-    'link': {
-        type: 'link',
+    'image': {
+        type: 'image',
         defaultKey: 'href',
         validOptions: validOptions,
-        toComponent: LinkElement,
+        toComponent: ImageElement,
         validateOptions: validateOptions
     }
 }
 
-export default LinkElement;
+export default ImageElement;

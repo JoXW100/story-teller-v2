@@ -1,0 +1,36 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "group",
+            "params": { 
+                "label": "Metadata", 
+                "open": false, 
+                "fill": false 
+            },
+            "children": [
+                { 
+                    "type": "text", 
+                    "params": { "label": "Title", "key": "title" }
+                },
+                { 
+                    "type": "textarea", 
+                    "params": { "label": "Content", "key": "content" }
+                }
+            ]
+        },
+        { 
+            "type": "group",
+            "params": { 
+                "label": "Editor", 
+                "open": true, 
+                "fill": true 
+            },
+            "children": [
+                { 
+                    "type": "editor"
+                }
+            ]
+        }
+    ]
+}

@@ -8,6 +8,9 @@ Elements are the available commands that can be used within the editor.
     - `\align [vertical]` or `\align [v]` Aligns content in a column and centers them.
     - `\align [horizontal]` or `\align [h]` Aligns content in a row and centers them.
 
+* `\block`
+    - Default option: `none`
+    - `\block` A holder for regular content, commonly used in align bodies
 
 * `\bold`
     - Default option: `none`
@@ -63,6 +66,19 @@ Elements are the available commands that can be used within the editor.
     - `\line` Draw an horizontal line
 
 
+* `\image` [`href`, `width`, `border`]
+    - Default option: `href`
+    - If no `href` is specified, a default image is displayed
+    - Valid `href` values:
+        - File/Document ID's: `NOT IMPLEMENTED YET`
+        - External url's: `https://...`
+    - If no `width` is specified, it will default to `100%`
+    - Valid `width` values: CSS measurement units (`100%`, `10px` etc)
+    - If no `border` is specified, it will default to `false`
+    - Valid `border` values: `true` or `false`
+    - `\image [https://helpx.adobe.com/content/dam/help/en/photos…before_and_after/image-before/Landscape-Color.jpg]` Displays the external image.
+    - `\link [ffffffffffffffffffffffff]` Redirects to the file with id `ffffffffffffffffffffffff` when the content is clicked
+
 * `\link` [`href`]
     - Default option: `href`
     - If no `href` is specified, the link will not redirect when clicked
@@ -110,4 +126,8 @@ Elements are the available commands that can be used within the editor.
     - Valid `attr` values: Any
     - `\save [12, attr: dex]` Draws a saving throw figure with DC 12 for the dex attribute
 
-
+* `\set` [`identifier`]
+    - Default option: `identifier`
+    - If no `identifier` is specified, the command will be ignored
+    - If no body is specified, the command will be ignored
+    - `\set [var] {test}` Sets the variable `$var` to `test`

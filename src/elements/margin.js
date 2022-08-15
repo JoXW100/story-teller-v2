@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
+import styles from 'styles/elements/main.module.scss';
 
 const validOptions = ['margin'];
 const validateOptions = (options) => {
@@ -19,7 +20,7 @@ const Margin = ({ options, children }) => {
     }, [options])
 
     return (
-        <div style={{ 'margin': margin }}>
+        <div className={styles.margin} style={{ margin: margin }}>
             { children.filter((x) => !/^[\n\r ]*$/.test(x)) }
         </div>
     )

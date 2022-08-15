@@ -55,7 +55,6 @@ class FilesInterface
      * @returns {Promise<import('@types/database').DBResponse<import('@types/database').File<?>>>}
      */
     async get(userId, storyId, fileId) {
-        console.log("GET", userId, storyId, fileId);
         try
         {
             let result = (await this.#collection.aggregate([
@@ -207,6 +206,37 @@ class FilesInterface
     }
 
     /**
+     * Changes a property of a folder in the database
+     * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
+     * @param {string} fileId The id of the file
+     * @param {string} property The name of the property
+     * @param {any} value The value of the property
+     * @param {string|Object<string,any>?} fileType The type of the file
+     * @param {boolean?} updateDate If the date is to be updated
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     */
+    async #setProperty(userId, storyId, fileId, property, value, fileType = null, updateDate = true) {
+        try
+        {
+            var set = { [`content.${property}`]: value };
+            updateDate && (set.dateUpdated = Date.now());
+
+            var query = { _userId: userId, _storyId: ObjectId(storyId), _id: ObjectId(fileId) }
+            fileType && (query.type = fileType);
+
+            let result = await this.#collection.updateOne(query, { $set: set })
+            var x = result.modifiedCount === 1;
+            console.log(`Set ${property}: => ${x}`);
+            return x ? success(x) : failure("Could not find file to change state");
+        }
+        catch (error)
+        {
+            return failure(error.message);
+        }
+    }
+
+    /**
      * Changes the open state of a folder in the database
      * @param {string} userId The id of the user
      * @param {string} storyId The id of the story
@@ -215,25 +245,15 @@ class FilesInterface
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setOpenState(userId, storyId, fileId, state) {
-        try
-        {
-            let result = await this.#collection.updateOne({
-                _userId: userId,
-                _storyId: ObjectId(storyId),
-                _id: ObjectId(fileId),
-                type: "folder"           
-            }, { 
-                $set: {
-                    'content.open': Boolean(state)
-                }
-            })
-            var x = result.modifiedCount === 1;
-            return x ? success(x) : failure("Could not find file to change state");
-        }
-        catch (error)
-        {
-            return failure(error.message);
-        }
+        return this.#setProperty(
+            userId, 
+            storyId, 
+            fileId, 
+            'open',
+            Boolean(state), 
+            "folder", 
+            false
+        );
     }
 
     /**
@@ -244,27 +264,35 @@ class FilesInterface
      * @param {string} text The new text
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
-     async setText(userId, storyId, fileId, text) {
-        try
-        {
-            let result = await this.#collection.updateOne({
-                _userId: userId,
-                _storyId: ObjectId(storyId),
-                _id: ObjectId(fileId),
-                type: { $not: /folder/ }  
-            }, { 
-                $set: {
-                    'content.text': String(text),
-                    dateUpdated: Date.now()
-                }
-            })
-            var x = result.modifiedCount === 1;
-            return x ? success(x) : failure("Could not find file to set text");
-        }
-        catch (error)
-        {
-            return failure(error.message);
-        }
+    async setText(userId, storyId, fileId, text) {
+        return this.#setProperty(
+            userId, 
+            storyId, 
+            fileId, 
+            'text',
+            String(text),
+            { $not: /folder/ }
+        );
+    }
+
+    /**
+     * Changes the text content of a file in the database
+     * @param {string} userId The id of the user
+     * @param {string} storyId The id of the story
+     * @param {string} fileId The id of the file
+     * @param {Object<string,any>} metadata The new text
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     */
+    async setMetadata(userId, storyId, fileId, metadata) {
+        if (typeof metadata !== 'object')
+            return failure('Expected type of metadata, object');
+        return this.#setProperty(
+            userId, 
+            storyId, 
+            fileId,
+            'metadata',
+            metadata
+        );
     }
     
 

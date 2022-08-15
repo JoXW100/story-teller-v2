@@ -3,6 +3,7 @@
     display: block;
     position: relative;
     height: 100%;
+    flex: 1;
     //overflow: scroll;
     counter-set: gutter_line_count 0;
 }
@@ -89,6 +90,6 @@
     width: 100%;
     height: 100%;
     resize: none;
-    overflow: scroll;
+    overflow-y: scroll;
     border: none;
 }
