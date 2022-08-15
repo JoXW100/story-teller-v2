@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { failure, success } from "./functions";
-import { FileType } from "@types/database";
+import { FileType } from "@enums/database";
 import "@types/database";
 
 class FilesInterface
@@ -73,6 +73,38 @@ class FilesInterface
                 { $limit: 1 }
             ]).toArray())[0];
             console.log(`Get File: => ${result?.name}.${result?.type}`);
+            return result ? success(result) : failure("Could not find any matching file");
+        }
+        catch (error)
+        {
+            return failure(error.message);
+        }
+    }
+
+    /**
+     * Adds a file to the database
+     * @param {string} storyId The id of the story
+     * @param {string} userId The id of the user
+     * @param {string} fileId The story that holds the file
+     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').File<?>>>}
+     */
+    async getMetadata(userId, storyId, fileId) {
+        try
+        {
+            let result = (await this.#collection.aggregate([
+                { $match: {
+                    _userId: userId,
+                    _storyId: ObjectId(storyId),
+                    _id: ObjectId(fileId)
+                }},
+                { $project: {
+                    _id: 0,
+                    type: '$type',
+                    metadata: '$content.metadata'
+                }},
+                { $limit: 1 }
+            ]).toArray())[0];
+            console.log(`Get File: => ${result?.type}`);
             return result ? success(result) : failure("Could not find any matching file");
         }
         catch (error)
@@ -169,7 +201,6 @@ class FilesInterface
     async move(userId, storyId, fileId, targetId) {
         try
         {
-            console.log("move", storyId, fileId, targetId);
             await this.#collection.aggregate([
                 { $match: { 
                     _userId: userId, 

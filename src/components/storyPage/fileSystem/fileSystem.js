@@ -7,7 +7,7 @@ import { openContext } from "components/contextMenu";
 import { openPopup } from "components/popupHolder";
 import { Context } from "components/contexts/storyContext";
 import { InputType } from "@types/storyPage";
-import { FileType } from "@types/database";
+import { FileType } from "@enums/database";
 import Localization from "classes/localization";
 import CreateFilePopup from "./createFilePopup";
 import ConfirmationPopup from "../../common/confirmationPopup";

@@ -1,4 +1,4 @@
-import { FileType } from "@types/database";
+import { FileType } from "@enums/database";
 import Database from "utils/database/database";
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { failure, success } from "utils/database/functions";
@@ -35,6 +35,9 @@ export default withApiAuthRequired(async function handler(req, res) {
 
                 case 'getFile':
                     return res.status(200).json(await Database.files.get(userId, params.storyId, params.fileId));
+                
+                case 'getMetadata':
+                    return res.status(200).json(await Database.files.getMetadata(userId, params.storyId, params.fileId));
 
                 case 'getFileStructure':
                     return res.status(200).json(await Database.files.getStructure(userId, params.storyId));

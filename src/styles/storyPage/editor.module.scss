@@ -11,18 +11,6 @@
     }
 }
 
-.empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background-color: #363636;
-    color: map-get($cobalt-palette, font-light);
-    font-weight: 600;
-    font-size: 1.2em;
-    user-select: none;
-}
-
 .editor {
     display: block;
     outline: none;
@@ -69,6 +57,9 @@
         min-width: 0;
         border: none;
         outline: none;
+        font: inherit;
+        font-size: small;
+        padding: 0 5px;
         flex: 1;
     }
 

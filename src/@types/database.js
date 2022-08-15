@@ -32,7 +32,7 @@
  * @property {ObjectId} _id
  * @property {ObjectId} _storyId
  * @property {ObjectId} _holderId
- * @property {FileType} type
+ * @property {import('@enums/database').FileType} type
  * @property {T} content
  * @property {number} dateCreated
  * @property {number} dateUpdated
@@ -54,7 +54,7 @@
  * @typedef StructureFile
  * @property {string} id
  * @property {string} holderId
- * @property {FileType} type
+ * @property {import('@enums/database').FileType} type
  * @property {string} name
  * @property {bool} open
  * @property {?[StructureFile]} children
@@ -64,15 +64,8 @@
  * @template T
  * @typedef File<T>
  * @property {ObjectId} id
- * @property {FileType} type
+ * @property {import('@enums/database').FileType} type
  * @property {string} name
  * @property {T} content
  */
 
-/** @enum {string} */
-export const FileType = {
-    Document: "doc",
-    Folder: "folder",
-    Root: "root",
-    Empty: "empty"
-}

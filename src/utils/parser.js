@@ -41,7 +41,7 @@ class Parser
 
             var splits = text?.split(matchBodyExpr) ?? [];
             var data = this.#parseVariables(splits, { ...metadata });
-            console.log("data", data);
+            
             var withVars = text?.replace(matchVarsExpr, (...x) => data[x[1]] ?? '');
             var splits = withVars?.split(matchBodyExpr) ?? [];
             var tree = this.#buildTree(splits);

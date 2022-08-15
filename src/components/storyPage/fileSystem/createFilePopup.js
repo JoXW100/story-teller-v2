@@ -7,7 +7,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DropdownMenu from "components/dropdownMenu";
 import Localization from "classes/localization"
 import { closePopup } from "components/popupHolder";
-import { FileType } from "@types/database";
+import { FileType } from "@enums/database";
 import { InputType } from '@types/storyPage';
 import styles from 'styles/storyPage/createFilePopup.module.scss'
 

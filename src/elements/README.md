@@ -8,9 +8,11 @@ Elements are the available commands that can be used within the editor.
     - `\align [vertical]` or `\align [v]` Aligns content in a column and centers them.
     - `\align [horizontal]` or `\align [h]` Aligns content in a row and centers them.
 
+
 * `\block`
     - Default option: `none`
     - `\block` A holder for regular content, commonly used in align bodies
+
 
 * `\bold`
     - Default option: `none`
@@ -79,6 +81,7 @@ Elements are the available commands that can be used within the editor.
     - `\image [https://helpx.adobe.com/content/dam/help/en/photos…before_and_after/image-before/Landscape-Color.jpg]` Displays the external image.
     - `\link [ffffffffffffffffffffffff]` Redirects to the file with id `ffffffffffffffffffffffff` when the content is clicked
 
+
 * `\link` [`href`]
     - Default option: `href`
     - If no `href` is specified, the link will not redirect when clicked
@@ -87,6 +90,20 @@ Elements are the available commands that can be used within the editor.
         - External url's: `https://...`
     - `\link [https://www.google.com/]` Redirects to `https://www.google.com/` when the content is clicked
     - `\link [ffffffffffffffffffffffff]` Redirects to the file with id `ffffffffffffffffffffffff` when the content is clicked
+
+
+* `\linkContent` [`fileId`]
+    - Default option: `fileId`
+    - If no `fileId` is specified, an error will be drawn
+    - Valid `fileId` values: File/Document ID's, `ffffffffffffffffffffffff`
+    - `\linkContent [ffffffffffffffffffffffff]` Draws a box containing the metadata content of the referenced file. Clicking on the box redirects to the referenced file.
+
+
+* `\linkTitle` [`fileId`]
+    - Default option: `fileId`
+    - If no `fileId` is specified, an error will be drawn
+    - Valid `fileId` values: File/Document ID's, `ffffffffffffffffffffffff`
+    - `\linkContent [ffffffffffffffffffffffff]` Draws a link text containing the title of the referenced file.
 
 
 * `\margin` [`margin`]
@@ -125,6 +142,7 @@ Elements are the available commands that can be used within the editor.
     - If no `attr` is specified, it will default to `NONE`
     - Valid `attr` values: Any
     - `\save [12, attr: dex]` Draws a saving throw figure with DC 12 for the dex attribute
+
 
 * `\set` [`identifier`]
     - Default option: `identifier`

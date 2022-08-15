@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import FileContext, { Context } from 'components/contexts/fileContext';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import Divider from 'components/divider'
-import Editor from './editor'
+import Editor from './editor/editor'
 import Renderer from './renderer'
 import styles from 'styles/storyPage/main.module.scss'
 import Localization from 'classes/localization'
@@ -27,6 +27,8 @@ const FileContent = () => {
     const Content = useMemo(() => {
         if (context.fileSelected && !context.file)
             return <InvalidFileView/>
+        if (!storyContext.editEnabled && !context.file)
+            return <NoSelectedFileView/>
 
         return storyContext.editEnabled 
             ? <Divider 
@@ -45,7 +47,15 @@ const FileContent = () => {
 const InvalidFileView = () => {
     return (
         <div className={styles.invalidFile}>
-            { Localization.toText('storyPage-failedLoadFIle') }
+            { Localization.toText('storyPage-failedLoadFile') }
+        </div>
+    )
+}
+
+const NoSelectedFileView = () => {
+    return (
+        <div className={styles.invalidFile}>
+            { Localization.toText('storyPage-noSelectedFile') }
         </div>
     )
 }

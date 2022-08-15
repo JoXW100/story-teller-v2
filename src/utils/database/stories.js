@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { failure, success } from "./functions";
-import { FileType } from "@types/database";
+import { FileType } from "@enums/database";
 import Database from "./database";
 import '@types/database'
 
