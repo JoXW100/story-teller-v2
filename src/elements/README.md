@@ -122,7 +122,7 @@ Elements are the available commands that can be used within the editor.
     - `\n` or `\newline` Insert line
 
 
-* `\roll` [`dice`, `num`, `mod`, `showDice`]
+* `\roll` [`dice`, `num`, `mod`, `mode`]
     - Default option: `dice`
     - If no `dice` is specified, it will default to `20`
     - Valid `dice` values: Any integer value greater than zero
@@ -130,9 +130,11 @@ Elements are the available commands that can be used within the editor.
     - Valid `num` values: Any integer value greater than zero
     - If no `mod` is specified, it will default to `0`
     - Valid `mod` values: Any integer value
-    - If no `showDice` is specified, it will default to `false`
-    - Valid `showDice` values: `true` or `false`
-    - `\roll [10, num: 2, mod: -1]` Draws a dice roll figure with 2d10 - 1
+    - If no `mode` is specified, it will default to `mod` if `dice` is `20`, otherwise `dice`.
+    - Valid `mode` values: `dice`, `mode`, or `dmg`
+    - `\roll [10, num: 2, mod: -1, mode: dice]` Draws a dice roll figure with `2d10 - 1` displayed, and has the context choices: `flat`, `advantage`, and `disadvantage`.
+    - `\roll [12, num: 3, mod: 1, mode: dmg]` Draws a dice roll figure with `3d12 + 1` displayed, and has the context choices: `flat`, and `crit`.
+    - `\roll [num: 1]` Draws a dice roll figure with `+ 1` displayed, and has the context choices: `flat`, `advantage`, and `disadvantage`.
 
 
 * `\save` [`value`, `attr`]

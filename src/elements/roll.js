@@ -50,9 +50,10 @@ const RollElement = ({ children, options }) => {
     const [_, dispatch] = useContext(Context);
 
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
+    const mode = options.mode ? options.mode : dice.num === 20 ? 'mod' : 'dice';
     const num = options.num ? parseInt(options.num) : 1;
     const mod = options.mod ? parseInt(options.mod) : 0;
-    const show = options.mode === 'dice' || options.mode === 'dmg';
+    const show = mode === 'dice' || mode === 'dmg';
     const desc = options.desc ?? 'Rolled';
 
     const context = useMemo(() => {
