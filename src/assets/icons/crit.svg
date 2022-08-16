@@ -14,16 +14,17 @@
     <path 
         d="M16,2 l-11.7,7.2 v11.7 l11.7,9 l11.7,-9 v-11.7 z"
         stroke='currentColor' 
+        fill="#b09000" 
         stroke-width='1.5'
     />
     <text 
-        font-size="24"
+        font-size="16"
         fill="currentColor"
         font-family="Verdana"
         text-anchor="middle"
-        x="16.5"
-        y="25"
+        x="16"
+        y="21"
     >
-    ?
+    20
     </text>
 </svg>

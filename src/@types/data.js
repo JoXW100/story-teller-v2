@@ -27,5 +27,6 @@
  * @property {import('@enums/data').RollMethod} method
  * @property {[RollValue]} results
  * @property {number} selectedIndex
+ * @property {string} desc
  * @property {number} modifier
  */

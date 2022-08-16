@@ -31,6 +31,7 @@
     } 
 
     & > .editGroupHeader {
+        position: relative;
         color: map-get($cobalt-palette, font-light);
         background: map-get($cobalt-palette, darkest);
         cursor: pointer;
@@ -40,6 +41,26 @@
     
         &:hover {
             background: map-get($cobalt-palette, dark);
+        }
+
+        &[open]::after {
+            position: absolute;
+            right: 5px;
+            top: 0.5ch;
+            border-color: transparent map-get($cobalt-palette, font-light) transparent transparent;
+            border-width: 6px;
+            border-style: solid;
+            content: " ";
+        }
+    
+        &:not([open])::after {
+            position: absolute;
+            right: -1px;
+            top: 0.5ch;
+            border-color: transparent transparent transparent map-get($cobalt-palette, font-light);
+            border-width: 6px;
+            border-style: solid;
+            content: " ";
         }
     }
 }

@@ -46,7 +46,8 @@
             "loginPage-prompt": "Login",
             "roll-normal": "Flat",
             "roll-advantage": "Advantage",
-            "roll-disadvantage": "Disadvantage"
+            "roll-disadvantage": "Disadvantage",
+            "roll-crit": "Crit"
         }
     }
 }

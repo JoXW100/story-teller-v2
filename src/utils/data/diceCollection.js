@@ -8,16 +8,28 @@ class DiceCollection {
     #collection;
     /** @type {number} */
     #modifier;
+    /** @type {string} */
+    #desc;
 
-    constructor() {
+    /**
+     * @param {number?} modifier 
+     * @param {string?} desc 
+     */
+    constructor(modifier = 0, desc = 'Rolled') {
         this.#collection = {};
-        this.#modifier = 0;
+        this.#modifier = modifier;
+        this.#desc = desc;
     }
 
     /** @returns {number} */
     get modifier() { return this.#modifier }
     /** @param {number} value */
     set modifier(value) { this.#modifier = value }
+
+    /** @returns {string} */
+    get desc() { return this.#desc }
+    /** @param {string} value */
+    set desc(value) { this.#desc = value }
 
     /** 
      * @param {Dice} dice 
@@ -34,19 +46,29 @@ class DiceCollection {
      * @returns {RollResult} 
      */
     roll(method = RollMethod.Normal) {
+        var results = [];
+        var selectedIndex = 0;
         switch (method) {
+            case RollMethod.Crit:
+                var result = this.map((value) => ({ 
+                    dice: value.dice, 
+                    num: value.num * 2, 
+                    result: value.dice.roll(value.num * 2)
+                }));
+                var sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
+                results = [{ values: result, sum: sum }];
+                selectedIndex = 0;
+                break;
+
             case RollMethod.Disadvantage:
             case RollMethod.Advantage:
                 var roll1 = this.roll(RollMethod.Normal);
                 var roll2 = this.roll(RollMethod.Normal);
                 var res1 = roll1.results[roll1.selectedIndex];
                 var res2 = roll2.results[roll2.selectedIndex]
-                return {
-                    method: method,
-                    results: [res1, res2],
-                    selectedIndex: +((res1.sum < res2.sum) === (method === RollMethod.Advantage)),
-                    modifier: this.#modifier
-                }
+                results = [res1, res2];
+                selectedIndex = +((res1.sum < res2.sum) === (method === RollMethod.Advantage));
+                break;
 
             case RollMethod.Normal:
             default:
@@ -56,12 +78,17 @@ class DiceCollection {
                     result: value.dice.roll(value.num)
                 }));
                 var sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                return {
-                    method: method,
-                    results: [{ values: result, sum: sum }],
-                    selectedIndex: 0,
-                    modifier: this.#modifier
-                }
+                results = [{ values: result, sum: sum }];
+                selectedIndex = 0;
+                break;
+        }
+
+        return {
+            method: method,
+            results: results,
+            selectedIndex: selectedIndex,
+            desc: this.#desc,
+            modifier: this.#modifier
         }
     }
 

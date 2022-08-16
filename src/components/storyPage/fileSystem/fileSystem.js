@@ -134,7 +134,7 @@ const FileSystem = ({ style }) => {
             if (!res.success) {
                 console.warn(res.result);
             }
-            callback(res);
+            callback && callback(res);
         })
         .catch(console.error);
     }

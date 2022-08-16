@@ -57,8 +57,6 @@ const RollHistoryPanel = ({ open, close, isOpen }) => {
  * @returns {JSX.Element}
  */
 const HistoryRollEntry = ({ entry }) => {
-    
-    
     const Content = useMemo(() => {
         var result = entry.result;
         var selected = result.results[result.selectedIndex];
@@ -79,9 +77,10 @@ const HistoryRollEntry = ({ entry }) => {
 
         return <>
             <div className={styles.entryHeader}>
-                <b>Rolled: </b> 
+                <b>{`${result.desc}:`} </b> 
                 { result.method === RollMethod.Advantage && <b type='adv'>+ADV</b> }
                 { result.method === RollMethod.Disadvantage && <b type='dis'>-DIS</b> }
+                { result.method === RollMethod.Crit && <b type='crit'>+CRIT</b> }
             </div>
             <div className={styles.entryContent}>
                 { content }

@@ -3,5 +3,6 @@
 export const RollMethod = {
     Normal: "Normal",
     Advantage: "Advantage",
-    Disadvantage: "Disadvantage"
+    Disadvantage: "Disadvantage",
+    Crit: "Crit"
 }

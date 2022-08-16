@@ -36,9 +36,9 @@ const Folder = ({ file }) => {
     const Icon = useMemo(() => state.open ? IconOpen : IconClosed, [state.open])
 
     const changeState = () => {
-        dispatch.setFileState(file, !state.open, () => {
-            setState((state) => ({ ...state, open: !state.open }));
-        });
+        var value = { ...state, open: !state.open }
+        setState(value);
+        dispatch.setFileState(file, value.open);
     }
 
     useEffect(() => {

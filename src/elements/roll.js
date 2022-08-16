@@ -1,16 +1,17 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
 import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import { ParseError } from 'utils/parser';
 import { D20Icon } from 'assets/dice';
+import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'classes/localization';
-import styles from 'styles/elements/main.module.scss';
-import { AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import { RollMethod } from '@enums/data';
+import styles from 'styles/elements/main.module.scss';
 
-const validOptions = ['dice', 'num', 'mod', 'showDice'];
+const validModes = ['dice', 'mod', 'dmg'];
+const validOptions = ['dice', 'num', 'mod', 'mode', 'desc'];
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.some((x) => x === key))
@@ -35,9 +36,9 @@ const validateOptions = (options) => {
             throw new ParseError(`Invalid roll option value. mod: '${options.mod}', must be an integer`);
     }
 
-    if (options.showDice) {
-        if (options.showDice !== 'true' && options.showDice != 'false')
-            throw new ParseError(`Invalid roll option value. showDice: '${options.showDice}', must be true or false`);
+    if (options.mode) {
+        if (!validModes.includes(options.mode))
+            throw new ParseError(`Invalid roll option value. mode: '${options.mode}', valid values: ${validModes.join(', ')}`);
     }
 }
 
@@ -46,18 +47,28 @@ const validateOptions = (options) => {
  * @returns {JSX.Element}
  */
 const RollElement = ({ children, options }) => {
-    const [context, dispatch] = useContext(Context);
+    const [_, dispatch] = useContext(Context);
 
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
     const num = options.num ? parseInt(options.num) : 1;
     const mod = options.mod ? parseInt(options.mod) : 0;
-    const show = options.showDice === 'true';
+    const show = options.mode === 'dice' || options.mode === 'dmg';
+    const desc = options.desc ?? 'Rolled';
 
-    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
-    const handleContext = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openContext([
+    const context = useMemo(() => {
+        return options.mode === 'dmg' 
+        ? [
+            {
+                text: Localization.toText('roll-normal'), 
+                icon: D20Icon, 
+                action: () => Roll(RollMethod.Normal)
+            },
+            { 
+                text: Localization.toText('roll-crit'), 
+                icon: CritIcon, 
+                action: () => Roll(RollMethod.Crit)
+            }
+        ] : [
             {
                 text: Localization.toText('roll-normal'), 
                 icon: D20Icon, 
@@ -73,12 +84,19 @@ const RollElement = ({ children, options }) => {
                 icon: DisadvantageIcon, 
                 action: () => Roll(RollMethod.Disadvantage)
             }
-        ], { x: e.pageX, y: e.pageY }, true)
+        ]
+    }, [options.mode])
+
+    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
+    const handleContext = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        openContext(context, { x: e.pageX, y: e.pageY }, true)
     }
 
     /** @param {RollMethod} method  */
     const Roll = (method) => {
-        var collection = new DiceCollection();
+        var collection = new DiceCollection(mod, desc);
         collection.add(dice, num);
         collection.modifier = mod;
         dispatch.roll(collection, method);

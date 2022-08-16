@@ -10,11 +10,12 @@ import '@types/editor';
  */
 const GroupComponent = ({ children, params }) => {
     const [open, setOpen] = useState(params.open);
-    
+
     return (
         <div className={styles.editGroup} fill={String(params.fill && open)}>
             <div 
                 className={styles.editGroupHeader}
+                open={open}
                 onClick={() => setOpen(!open)}
             >
                 {params.label}

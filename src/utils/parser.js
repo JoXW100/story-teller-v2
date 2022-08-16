@@ -102,28 +102,27 @@ class Parser
                 switch (part){
                     case '\{':
                         counter++;
-                        if (counter > 1)
+                        if (counter > 1 && variable)
                             content.push(part);
                         break;
                     case '\}':
                         counter--;
                         if (counter === 0 && variable) {
                             data[variable.options[0].value] = content.join('');
-                            content = [];
                             variable = null;
                         }
-                        else if (counter > 0) 
+                        else if (variable) 
                             content.push(part);
                         break;
                     default:
-                        if (counter === 0) {
-                            /** @type {ParserObject} */
-                            var holder = { type: 'root', content: [], options: [] };
-                            var x = this.#parseFunction(part, holder);
-                            if (x?.type === 'set' && x.options.length > 0)
+                        if (!variable) {;
+                            var x = this.#parseFunction(part);
+                            if (x?.type === 'set' && x.options.length > 0){
                                 variable = x;
+                                content = [];
+                            }
                         }
-                        else if (counter > 0)
+                        else if (variable)
                             content.push(part);
                         break;
                 }
