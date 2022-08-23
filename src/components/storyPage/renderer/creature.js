@@ -94,10 +94,18 @@ const CreatureRenderer = ({ metadata = {} }) => {
     const type = Object.keys(CreatureType).find((key) => CreatureType[key] == metadata.type)
     const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == metadata.size)
     const speed = metadata.speed && Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ');
-    const saves = metadata.saves && Object.keys(metadata.saves).map((key, index) => <RollElement key={index} options={{ mod: metadata.saves[key], desc: `${key.toUpperCase()} Save` }} children={` ${key.toUpperCase()}`}/>);
+    const saves = metadata.saves && Object.keys(metadata.saves).map((key, index) => (
+        <RollElement key={index} options={{ mod: metadata.saves[key], desc: `${key.toUpperCase()} Save` }}>
+            {` ${key.toUpperCase()}`}
+        </RollElement>
+    ));
     const skills = metadata.skills && Object.keys(metadata.skills).map((key, index) => {
         var skill = Object.keys(Skill).find((k) => Skill[k] == key);
-        return <RollElement key={index} options={{ mod: metadata.skills[key], desc: `${skill} Check` }} children={` ${skill}`}/>
+        return (
+            <RollElement key={index} options={{ mod: metadata.skills[key], desc: `${skill} Check` }}>
+                {` ${skill}`}
+            </RollElement>
+        )
     });
     const health = getHealth(metadata);
     const ac = getAC(metadata);

@@ -25,10 +25,7 @@ const Enums = {
 const SelectionComponent = ({ params }) => {
     const [context, dispatch] = useContext(Context)
     const Enum = Enums[params.enum];
-    if (!Enum){
-        console.error("No enum of that type")
-        return null;
-    }
+
     /** @type {Object<string,any>} */
     const selection = context.file?.metadata 
         ? context.file.metadata[params.key] ?? {}
@@ -52,7 +49,7 @@ const SelectionComponent = ({ params }) => {
     }
 
     const values = useMemo(() => (
-        Object.keys(Enum).reduce((prev, val) => 
+        Enum ? Object.keys(Enum).reduce((prev, val) => 
             ({ ...prev, [Enum[val]]: { text: val, element: (
                 <SelectionItemElement 
                     item={val} 
@@ -61,8 +58,14 @@ const SelectionComponent = ({ params }) => {
                     inputType="number"
                 />
             )}})
-        , {})
+        , {}) : undefined
     ), [selection, context.file.metadata])
+    
+    if (!Enum){
+        console.error("No enum of that type")
+        return null;
+    }
+    
     return (
         <div className={styles.editSelection}>
             <b> {`${ params.label ?? "label"}:`} </b>
