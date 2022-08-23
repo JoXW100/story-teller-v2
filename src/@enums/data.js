@@ -6,3 +6,25 @@ export const RollMethod = {
     Disadvantage: "Disadvantage",
     Crit: "Crit"
 }
+
+/** @enum {string} */
+export const EditInputType = {
+    Root: 'root',
+    Group: 'group',
+    Editor: 'editor',
+    Text: 'text',
+    Textarea: 'textarea',
+    Number: 'number',
+    List: 'list',
+    Selection: 'selection',
+    Option: 'option',
+    Enum: 'enum',
+    Boolean: 'boolean'
+}
+
+/** @enum {string} */
+export const RendererCommand = {
+    Document: 'doc',
+    Creature: 'cre',
+    Ability: 'abi'
+}

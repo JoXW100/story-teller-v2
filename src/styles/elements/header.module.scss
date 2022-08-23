@@ -1,30 +1,30 @@
 @import '../colors.scss';
 
 .header1 {
-    color: map-get($cobalt-palette, font);
-    font-weight: bold;
+    @extend .header;
     font-size: xx-large;
     margin-top: 2px;
     margin-bottom: 2px;
 }
 
 .header2 {
-    color: map-get($cobalt-palette, font);
-    font-weight: bold;
+    @extend .header;
     font-size: x-large;
-    margin-top: 1px;
-    margin-bottom: 1px;
 }
 
 .header3 {
-    color: map-get($cobalt-palette, font);
-    font-weight: bold;
+    @extend .header;
     font-size: large;
-    margin-top: 1px;
-    margin-bottom: 1px;
 }
 
-.underline {
-    border-bottom: 1px solid map-get($cobalt-palette, font);
-    margin-bottom: 6px;
+.header {
+    color: map-get($cobalt-palette, font);
+    font-weight: bold;
+    margin-top: 1px;
+    margin-bottom: 1px;
+
+    &[underline=true] {
+        border-bottom: 1px solid map-get($cobalt-palette, font);
+        margin-bottom: 6px;
+    }
 }

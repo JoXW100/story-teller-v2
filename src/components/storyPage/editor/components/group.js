@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import styles from 'styles/storyPage/editor.module.scss'
-import '@types/editor';
+import '@types/data';
 
 
 /**
  * 
- * @param {{ children: JSX.Element, params: GroupTemplateParams }} 
+ * @param {{ children: JSX.Element, params: GroupParams }} 
  * @returns {JSX.Element}
  */
-const GroupComponent = ({ children, params }) => {
+const GroupComponent = ({ children, params = { label: "None"} }) => {
     const [open, setOpen] = useState(params.open);
 
     return (

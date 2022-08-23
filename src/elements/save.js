@@ -1,7 +1,7 @@
 import styles from 'styles/elements/main.module.scss';
 import { ParseError } from 'utils/parser';
 
-const validOptions = ['value', 'attr'];
+const validOptions = ['value', 'attr', 'tooltips'];
 
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
@@ -25,7 +25,10 @@ const SaveElement = ({ options }) => {
     const value = options.value ?? '0';
     const attr = (options.attr ?? 'NONE').toUpperCase();
     return (
-        <span className={styles.save}> 
+        <span 
+            className={styles.save}
+            tooltips={options.tooltips}
+        > 
             {`DC:${value} ${attr}`} 
         </span>
     )

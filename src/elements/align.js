@@ -28,7 +28,7 @@ const validateOptions = (options) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const AlignElement = ({ options, children }) => {
+const AlignElement = ({ options = {}, children }) => {
     const vertical = options.direction?.includes('v');
     const center = options.direction?.includes('c')
     const weight = parseFloat(options.weight ?? 1)
@@ -48,7 +48,7 @@ const AlignElement = ({ options, children }) => {
 /**
  * @type {Object.<string, RenderElement>}
  */
- export const element = {
+export const element = {
     'align': {
         type: 'align',
         defaultKey: 'direction',

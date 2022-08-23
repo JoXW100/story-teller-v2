@@ -2,8 +2,10 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Context } from 'components/contexts/storyContext';
 import { useMetadata } from 'utils/handleMetadata';
+import { BuildAbility } from 'components/storyPage/renderer/ability';
 import Parser, { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
+import { FileType } from '@enums/database';
 import styles from 'styles/elements/main.module.scss';
 
 const validOptions1 = ['href'];
@@ -40,7 +42,7 @@ const LinkComponent = ({ href, className, children }) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const LinkElement = ({ options, children }) => {
+export const LinkElement = ({ options = {}, children }) => {
     const href = useMemo(() => {
         try {
             if (!options.href) 
@@ -63,7 +65,11 @@ const LinkElement = ({ options, children }) => {
     );
 }
 
-const LinkContentElement = ({ options }) => {
+/**
+ * @param {{ options: Object.<string, string>, children: JSX.Element }} 
+ * @returns {JSX.Element}
+ */
+export const LinkContentElement = ({ options = {} }) => {
     const [context] = useContext(Context);
     const href = useMemo(() => {
         try {
@@ -78,33 +84,55 @@ const LinkContentElement = ({ options }) => {
         }
     }, [options]);
 
-    const [loaded, metadata] = useMetadata(context.story.id, options.fileId)
+    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId)
     const [content, setContent] = useState(null);
 
     useEffect(() => {
-        if (loaded && metadata?.content) {
-            Parser.parse(metadata.content, {})
-            .then((res) => setContent(res))
-            .catch(console.error);
-        }
-        else {
-            setContent(null)
+        if (loaded) {
+            switch (type) {
+                case FileType.Ability:
+                    setContent(BuildAbility(metadata))
+                    break;
+                    
+                case FileType.Document:
+                default:
+                    Parser.parse(metadata.content, {})
+                    .then((res) => setContent(
+                        <>
+                            <h3 className={styles.header}> 
+                                { metadata.title } 
+                            </h3>
+                            { res }
+                        </>
+                    ))
+                    .catch(console.error);
+                    break;
+            }
         }
     }, [metadata])
 
-    return (!loaded || metadata?.title) ? (
+    if (!loaded) {
+        return (
+            <div className={styles.linkLoading}>
+                Loading...
+            </div>
+        )
+    }
+
+    return (loaded && metadata) ? (
         <LinkComponent href={href} className={styles.linkContent}>
             <div>
-                <h3 className={styles.header}> 
-                    { metadata?.title ?? 'Loading...' } 
-                </h3>
                 { content }
             </div>
         </LinkComponent>
     ) : <div className={styles.error}> Error </div>;
 }
 
-const LinkTitleElement = ({ options }) => {
+/**
+ * @param {{ options: Object.<string, string>, children: JSX.Element }} 
+ * @returns {JSX.Element}
+ */
+export const LinkTitleElement = ({ options }) => {
     const [context] = useContext(Context);
     const href = useMemo(() => {
         try {

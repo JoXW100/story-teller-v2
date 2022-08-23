@@ -1,53 +1,60 @@
-import * as align from './align';
-import * as block from './block';
-import * as bold from './bold';
-import * as box from './box';
-import * as center from './center';
-import * as fill from './fill';
-import * as header from './header';
-import * as image from './image';
-import * as line from './line';
-import * as link from './link';
-import * as margin from './margin';
-import * as newline from './newline';
-import * as roll from './roll';
-import * as save from './save';
-import * as text from './text';
+import * as Align from './align';
+import * as Block from './block';
+import * as Bold from './bold';
+import * as Box from './box';
+import * as Center from './center';
+import * as Fill from './fill';
+import * as Header from './header';
+import * as Icon from './icon';
+import * as Image from './image';
+import * as Line from './line';
+import * as Link from './link';
+import * as Margin from './margin';
+import * as Newline from './newline';
+import * as Roll from './roll';
+import * as Save from './save';
+import * as Text from './text';
 
-const ElementDictionary = {
-    ...align.element,
-    ...block.element,
-    ...bold.element,
-    ...box.element,
-    ...center.element,
-    ...fill.element,
-    ...header.element,
-    ...image.element,
-    ...line.element,
-    ...link.element,
-    ...margin.element,
-    ...newline.element,
-    ...roll.element,
-    ...save.element,
-    ...text.element
+export const ElementDictionary = {
+    ...Align.element,
+    ...Block.element,
+    ...Bold.element,
+    ...Box.element,
+    ...Center.element,
+    ...Fill.element,
+    ...Header.element,
+    ...Icon.element,
+    ...Image.element,
+    ...Line.element,
+    ...Link.element,
+    ...Margin.element,
+    ...Newline.element,
+    ...Roll.element,
+    ...Save.element,
+    ...Text.element
 }
 
-export {
-    align,
-    block,
-    bold,
-    box,
-    center,
-    fill,
-    header,
-    image,
-    line,
-    link,
-    margin,
-    newline,
-    roll,
-    save,
-    text
+export const Elements = {
+    Align: Align.default,
+    Block: Block.default,
+    Bold: Bold.default,
+    Box: Box.default,
+    Center: Center.default,
+    Fill: Fill.default,
+    Header1: Header.Header1,
+    Header2: Header.Header2,
+    Header3: Header.Header3,
+    Icon: Icon.default,
+    Image: Image.default,
+    Line: Line.default,
+    Link: Link.LinkElement,
+    LinkContent: Link.LinkContentElement,
+    LinkTitle: Link.LinkTitleElement,
+    Margin: Margin.default,
+    Newline: Newline.default,
+    Roll: Roll.default,
+    Save: Save.default,
+    Text: Text.default
 }
 
-export default ElementDictionary;
+export default Elements;

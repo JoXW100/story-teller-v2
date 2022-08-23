@@ -31,6 +31,8 @@
             "create-edit": "Edit",
             "create-delete": "Delete",
             "create-copyId": "Copy ID",
+            "create-openFile": "Open file",
+            "create-openFileNewTab": "Open file in new tab",
             "create-confirmationHeader": "Are you sure",
             "create-confirmationYes": "Yes",
             "create-confirmationNo": "No",

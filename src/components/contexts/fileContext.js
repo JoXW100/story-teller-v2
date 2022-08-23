@@ -1,16 +1,13 @@
 import React, { useEffect, useReducer } from 'react'
 import RequestQueue from 'utils/data/requestQueue'
 import '@types/fileContext'
+import '@types/database'
 
-/** @type {React.Context<FileContextProvider>} */
+/** @type {React.Context<import('@types/fileContext').FileContextProvider>} */
 export const Context = React.createContext({})
 
 /**
- * @param {{ 
- *  storyId: import('@types/database').ObjectId, 
- *  fileId: import('@types/database').ObjectId, 
- *  children: JSX.Element 
- * }}
+ * @param {{ storyId: ObjectId, fileId: ObjectId, children: JSX.Element }}
  * @returns {JSX.Element}
  */
 const FileContext = ({ storyId, fileId, children }) => {
@@ -55,9 +52,9 @@ const FileContext = ({ storyId, fileId, children }) => {
     }
 
     /**
-     * @param {FileContextState} state
+     * @param {import('@types/fileContext').FileContextState} state
      * @param {DispatchAction<any>} action
-     * @returns {FileContextState}
+     * @returns {import('@types/fileContext').FileContextState}
      */
     const reducer = (state, action) => {
         switch (action.type) {
@@ -103,13 +100,16 @@ const FileContext = ({ storyId, fileId, children }) => {
             
             case 'setMetadata':
                 if (state.file && action.data?.key) {
-                    var data = { ...state.file.content.metadata, [action.data.key]: action.data.value }
+                    var data = { 
+                        ...state.file.metadata, 
+                        [action.data.key]: action.data.value 
+                    }
                     state.queue.addRequest(setFileMetadata, "metadata", storyId, state.file.id, data);
                     return { 
                         ...state, 
                         file: { 
                             ...state.file, 
-                            content: { ...state.file.content, metadata: data }
+                            metadata: data
                         } 
                     }
                 }
@@ -119,7 +119,12 @@ const FileContext = ({ storyId, fileId, children }) => {
         }
     }
 
-    /** @type {[state: FileContextState, dispatch: React.Dispatch<DispatchAction<any>>]} */
+    /** 
+     * @type {[
+     *      state: import('@types/fileContext').FileContextState, 
+     *      dispatch: React.Dispatch<DispatchAction<any>>
+     *  ]}
+     */
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         fetching: false,

@@ -41,6 +41,19 @@ class Dice {
         return this.#type;
     }
 
+    /**  
+     * @param {number | string} type 
+     * @param {number} num
+     * @returns {number}
+     */
+    static average(type, num) {
+        if (typeof type === 'string')
+            type = parseInt(type)
+        return type === 0 
+            ? 0 
+            : Math.floor((type + 1)/2.0 * num)
+    }
+
     /**
      * @param {number} num
      * @returns {[number]}

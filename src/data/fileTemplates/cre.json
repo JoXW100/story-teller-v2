@@ -1,0 +1,145 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true, "fill": false },
+                "content": [
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name" }
+                    },
+                    { 
+                        "type": "textarea", 
+                        "params": { "label": "Description", "key": "description" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Size", "key": "size", "type": "creatureSize", "default": "medium" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "none" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Alignment", "key": "alignment", "type": "alignment", "default": 0 }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Portrait", "key": "portrait" }
+                    },
+                    {
+                        "type": "list",
+                        "params": { "label": "Abilities", "key": "abilities", "type": "text" }
+                    },
+                    { 
+                        "type": "group",
+                        "params": { "label": "Stats", "open": true },
+                        "content": [
+                            { 
+                                "type": "number", 
+                                "params": { "label": "Level", "key": "level" }
+                            },
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Hit Dice", "key": "hitDice", "type": "dice", "default": 0 }
+                            },
+                            { 
+                                "type": "option", 
+                                "params": { "label": "Health", "key": "health", "type": "number" }
+                            },
+                            { 
+                                "type": "option", 
+                                "params": { "label": "AC", "key": "ac", "type": "number" }
+                            },
+                            { 
+                                "type": "option", 
+                                "params": { "label": "Proficiency", "key": "proficiency", "type": "number" }
+                            },
+                            { 
+                                "type": "option", 
+                                "params": { "label": "Initiative", "key": "initiative", "type": "number" }
+                            },
+                            { 
+                                "type": "selection", 
+                                "params": { "label": "Speed", "key": "speed", "enum": "movement", "type": "number", "default": 0 }
+                            }
+                        ]
+                    },
+                    { 
+                        "type": "group",
+                        "params": { "label": "Attributes", "open": true },
+                        "content": [
+                            { 
+                                "type": "number", 
+                                "params": { "label": "STR", "key": "str" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "DEX", "key": "dex" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "CON", "key": "con" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "INT", "key": "int" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "WIS", "key": "wis" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "CHA", "key": "cha" }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Info", "open": true },
+                        "content": [
+                            { 
+                                "type": "selection", 
+                                "params": { "label": "Saving throws", "key": "saves", "enum": "attr", "type": "number", "default": 0 }
+                            },
+                            { 
+                                "type": "selection", 
+                                "params": { "label": "Skills", "key": "skills", "enum": "skill", "type": "number", "default": 0 }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Senses", "key": "senses" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Languages", "key": "languages" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "Challenge", "key": "challenge", "allowFloat": true }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "XP", "key": "xp" }
+                            }
+                        ]
+                    }
+                ]
+            },
+            { 
+                "type": "group",
+                "params": { "label": "Editor", "open": false, "fill": true },
+                "content": [
+                    { 
+                        "type": "editor"
+                    }
+                ]
+            }
+        ]
+    },
+    "renderer": { "type": "cre" }
+}

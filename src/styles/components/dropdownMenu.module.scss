@@ -3,43 +3,49 @@ $size: 30px;
 .main {
     display: flex;
     height: $size;
-    min-width: $size;
-    background-color: inherit;
+    background: inherit;
+    flex-shrink: 0;
     user-select: none;
     cursor: pointer;
+    height: inherit;
     flex: 1;
 
     & > .button {
-        width: $size;
-        height: $size;
-
-        & > SVG {
-            height: 100%;
-        }
+        height: 100%;
+        aspect-ratio: 1;
     }
 
     & > .content {
         display: block;
         position: relative;
-        background-color: inherit;
+        background: inherit;
+        height: inherit;
         flex: 1;
 
         & > .menu {
-            display: block;
+            display: grid;
             position: absolute;
-            background-color: inherit;
+            background: inherit;
             white-space: normal;
             top: 0;
             left: 0;
             width: 100%;
-            max-height: $size * 5;
             overflow-y: auto;
+
+            &[expanded=false] {
+                height: inherit;
+                overflow: hidden;
+            }
+
+            &[expanded=true] {
+                z-index: 15;
+                max-height: 500%;
+            }
     
             & > .menuRow {
                 display: flex;
                 align-items: center;
-                height: $size;
-                background-color: inherit;
+                background: inherit;
             }
         }
     }
@@ -54,13 +60,13 @@ $size: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white;
+    background: inherit;
 
     &:hover {
-        background-color: #dadada;
+        background: #dadada;
     }
 
     &:active {
-        background-color: #b8b8b8;
+        background: #b8b8b8;
     }
 }

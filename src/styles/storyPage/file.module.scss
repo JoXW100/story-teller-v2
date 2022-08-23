@@ -11,9 +11,10 @@
     cursor: pointer;
 
     & > SVG {
-        padding: 4px 0 1px 0;
-        width: 1em;
-        height: 1em;
+        padding: 4px 2px 1px 0;
+        width: 20px;
+        height: 20px;
+        font-size: inherit;
     }
 
     & > .text {

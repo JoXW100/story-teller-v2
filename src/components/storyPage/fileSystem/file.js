@@ -1,20 +1,26 @@
-import React, { useContext, useEffect, useState } from 'react';
-import Icon from '@mui/icons-material/InsertDriveFileSharp';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import DocumentIcon from '@mui/icons-material/InsertDriveFileSharp';
+import AbilityIcon from '@mui/icons-material/FitnessCenterSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import CopyIcon from '@mui/icons-material/ContentCopySharp';
-import Link from 'next/link';
+import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
+import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
+import { DragonIcon } from 'assets/icons';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
 import { FileSystemContext } from './fileSystem';
-import FileInput from './fileInput';
+import Link from 'next/link';
+import Navigation from 'utils/navigation';
 import Localization from 'classes/localization';
+import FileInput from './fileInput';
+import { FileType } from '@enums/database';
 import styles from 'styles/storyPage/file.module.scss';
 import '@types/fileSystem';
-import Navigation from 'utils/navigation';
+import { useRouter } from 'next/router';
 
 /**
- * @param {{ file: StructureFile }}
+ * @param {{ file: import('@types/database').StructureFile }}
  * @returns {JSX.Element}
  */
 const File = ({ file }) => {
@@ -25,6 +31,18 @@ const File = ({ file }) => {
         selected: context.fileId === file.id, 
         text: file.name
     });
+    const router = useRouter();
+
+    const Icon = useMemo(() => {
+        switch (file.type) {
+            case FileType.Creature:
+                return DragonIcon;
+            case FileType.Ability:
+                return AbilityIcon;
+            default: 
+                return DocumentIcon
+        }
+    }, [file.type])
 
     useEffect(() => {
         if (!state.inEditMode && state.text !== file.name) {
@@ -46,6 +64,16 @@ const File = ({ file }) => {
         e.preventDefault()
         e.stopPropagation()
         openContext([
+            {
+                text: Localization.toText('create-openFile'), 
+                icon: OpenIcon, 
+                action: () => router.push(Navigation.FileURL(file.id))
+            },
+            {
+                text: Localization.toText('create-openFileNewTab'), 
+                icon: OpenInNewPageIcon, 
+                action: () => window.open(Navigation.FileURL(file.id))
+            },
             {
                 text: Localization.toText('create-copyId'), 
                 icon: CopyIcon, 

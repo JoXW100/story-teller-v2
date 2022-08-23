@@ -18,7 +18,6 @@ export default withApiAuthRequired(async function handler(req, res) {
             return res.status(400).json(failure("Not connected to database"));
         }
     }
-    console.log("Database", type, JSON.stringify(params));
 
     let body;
     switch (req.method) {
@@ -38,6 +37,9 @@ export default withApiAuthRequired(async function handler(req, res) {
                 
                 case 'getMetadata':
                     return res.status(200).json(await Database.files.getMetadata(userId, params.storyId, params.fileId));
+
+                case 'getManyMetadata':
+                    return res.status(200).json(await Database.files.getManyMetadata(userId, params.storyId, params.fileIds));
 
                 case 'getFileStructure':
                     return res.status(200).json(await Database.files.getStructure(userId, params.storyId));
@@ -98,7 +100,9 @@ export default withApiAuthRequired(async function handler(req, res) {
 const fileToContent = (data) => {
     switch (data.type) {
         case FileType.Document:
-            return { name: data.name, text: "" };
+        case FileType.Creature:
+        case FileType.Ability:
+            return { name: data.name, text: "", metadata: {} };
         case FileType.Folder:
             return { name: data.name, open: false };
         default:

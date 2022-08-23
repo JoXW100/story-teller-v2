@@ -30,3 +30,15 @@ $pageHeight: 14in; /* A4 */
     color: red;
     font-weight: bold;
 }
+
+.horizontal {
+    display: flex;
+    align-items: row;
+}
+
+.ability {
+    border: 1px solid map-get($cobalt-palette, border);
+    background: map-get($cobalt-palette, lightest);
+    padding: 5px;
+    margin-bottom: 10px;
+}

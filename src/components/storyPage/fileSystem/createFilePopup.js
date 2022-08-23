@@ -84,6 +84,12 @@ const CreateFileContent = ({ callback }) => {
         closePopup()
     }
 
+    const options = { 
+        [FileType.Document]: 'Document', 
+        [FileType.Creature]: "Creature", 
+        [FileType.Ability]: "Ability" 
+    }
+
     return (
         <>
             <div className={styles.inputRow}>
@@ -99,7 +105,7 @@ const CreateFileContent = ({ callback }) => {
                 <DropdownMenu 
                     className={styles.dropdown}
                     value={state.type} 
-                    values={{ [FileType.Document]: 'Document' }}
+                    values={options}
                     onChange={(value) => setState({ ...state, type: value })}
                 />
             </div>

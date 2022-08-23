@@ -2,10 +2,8 @@ import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
 import { RollMethod } from '@enums/data';
 import Queue from 'utils/data/queue';
-import 'utils/data/queue';
-import '@types/storyContext'
 
-/** @type {React.Context<StoryContextProvider>} */
+/** @type {React.Context<import('@types/storyContext').StoryContextProvider>} */
 export const Context = React.createContext({})
 
 /**
@@ -30,9 +28,9 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
     }
 
     /**
-     * @param {StoryContextState} state
-     * @param {DispatchAction} action
-     * @returns {StoryContextState}
+     * @param {import('@types/storyContext').StoryContextState} state
+     * @param {import('@types/storyContext').DispatchAction} action
+     * @returns {import('@types/storyContext').StoryContextState}
      */
     const reducer = (state, action) => {
         switch (action.type) {
@@ -67,7 +65,7 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
         }
     }
 
-    /** @type {[state: StoryContextState, dispatch: React.Dispatch<DispatchAction>]} */
+    /** @type {[state: import('@types/storyContext').StoryContextState, dispatch: React.Dispatch<DispatchAction>]} */
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         editEnabled: true,

@@ -13,7 +13,7 @@ const validateOptions = (options) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const BoxElement = ({ options, children }) => {
+const BoxElement = ({ options = {}, children }) => {
     return (
         <div 
             style={options.color ? { background: options.color } : undefined}

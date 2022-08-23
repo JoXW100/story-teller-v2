@@ -1,0 +1,128 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true },
+                "content": [
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Ability Type", "key": "type", "type": "abilityType", "default": "feature" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Action Type", "key": "action", "type": "action", "default": "action" }
+                    },
+                    { 
+                        "type": "text", 
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
+                        "params": { "label": "Notes", "key": "notes" }
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Effect", "open": true },
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
+                        "content": [
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Condition", "key": "condition", "type": "effectCondition", "default": "hit" }
+                            },
+                            { 
+                                "type": "enum", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "condition" }, "save"] }],
+                                "params": { "label": "Save Attribute", "key": "saveAttr", "type": "attr", "default": "str" }
+                            },
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon"] }] }],
+                                "params": { "label": "Reach", "key": "range" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon", "skill"] }] }],
+                                "params": { "label": "Range", "key": "range" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon"] }] }],
+                                "params": { "label": "Range (Long)", "key": "rangeLong" }
+                            },
+                            { 
+                                "type": "text", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                                "params": { "label": "Effect", "key": "effectText" }
+                            },
+                            {
+                                "type": "group",
+                                "params": { "label": "Condition Roll", "open": true },
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "content": [
+                                    { 
+                                        "type": "enum", 
+                                        "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
+                                    },
+                                    { 
+                                        "type": "boolean", 
+                                        "params": { "label": "Proficiency", "key": "conditionProficiency", "default": false }
+                                    },
+                                    { 
+                                        "type": "option", 
+                                        "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "group",
+                                "params": { "label": "Effect Roll", "open": true },
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "any", "value": ["none", null] }] }],
+                                "content": [
+                                    { 
+                                        "type": "enum", 
+                                        "params": { "label": "Scaling", "key": "effectScaling", "type": "scaling", "default": "none" }
+                                    },
+                                    { 
+                                        "type": "boolean", 
+                                        "params": { "label": "Proficiency", "key": "effectProficiency", "default": false }
+                                    },
+                                    { 
+                                        "type": "option", 
+                                        "params": { "label": "Modifier", "key": "effectModifier", "type": "number" }
+                                    },
+                                    { 
+                                        "type": "enum", 
+                                        "params": { "label": "Dice", "key": "effectDice", "type": "dice", "default": 0 }
+                                    },
+                                    { 
+                                        "type": "number", 
+                                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "effectDice" }, { "type": "any", "value": [0, null] }] }],
+                                        "params": { "label": "Num Dice", "key": "effectDiceNum" }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Content", "open": true, "fill": true },
+                "content": [
+                    {
+                        "type": "textarea",
+                        "params": { "label": "Description", "key": "description", "fill": true  }
+                    }
+                ]
+            }
+        ]
+    },
+    "renderer": { "type": "abi" }
+}

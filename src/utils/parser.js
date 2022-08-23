@@ -1,5 +1,5 @@
 
-import ElementDictionary from "elements";
+import { ElementDictionary } from "elements";
 /**
  * @typedef ParserObject
  * @property {string} type
@@ -46,7 +46,11 @@ class Parser
             var splits = withVars?.split(matchBodyExpr) ?? [];
             var tree = this.#buildTree(splits);
             // First node is root
-            resolve((<> { tree.content.map((node, key) => this.#buildComponent(node, key)) } </>));
+            resolve(
+                <div key={0}> 
+                    { tree.content.map((node, key) => this.#buildComponent(node, key)) }
+                </div>
+             );
         });
     }
 
@@ -196,9 +200,10 @@ class Parser
         var element = ElementDictionary[tree.type];
         if (!element)
             throw new ParseError(`Unknown command '${tree.type}'`);
-        if ((tree.type === 'text' && tree.content.trim() == ''))
+        if (tree.type === 'text' && typeof tree.content === 'object')
+            tree.content = tree.content[0] ?? '';
+        if (tree.type === 'text' && tree.content?.trim() == '')
             return null;
-        
 
         var options = {};
         tree.options.forEach((x) => {

@@ -4,7 +4,7 @@ import { ParseError } from "utils/parser";
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
- const TextElement = ({ options, children }) => {
+ const TextElement = ({ children }) => {
     return <span> {children} </span>
 }
 

@@ -147,11 +147,13 @@ $navbarWidth: 35px;
 
     & > .dropdown {
         background-color: map-get($cobalt-palette, lighter);
+        height: 30px;
 
         & > div:first-child {
             & > * > * {
                 padding: 3px 10px;
                 border: 1px solid map-get($cobalt-palette, lightest);
+                height: 30px;
                 &:hover {
                     background-color: map-get($cobalt-palette, lightest);
                 }

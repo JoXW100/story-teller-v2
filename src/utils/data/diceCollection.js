@@ -1,6 +1,6 @@
 import { RollMethod } from '@enums/data';
 import Dice from 'utils/data/dice';
-
+import '@types/dice';
 
 
 class DiceCollection {

@@ -1,3 +1,5 @@
+import '@types/database';
+
 /**
  * @template T
  * @typedef DispatchAction
@@ -13,8 +15,10 @@
 
 /**
  * @typedef FileContextState
- * @property {FileState} state
- * @property {import('@types/database').File<*>} file
+ * @property {boolean} loading
+ * @property {boolean} fetching
+ * @property {boolean} fileSelected
+ * @property {import('@types/database').FileData<any, any>} file
  * @property {import('utils/data/requestQueue').default} queue
  */
 

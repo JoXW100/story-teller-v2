@@ -23,8 +23,8 @@ class FilesInterface
      * @param {string} storyId The story that holds the file
      * @param {string} holderId The file that holds the file
      * @param {FileType} type The type of the file to add
-     * @param {Object<string, *>} content The stating content of the file
-     * @returns {Promise<import('@types/database').DBResponse<ObjectId>>}
+     * @param {DBContent<any>} content The stating content of the file
+     * @returns {DBResponse<ObjectId>>}
      */
     async add(userId, storyId, holderId, type, content = {}) {
         try
@@ -52,7 +52,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {string} fileId The story that holds the file
-     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').File<?>>>}
+     * @returns {Promise<DBResponse<FileData<any, any>>>}
      */
     async get(userId, storyId, fileId) {
         try
@@ -68,9 +68,11 @@ class FilesInterface
                     id: '$_id',
                     name: '$content.name',
                     type: '$type',
-                    content: '$content'
+                    content: '$content',
+                    metadata: '$content.metadata'
                 }},
-                { $limit: 1 }
+                { $limit: 1 },
+                { $project: { 'content.metadata': 0 }},
             ]).toArray())[0];
             console.log(`Get File: => ${result?.name}.${result?.type}`);
             return result ? success(result) : failure("Could not find any matching file");
@@ -82,11 +84,11 @@ class FilesInterface
     }
 
     /**
-     * Adds a file to the database
+     * Gets the metadata from a file in the database
      * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {string} fileId The story that holds the file
-     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').File<?>>>}
+     * @returns {Promise<DBResponse<FileMetadata>>}
      */
     async getMetadata(userId, storyId, fileId) {
         try
@@ -104,7 +106,40 @@ class FilesInterface
                 }},
                 { $limit: 1 }
             ]).toArray())[0];
-            console.log(`Get File: => ${result?.type}`);
+            console.log(`Get Metadata: => ${result?.type}`);
+            return result ? success(result) : failure("Could not find any matching file");
+        }
+        catch (error)
+        {
+            return failure(error.message);
+        }
+    }
+    /**
+     * Gets the metadata from a file in the database
+     * @param {string} storyId The id of the story
+     * @param {string} userId The id of the user
+     * @param {[string]} fileIds The story that holds the file
+     * @returns {Promise<DBResponse<FileMetadata>>}
+     */
+    async getManyMetadata(userId, storyId, fileIds) {
+        try
+        {
+            var ids = fileIds?.split(',');
+            if (!ids || ids.length < 1)
+                return failure("No fileIds provided");
+            let result = await this.#collection.aggregate([
+                { $match: {
+                    _userId: userId,
+                    _storyId: ObjectId(storyId),
+                    _id: { $in: ids.map(x => ObjectId(x)) }
+                }},
+                { $project: {
+                    _id: 0,
+                    type: '$type',
+                    metadata: '$content.metadata'
+                }}
+            ]).toArray();
+            console.log(`Get Many Metadata: => ${result?.length}`);
             return result ? success(result) : failure("Could not find any matching file");
         }
         catch (error)
@@ -118,7 +153,7 @@ class FilesInterface
      * @param {string} userId The id of the user
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async delete(userId, storyId, fileId) {
         try
@@ -142,7 +177,7 @@ class FilesInterface
      * Removes matching files from the database
      * @param {string} userId The id of the user
      * @param {string} storyId The id of the story
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async deleteFrom(userId, storyId) {
         try
@@ -165,7 +200,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} name The new name of the file
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async rename(userId, storyId, fileId, name) {
         try
@@ -196,7 +231,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} targetId The id of the new holder file
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async move(userId, storyId, fileId, targetId) {
         try
@@ -243,9 +278,9 @@ class FilesInterface
      * @param {string} fileId The id of the file
      * @param {string} property The name of the property
      * @param {any} value The value of the property
-     * @param {string|Object<string,any>?} fileType The type of the file
+     * @param {import('@enums/database').FileType|Object<string,any>?} fileType The type of the file
      * @param {boolean?} updateDate If the date is to be updated
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async #setProperty(userId, storyId, fileId, property, value, fileType = null, updateDate = true) {
         try
@@ -258,7 +293,7 @@ class FilesInterface
 
             let result = await this.#collection.updateOne(query, { $set: set })
             var x = result.modifiedCount === 1;
-            console.log(`Set ${property}: => ${x}`);
+            console.log(`SetProperty (${property}): => ${x}`);
             return x ? success(x) : failure("Could not find file to change state");
         }
         catch (error)
@@ -273,7 +308,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the folder
      * @param {bool} state The new state of the folder
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async setOpenState(userId, storyId, fileId, state) {
         return this.#setProperty(
@@ -293,7 +328,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} text The new text
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async setText(userId, storyId, fileId, text) {
         return this.#setProperty(
@@ -312,7 +347,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {Object<string,any>} metadata The new text
-     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
+     * @returns {Promise<DBResponse<boolean>>}
      */
     async setMetadata(userId, storyId, fileId, metadata) {
         if (typeof metadata !== 'object')
@@ -331,7 +366,7 @@ class FilesInterface
      * Gets the file structure of story in the database
      * @param {string} userId The id of the user
      * @param {string} storyId The story that holds the files
-     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').StructureFile>>} The id of the file
+     * @returns {Promise<DBResponse<StructureFile>>} The id of the file
      */
     async getStructure(userId, storyId) {
         try

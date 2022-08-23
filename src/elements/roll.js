@@ -11,7 +11,7 @@ import { RollMethod } from '@enums/data';
 import styles from 'styles/elements/main.module.scss';
 
 const validModes = ['dice', 'mod', 'dmg'];
-const validOptions = ['dice', 'num', 'mod', 'mode', 'desc'];
+const validOptions = ['dice', 'num', 'mod', 'mode', 'desc', 'tooltips'];
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.some((x) => x === key))
@@ -20,8 +20,8 @@ const validateOptions = (options) => {
 
     if (options.dice) {
         var num = parseInt(options.dice)
-        if (isNaN(num) || num <= 0)
-            throw new ParseError(`Invalid roll option value. dice: '${options.dice}', must be an integer > 0`);
+        if (isNaN(num))
+            throw new ParseError(`Invalid roll option value. dice: '${options.dice}', must be an integer`);
     }
 
     if (options.num) {
@@ -43,14 +43,22 @@ const validateOptions = (options) => {
 }
 
 /**
- * @param {{ options: Object.<string, string>, children: JSX.Element }} 
+ * @typedef RollOptions 
+ * @property {number} dice
+ * @property {number} num
+ * @property {number} mod
+ * @property {'mod' | 'dice' | 'dmg'} mode
+ * @property {string} desc
+ * @property {string} tooltips
+ * 
+ * @param {{ options: RollOptions, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const RollElement = ({ children, options }) => {
+const RollElement = ({ children, options = {} }) => {
     const [_, dispatch] = useContext(Context);
 
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
-    const mode = options.mode ? options.mode : dice.num === 20 ? 'mod' : 'dice';
+    const mode = options.mode ? options.mode : (dice.num === 20 || dice.num === 0) ? 'mod' : 'dice';
     const num = options.num ? parseInt(options.num) : 1;
     const mod = options.mod ? parseInt(options.mod) : 0;
     const show = mode === 'dice' || mode === 'dmg';
@@ -112,6 +120,7 @@ const RollElement = ({ children, options }) => {
             className={styles.dice}
             onClick={() => Roll(RollMethod.Normal)}
             onContextMenu={handleContext}
+            tooltips={options.tooltips}
         >
             { !show ? modText
                 : `${num}${dice.text} ${modText} `}

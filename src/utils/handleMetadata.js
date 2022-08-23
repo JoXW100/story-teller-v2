@@ -47,7 +47,8 @@ const useMetadata = (storyId, fileId) => {
     
     return [
         state.loaded && !state.fetching,
-        state.file?.metadata ?? null
+        state.file?.metadata ?? null,
+        state.file?.type
     ]
 }
 

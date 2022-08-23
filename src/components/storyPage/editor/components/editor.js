@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import TextEditor from 'components/textEditor/simple-textEditor';
-import '@types/editor';
 
 /** @returns {JSX.Element} */
 const EditorComponent = () => {

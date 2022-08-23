@@ -1,0 +1,42 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { 
+                    "label": "Metadata", 
+                    "open": false, 
+                    "fill": false 
+                },
+                "content": [
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Title", "key": "title" }
+                    },
+                    { 
+                        "type": "textarea", 
+                        "params": { "label": "Content", "key": "content" }
+                    }
+                ]
+            },
+            { 
+                "type": "group",
+                "params": { 
+                    "label": "Editor", 
+                    "open": true, 
+                    "fill": true 
+                },
+                "content": [
+                    { 
+                        "type": "editor"
+                    }
+                ]
+            }
+        ]
+    },
+    "renderer": {
+        "type": "doc",
+        "params": { "key": "$text"  }
+    }
+}

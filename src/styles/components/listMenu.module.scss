@@ -1,0 +1,81 @@
+$size: 20px;
+$height: 100px;
+
+.main {
+    display: flex;
+    flex-direction: column;
+    background-color: inherit;
+    min-width: 0;
+    user-select: none;
+    height: $height;
+    cursor: pointer;
+    flex: 1;
+
+    .addRow {
+        display: flex;
+        height: $size;
+        background: inherit;
+
+        .button {
+            height: 100%;
+            aspect-ratio: 1;
+        }
+
+        .input {
+            display: flex;
+            height: $size;
+            min-width: 0;
+            flex-shrink: 0;
+            border: none;
+            outline: none;
+            font: inherit;
+            padding: 0 5px;
+            flex: 1;
+        }
+    }
+    
+    .content {
+        display: block;
+        flex: 1;
+        overflow-y: scroll;
+        direction: rtl;
+        cursor: default;
+
+        .row {
+            direction: ltr;
+            height: $size;
+            display: flex;
+            align-items: center;
+            background-color: inherit;
+            user-select: text;
+        
+            .rowContent {
+                flex: 1;
+                margin: 0 0 0 5px;
+                min-width: 0;
+            }
+        
+            .button {
+                height: inherit;
+                aspect-ratio: 1;
+            }
+        }
+    }
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e2e2e2;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background-color: #dadada;
+    }
+
+    &:active {
+        background-color: #b8b8b8;
+    }
+}

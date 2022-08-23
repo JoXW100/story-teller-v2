@@ -9,10 +9,11 @@ import DropUpIcon from '@mui/icons-material/ArrowDropUpSharp';
  *  className: string,
  *  values: Object.<string, JSX.Element>, 
  *  value: string, 
+ *  showButton: boolean?
  *  onChange: (value: string) => void 
 *  }}
  */
-const DropdownMenu = ({ className, values, value, onChange }) => {
+const DropdownMenu = ({ className, values, value, showButton = true, onChange }) => {
 
     const [state, setState] = useState({ value: value, open: false });
 
@@ -26,40 +27,57 @@ const DropdownMenu = ({ className, values, value, onChange }) => {
     }, [])
 
     useEffect(() => {
-        state.value !== value && onChange(state.value)
+        state.value !== value && onChange && onChange(state.value)
     }, [state.value])
+
+    useEffect(() => {
+        setState({ value: value, open: false })
+    }, [value])
 
     const rows = useMemo(() => (
         !state.open 
         ? [state.value] 
-        : (
-            Object.keys(values)
+        : (Object.keys(values ?? {})
             .reduce((acc, value) => (
                 value === state.value ? [value, ...acc] : [...acc, value]
-            ), []))
-        ).map((value, index) => (
-            <div 
-                key={index} 
-                className={styles.menuRow} 
+            ), [])
+        )).map((value, index) => (
+            <DropdownRow 
+                key={index}
                 onClick={() => setState({ ...state, value: value })}
-            > 
+            >
                 { values[value] }
-            </div>
+            </DropdownRow>
         )
     ), [values, state.value, state.open])
-
     return (
         <div 
-            className={ className ? styles.main + ' ' + className : styles.main}
+            className={className ? `${styles.main} ${className}` : styles.main}
             disabled={!values || Object.values(values).length <= 1}
             onClick={() => setState((state) => ({ ...state, open: !state.open}))}
         >
             <div className={styles.content} onMouseLeave={clickHandler}> 
-                <div className={styles.menu}> { rows } </div>
+                <div 
+                    className={styles.menu}
+                    expanded={state.open.toString()}
+                > { rows } </div>
             </div>
-            <div className={styles.button}>
-                { state.open ? <DropUpIcon/> : <DropDownIcon/> }
-            </div>
+            { showButton &&
+                <div className={styles.button}>
+                    { state.open ? <DropUpIcon/> : <DropDownIcon/> }
+                </div>
+            }
+        </div>
+    )
+}
+
+const DropdownRow = ({ onClick, children }) => {
+    return (
+        <div 
+            className={styles.menuRow} 
+            onClick={onClick}
+        > 
+            { children }
         </div>
     )
 }

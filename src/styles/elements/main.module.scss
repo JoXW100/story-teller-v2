@@ -1,5 +1,19 @@
 @import '../colors.scss';
 
+.fontExtension {
+    font-weight: bold;
+    font-size: medium;
+    text-align: center;
+    color: map-get($cobalt-palette, darkest);
+}
+
+.roundedExtension {
+    border: 2px solid map-get($cobalt-palette, darkest);
+    border-radius: 5px;
+    background-color: map-get($cobalt-palette, lightest);
+    padding: 0 5px;
+}
+
 .center {
     flex: 1;
     height: 100%;
@@ -46,6 +60,13 @@
     }
 }
 
+.linkLoading {
+    @extend .box;
+    @extend .header;
+    user-select: none;
+    cursor: pointer;
+}
+
 .line {
     border-bottom: 2px solid map-get($cobalt-palette, border);
     margin: 5px 0;
@@ -84,8 +105,11 @@
     @extend .roundedExtension;
 
     display: inline-flex;
-    user-select: none;
     width: fit-content;
+    align-items: center;
+    white-space: nowrap;
+    user-select: none;
+    flex: 1;
     cursor: pointer;
 
     &:hover {
@@ -99,20 +123,6 @@
     & > span, & > svg {
         margin-left: 5px;
     }
-}
-
-.fontExtension {
-    font-weight: bold;
-    font-size: medium;
-    text-align: center;
-    color: map-get($cobalt-palette, darkest);
-}
-
-.roundedExtension {
-    border: 2px solid map-get($cobalt-palette, darkest);
-    border-radius: 5px;
-    background-color: map-get($cobalt-palette, lightest);
-    padding: 0 5px;
 }
 
 .fill {
@@ -172,4 +182,15 @@
     font-size: large;
     font-weight: bold;
     color: black;
+}
+
+.icon {
+    display: inline-flex;
+
+    & > svg {
+        width: auto;
+        height: 1em;
+        color: inherit;
+        fill: map-get($cobalt-palette, font-light);
+    }
 }

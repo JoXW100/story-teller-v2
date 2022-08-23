@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/storyContext';
 import { RollMethod } from '@enums/data';
 import styles from 'styles/storyPage/rollHistory.module.scss'
+import '@types/dice';
 
 /**
  * @param {{ open: () => void, close: () => void, isOpen: boolean }}  

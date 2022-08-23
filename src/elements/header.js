@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/header.module.scss';
 
@@ -16,14 +15,8 @@ const validateOptions = (options) => {
  * @returns {JSX.Element}
  */
 export const Header1 = ({ options, children }) => {
-    const style = useMemo(() => {
-        return options.underline == 'true' 
-            ? `${styles.header1} ${styles.underline}`
-            : styles.header1
-    }, [options])
-
     return (
-        <div className={style}>
+        <div className={styles.header1} underline={options?.underline ?? "false"}>
             { children }
         </div>
     )
@@ -34,14 +27,8 @@ export const Header1 = ({ options, children }) => {
  * @returns {JSX.Element}
  */
 export const Header2 = ({ options, children }) => {
-    const style = useMemo(() => {
-        return options.underline == 'true' 
-            ? `${styles.header2} ${styles.underline}`
-            : styles.header2
-    }, [options])
-
     return (
-        <div className={style}>
+        <div className={styles.header2} underline={options?.underline ?? "false"}>
             { children }
         </div>
     )
@@ -52,14 +39,8 @@ export const Header2 = ({ options, children }) => {
  * @returns {JSX.Element}
  */
 export const Header3 = ({ options, children }) => {
-    const style = useMemo(() => {
-        return options.underline == 'true' 
-            ? `${styles.header3} ${styles.underline}`
-            : styles.header3
-    }, [options])
-
     return (
-        <div className={style}>
+        <div className={styles.header3} underline={options?.underline ?? "false"}>
             { children }
         </div>
     )

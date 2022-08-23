@@ -1,7 +1,4 @@
-/**
- * @typedef {import('@types/database').StructureFile} StructureFile
- */
-
+import '@types/database';
 /**
  * @typedef FileSystemState
  * @property {boolean} loading
@@ -11,7 +8,7 @@
 
 /**
  * @template T
- * @typedef {(res: import('@types/database').DBResponse<T>) => void} Callback
+ * @typedef {(res: DBResponse<T>) => void} Callback
  */
 
 /**
