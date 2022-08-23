@@ -160,7 +160,7 @@ const AbilityRenderer = ({ metadata, data }) => {
         })
     }, [metadata])
 
-    const ability = useMemo(() => BuildAbility(metadata, data, content), [metadata])
+    const ability = useMemo(() => BuildAbility(metadata, data, content), [metadata, data, content])
 
     return (
         <div className={styles.ability}>
