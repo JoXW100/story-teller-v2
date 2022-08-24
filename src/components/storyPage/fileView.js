@@ -26,11 +26,12 @@ const FileContent = () => {
     const [storyContext] = useContext(StoryContext);
 
     const Content = useMemo(() => {
-        if (context.fileSelected && !context.file)
-            return <InvalidFileView/>
-        if (!storyContext.editEnabled && !context.file)
-            return <NoSelectedFileView/>
-
+        console.log(context.file, storyContext.editEnabled, context.fileSelected)
+        if (!context.file) {
+            if (context.fileSelected)
+                return <InvalidFileView/>
+            return <NoSelectedFileView/>;
+        }
         /** @type {FileTemplate} */
         var template = Templates[context.file.type]
         if (template) {
