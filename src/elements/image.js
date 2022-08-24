@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/main.module.scss';
 
@@ -25,7 +25,7 @@ const ImageElement = ({ options }) => {
             if (!options.href) 
                 return undefined;
             if (options.href.includes('http'))
-                return options.href;
+                return new URL(options.href);
             return undefined;
         } catch (error) {
             return undefined;
@@ -38,10 +38,10 @@ const ImageElement = ({ options }) => {
     return (
         <div
             className={styles.image} 
-            style={{ width: width }}
+            style={{ width: width, flex: width == '100%' ? 1 : undefined }}
             border={border}
         >
-            <img src={href}/>
+            <img src={href ?? '/defaultImage.jpg'}/>
         </div>
     )
 }

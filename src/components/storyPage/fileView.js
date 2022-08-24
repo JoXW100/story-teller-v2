@@ -26,7 +26,6 @@ const FileContent = () => {
     const [storyContext] = useContext(StoryContext);
 
     const Content = useMemo(() => {
-        console.log(context.file, storyContext.editEnabled, context.fileSelected)
         if (!context.file) {
             if (context.fileSelected)
                 return <InvalidFileView/>

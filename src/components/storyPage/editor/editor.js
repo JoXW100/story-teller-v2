@@ -54,6 +54,9 @@ const handleCondition = (condition, data) => {
  */
 const checkConditions = (template, metadata = {}) => {
     const data = { metadata: metadata }
+    if (template.params?.key) {
+        metadata[template.params.key] = metadata[template.params.key] ?? template.params.default
+    }
     return template.conditions?.every((c) => handleCondition(c, data) ) ?? true
 }
 

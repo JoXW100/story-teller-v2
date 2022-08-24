@@ -1,4 +1,4 @@
-import { ActionType, Alignment, CreatureSize, CreatureType, OptionalAttribute, Skill } from '@enums/database';
+import { ActionType, Alignment, CreatureSize, CreatureType, Gender, OptionalAttribute, Skill } from '@enums/database';
 import { CalculationMode } from '@enums/editor';
 import { Context } from 'components/contexts/storyContext';
 import Elements from 'elements';
@@ -88,7 +88,7 @@ const getChallenge = (metadata) => (
  * @param {{ metadata: import('@types/database').CreatureMetadata }} 
  * @returns {JSX.Element}
  */
-const CreatureRenderer = ({ metadata = {} }) => {
+const CharacterRenderer = ({ metadata = {} }) => {
     const [context] = useContext(Context)
     const alignment = {
         [Alignment.ChaoticEvil]: "Chaotic Evil",
@@ -104,6 +104,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
     }[metadata.alignment ?? 0]
     const type = Object.keys(CreatureType).find((key) => CreatureType[key] == metadata.type) ?? "None"
     const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == metadata.size) ?? "Medium"
+    const gender = Object.keys(Gender).find((key) => Gender[key] == metadata.gender) ?? "None"
     const speed = metadata.speed && Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ');
     const saves = metadata.saves && Object.keys(metadata.saves).map((key, index) => (
         <RollElement key={index} options={{ mod: metadata.saves[key], desc: `${key.toUpperCase()} Save` }}>
@@ -118,6 +119,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
             </RollElement>
         )
     });
+    const traits = metadata.traits?.join(', ');
     const health = getHealth(metadata);
     const ac = getAC(metadata);
     const proficiency = getProficiency(metadata);
@@ -211,9 +213,28 @@ const CreatureRenderer = ({ metadata = {} }) => {
                     <Elements.Line/>
                     <Elements.Image options={{ href: metadata.portrait }}/>
                     <Elements.Line/>
-                    <Elements.Header2>Description</Elements.Header2>
+                    <div><b>Race </b> { metadata.raceText }</div>
+                    <div><b>Gender </b> { gender }</div>
+                    <div><b>Age </b> { metadata.age }</div>
+                    <div><b>Height </b> { metadata.height }</div>
+                    <div><b>Weight </b> { metadata.weight }</div>
+                    <div><b>Occupation </b> { metadata.occupation }</div>
+                    <div><b>Traits </b> { traits }</div>
+                    <Elements.Line/>
+                    <Elements.Header3>Appearance</Elements.Header3>
+                    { metadata.appearance }
+                    <Elements.Line/>
+                    <Elements.Header3>Description</Elements.Header3>
                     { metadata.description }
                     <Elements.Line/>
+                    <Elements.Header3>History</Elements.Header3>
+                    { metadata.history }
+                    <Elements.Line/>
+                    <Elements.Header3>Notes</Elements.Header3>
+                    { metadata.notes }
+                </Elements.Block>
+                <Elements.Line/>
+                <Elements.Block>
                     <div><b>Armor Class </b>{ac}</div>
                     <div><b>Hit Points </b>{ `${health.value} ` }{ health.element }</div>
                     <div><b>Speed </b>{ speed ?? "" }</div>
@@ -225,32 +246,32 @@ const CreatureRenderer = ({ metadata = {} }) => {
                     <Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>STR</b>
-                                { metadata.str ?? 0 }
+                            { metadata.str ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.str), desc: "STR Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>DEX</b>
-                                { metadata.dex ?? 0 }
+                            { metadata.dex ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.dex), desc: "DEX Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>CON</b>
-                                { metadata.con ?? 0 }
+                            { metadata.con ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.con), desc: "CON Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>INT</b>
-                                { metadata.int ?? 0 }
+                            { metadata.int ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.int), desc: "INT Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>WIS</b>
-                                { metadata.wis ?? 0 }
+                            { metadata.wis ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.wis), desc: "WIS Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <b>CHA</b>
-                                { metadata.cha ?? 0 }
+                            { metadata.cha ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.cha), desc: "CHA Check" }}/>
                         </Elements.Align>
                     </Elements.Align>
@@ -267,9 +288,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
                         <b>Proficiency Bonus </b>
                         <RollElement options={{ mod: proficiency, desc: "Proficient Check" }}/>
                     </div>
-                </Elements.Block>
-                <Elements.Line/>
-                <Elements.Block>
+                    <Elements.Line/>
                     { Abilities && <Abilities metadata={metadata}/> }
                 </Elements.Block>
             </Elements.Align>
@@ -279,7 +298,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
     )
 }
 
-export const BuildCreature = (metadata) => {
+export const BuildCharacter = (metadata) => {
     return (
         <Elements.Align>
             <Elements.Image options={{ width: '120px', href: metadata.portrait }}/>
@@ -292,4 +311,4 @@ export const BuildCreature = (metadata) => {
     )
 }
 
-export default CreatureRenderer;
+export default CharacterRenderer;

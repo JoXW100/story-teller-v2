@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
 import Dice from 'utils/data/dice';
@@ -103,22 +103,25 @@ const RollElement = ({ children, options = {} }) => {
         openContext(context, { x: e.pageX, y: e.pageY }, true)
     }
 
-    /** @param {RollMethod} method  */
-    const Roll = (method) => {
+    /** @param {React.MouseEvent<HTMLSpanElement, MouseEvent>} e*/
+    const HandleClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         var collection = new DiceCollection(mod, desc);
         collection.add(dice, num);
-        collection.modifier = mod;
-        dispatch.roll(collection, method);
+        dispatch.roll(collection, RollMethod.Normal);
     }
 
     const modText = (show && mod === 0) ? '' 
         : mod < 0 ? `- ${Math.abs(mod)}`
         : `+ ${mod}`;
 
+    
+
     return (
         <span 
             className={styles.dice}
-            onClick={() => Roll(RollMethod.Normal)}
+            onClick={HandleClick}
             onContextMenu={handleContext}
             tooltips={options.tooltips}
         >

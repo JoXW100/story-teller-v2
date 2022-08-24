@@ -7,6 +7,8 @@ import Parser, { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
 import { FileType } from '@enums/database';
 import styles from 'styles/elements/main.module.scss';
+import { BuildCharacter } from 'components/storyPage/renderer/character';
+import { BuildCreature } from 'components/storyPage/renderer/creature';
 
 const validOptions1 = ['href'];
 const validateOptions1 = (options) => {
@@ -32,9 +34,9 @@ const LinkComponent = ({ href, className, children }) => {
             </span>
         </Link>
     ) : (
-        <span className={className}>
+        <div className={className}>
             { children }
-        </span>
+        </div>
     )
 }
 
@@ -91,9 +93,17 @@ export const LinkContentElement = ({ options = {} }) => {
         if (loaded) {
             switch (type) {
                 case FileType.Ability:
-                    setContent(BuildAbility(metadata))
+                    Parser.parse(metadata.description, {})
+                    .then((res) => setContent(BuildAbility(metadata, {}, res)))
+                    .catch(console.error);
                     break;
-                    
+                case FileType.Creature:
+                    setContent(BuildCreature(metadata))
+                    break;
+                case FileType.Character:
+                    setContent(BuildCharacter(metadata))
+                    break;
+
                 case FileType.Document:
                 default:
                     Parser.parse(metadata.content, {})
@@ -147,11 +157,26 @@ export const LinkTitleElement = ({ options }) => {
         }
     }, [options]);
 
-    const [loaded, metadata] = useMetadata(context.story.id, options.fileId)
+    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId)
+
+    const title = useMemo(() => {
+        if (!type)
+            return null;
+        switch (type) {
+            case FileType.Ability:
+            case FileType.Character:
+            case FileType.Creature:
+                return metadata.name;
+
+            case FileType.Document:
+            default:
+                return metadata.title;
+        }
+    }, [type, metadata])
 
     return (!loaded || metadata) ? (
         <LinkComponent href={href} className={styles.link}>
-            {metadata?.title ?? 'Error'}
+            { title ?? 'Error' }
         </LinkComponent>
     ) : <div className={styles.error}> Error </div>;
 }

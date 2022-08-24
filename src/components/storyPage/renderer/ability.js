@@ -9,7 +9,6 @@ import styles from 'styles/storyPage/renderer.module.scss';
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
 
 const getScaling = (data = {}, scaling) => {
-    console.log(data);
     switch (scaling) {
         case Scaling.Finesse:
             return Math.max(getScaling(data, Scaling.DEX), getScaling(data, Scaling.STR));
@@ -18,7 +17,7 @@ const getScaling = (data = {}, scaling) => {
         case Scaling.None:
             return 0;
         default:
-            return getAttributeModifier(data[scaling] ?? 0)
+            return data[scaling] ? getAttributeModifier(data[scaling]) : 0
 
     }
 }
@@ -37,7 +36,7 @@ const getConditionModifier = (metadata, data = {}) => {
     }
 }
 
-const getEffectModifier = (metadata, data) => {
+const getEffectModifier = (metadata, data = {}) => {
     switch (metadata.effectModifier?.type) {
         case CalculationMode.Auto:
         default:
@@ -49,7 +48,7 @@ const getEffectModifier = (metadata, data) => {
     }
 }
 
-export const BuildAbility = (metadata, data, content) => {
+export const BuildAbility = (metadata = {}, data = {}, content) => {
     const range = metadata.range ?? 0;
     const longRange = metadata.rangeLong ?? 0;
     const conditionMod = getConditionModifier(metadata, data);

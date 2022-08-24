@@ -2,9 +2,10 @@ import { useContext, useEffect, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import CreatureRenderer from './creature';
 import AbilityRenderer from './ability';
+import CharacterRenderer from './character';
 import Parser, { ParseError } from 'utils/parser';
-import { RendererCommand } from '@enums/data';
 import styles from 'styles/storyPage/renderer.module.scss';
+import { FileType } from '@enums/database';
 
 /** 
  * @param {EditorTemplate<any>} template
@@ -14,13 +15,16 @@ import styles from 'styles/storyPage/renderer.module.scss';
  */
 const BuildRenderer = async (template, metadata = {}) => {
     switch (template.type) {
-        case RendererCommand.Creature:
+        case FileType.Creature:
             return <CreatureRenderer metadata={metadata}/>
             
-        case RendererCommand.Ability:
+        case FileType.Ability:
             return <AbilityRenderer metadata={metadata}/>
 
-        case RendererCommand.Document:
+        case FileType.Character:
+            return <CharacterRenderer metadata={metadata}/>
+
+        case FileType.Document:
             return Parser.parse(metadata[template.params.key], metadata)
         
         default:

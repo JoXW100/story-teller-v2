@@ -1,11 +1,12 @@
 /** @enum {string} */
 export const FileType = {
-    Document: "doc",
-    Folder: "folder",
     Root: "root",
     Empty: "empty",
+    Document: "doc",
+    Folder: "folder",
     Creature: "cre",
-    Ability: "abi"
+    Ability: "abi",
+    Character: "cha"
 }
 
 /** @enum {string} */
@@ -166,4 +167,23 @@ export const ActionType = {
     Special: "special",
     //Legendary: "legendary",
     None: "none"
+}
+
+/** @enum {string} */
+export const Gender = {
+    Male: "male",
+    Female: "female",
+    Other: "other"
+}
+
+/** @enum {string} */
+export const AbilityTarget = {
+    None: "none",
+    Self: "self",
+    Single: "single",
+    Cone: "cone",
+    Cube: "cube",
+    Cylinder: "cylinder",
+    Line: "line",
+    Sphere: "sphere"
 }

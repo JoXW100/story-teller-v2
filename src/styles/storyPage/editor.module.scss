@@ -9,6 +9,10 @@ $size: 20px;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+
+    & > .editGroup[fill=false]:last-child  {
+        margin-bottom: 120px;
+    } 
 }
 
 .editGroup {

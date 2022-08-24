@@ -21,10 +21,3 @@ export const EditInputType = {
     Enum: 'enum',
     Boolean: 'boolean'
 }
-
-/** @enum {string} */
-export const RendererCommand = {
-    Document: 'doc',
-    Creature: 'cre',
-    Ability: 'abi'
-}

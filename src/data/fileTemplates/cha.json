@@ -16,7 +16,7 @@
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "none" }
+                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "humanoid" }
                     },
                     { 
                         "type": "enum", 
@@ -26,9 +26,55 @@
                         "type": "text", 
                         "params": { "label": "Portrait", "key": "portrait" }
                     },
-                    { 
-                        "type": "textarea", 
-                        "params": { "label": "Description", "key": "description" }
+                    {
+                        "type": "group",
+                        "params": { "label": "Details", "open": true },
+                        "content": [
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Race", "key": "raceText" }
+                            },
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Gender", "key": "gender", "type": "gender", "default": "male" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Age", "key": "age" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Height", "key": "height" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Weight", "key": "weight" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Occupation", "key": "occupation" }
+                            },
+                            {
+                                "type": "list",
+                                "params": { "label": "Traits", "key": "traits", "type": "text" }
+                            },
+                            { 
+                                "type": "textarea", 
+                                "params": { "label": "Appearance", "key": "appearance" }
+                            },
+                            { 
+                                "type": "textarea", 
+                                "params": { "label": "Description", "key": "description" }
+                            },
+                            { 
+                                "type": "textarea", 
+                                "params": { "label": "History", "key": "history" }
+                            },
+                            { 
+                                "type": "textarea", 
+                                "params": { "label": "Notes", "key": "notes" }
+                            }
+                        ]
                     },
                     { 
                         "type": "group",
@@ -151,5 +197,5 @@
             }
         ]
     },
-    "renderer": { "type": "cre" }
+    "renderer": { "type": "cha" }
 }

@@ -41,19 +41,33 @@
                                 "type": "enum", 
                                 "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
                             },
+                            {
+                                "type": "enum",
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "skill"] }],
+                                "params": { "label": "Target", "key": "target", "type": "target", "default": "single" }
+                            },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon"] }] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
+                                ],
                                 "params": { "label": "Reach", "key": "range" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon", "skill"] }] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon", "skill"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
+                                ],
                                 "params": { "label": "Range", "key": "range" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon"] }] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
+                                ],
                                 "params": { "label": "Range (Long)", "key": "rangeLong" }
                             },
                             { 

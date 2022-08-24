@@ -5,6 +5,7 @@ import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
+import CharacterIcon from '@mui/icons-material/PersonSharp';
 import { DragonIcon, HandIcon } from 'assets/icons';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
@@ -38,6 +39,8 @@ const File = ({ file }) => {
                 return DragonIcon;
             case FileType.Ability:
                 return HandIcon;
+            case FileType.Character:
+                return CharacterIcon
             default: 
                 return DocumentIcon
         }

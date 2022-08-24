@@ -102,6 +102,7 @@ const fileToContent = (data) => {
         case FileType.Document:
         case FileType.Creature:
         case FileType.Ability:
+        case FileType.Character:
             return { name: data.name, text: "", metadata: {} };
         case FileType.Folder:
             return { name: data.name, open: false };
