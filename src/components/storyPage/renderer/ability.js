@@ -1,4 +1,4 @@
-import { AbilityType, Attribute, DamageType, EffectCondition, Scaling } from '@enums/database';
+import { AbilityType, Attribute, DamageType, EffectCondition, OptionalAttribute, Scaling } from '@enums/database';
 import { CalculationMode } from '@enums/editor';
 import Elements from 'elements';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -9,9 +9,12 @@ import styles from 'styles/storyPage/renderer.module.scss';
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
 
 const getScaling = (data = {}, scaling) => {
+    console.log(data);
     switch (scaling) {
         case Scaling.Finesse:
             return Math.max(getScaling(data, Scaling.DEX), getScaling(data, Scaling.STR));
+        case Scaling.SpellModifier:
+            return data.spellAttribute === OptionalAttribute.None ? 0 : getScaling(data, data.spellAttribute)
         case Scaling.None:
             return 0;
         default:

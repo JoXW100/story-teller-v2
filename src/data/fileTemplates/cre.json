@@ -127,6 +127,16 @@
                                 "params": { "label": "XP", "key": "xp" }
                             }
                         ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Spells", "open": true },
+                        "content": [
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Attribute", "key": "spellAttribute", "type": "optionalAttr", "default": "none" }
+                            }
+                        ]
                     }
                 ]
             },

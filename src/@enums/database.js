@@ -124,11 +124,17 @@ export const EffectCondition = {
 }
 
 /** @enum {string} */
+export const OptionalAttribute = {
+    ...Attribute,
+    None: "none"
+}
+
+/** @enum {string} */
 export const Scaling = {
     ...Attribute,
     None: "none",
     Finesse: "finesse",
-    //SpellModifier: "spellMod",
+    SpellModifier: "spellMod",
     //SpellAttack: "spellAttack",
     //SpellSave: "spellSave"
 }

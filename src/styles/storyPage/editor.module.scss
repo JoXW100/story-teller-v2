@@ -9,17 +9,6 @@ $size: 20px;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-
-    .editor {
-        height: 100%;
-    }
-}
-
-.editor {
-    display: block;
-    outline: none;
-    white-space: pre;
-    padding: 5px;
 }
 
 .editGroup {
@@ -33,6 +22,7 @@ $size: 20px;
     &[fill=true] {
         flex: 1;
         height: 100%;
+        min-height: 200px;
     } 
 
     & > .editGroupHeader {

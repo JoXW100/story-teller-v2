@@ -1,4 +1,4 @@
-import { ActionType, Alignment, CreatureSize, CreatureType, Skill } from '@enums/database';
+import { ActionType, Alignment, CreatureSize, CreatureType, OptionalAttribute, Skill } from '@enums/database';
 import { CalculationMode } from '@enums/editor';
 import { Context } from 'components/contexts/storyContext';
 import Elements from 'elements';
@@ -113,7 +113,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
     const initiative = getInitiative(metadata);
 
     const [content, setContent] = useState(null);
-    const [abilities, setAbilities] = useState(null);
+    const [Abilities, setAbilities] = useState(null);
 
     useEffect(() => {
         Parser.parse(metadata.$text, metadata)
@@ -139,42 +139,44 @@ const CreatureRenderer = ({ metadata = {} }) => {
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    var data = { 
-                        str: metadata.str, 
-                        dex: metadata.dex, 
-                        con: metadata.con, 
-                        int: metadata.int, 
-                        wis: metadata.wis,
-                        cha: metadata.cha,
-                        proficiency: proficiency,
-                        spellAttribute: "none"
-                    }
-                    var abilities = {
-                        [ActionType.None]: { header: null, content: [] },
-                        [ActionType.Action]: { header: "Actions", content: [] },
-                        [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
-                        [ActionType.Reaction]: { header: "Reactions", content: [] },
-                        [ActionType.Special]: { header: "Special", content: [] },
-                    }
-                    res.result.forEach((file, index) => {
-                        if (file.type === 'abi') {
-                            abilities[file.metadata.action ?? "action"].content.push(
-                                <AbilityRenderer key={index} metadata={file.metadata} data={data}/>
-                            )
+                    setAbilities(() => (
+                        ({ metadata }) => {
+                            var data = { 
+                                str: metadata.str, 
+                                dex: metadata.dex, 
+                                con: metadata.con, 
+                                int: metadata.int, 
+                                wis: metadata.wis,
+                                cha: metadata.cha,
+                                proficiency: proficiency,
+                                spellAttribute: metadata.spellAttribute ?? OptionalAttribute.None
+                            }
+                            var abilities = {
+                                [ActionType.None]: { header: null, content: [] },
+                                [ActionType.Action]: { header: "Actions", content: [] },
+                                [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
+                                [ActionType.Reaction]: { header: "Reactions", content: [] },
+                                [ActionType.Special]: { header: "Special", content: [] },
+                            }
+                            res.result.forEach((file, index) => {
+                                if (file.type === 'abi') {
+                                    abilities[file.metadata.action ?? "action"].content.push(
+                                        <AbilityRenderer key={index} metadata={file.metadata} data={data}/>
+                                    )
+                                }
+                            })
+                            return Object.keys(abilities).map((type) => abilities[type].content.length > 0 ? (
+                                <React.Fragment key={type}>
+                                    { abilities[type].header && (
+                                        <Elements.Header2 options={{ underline: "true" }}>
+                                            {abilities[type].header}
+                                        </Elements.Header2>
+                                    )}
+                                    { abilities[type].content }
+                                </React.Fragment>
+                            ) : null)
                         }
-                    })
-                    setAbilities(
-                        Object.keys(abilities).map((type) => abilities[type].content.length > 0 ? (
-                            <React.Fragment key={type}>
-                                { abilities[type].header && (
-                                    <Elements.Header2 options={{ underline: "true" }}>
-                                        {abilities[type].header}
-                                    </Elements.Header2>
-                                )}
-                                { abilities[type].content }
-                            </React.Fragment>
-                        ) : null)
-                    );
+                    ));
                 }
                 else {
                     console.warn(res.result);
@@ -186,7 +188,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
         else {
             setAbilities(null);
         }
-    }, [metadata.abilities])
+    }, [metadata.abilities, context.story])
 
     return (
         <>
@@ -256,7 +258,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    { abilities }
+                    { Abilities && <Abilities metadata={metadata}/> }
                 </Elements.Block>
             </Elements.Align>
             <Elements.Line/>
@@ -264,7 +266,5 @@ const CreatureRenderer = ({ metadata = {} }) => {
         </>
     )
 }
-
-
 
 export default CreatureRenderer;

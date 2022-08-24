@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import { AbilityType, Alignment, Attribute, CreatureSize, CreatureType, DamageType, Dice, EffectCondition, Scaling, MovementType, Skill, ActionType } from '@enums/database';
+import { AbilityType, Alignment, Attribute, CreatureSize, CreatureType, DamageType, Dice, EffectCondition, Scaling, MovementType, Skill, ActionType, OptionalAttribute } from '@enums/database';
 import DropdownMenu from 'components/dropdownMenu';
 import styles from 'styles/storyPage/editor.module.scss'
 import '@types/data';
@@ -18,6 +18,7 @@ const Enums = {
     "scaling": Scaling,
     "damageType": DamageType,
     "action": ActionType,
+    "optionalAttr": OptionalAttribute
 }
 
 /**
