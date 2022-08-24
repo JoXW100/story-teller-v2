@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import DocumentIcon from '@mui/icons-material/InsertDriveFileSharp';
-import AbilityIcon from '@mui/icons-material/FitnessCenterSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
-import { DragonIcon } from 'assets/icons';
+import { DragonIcon, HandIcon } from 'assets/icons';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
 import { FileSystemContext } from './fileSystem';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Navigation from 'utils/navigation';
 import Localization from 'classes/localization';
@@ -17,7 +17,6 @@ import FileInput from './fileInput';
 import { FileType } from '@enums/database';
 import styles from 'styles/storyPage/file.module.scss';
 import '@types/fileSystem';
-import { useRouter } from 'next/router';
 
 /**
  * @param {{ file: import('@types/database').StructureFile }}
@@ -38,7 +37,7 @@ const File = ({ file }) => {
             case FileType.Creature:
                 return DragonIcon;
             case FileType.Ability:
-                return AbilityIcon;
+                return HandIcon;
             default: 
                 return DocumentIcon
         }

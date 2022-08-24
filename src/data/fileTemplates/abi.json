@@ -83,7 +83,7 @@
                             {
                                 "type": "group",
                                 "params": { "label": "Effect Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "any", "value": ["none", null] }] }],
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "any", "value": ["none", "null"] }] }],
                                 "content": [
                                     { 
                                         "type": "enum", 

@@ -1,4 +1,4 @@
-import { AbilityType, DamageType, Scaling } from '@enums/database';
+import { AbilityType, Attribute, DamageType, EffectCondition, Scaling } from '@enums/database';
 import { CalculationMode } from '@enums/editor';
 import Elements from 'elements';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -48,7 +48,7 @@ const getEffectModifier = (metadata, data) => {
 
 export const BuildAbility = (metadata, data, content) => {
     const range = metadata.range ?? 0;
-    const longRange = metadata.longRange ?? 0;
+    const longRange = metadata.rangeLong ?? 0;
     const conditionMod = getConditionModifier(metadata, data);
     const effectMod = getEffectModifier(metadata, data)
     const type = {
@@ -90,33 +90,58 @@ export const BuildAbility = (metadata, data, content) => {
                                 : <><b>Reach </b> {`${range} ft`}</>
                             }
                         </div>
-                        <div>
-                            <b>HIT/DC </b>
-                            <Elements.Roll 
-                                options={{ 
-                                    mod: conditionMod, 
-                                    desc: `${metadata.name} Attack` 
-                                }}
-                            />
-                        </div>
-                        <div>
-                            <b>Damage </b>
-                            <Elements.Roll 
-                                options={{ 
-                                    dice: metadata.effectDice, 
-                                    num: metadata.effectDiceNum, 
-                                    mod: effectMod, 
-                                    desc: `${metadata.name} Damage`,
-                                    tooltips: Object.keys(DamageType).find((key) => DamageType[key] === metadata.damageType) 
-                                }}
-                            >
-                                <Elements.Icon icon={metadata.damageType}/>
-                            </Elements.Roll>
-                        </div>
+                        { (metadata.condition ?? EffectCondition.Hit) === EffectCondition.Hit &&
+                            <div>
+                                <b>HIT/DC </b>
+                                <Elements.Roll 
+                                    options={{ 
+                                        mod: conditionMod, 
+                                        desc: `${metadata.name} Attack` 
+                                    }}
+                                />
+                            </div>
+                        }
+                        { metadata.condition === EffectCondition.Save &&
+                            <div>
+                                <b>HIT/DC </b>
+                                <Elements.Save
+                                    options={{
+                                        attr: metadata.saveAttr ?? Attribute.STR,
+                                        value: 8 + conditionMod
+                                    }}
+                                />
+                            </div>
+                        }
+                        { metadata.damageType === DamageType.None && (
+                            <div>
+                                <b>Effect </b>
+                                { metadata.effectText }
+                            </div>
+                        )}
+                        { metadata.damageType !== DamageType.None && (
+                            <div>
+                                <b>Damage </b>
+                                <Elements.Roll 
+                                    options={{ 
+                                        dice: metadata.effectDice, 
+                                        num: metadata.effectDiceNum, 
+                                        mod: effectMod, 
+                                        desc: `${metadata.name} Damage`
+                                    }}
+                                >
+                                    <Elements.Icon 
+                                        options={{ 
+                                            icon: metadata.damageType,
+                                            tooltips: Object.keys(DamageType).find((key) => DamageType[key] === metadata.damageType) 
+                                        }}
+                                    />
+                                </Elements.Roll>
+                            </div>
+                        )}
                         { notes }
                     </div>
                 </Elements.Align>
-                <Elements.Line/>
+                { content && <Elements.Line/> }
                 { content }
             </>
     }
@@ -143,6 +168,11 @@ const AbilityRenderer = ({ metadata, data }) => {
     const [content, setContent] = useState(null)
 
     useEffect(() => {
+        if ((metadata.description?.length ?? 0) == 0){
+            setContent(null);
+            return;
+        }
+
         Parser.parse(metadata.description, metadata)
         .then((res) => setContent(res))
         .catch((error) => {

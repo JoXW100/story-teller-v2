@@ -1,4 +1,4 @@
-import { ActionType, Alignment, Attribute, CreatureSize, CreatureType, Skill } from '@enums/database';
+import { ActionType, Alignment, CreatureSize, CreatureType, Skill } from '@enums/database';
 import { CalculationMode } from '@enums/editor';
 import { Context } from 'components/contexts/storyContext';
 import Elements from 'elements';

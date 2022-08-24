@@ -2,7 +2,7 @@ import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/main.module.scss';
 import Icons from 'assets/icons';
 
-const validOptions = ['icon'];
+const validOptions = ['icon', 'tooltips'];
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.some((x) => x === key))
@@ -14,10 +14,10 @@ const validateOptions = (options) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const IconElement = ({ options, icon }) => {
+const IconElement = ({ options = {}, icon }) => {
     const Icon = Icons[options ? options.icon : icon] ?? (() => null)
     return (
-        <span className={styles.icon}>
+        <span className={styles.icon} tooltips={options.tooltips}>
             { <Icon/> }
         </span>
     )
