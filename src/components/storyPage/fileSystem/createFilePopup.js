@@ -88,7 +88,8 @@ const CreateFileContent = ({ callback }) => {
         [FileType.Document]: 'Document', 
         [FileType.Creature]: "Creature", 
         [FileType.Ability]: "Ability",
-        [FileType.Character]: "Character"
+        [FileType.Character]: "Character",
+        [FileType.Spell]: "Spell"
     }
 
     return (

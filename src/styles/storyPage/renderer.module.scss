@@ -37,8 +37,18 @@ $pageHeight: 14in; /* A4 */
 }
 
 .ability {
-    border: 1px solid map-get($cobalt-palette, border);
     background: map-get($cobalt-palette, lightest);
     padding: 5px;
     margin-bottom: 10px;
+    border: 2px solid map-get($cobalt-palette, border);
+    cursor: pointer;
+}
+
+.spell {
+    background: map-get($cobalt-palette, lightest);
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 2px solid map-get($cobalt-palette, border);
+    font-size: 14px;
+    cursor: pointer;
 }

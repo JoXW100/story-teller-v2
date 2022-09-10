@@ -9,13 +9,17 @@ import FireIcon from './dmg/fire.svg';
 import PiercingIcon from './dmg/piercing.svg';
 import PoisonIcon from './dmg/poison.svg';
 import SlashingIcon from './dmg/slashing.svg';
+import ConeIcon from './shapes/cone.svg';
+import SphereIcon from './shapes/sphere.svg';
 
 export {
     AdvantageIcon,
     DisadvantageIcon,
     DragonIcon,
     HandIcon,
-    CritIcon
+    CritIcon,
+    ConeIcon,
+    SphereIcon,
 }
 
 export const Icons = {
@@ -24,12 +28,14 @@ export const Icons = {
     crit: CritIcon,
     dragon: DragonIcon,
     hand: HandIcon,
+    cone: ConeIcon,
+    sphere: SphereIcon,
     acid: AcidIcon,
     bludgeoning: BludgeoningIcon,
     fire: FireIcon,
     piercing: PiercingIcon,
     poison: PoisonIcon,
-    slashing: SlashingIcon
+    slashing: SlashingIcon,
 }
 
 export default Icons;

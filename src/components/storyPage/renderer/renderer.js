@@ -3,6 +3,7 @@ import { Context } from 'components/contexts/fileContext';
 import CreatureRenderer from './creature';
 import AbilityRenderer from './ability';
 import CharacterRenderer from './character';
+import SpellRenderer from './spell';
 import Parser, { ParseError } from 'utils/parser';
 import styles from 'styles/storyPage/renderer.module.scss';
 import { FileType } from '@enums/database';
@@ -23,6 +24,9 @@ const BuildRenderer = async (template, metadata = {}) => {
 
         case FileType.Character:
             return <CharacterRenderer metadata={metadata}/>
+
+        case FileType.Spell:
+            return <SpellRenderer metadata={metadata}/>
 
         case FileType.Document:
             return Parser.parse(metadata[template.params.key], metadata)

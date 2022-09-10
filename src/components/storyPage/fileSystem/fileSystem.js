@@ -16,7 +16,7 @@ import File from "./file";
 import styles from 'styles/storyPage/fileSystem.module.scss';
 import '@types/fileSystem';
 
-/** @type {React.Context<FileSystemContextProvider>} */
+/** @type {React.Context<import('@types/fileSystem').FileSystemContextProvider>} */
 export const FileSystemContext = React.createContext({})
 
 /**
@@ -26,7 +26,7 @@ const FileSystem = ({ style }) => {
     const [context] = useContext(Context);
     const router = useRouter();
 
-    /** @type {[state: FileSystemState, setState: React.Dispatch<FileSystemState>]} */
+    /** @type {[state: FileSystemState, setState: React.Dispatch<import('@types/fileSystem').FileSystemState>]} */
     const [state, setState] = useState({
         loading: false,
         fetching: true,
@@ -163,17 +163,24 @@ const FileSystem = ({ style }) => {
     }
 
     /**
-     * @param {[StructureFile]} files
+     * @param {[import('@types/database').StructureFile]} files
      * @returns {JSX.Element} 
      */
     const filesToComponent = (files) => {
-        return files?.sort((a, b) => b.type.localeCompare(a.type))
-        .map((file, index) => {
-            let Component = file.type === FileType.Folder
-                ? Folder
-                : File
-            return <Component key={index} file={file}/>
-        })
+        var { files, folders } = files
+        .reduce((prev, val) => {
+            if (val.type === FileType.Folder)
+                prev.folders.push(val)
+            else 
+                prev.files.push(val)
+            return prev;
+        }, { files: [], folders: []})
+        
+        var key = 0;
+        return [
+            ...folders.sort((a,b) => a.name.localeCompare(b.name)).map((x) => <Folder key={key++} file={x}/>),
+            ...files.sort((a,b) => a.name.localeCompare(b.name)).map((x) => <File key={key++} file={x}/>)
+        ]
     }
 
     /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */

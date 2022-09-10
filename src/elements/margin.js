@@ -14,14 +14,14 @@ const validateOptions = (options) => {
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
-const Margin = ({ options, children }) => {
+const Margin = ({ options = {}, children }) => {
     const margin = useMemo(() => {
         return options.margin ?? '5px'
     }, [options])
 
     return (
         <div className={styles.margin} style={{ margin: margin }}>
-            { children.filter((x) => !/^[\n\r ]*$/.test(x)) }
+            { children?.filter((x) => !/^[\n\r ]*$/.test(x)) }
         </div>
     )
 }

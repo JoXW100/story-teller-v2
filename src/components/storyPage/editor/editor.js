@@ -10,8 +10,9 @@ import '@types/data';
  * @param {{ metadata: Object<string, any>, mode: string, cmp: any }} data
 */
 const handleCondition = (condition, data) => {
-    if (typeof condition === "string")
+    if (typeof condition === "string" || typeof condition === "boolean")
         return handleCondition({ type: "value", value: condition }, data)
+    
     switch (condition.type) {
         case "equals":
             var params = { ...data, cmp: "$empty", mode: "equals" };
@@ -54,9 +55,6 @@ const handleCondition = (condition, data) => {
  */
 const checkConditions = (template, metadata = {}) => {
     const data = { metadata: metadata }
-    if (template.params?.key) {
-        metadata[template.params.key] = metadata[template.params.key] ?? template.params.default
-    }
     return template.conditions?.every((c) => handleCondition(c, data) ) ?? true
 }
 
@@ -150,7 +148,7 @@ const Editor = ({ template }) => {
     const content = useMemo(() => {
         /** @type {{ editor: EditorTemplate<T> }} */
         return context.file
-            ? buildEditor(template, context.file.metadata)
+            ? buildEditor(template, { ...context.file.metadata })
             : null
     }, [context.file, template])
 

@@ -1,7 +1,7 @@
 import { ParseError } from 'utils/parser';
 import styles from 'styles/elements/main.module.scss';
 
-const validOptions = ['color'];
+const validOptions = ['color', 'border'];
 const validateOptions = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.some((x) => x === key))
@@ -14,9 +14,11 @@ const validateOptions = (options) => {
  * @returns {JSX.Element}
  */
 const BoxElement = ({ options = {}, children }) => {
+    const border = options.border ?? "true";
     return (
         <div 
             style={options.color ? { background: options.color } : undefined}
+            border={border}
             className={styles.box}
         >
             { children }

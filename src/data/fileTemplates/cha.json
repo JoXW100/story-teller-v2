@@ -8,7 +8,7 @@
                 "content": [
                     { 
                         "type": "text", 
-                        "params": { "label": "Name", "key": "name" }
+                        "params": { "label": "Name", "key": "name", "default": "Character name" }
                     },
                     { 
                         "type": "enum", 

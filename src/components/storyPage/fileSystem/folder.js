@@ -96,7 +96,7 @@ const Folder = ({ file }) => {
             e.stopPropagation();
 
             var drag = window.dragData?.file;
-            if (drag && (drag.holderId !== file.id)) {
+            if (drag && drag.holderId !== file.id && drag.id !== file.id) {
                 dispatch.moveFile(drag, file)
             }
 

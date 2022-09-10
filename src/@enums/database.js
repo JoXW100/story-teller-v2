@@ -6,7 +6,8 @@ export const FileType = {
     Folder: "folder",
     Creature: "cre",
     Ability: "abi",
-    Character: "cha"
+    Character: "cha",
+    Spell: "spe"
 }
 
 /** @enum {string} */
@@ -181,9 +182,48 @@ export const AbilityTarget = {
     None: "none",
     Self: "self",
     Single: "single",
+    Point: "point"
+}
+
+/** @enum {string} */
+export const AbilityArea = {
+    None: "none",
     Cone: "cone",
     Cube: "cube",
     Cylinder: "cylinder",
     Line: "line",
     Sphere: "sphere"
+}
+
+/** @enum {string} */
+export const MagicSchool = {
+    Abjuration: "abjuration",
+    Conjuration: "conjuration",
+    Divination: "divination",
+    Dunamancy: "dunamancy",
+    Enchantment: "enchantment",
+    Evocation: "evocation",
+    Illusion: "illusion",
+    Necromancy: "necromancy",
+    Transmutation: "transmutation"
+}
+
+/** @enum {string} */
+export const CastingTime = {
+    Action: "action",
+    BonusAction: "bonusAction",
+    Reaction: "reaction",
+    Minute: "minute",
+    Hour: "hour",
+    Custom: "custom",
+}
+
+/** @enum {string} */
+export const Duration = {
+    Instantaneous: "instantaneous",
+    Round: "round",
+    Minute: "minute",
+    Hour: "hour",
+    Day: "day",
+    Custom: "custom"
 }

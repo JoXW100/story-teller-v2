@@ -18,7 +18,7 @@ const validateOptions1 = (options) => {
     });
 }
 
-const validOptions2 = ['fileId'];
+const validOptions2 = ['fileId', 'border'];
 const validateOptions2 = (options) => {
     Object.keys(options).forEach((key) => {
         if (!validOptions2.some((x) => x === key))
@@ -88,6 +88,7 @@ export const LinkContentElement = ({ options = {} }) => {
 
     const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId)
     const [content, setContent] = useState(null);
+    const border = options.border ?? "true";
 
     useEffect(() => {
         if (loaded) {
@@ -123,7 +124,7 @@ export const LinkContentElement = ({ options = {} }) => {
 
     if (!loaded) {
         return (
-            <div className={styles.linkLoading}>
+            <div className={styles.linkLoading} border={border}>
                 Loading...
             </div>
         )
@@ -131,7 +132,7 @@ export const LinkContentElement = ({ options = {} }) => {
 
     return (loaded && metadata) ? (
         <LinkComponent href={href} className={styles.linkContent}>
-            <div>
+            <div border={border}>
                 { content }
             </div>
         </LinkComponent>
@@ -157,7 +158,7 @@ export const LinkTitleElement = ({ options }) => {
         }
     }, [options]);
 
-    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId)
+    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId);
 
     const title = useMemo(() => {
         if (!type)

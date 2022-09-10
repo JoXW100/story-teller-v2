@@ -4,10 +4,10 @@ import { Context as StoryContext } from 'components/contexts/storyContext';
 import Divider from 'components/divider'
 import Editor from './editor/editor'
 import Renderer from './renderer/renderer'
-import styles from 'styles/storyPage/main.module.scss'
-import Localization from 'classes/localization'
-import '@types/fileContext'
 import Templates from 'data/fileTemplates';
+import Localization from 'classes/localization'
+import styles from 'styles/storyPage/main.module.scss'
+import '@types/fileContext'
 
 /**
  * @returns {JSX.Element}
@@ -19,6 +19,20 @@ const FileView = () => {
             <FileContent/>
         </FileContext>
     );
+}
+
+const setDefaults = (template, metadata) => {
+    switch (template.type)
+    {
+        case "root":
+        case "group":
+            template.content?.forEach((x) => setDefaults(x, metadata));
+            break;
+        default:
+            if (template.params?.key && metadata[template.params.key] === undefined && template.params?.default)
+                metadata[template.params.key] = template.params.default;
+            break;
+    }
 }
 
 const FileContent = () => {
@@ -34,6 +48,7 @@ const FileContent = () => {
         /** @type {FileTemplate} */
         var template = Templates[context.file.type]
         if (template) {
+            setDefaults(template.editor, context.file.metadata ?? {})
             return storyContext.editEnabled 
                 ? <Divider 
                     className={styles.content}

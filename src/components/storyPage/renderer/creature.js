@@ -214,57 +214,57 @@ const CreatureRenderer = ({ metadata = {} }) => {
                     <Elements.Header2>Description</Elements.Header2>
                     { metadata.description }
                     <Elements.Line/>
-                    <div><b>Armor Class </b>{ac}</div>
-                    <div><b>Hit Points </b>{ `${health.value} ` }{ health.element }</div>
-                    <div><b>Speed </b>{ speed ?? "" }</div>
+                    <div><Elements.Bold>Armor Class </Elements.Bold>{ac}</div>
+                    <div><Elements.Bold>Hit Points </Elements.Bold>{ `${health.value} ` }{ health.element }</div>
+                    <div><Elements.Bold>Speed </Elements.Bold>{ speed ?? "" }</div>
                     <div>
-                        <b>Initiative </b>
+                        <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ mod: initiative ?? 0, desc: "Initiative" }}/>
                     </div>
                     <Elements.Line/>
                     <Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>STR</b>
+                            <Elements.Bold>STR</Elements.Bold>
                                 { metadata.str ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.str), desc: "STR Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>DEX</b>
+                            <Elements.Bold>DEX</Elements.Bold>
                                 { metadata.dex ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.dex), desc: "DEX Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>CON</b>
+                            <Elements.Bold>CON</Elements.Bold>
                                 { metadata.con ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.con), desc: "CON Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>INT</b>
+                            <Elements.Bold>INT</Elements.Bold>
                                 { metadata.int ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.int), desc: "INT Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>WIS</b>
+                            <Elements.Bold>WIS</Elements.Bold>
                                 { metadata.wis ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.wis), desc: "WIS Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>CHA</b>
+                            <Elements.Bold>CHA</Elements.Bold>
                                 { metadata.cha ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.cha), desc: "CHA Check" }}/>
                         </Elements.Align>
                     </Elements.Align>
                     <Elements.Line/>
-                    <div><b>Saving Throws </b>{ saves }</div>
-                    <div><b>Skills </b>{skills}</div>
-                    <div><b>Senses </b>{metadata.senses ?? "" }</div>
-                    <div><b>Languages </b>{metadata.languages ?? "" }</div>
+                    <div><Elements.Bold>Saving Throws </Elements.Bold>{ saves }</div>
+                    <div><Elements.Bold>Skills </Elements.Bold>{skills}</div>
+                    <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses ?? "" }</div>
+                    <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages ?? "" }</div>
                     <div>
-                        <b>Challenge </b>
+                        <Elements.Bold>Challenge </Elements.Bold>
                         { `${challenge} (${metadata.xp ?? 0} XP)`}
                     </div>
                     <div>
-                        <b>Proficiency Bonus </b>
+                        <Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ mod: proficiency, desc: "Proficient Check" }}/>
                     </div>
                 </Elements.Block>

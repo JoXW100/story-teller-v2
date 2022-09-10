@@ -113,11 +113,8 @@ const RollElement = ({ children, options = {} }) => {
     }
 
     const modText = (show && mod === 0) ? '' 
-        : mod < 0 ? `- ${Math.abs(mod)}`
-        : `+ ${mod}`;
-
-    
-
+        : mod < 0 ? ` - ${Math.abs(mod)}`
+        : ` + ${mod}`;
     return (
         <span 
             className={styles.dice}
@@ -126,7 +123,7 @@ const RollElement = ({ children, options = {} }) => {
             tooltips={options.tooltips}
         >
             { !show ? modText
-                : `${num}${dice.text} ${modText} `}
+                : `${num}${dice.text}${modText} `}
             { children }
         </span>
     )

@@ -147,6 +147,7 @@ const EditModeButton = () => {
         }
         return data;
     }, [context.editEnabled])
+    
     return (
         <Link href={Navigation.EditModeURL(!context.editEnabled)}>
             <div 

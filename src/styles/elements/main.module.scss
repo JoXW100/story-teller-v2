@@ -1,8 +1,10 @@
 @import '../colors.scss';
 
+$border: map-get($cobalt-palette, border);
+
 .fontExtension {
     font-weight: bold;
-    font-size: medium;
+    font-size: small;
     text-align: center;
     color: map-get($cobalt-palette, darkest);
 }
@@ -34,6 +36,9 @@
     
     display: inline-flex;
     user-select: none;
+    align-items: center;
+    flex: 1 1;
+    width: fit-content;
     cursor: pointer;
 }
 
@@ -53,10 +58,6 @@
 
     & > div {
         @extend .box;
-
-        &:hover {
-            background: map-get($cobalt-palette, font-light);
-        }
     }
 }
 
@@ -68,12 +69,12 @@
 }
 
 .line {
-    border-bottom: 2px solid map-get($cobalt-palette, border);
+    border-bottom: 2px solid $border;
     margin: 5px 0;
 }
 
 .line-vertical {
-    border-right: 2px solid map-get($cobalt-palette, border);
+    border-right: 2px solid $border;
     margin: 0 5px;
 }
 
@@ -84,7 +85,6 @@
     flex: 1;
 
     & > .box {  width: fit-content; }
-    & > .line { @extend .line-vertical; border-bottom: none; }
 
     &[direction=V] {
         flex-direction: column;
@@ -93,10 +93,12 @@
 
     &[direction=H] {
         flex-direction: row;
+        & > .line { @extend .line-vertical; border-bottom: none; }
     }
 
     &[center=C] {
         align-items: center;
+        & > .line { align-self: stretch; }
     }
 }
 
@@ -134,9 +136,12 @@
 }
 
 .box {
-    border: 1px solid map-get($cobalt-palette, border);
     background: map-get($cobalt-palette, lightest);
     padding: 5px;
+
+    &[border=true] {
+        border: 2px solid $border;
+    }
 }
 
 .margin {
@@ -145,20 +150,37 @@
 }
 
 .block {
-    display: block;
     flex: 1;
     width: 100%;
 }
 
 .image {
+    display: flex;
     width: 100%;
     height: fit-content;
 
     &[border=true] {
-        border: 1px solid map-get($cobalt-palette, border);
+        border: 2px solid $border;
     }
 
     & > img { width: 100%; }
+}
+
+.header1 {
+    @extend .header;
+    font-size: xx-large;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.header2 {
+    @extend .header;
+    font-size: x-large;
+}
+
+.header3 {
+    @extend .header;
+    font-size: large;
 }
 
 .header {
@@ -166,8 +188,13 @@
     font-weight: bold;
     font-size: large;
     margin-top: 1px;
-    border-bottom: 1px solid map-get($cobalt-palette, font);
-    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+
+    &[underline=true] {
+        border-bottom: 2px solid map-get($cobalt-palette, font);
+        margin-bottom: 6px;
+    }
 }
 
 .error {
@@ -178,10 +205,10 @@
     flex: 1;
     height: 50px;
     background-color: red;
-    border: 1px solid black;
+    border: 1px solid $border;
     font-size: large;
     font-weight: bold;
-    color: black;
+    color: map-get($cobalt-palette, font);
 }
 
 .icon {

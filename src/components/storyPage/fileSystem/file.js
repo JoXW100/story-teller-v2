@@ -6,6 +6,7 @@ import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
 import CharacterIcon from '@mui/icons-material/PersonSharp';
+import SpellIcon from '@mui/icons-material/AutoAwesomeSharp';
 import { DragonIcon, HandIcon } from 'assets/icons';
 import { Context } from 'components/contexts/storyContext';
 import { openContext } from 'components/contextMenu';
@@ -41,6 +42,8 @@ const File = ({ file }) => {
                 return HandIcon;
             case FileType.Character:
                 return CharacterIcon
+            case FileType.Spell:
+                return SpellIcon
             default: 
                 return DocumentIcon
         }

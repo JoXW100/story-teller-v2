@@ -6,10 +6,9 @@ import styles from 'styles/storyPage/dicePanel.module.scss';
 
 /**
  * 
- * @param {{ close: () => void }}
  * @returns {JSX.Element}
  */
-const DicePanel = ({ close }) => {
+const DicePanel = () => {
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({ collection: new DiceCollection() });
     const dice = [new Dice(100), new Dice(20), new Dice(12), new Dice(10), new Dice(8), new Dice(6), new Dice(4)];
@@ -55,7 +54,7 @@ const DicePanel = ({ close }) => {
  * @param {{ dice: Dice, num: number, onClick: (dice: Dice) => void }} 
  * @returns {JSX.Element}
  */
-const DiceItem = ({ dice, num, icon, onClick }) => {
+const DiceItem = ({ dice, num, onClick }) => {
     const Icon = dice.icon;
     return (
         <div

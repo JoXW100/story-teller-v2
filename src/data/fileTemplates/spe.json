@@ -8,25 +8,68 @@
                 "content": [
                     { 
                         "type": "text", 
-                        "params": { "label": "Name", "key": "name", "default": "Ability name" }
+                        "params": { "label": "Name", "key": "name", "default": "Spell name" }
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "Level", "key": "level", "default": 1 }
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Ability Type", "key": "type", "type": "abilityType", "default": "feature" }
+                        "params": { "label": "School", "key": "school", "type": "magicSchool", "default": "abjuration" }
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Action Type", "key": "action", "type": "action", "default": "action" }
+                        "params": { "label": "Casting Time", "key": "time", "type": "castingTime", "default": "action" }
                     },
                     { 
                         "type": "text", 
-                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
-                        "params": { "label": "Notes", "key": "notes" }
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "time" }, "custom"] }],
+                        "params": { "label": "Time", "key": "timeCustom" }
+                    },
+                    { 
+                        "type": "number", 
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "time" }, "custom"] }],
+                        "params": { "label": "Time Value", "key": "timeValue", "default": 1 }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Ritual", "key": "ritual", "default": false }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Duration", "key": "duration", "type": "duration", "default": "instantaneous" }
+                    },
+                    { 
+                        "type": "number", 
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "duration" }, "instantaneous"] }],
+                        "params": { "label": "Duration Value", "key": "durationValue", "default": 1 }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "duration" }, "instantaneous"] }],
+                        "params": { "label": "Concentration", "key": "concentration", "default": false }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Verbal", "key": "componentVerbal", "default": false }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Somatic", "key": "componentSomatic", "default": false }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Material", "key": "componentMaterial", "default": false }
+                    },
+                    { 
+                        "type": "text", 
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "componentMaterial" }, true] }],
+                        "params": { "label": "Materials", "key": "materials" }
                     },
                     {
                         "type": "group",
                         "params": { "label": "Effect", "open": true },
-                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
                         "content": [
                             { 
                                 "type": "enum", 
@@ -43,24 +86,41 @@
                             },
                             {
                                 "type": "enum",
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "skill"] }],
-                                "params": { "label": "Target", "key": "target", "type": "target", "default": "single" }
+                                "params": { "label": "Target", "key": "target", "type": "target", "default": "none" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon"] }] },
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
-                                ],
-                                "params": { "label": "Reach", "key": "range" }
-                            },
-                            { 
-                                "type": "number", 
-                                "conditions": [
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon", "skill"] }] },
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
-                                ],
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["single", "point"] } ] }],
                                 "params": { "label": "Range", "key": "range" }
+                            },
+                            {
+                                "type": "enum",
+                                "params": { "label": "Area", "key": "area", "type": "area", "default": "none" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cone"] }],
+                                "params": { "label": "Cone Size (ft)", "key": "areaSize" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cube"] }],
+                                "params": { "label": "Side Length (ft)", "key": "areaSize" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, { "type": "any", "value": ["cylinder", "sphere"] }] }],
+                                "params": { "label": "Radius (ft)", "key": "areaSize" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cylinder"] }],
+                                "params": { "label": "Height (ft)", "key": "areaHeight" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "line"] }],
+                                "params": { "label": "Width (ft)", "key": "areaSize" }
                             },
                             { 
                                 "type": "number", 
@@ -82,11 +142,11 @@
                                 "content": [
                                     { 
                                         "type": "enum", 
-                                        "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
+                                        "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "spellMod" }
                                     },
                                     { 
                                         "type": "boolean", 
-                                        "params": { "label": "Proficiency", "key": "conditionProficiency", "default": false }
+                                        "params": { "label": "Proficiency", "key": "conditionProficiency", "default": true }
                                     },
                                     { 
                                         "type": "option", 
@@ -138,5 +198,5 @@
             }
         ]
     },
-    "renderer": { "type": "abi" }
+    "renderer": { "type": "spe" }
 }

@@ -105,20 +105,20 @@ const CharacterRenderer = ({ metadata = {} }) => {
     const type = Object.keys(CreatureType).find((key) => CreatureType[key] == metadata.type) ?? "None"
     const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == metadata.size) ?? "Medium"
     const gender = Object.keys(Gender).find((key) => Gender[key] == metadata.gender) ?? "None"
-    const speed = metadata.speed && Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ');
-    const saves = metadata.saves && Object.keys(metadata.saves).map((key, index) => (
+    const speed = metadata.speed ? Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ') : null;
+    const saves = metadata.saves ? Object.keys(metadata.saves).map((key, index) => (
         <RollElement key={index} options={{ mod: metadata.saves[key], desc: `${key.toUpperCase()} Save` }}>
             {` ${key.toUpperCase()}`}
         </RollElement>
-    ));
-    const skills = metadata.skills && Object.keys(metadata.skills).map((key, index) => {
+    )) : null;
+    const skills = metadata.skills ? Object.keys(metadata.skills).map((key, index) => {
         var skill = Object.keys(Skill).find((k) => Skill[k] == key);
         return (
             <RollElement key={index} options={{ mod: metadata.skills[key], desc: `${skill} Check` }}>
                 {` ${skill}`}
             </RollElement>
         )
-    });
+    }) : null;
     const traits = metadata.traits?.join(', ');
     const health = getHealth(metadata);
     const ac = getAC(metadata);
@@ -213,13 +213,13 @@ const CharacterRenderer = ({ metadata = {} }) => {
                     <Elements.Line/>
                     <Elements.Image options={{ href: metadata.portrait }}/>
                     <Elements.Line/>
-                    <div><b>Race </b> { metadata.raceText }</div>
-                    <div><b>Gender </b> { gender }</div>
-                    <div><b>Age </b> { metadata.age }</div>
-                    <div><b>Height </b> { metadata.height }</div>
-                    <div><b>Weight </b> { metadata.weight }</div>
-                    <div><b>Occupation </b> { metadata.occupation }</div>
-                    <div><b>Traits </b> { traits }</div>
+                    <div><Elements.Bold>Race </Elements.Bold> { metadata.raceText }</div>
+                    <div><Elements.Bold>Gender </Elements.Bold> { gender }</div>
+                    <div><Elements.Bold>Age </Elements.Bold> { metadata.age }</div>
+                    <div><Elements.Bold>Height </Elements.Bold> { metadata.height }</div>
+                    <div><Elements.Bold>Weight </Elements.Bold> { metadata.weight }</div>
+                    <div><Elements.Bold>Occupation </Elements.Bold> { metadata.occupation }</div>
+                    <div><Elements.Bold>Traits </Elements.Bold> { traits }</div>
                     <Elements.Line/>
                     <Elements.Header3>Appearance</Elements.Header3>
                     { metadata.appearance }
@@ -235,57 +235,57 @@ const CharacterRenderer = ({ metadata = {} }) => {
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <div><b>Armor Class </b>{ac}</div>
-                    <div><b>Hit Points </b>{ `${health.value} ` }{ health.element }</div>
-                    <div><b>Speed </b>{ speed ?? "" }</div>
+                    <div><Elements.Bold>Armor Class </Elements.Bold>{ac}</div>
+                    <div><Elements.Bold>Hit Points </Elements.Bold>{ `${health.value} ` }{ health.element }</div>
+                    <div><Elements.Bold>Speed </Elements.Bold>{ speed ?? "" }</div>
                     <div>
-                        <b>Initiative </b>
+                        <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ mod: initiative ?? 0, desc: "Initiative" }}/>
                     </div>
                     <Elements.Line/>
                     <Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>STR</b>
+                            <Elements.Bold>STR</Elements.Bold>
                             { metadata.str ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.str), desc: "STR Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>DEX</b>
+                            <Elements.Bold>DEX</Elements.Bold>
                             { metadata.dex ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.dex), desc: "DEX Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>CON</b>
+                            <Elements.Bold>CON</Elements.Bold>
                             { metadata.con ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.con), desc: "CON Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>INT</b>
+                            <Elements.Bold>INT</Elements.Bold>
                             { metadata.int ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.int), desc: "INT Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>WIS</b>
+                            <Elements.Bold>WIS</Elements.Bold>
                             { metadata.wis ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.wis), desc: "WIS Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
-                            <b>CHA</b>
+                            <Elements.Bold>CHA</Elements.Bold>
                             { metadata.cha ?? 0 }
                             <Elements.Roll options={{ mod: getAttributeModifier(metadata.cha), desc: "CHA Check" }}/>
                         </Elements.Align>
                     </Elements.Align>
                     <Elements.Line/>
-                    <div><b>Saving Throws </b>{ saves }</div>
-                    <div><b>Skills </b>{skills}</div>
-                    <div><b>Senses </b>{metadata.senses ?? "" }</div>
-                    <div><b>Languages </b>{metadata.languages ?? "" }</div>
+                    <div><Elements.Bold>Saving Throws </Elements.Bold>{ saves }</div>
+                    <div><Elements.Bold>Skills </Elements.Bold>{skills}</div>
+                    <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses ?? "" }</div>
+                    <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages ?? "" }</div>
                     <div>
-                        <b>Challenge </b>
+                        <Elements.Bold>Challenge </Elements.Bold>
                         { `${challenge} (${metadata.xp ?? 0} XP)`}
                     </div>
                     <div>
-                        <b>Proficiency Bonus </b>
+                        <Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ mod: proficiency, desc: "Proficient Check" }}/>
                     </div>
                     <Elements.Line/>

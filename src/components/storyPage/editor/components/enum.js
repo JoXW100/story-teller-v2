@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import { AbilityType, Alignment, Attribute, CreatureSize, CreatureType, DamageType, Dice, EffectCondition, Scaling, MovementType, Skill, ActionType, OptionalAttribute, Gender, AbilityTarget } from '@enums/database';
+import { AbilityType, Alignment, Attribute, CreatureSize, CreatureType, DamageType, Dice, EffectCondition, Scaling, MovementType, Skill, ActionType, OptionalAttribute, Gender, AbilityTarget, MagicSchool, CastingTime, Duration, AbilityArea } from '@enums/database';
 import DropdownMenu from 'components/dropdownMenu';
 import styles from 'styles/storyPage/editor.module.scss'
 import '@types/data';
@@ -20,7 +20,11 @@ const Enums = {
     "action": ActionType,
     "optionalAttr": OptionalAttribute,
     "gender": Gender,
-    "target": AbilityTarget
+    "target": AbilityTarget,
+    "magicSchool": MagicSchool,
+    "castingTime": CastingTime,
+    "duration": Duration,
+    "area": AbilityArea
 }
 
 /**

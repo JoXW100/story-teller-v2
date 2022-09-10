@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import styles from 'styles/elements/header.module.scss';
+import styles from 'styles/elements/main.module.scss';
 
 const validOptions = ['underline'];
 const validateOptions = (options) => {

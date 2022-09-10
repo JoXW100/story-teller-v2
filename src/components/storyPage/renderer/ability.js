@@ -63,9 +63,6 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
         [AbilityType.Special]: "Special",
         [AbilityType.Trait]: "Trait",
     }[metadata.type];
-    const notes = (metadata.notes && metadata.notes.length) > 0 ? (
-        <div> <b>Notes </b> { metadata.notes } </div>
-    ) : null
     switch(metadata.type) {
         case AbilityType.Feature:
         default:
@@ -88,13 +85,13 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
                         <div>
                             { 
                                 [AbilityType.RangedAttack, AbilityType.RangedWeapon].includes(metadata.type)
-                                ? <><b>Range </b> {`${range} (${longRange}) ft `}</>
-                                : <><b>Reach </b> {`${range} ft`}</>
+                                ? <><Elements.Bold>Range </Elements.Bold> {`${range} (${longRange}) ft `}</>
+                                : <><Elements.Bold>Reach </Elements.Bold> {`${range} ft`}</>
                             }
                         </div>
-                        { (metadata.condition ?? EffectCondition.Hit) === EffectCondition.Hit &&
+                        { metadata.condition === EffectCondition.Hit &&
                             <div>
-                                <b>HIT/DC </b>
+                                <Elements.Bold>HIT/DC </Elements.Bold>
                                 <Elements.Roll 
                                     options={{ 
                                         mod: conditionMod, 
@@ -105,7 +102,7 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
                         }
                         { metadata.condition === EffectCondition.Save &&
                             <div>
-                                <b>HIT/DC </b>
+                                <Elements.Bold>HIT/DC </Elements.Bold>
                                 <Elements.Save
                                     options={{
                                         attr: metadata.saveAttr ?? Attribute.STR,
@@ -116,13 +113,13 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
                         }
                         { metadata.damageType === DamageType.None && (
                             <div>
-                                <b>Effect </b>
+                                <Elements.Bold>Effect </Elements.Bold>
                                 { metadata.effectText }
                             </div>
                         )}
                         { metadata.damageType !== DamageType.None && (
                             <div>
-                                <b>Damage </b>
+                                <Elements.Bold>Damage </Elements.Bold>
                                 <Elements.Roll 
                                     options={{ 
                                         dice: metadata.effectDice, 
@@ -140,7 +137,9 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
                                 </Elements.Roll>
                             </div>
                         )}
-                        { notes }
+                        { (metadata.notes && metadata.notes.length) > 0 && (
+                            <div> <Elements.Bold>Notes </Elements.Bold> { metadata.notes } </div>
+                        )}
                     </div>
                 </Elements.Align>
                 { content && <Elements.Line/> }
@@ -168,6 +167,11 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
  */
 const AbilityRenderer = ({ metadata, data }) => {
     const [content, setContent] = useState(null)
+    const [open, setOpen] = useState(false);
+
+    const handleClick = () => {
+        setOpen(!open);
+    }
 
     useEffect(() => {
         if ((metadata.description?.length ?? 0) == 0){
@@ -192,10 +196,10 @@ const AbilityRenderer = ({ metadata, data }) => {
         })
     }, [metadata])
 
-    const ability = useMemo(() => BuildAbility(metadata, data, content), [metadata, data, content])
+    const ability = useMemo(() => BuildAbility(metadata, data, open ? content : null), [metadata, data, content, open])
 
     return (
-        <div className={styles.ability}>
+        <div className={styles.ability} onClick={handleClick}>
             { ability }
         </div>
     )
