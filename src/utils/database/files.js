@@ -385,19 +385,16 @@ class FilesInterface
                     open: '$content.open'
                 }}
             ]).toArray())
-
             let data = result.reduce((acc, value) => (
                 { ...acc, [value.holderId]: acc[value.holderId] 
                     ? [...(acc[value.holderId]), value]
                     : [value] 
                 }
             ), {})
-            
             const build = (value, data) => {
-                value.children = data[value.id]?.map((value) => build(value, data) )
+                value.children = data[value.id]?.map((value) => build(value, data) ) ?? []
                 return value
             }
-
             return success(build(data.null[0], data).children);
         }
         catch (error)
