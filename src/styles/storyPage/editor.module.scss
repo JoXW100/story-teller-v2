@@ -73,6 +73,24 @@ $size: 20px;
     white-space: nowrap;
 }
 
+.editInput {
+    min-width: 0;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: small;
+    padding: 0 5px;
+    flex: 1;
+
+    &[error=true] {
+        color: red;
+    }
+
+    &::-webkit-inner-spin-button{
+        appearance: none;
+    }
+}
+
 .editText {
     display: flex;
     margin: 2px 0 2px 5px;
@@ -81,13 +99,7 @@ $size: 20px;
     & > b { @extend .label; }
 
     & > input {
-        min-width: 0;
-        border: none;
-        outline: none;
-        font: inherit;
-        font-size: small;
-        padding: 0 5px;
-        flex: 1;
+        @extend .editInput;
     }
 
     & > div {
@@ -125,21 +137,7 @@ $size: 20px;
     & > b { @extend .label; }
 
     & > input {
-        min-width: 0;
-        border: none;
-        outline: none;
-        font: inherit;
-        font-size: small;
-        padding: 0 5px;
-        flex: 1;
-
-        &[error=true] {
-            color: red;
-        }
-
-        &::-webkit-inner-spin-button{
-            appearance: none;
-        }
+        @extend .editInput;
     }
 }
 
@@ -235,8 +233,14 @@ $size: 20px;
                 background: #f3f8ff;
             }
         }
+
+        input {
+            @extend .editInput;
+        }
     }
 }
+
+
 
 .editOption {
     display: flex;

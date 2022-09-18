@@ -34,13 +34,14 @@ class Parser
      * @param {Object<string, any>} metadata
      * @returns {Promise<JSX.Element>}
      */
-    static parse(text, metadata) {
+    static parse(text, metadata = {}) {
         return new Promise((resolve, reject) => {
             const matchVarsExpr = /\$([a-z0-9]+)/gi;
             const matchBodyExpr = /([\{\}])/;
 
             var splits = text?.split(matchBodyExpr) ?? [];
-            var data = this.#parseVariables(splits, { ...metadata });
+            !metadata.$vars && (metadata.$vars = {})
+            var data = this.#parseVariables(splits, metadata.$vars);
             
             var withVars = text?.replace(matchVarsExpr, (...x) => data[x[1]] ?? '');
             var splits = withVars?.split(matchBodyExpr) ?? [];
@@ -48,7 +49,7 @@ class Parser
             // First node is root
             resolve(
                 <div key={0}> 
-                    { tree.content.map((node, key) => this.#buildComponent(node, key)) }
+                    { tree.content.map((node, key) => this.#buildComponent(node, key, metadata)) }
                 </div>
              );
         });
@@ -194,7 +195,7 @@ class Parser
      * 
      * @param {ParserObject} tree 
      */
-    static #buildComponent(tree, key = 0) {
+    static #buildComponent(tree, key = 0, metadata = {}) {
         if (tree.type === 'set')
             return null;
         var element = ElementDictionary[tree.type];
@@ -214,10 +215,10 @@ class Parser
         const Element = element.toComponent;
         const Content = tree.type === 'text'
             ? tree.content
-            : tree.content.map((node, key) => this.#buildComponent(node, key));
+            : tree.content.map((node, key) => this.#buildComponent(node, key, metadata));
 
         return (
-            <Element options={options} key={key}>
+            <Element options={options} metadata={metadata} key={key}>
                 { Content }
             </Element>
         )

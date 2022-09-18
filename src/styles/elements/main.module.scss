@@ -221,3 +221,10 @@ $border: map-get($cobalt-palette, border);
         fill: map-get($cobalt-palette, font-light);
     }
 }
+
+.toggle {
+    flex: 1;
+    width: fit-content;
+    cursor: pointer;
+    user-select: none;
+}

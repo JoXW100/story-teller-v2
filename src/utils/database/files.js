@@ -24,7 +24,7 @@ class FilesInterface
      * @param {string} holderId The file that holds the file
      * @param {FileType} type The type of the file to add
      * @param {DBContent<any>} content The stating content of the file
-     * @returns {DBResponse<ObjectId>>}
+     * @returns {import('@types/database').DBResponse<ObjectId>>}
      */
     async add(userId, storyId, holderId, type, content = {}) {
         try
@@ -52,7 +52,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {string} fileId The story that holds the file
-     * @returns {Promise<DBResponse<FileData<any, any>>>}
+     * @returns {Promise<import('@types/database').DBResponse<FileData<any, any>>>}
      */
     async get(userId, storyId, fileId) {
         try
@@ -88,7 +88,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {string} fileId The story that holds the file
-     * @returns {Promise<DBResponse<FileMetadata>>}
+     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').FileMetadata>>}
      */
     async getMetadata(userId, storyId, fileId) {
         try
@@ -119,7 +119,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} userId The id of the user
      * @param {[string]} fileIds The story that holds the file
-     * @returns {Promise<DBResponse<FileMetadata>>}
+     * @returns {Promise<import('@types/database').DBResponse<FileMetadata>>}
      */
     async getManyMetadata(userId, storyId, fileIds) {
         try
@@ -153,7 +153,7 @@ class FilesInterface
      * @param {string} userId The id of the user
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async delete(userId, storyId, fileId) {
         try
@@ -177,7 +177,7 @@ class FilesInterface
      * Removes matching files from the database
      * @param {string} userId The id of the user
      * @param {string} storyId The id of the story
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async deleteFrom(userId, storyId) {
         try
@@ -200,7 +200,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} name The new name of the file
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async rename(userId, storyId, fileId, name) {
         try
@@ -231,7 +231,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} targetId The id of the new holder file
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async move(userId, storyId, fileId, targetId) {
         try
@@ -280,7 +280,7 @@ class FilesInterface
      * @param {any} value The value of the property
      * @param {import('@enums/database').FileType|Object<string,any>?} fileType The type of the file
      * @param {boolean?} updateDate If the date is to be updated
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async #setProperty(userId, storyId, fileId, property, value, fileType = null, updateDate = true) {
         try
@@ -308,7 +308,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the folder
      * @param {bool} state The new state of the folder
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setOpenState(userId, storyId, fileId, state) {
         return this.#setProperty(
@@ -328,7 +328,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {string} text The new text
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setText(userId, storyId, fileId, text) {
         return this.#setProperty(
@@ -347,7 +347,7 @@ class FilesInterface
      * @param {string} storyId The id of the story
      * @param {string} fileId The id of the file
      * @param {Object<string,any>} metadata The new text
-     * @returns {Promise<DBResponse<boolean>>}
+     * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setMetadata(userId, storyId, fileId, metadata) {
         if (typeof metadata !== 'object')
@@ -360,17 +360,24 @@ class FilesInterface
             metadata
         );
     }
+
+    /**
+     * @typedef StructureCollection
+     * @property {import('@types/database').StructureFile} root
+     * @property {Object<string, import('@types/database').StructureFile} files 
+     */
     
 
     /**
      * Gets the file structure of story in the database
      * @param {string} userId The id of the user
      * @param {string} storyId The story that holds the files
-     * @returns {Promise<DBResponse<StructureFile>>} The id of the file
+     * @returns {Promise<import('@types/database').DBResponse<import('@types/database').StructureFile>>} The id of the file
      */
     async getStructure(userId, storyId) {
         try
         {
+            console.log("Build 1");
             let result = (await this.#collection.aggregate([
                 { $match: { 
                     _userId: userId,
@@ -385,20 +392,31 @@ class FilesInterface
                     open: '$content.open'
                 }}
             ]).toArray())
+            
+            /** @type {StructureCollection} */
             let data = result.reduce((acc, value) => (
-                { ...acc, [value.holderId]: acc[value.holderId] 
-                    ? [...(acc[value.holderId]), value]
-                    : [value] 
-                }
-            ), {})
-            const build = (value, data) => {
-                value.children = data[value.id]?.map((value) => build(value, data) ) ?? []
-                return value
+                value.type === 'root' 
+                    ? { root: value, files: acc.files }
+                    : { root: acc.root, files: { [value.id]: value, ...acc.files } }
+            ), { root: null, files: {} });
+
+            /** 
+             * @param {StructureCollection} data
+             * @returns {[import('@types/database').StructureFile]}
+             */
+            const build = (data) => {
+                Object.keys(data.files).forEach((key) => {
+                    var file = data.files[key];
+                    var holder = data.files[file.holderId] ?? data.root;
+                    holder.children = [file, ...holder.children ?? []]
+                })
+                return data.root.children;
             }
-            return success(build(data.null[0], data).children);
+            return success(build(data) ?? []);
         }
         catch (error)
         {
+            console.log(error);
             return failure(error.message);
         }
     }

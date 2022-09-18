@@ -14,6 +14,7 @@ import * as Newline from './newline';
 import * as Roll from './roll';
 import * as Save from './save';
 import * as Text from './text';
+import * as Toggle from './toggle';
 
 export const ElementDictionary = {
     ...Align.element,
@@ -31,7 +32,8 @@ export const ElementDictionary = {
     ...Newline.element,
     ...Roll.element,
     ...Save.element,
-    ...Text.element
+    ...Text.element,
+    ...Toggle.element
 }
 
 export const Elements = {
@@ -54,7 +56,8 @@ export const Elements = {
     Newline: Newline.default,
     Roll: Roll.default,
     Save: Save.default,
-    Text: Text.default
+    Text: Text.default,
+    Toggle: Toggle.default
 }
 
 export default Elements;

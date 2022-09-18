@@ -89,14 +89,24 @@ const Folder = ({ file }) => {
         ], { x: e.pageX, y: e.pageY }, true)
     }
 
+    /** 
+     * @param {import('@types/database').StructureFile} file
+     * @param {import('@types/database').StructureFile} holder
+     */
+    const containsFile = (file, holder) => 
+    {
+        return file.id == holder.id || holder.children.some((x) => containsFile(file, x));
+    }
+
     /** @param {React.DragEvent<HTMLDivElement>} e */
     const handleDrop = (e) => {
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-
+            
+            /** @type {import('@types/database').StructureFile} */
             var drag = window.dragData?.file;
-            if (drag && drag.holderId !== file.id && drag.id !== file.id) {
+            if (drag && drag.holderId !== file.id && !containsFile(file, drag)) {
                 dispatch.moveFile(drag, file)
             }
 

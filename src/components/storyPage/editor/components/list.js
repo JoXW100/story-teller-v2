@@ -23,7 +23,7 @@ const ListComponent = ({ params }) => {
             <b> {`${ params.label ?? "label"}:`} </b>
             <ListMenu
                 className={styles.list}
-                values={values}
+                values={typeof values === 'object' ? values : []}
                 type={params.type}
                 defaultValue={params.default}
                 onChange={handleChange}

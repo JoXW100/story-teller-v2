@@ -245,7 +245,7 @@ const FileSystem = ({ style }) => {
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    setState((state) => ({ ...state, files: res.result }));
+                    setState((state) => ({ ...state, files: res.result ?? [] }));
                     return;
                 }
                 throw new Error(res.result);

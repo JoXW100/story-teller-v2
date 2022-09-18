@@ -167,10 +167,10 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
  */
 const AbilityRenderer = ({ metadata, data }) => {
     const [content, setContent] = useState(null)
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(metadata.type === AbilityType.Feature);
 
     const handleClick = () => {
-        setOpen(!open);
+        setOpen(!open || metadata.type === AbilityType.Feature);
     }
 
     useEffect(() => {

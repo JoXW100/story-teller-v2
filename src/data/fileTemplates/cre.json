@@ -30,6 +30,10 @@
                         "type": "textarea", 
                         "params": { "label": "Description", "key": "description" }
                     },
+                    {
+                        "type": "list",
+                        "params": { "label": "Abilities", "key": "abilities", "type": "text" }
+                    },
                     { 
                         "type": "group",
                         "params": { "label": "Stats", "open": true },
@@ -131,12 +135,18 @@
                             { 
                                 "type": "enum", 
                                 "params": { "label": "Attribute", "key": "spellAttribute", "type": "optionalAttr", "default": "none" }
+                            },
+                            {
+                                "type": "list",
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1 }
+                            },
+                            {
+                                "type": "list",
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                                "params": { "label": "Spells", "key": "spells", "type": "text" }
                             }
                         ]
-                    },
-                    {
-                        "type": "list",
-                        "params": { "label": "Abilities", "key": "abilities", "type": "text" }
                     }
                 ]
             },
