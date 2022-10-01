@@ -1,13 +1,15 @@
 import { ActionType, Alignment, CreatureSize, CreatureType, Gender, OptionalAttribute, Skill } from '@enums/database';
+import React, { useContext, useEffect, useState } from 'react';
 import { CalculationMode } from '@enums/editor';
 import { Context } from 'components/contexts/storyContext';
 import Elements from 'elements';
 import RollElement from 'elements/roll';
-import React, { useContext, useEffect, useState } from 'react';
-import styles from 'styles/storyPage/renderer.module.scss';
+import SpellSlotToggle from '../spellSlotToggle';
 import Dice from 'utils/data/dice';
 import Parser, { ParseError } from 'utils/parser';
 import AbilityRenderer from './ability';
+import SpellRenderer from './spell';
+import styles from 'styles/storyPage/renderer.module.scss';
 
 
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
@@ -83,6 +85,19 @@ const getChallenge = (metadata) => (
         : 0
 );
 
+const AlignmentTranslation = {
+    [Alignment.ChaoticEvil]: "Chaotic Evil",
+    [Alignment.ChaoticGood]: "Chaotic Good",
+    [Alignment.ChaoticNeutral]: "Chaotic Neutral",
+    [Alignment.TrueNeutral]: "Neutral",
+    [Alignment.NeutralEvil]: "Neutral Evil",
+    [Alignment.NeutralGood]: "Neutral Good",
+    [Alignment.LawfulEvil]: "Lawful Evil",
+    [Alignment.LawfulGood]: "Lawful Good",
+    [Alignment.LawfulNeutral]: "Lawful Neutral",
+    [Alignment.None]: "None"
+}
+
 /**
  * 
  * @param {{ metadata: import('@types/database').CreatureMetadata }} 
@@ -90,18 +105,7 @@ const getChallenge = (metadata) => (
  */
 const CharacterRenderer = ({ metadata = {} }) => {
     const [context] = useContext(Context)
-    const alignment = {
-        [Alignment.ChaoticEvil]: "Chaotic Evil",
-        [Alignment.ChaoticGood]: "Chaotic Good",
-        [Alignment.ChaoticNeutral]: "Chaotic Neutral",
-        [Alignment.TrueNeutral]: "Neutral",
-        [Alignment.NeutralEvil]: "Neutral Evil",
-        [Alignment.NeutralGood]: "Neutral Good",
-        [Alignment.LawfulEvil]: "Lawful Evil",
-        [Alignment.LawfulGood]: "Lawful Good",
-        [Alignment.LawfulNeutral]: "Lawful Neutral",
-        [Alignment.None]: "None"
-    }[metadata.alignment ?? 0]
+    const alignment = AlignmentTranslation[metadata.alignment ?? 0]
     const type = Object.keys(CreatureType).find((key) => CreatureType[key] == metadata.type) ?? "None"
     const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == metadata.size) ?? "Medium"
     const gender = Object.keys(Gender).find((key) => Gender[key] == metadata.gender) ?? "None"
@@ -128,6 +132,7 @@ const CharacterRenderer = ({ metadata = {} }) => {
 
     const [content, setContent] = useState(null);
     const [Abilities, setAbilities] = useState(null);
+    const [Spells, setSpells] = useState(null);
 
     useEffect(() => {
         Parser.parse(metadata.$text, metadata)
@@ -203,6 +208,69 @@ const CharacterRenderer = ({ metadata = {} }) => {
             setAbilities(null);
         }
     }, [metadata.abilities, context.story])
+
+    useEffect(() => {
+        if (metadata.spells) {
+            fetch(`/api/database/getManyMetadata?storyId=${context.story.id}&fileIds=${metadata.spells}`)
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.success) {
+                    setSpells(() => (
+                        ({ metadata }) => {
+                            var data = { 
+                                str: metadata.str, 
+                                dex: metadata.dex, 
+                                con: metadata.con, 
+                                int: metadata.int, 
+                                wis: metadata.wis,
+                                cha: metadata.cha,
+                                proficiency: proficiency,
+                                spellAttribute: metadata.spellAttribute ?? OptionalAttribute.None
+                            }
+                            var abilities = []
+                            res.result.forEach((file, index) => {
+                                if (file.type === 'spe') {
+                                    var level = file.metadata.level ?? 1
+                                    if (!abilities[level]) 
+                                        abilities[level] = []
+                                    abilities[level].push(
+                                        <SpellRenderer key={index} metadata={file.metadata} data={data}/>
+                                    )
+                                }
+                            })
+                            return Object.keys(abilities)
+                                .filter((type) => type == 0 || metadata.spellSlots[type - 1])
+                                .map((type) => (
+                                    <React.Fragment key={type}>
+                                        <Elements.Row>
+                                            <Elements.Bold> 
+                                                { type == 0 
+                                                    ? 'Cantrips:'
+                                                    : `Level ${type}:`
+                                                } 
+                                            </Elements.Bold>
+                                            { type > 0 && Array.from({length: metadata.spellSlots[type - 1] }, (_,i) => (
+                                                <SpellSlotToggle key={i}/>
+                                            ))}
+                                        </Elements.Row>
+                                        { abilities[type] }
+                                    </React.Fragment>
+                                )
+                            )
+                        }
+                    ));
+                }
+                else {
+                    console.warn(res.result);
+                    setSpells(null);
+                }
+            })
+            .catch(console.error)
+        }
+        else {
+            setSpells(null);
+        }
+    }, [metadata.spells, context.story])
 
     return (
         <>
@@ -292,7 +360,15 @@ const CharacterRenderer = ({ metadata = {} }) => {
                     { Abilities && <Abilities metadata={metadata}/> }
                 </Elements.Block>
             </Elements.Align>
-            <Elements.Line/>
+            { metadata.spellAttribute != OptionalAttribute.None && Spells &&
+                <>
+                    <Elements.Line/>
+                    <Elements.Header2> Spells: </Elements.Header2>
+                    <Spells metadata={metadata}/>
+                </>
+            }
+                    
+            { content && <Elements.Line/> }
             {content}
         </>
     )

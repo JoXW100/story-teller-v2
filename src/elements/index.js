@@ -12,6 +12,7 @@ import * as Link from './link';
 import * as Margin from './margin';
 import * as Newline from './newline';
 import * as Roll from './roll';
+import * as Row from './row';
 import * as Save from './save';
 import * as Text from './text';
 import * as Toggle from './toggle';
@@ -31,6 +32,7 @@ export const ElementDictionary = {
     ...Margin.element,
     ...Newline.element,
     ...Roll.element,
+    ...Row.element,
     ...Save.element,
     ...Text.element,
     ...Toggle.element
@@ -55,6 +57,7 @@ export const Elements = {
     Margin: Margin.default,
     Newline: Newline.default,
     Roll: Roll.default,
+    Row: Row.default,
     Save: Save.default,
     Text: Text.default,
     Toggle: Toggle.default

@@ -311,15 +311,8 @@ class FilesInterface
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setOpenState(userId, storyId, fileId, state) {
-        return this.#setProperty(
-            userId, 
-            storyId, 
-            fileId, 
-            'open',
-            Boolean(state), 
-            "folder", 
-            false
-        );
+        return this.#setProperty(userId, storyId, fileId, 'open',
+            Boolean(state), "folder", false);
     }
 
     /**
@@ -331,14 +324,8 @@ class FilesInterface
      * @returns {Promise<import('@types/database').DBResponse<boolean>>}
      */
     async setText(userId, storyId, fileId, text) {
-        return this.#setProperty(
-            userId, 
-            storyId, 
-            fileId, 
-            'text',
-            String(text),
-            { $not: /folder/ }
-        );
+        return this.#setProperty(userId, storyId, fileId, 'text', String(text),
+            { $not: /folder/ });
     }
 
     /**
@@ -352,13 +339,7 @@ class FilesInterface
     async setMetadata(userId, storyId, fileId, metadata) {
         if (typeof metadata !== 'object')
             return failure('Expected type of metadata, object');
-        return this.#setProperty(
-            userId, 
-            storyId, 
-            fileId,
-            'metadata',
-            metadata
-        );
+        return this.#setProperty(userId, storyId, fileId, 'metadata', metadata);
     }
 
     /**

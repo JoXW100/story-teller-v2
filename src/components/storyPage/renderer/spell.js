@@ -68,16 +68,12 @@ const getDuration = (metadata) => {
 
 const getRange = (metadata) => {
     var area = null;
-    var icon = null;
-    var tooltips = null;
     switch (metadata.area) 
     {
         case AbilityArea.None:
             break;
         case AbilityArea.Cone:
             area = `${metadata.areaSize}ft `;
-            icon = "cone";
-            tooltips = "Cone";
             break;
         case AbilityArea.Cube:
             area = `${metadata.areaSize}ft `;
@@ -90,31 +86,22 @@ const getRange = (metadata) => {
             break;
         case AbilityArea.Sphere:
             area = `${metadata.areaSize}ft `;
-            icon = "sphere";
-            tooltips = "Sphere";
             break;
     }
-
     switch (metadata.target)
     {
         case AbilityTarget.Self:
-            return (
-                <span>
-                    {area ? `Self, ${area}` : "Self"}
-                    {area && <Elements.Icon options={{ icon: metadata.area, tooltips: tooltips }}/> }
-                </span>
-            )
-
+            return area ? `Self, ${area}` : "Self"
         case AbilityTarget.Point:
         case AbilityTarget.Single:
-            return (
-                <span>
-                    {area ? `${metadata.range}ft, ${area}` : `${metadata.range}ft`}
-                    {area && <Elements.Icon options={{ icon: metadata.area, tooltips: tooltips }}/>}
-                </span>
-            )
+            return area ? `${metadata.range}ft/${area}` : `${metadata.range}ft`
         default:
     }
+}
+
+const getAreaIcon = (metadata) => {
+    var name = Object.keys(AbilityArea).find((x) => AbilityArea[x] == metadata.area)
+    return <Elements.Icon options={{ icon: metadata.area, tooltips: name }}/>
 }
 
 export const BuildSpell = (metadata = {}, data = {}, content) => {
@@ -124,6 +111,7 @@ export const BuildSpell = (metadata = {}, data = {}, content) => {
     const castingTime = getCastingTime(metadata);
     const duration = getDuration(metadata);
     const range = getRange(metadata)
+    const areaIcon = getAreaIcon(metadata)
     return (
         <>
             <Elements.Align>
@@ -141,7 +129,10 @@ export const BuildSpell = (metadata = {}, data = {}, content) => {
                 </Elements.Align>
                 { metadata.target !== AbilityTarget.None &&
                     <Elements.Align options={{ direction: "v" }}>
-                        <Elements.Bold> Range </Elements.Bold>
+                        <div className={styles.spellAreaRow}>
+                            <Elements.Bold> Range/Area </Elements.Bold>
+                            {areaIcon}
+                        </div>
                         {range}
                     </Elements.Align>
                 }

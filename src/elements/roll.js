@@ -1,10 +1,10 @@
 import React, { useContext, useMemo } from 'react';
-import { Context } from 'components/contexts/storyContext';
-import { openContext } from 'components/contextMenu';
 import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import { ParseError } from 'utils/parser';
 import { D20Icon } from 'assets/dice';
+import { Context } from 'components/contexts/storyContext';
+import { openContext } from 'components/contextMenu';
 import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'classes/localization';
 import { RollMethod } from '@enums/data';
@@ -64,34 +64,43 @@ const RollElement = ({ children, options = {} }) => {
     const show = mode === 'dice' || mode === 'dmg';
     const desc = options.desc ?? 'Rolled';
 
+    /**
+     * @param {RollMethod} method 
+     */
+    const roll = (method) => {
+        var collection = new DiceCollection(mod, desc);
+        collection.add(dice, num);
+        dispatch.roll(collection, method);
+    }
+
     const context = useMemo(() => {
         return options.mode === 'dmg' 
         ? [
             {
                 text: Localization.toText('roll-normal'), 
                 icon: D20Icon, 
-                action: () => Roll(RollMethod.Normal)
+                action: () => roll(RollMethod.Normal)
             },
             { 
                 text: Localization.toText('roll-crit'), 
                 icon: CritIcon, 
-                action: () => Roll(RollMethod.Crit)
+                action: () => roll(RollMethod.Crit)
             }
         ] : [
             {
                 text: Localization.toText('roll-normal'), 
                 icon: D20Icon, 
-                action: () => Roll(RollMethod.Normal)
+                action: () => roll(RollMethod.Normal)
             },
             { 
                 text: Localization.toText('roll-advantage'), 
                 icon: AdvantageIcon, 
-                action: () => Roll(RollMethod.Advantage)
+                action: () => roll(RollMethod.Advantage)
             },
             { 
                 text: Localization.toText('roll-disadvantage'), 
                 icon: DisadvantageIcon, 
-                action: () => Roll(RollMethod.Disadvantage)
+                action: () => roll(RollMethod.Disadvantage)
             }
         ]
     }, [options.mode])
@@ -107,9 +116,7 @@ const RollElement = ({ children, options = {} }) => {
     const HandleClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        var collection = new DiceCollection(mod, desc);
-        collection.add(dice, num);
-        dispatch.roll(collection, RollMethod.Normal);
+        roll(RollMethod.Normal);
     }
 
     const modText = (show && mod === 0) ? '' 

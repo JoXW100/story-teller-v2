@@ -52,3 +52,37 @@ $pageHeight: 14in; /* A4 */
     font-size: 14px;
     cursor: pointer;
 }
+
+.spellAreaRow {
+    display: flex;
+
+    & > * {
+        margin-right: 5px;
+    }
+}
+
+.spellSlotToggle {
+    display: flex;
+    position: relative;
+    background: map-get($cobalt-palette, white);
+    border: 1px solid map-get($cobalt-palette, border);
+    height: 15px;
+    width: 15px;
+    align-self: center;
+    margin-left: 5px;
+    content: " ";
+    cursor: pointer;
+    &[active=true]::after {
+        position: absolute;
+        background: map-get($cobalt-palette, border);
+        z-index: 100;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: 2px;
+        width: auto;
+        height: auto;
+        content: " ";
+    }
+}

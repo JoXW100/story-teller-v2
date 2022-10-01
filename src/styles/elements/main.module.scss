@@ -166,27 +166,9 @@ $border: map-get($cobalt-palette, border);
     & > img { width: 100%; }
 }
 
-.header1 {
-    @extend .header;
-    font-size: xx-large;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
-
-.header2 {
-    @extend .header;
-    font-size: x-large;
-}
-
-.header3 {
-    @extend .header;
-    font-size: large;
-}
-
 .header {
     color: map-get($cobalt-palette, font);
     font-weight: bold;
-    font-size: large;
     margin-top: 1px;
     display: flex;
     align-items: center;
@@ -195,6 +177,23 @@ $border: map-get($cobalt-palette, border);
         border-bottom: 2px solid map-get($cobalt-palette, font);
         margin-bottom: 6px;
     }
+}
+
+.header1 {
+    @extend .header;
+    font-size: x-large;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.header2 {
+    @extend .header;
+    font-size: larger;
+}
+
+.header3 {
+    @extend .header;
+    font-size: large;
 }
 
 .error {
@@ -227,4 +226,8 @@ $border: map-get($cobalt-palette, border);
     width: fit-content;
     cursor: pointer;
     user-select: none;
+}
+
+.row {
+    display: inline-flex;
 }

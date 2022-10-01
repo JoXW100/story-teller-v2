@@ -23,7 +23,6 @@ const ToggleElement = ({ options = {}, metadata }) => {
         if (key)
         {
             var data = metadata.$vars[key];
-            console.log("data", data, metadata);
             Parser.parse(data, metadata)
             .then((res) => setContent(res))
             .catch(() => setContent(null))
@@ -36,10 +35,7 @@ const ToggleElement = ({ options = {}, metadata }) => {
 
 
     return (
-        <div 
-            className={styles.toggle}
-            onClick={handleClick}
-        >
+        <div className={styles.toggle} onClick={handleClick}>
             { content }
         </div>
     )

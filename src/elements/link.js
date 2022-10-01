@@ -1,14 +1,14 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { Context } from 'components/contexts/storyContext';
-import { useMetadata } from 'utils/handleMetadata';
 import { BuildAbility } from 'components/storyPage/renderer/ability';
+import { BuildCharacter } from 'components/storyPage/renderer/character';
+import { BuildCreature } from 'components/storyPage/renderer/creature';
+import { BuildSpell } from 'components/storyPage/renderer/spell';
+import { useMetadata } from 'utils/handleMetadata';
 import Parser, { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
 import { FileType } from '@enums/database';
 import styles from 'styles/elements/main.module.scss';
-import { BuildCharacter } from 'components/storyPage/renderer/character';
-import { BuildCreature } from 'components/storyPage/renderer/creature';
 
 const validOptions1 = ['href'];
 const validateOptions1 = (options) => {
@@ -28,11 +28,9 @@ const validateOptions2 = (options) => {
 
 const LinkComponent = ({ href, className, children }) => {
     return href ? (
-        <Link href={href}>
-            <span className={className}>
-                { children }
-            </span>
-        </Link>
+        <a href={href} className={className}>
+            { children }
+        </a>
     ) : (
         <div className={className}>
             { children }
@@ -103,6 +101,9 @@ export const LinkContentElement = ({ options = {} }) => {
                     break;
                 case FileType.Character:
                     setContent(BuildCharacter(metadata))
+                    break;
+                case FileType.Spell:
+                    setContent(BuildSpell(metadata))
                     break;
 
                 case FileType.Document:

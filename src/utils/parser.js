@@ -35,15 +35,20 @@ class Parser
      * @returns {Promise<JSX.Element>}
      */
     static parse(text, metadata = {}) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const matchVarsExpr = /\$([a-z0-9]+)/gi;
             const matchBodyExpr = /([\{\}])/;
 
             var splits = text?.split(matchBodyExpr) ?? [];
             !metadata.$vars && (metadata.$vars = {})
-            var data = this.#parseVariables(splits, metadata.$vars);
+            var variables = { 
+                ...metadata.$vars ?? {}, 
+                title: metadata.title, 
+                content: metadata.content 
+            }
+            metadata.$vars = this.#parseVariables(splits, variables);
             
-            var withVars = text?.replace(matchVarsExpr, (...x) => data[x[1]] ?? '');
+            var withVars = text?.replace(matchVarsExpr, (...x) => variables[x[1]] ?? '');
             var splits = withVars?.split(matchBodyExpr) ?? [];
             var tree = this.#buildTree(splits);
             // First node is root
