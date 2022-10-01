@@ -95,7 +95,7 @@ const Folder = ({ file }) => {
      */
     const containsFile = (file, holder) => 
     {
-        return file.id == holder.id || holder.children.some((x) => containsFile(file, x));
+        return file.id == holder.id || holder.children?.some((x) => containsFile(file, x));
     }
 
     /** @param {React.DragEvent<HTMLDivElement>} e */
