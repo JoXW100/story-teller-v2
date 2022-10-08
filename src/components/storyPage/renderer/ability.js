@@ -76,8 +76,8 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
         case AbilityType.MeleeWeapon:
             return <>
                 <Elements.Align>
-                    <div style={{ width: '140px'}}>
-                        <Elements.Header3>{ metadata.name }</Elements.Header3>
+                    <div style={{ width: '50%'}}>
+                        <Elements.Bold>{ metadata.name }</Elements.Bold><br/>
                         { type }
                     </div>
                     <Elements.Line/>
@@ -119,12 +119,13 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
                         )}
                         { metadata.damageType !== DamageType.None && (
                             <div>
-                                <Elements.Bold>Damage </Elements.Bold>
+                                <Elements.Bold>Damage</Elements.Bold>
                                 <Elements.Roll 
                                     options={{ 
                                         dice: metadata.effectDice, 
                                         num: metadata.effectDiceNum, 
-                                        mod: effectMod, 
+                                        mod: effectMod,
+                                        mode: 'dmg',
                                         desc: `${metadata.name} Damage`
                                     }}
                                 >

@@ -23,14 +23,15 @@ const arraysAreEqual = (a, b) => {
 /**
  * @param {{ 
  *  className: string,
+ *  onChange=(selection: [string]) => void
  *  values: [string] 
  *  type: string,
  *  defaultValue: string, 
- *  onChange=(selection: [string]) => void
+ *  editEnabled: boolean
  * }} 
  * @returns {JSX.Element}
  */
-const ListMenu = ({ className, values = [], type = "text", defaultValue = "", onChange }) => {
+const ListMenu = ({ className, onChange, values = [], type = "text", defaultValue = "", editEnabled = false }) => {
     const [state, setState] = useState({
         value: defaultValue,
         values: values ?? []
@@ -43,31 +44,39 @@ const ListMenu = ({ className, values = [], type = "text", defaultValue = "", on
     }, [state.values])
 
     /** @param {React.ChangeEvent<HTMLInputElement>} e */
-    const handleChange = (e) => {
-        setState({ ...state, value: e.target.value })
+    const handleChange = (e, index = -1) => {
+        console.log(e, index)
+        if (index < 0)
+            setState({ ...state, value: e.target.value })
+        else {
+            values = [...state.values]
+            values[index] = e.target.value
+            setState({ ...state, values: values })
+        }
     }
 
     const handleAdd = () => {
         setState({ 
             ...state, 
             value: defaultValue, 
-            values: [...state.values, state.value]  
+            values: [state.value, ...state.values]  
         })
     } 
 
     const handleRemove = (index) => {
         var values = [ ...state.values.slice(0, index), ...state.values.slice(index + 1) ]
-        setState({ 
-            ...state, 
-            values: values  
-        })
+        setState({ ...state, values: values })
     }
 
     const rows = useMemo(() => (
         state.values?.map((value, index) => (
-            <ListRow key={index} onClick={() => handleRemove(index)}>
-                { value }
-            </ListRow>
+            <ListRow 
+                key={index} 
+                value={value} 
+                onClick={() => handleRemove(index)}
+                onChange={(e) => handleChange(e, index)}
+                editEnabled={editEnabled}
+            />
         ))
     ), [state.values, values]);
     
@@ -94,12 +103,32 @@ const ListMenu = ({ className, values = [], type = "text", defaultValue = "", on
     )
 }
 
-const ListRow = ({ onClick, children }) => {
+/**
+ * 
+ * @param {{ 
+ *  value: string,
+ *  onClick: () => void,
+ *  onChange: (e) => void
+ *  type: string,
+ *  editEnabled: boolean
+ * }} 
+ * @returns {JSX.Element}
+ */
+const ListRow = ({ value, onClick, onChange, type, editEnabled }) => {
     return (
         <div className={styles.row}>
-            <div className={styles.rowContent}>
-                { children }
-            </div>
+            { editEnabled ? (
+                <input 
+                    className={styles.input} 
+                    value={value}
+                    type={type}
+                    onChange={onChange}
+                />
+            ) : (
+                <div className={styles.rowContent}>
+                    { value }
+                </div>
+            )}
             <div 
                 className={styles.button}
                 onClick={onClick}

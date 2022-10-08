@@ -4,6 +4,7 @@ import { BuildAbility } from 'components/storyPage/renderer/ability';
 import { BuildCharacter } from 'components/storyPage/renderer/character';
 import { BuildCreature } from 'components/storyPage/renderer/creature';
 import { BuildSpell } from 'components/storyPage/renderer/spell';
+import { BuildDocument } from 'components/storyPage/renderer/document';
 import { useMetadata } from 'utils/handleMetadata';
 import Parser, { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
@@ -105,18 +106,9 @@ export const LinkContentElement = ({ options = {} }) => {
                 case FileType.Spell:
                     setContent(BuildSpell(metadata))
                     break;
-
-                case FileType.Document:
                 default:
                     Parser.parse(metadata.content, {})
-                    .then((res) => setContent(
-                        <>
-                            <h3 className={styles.header}> 
-                                { metadata.title } 
-                            </h3>
-                            { res }
-                        </>
-                    ))
+                    .then((res) => setContent(BuildDocument(metadata, res)))
                     .catch(console.error);
                     break;
             }

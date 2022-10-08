@@ -27,6 +27,7 @@ const ListComponent = ({ params }) => {
                 type={params.type}
                 defaultValue={params.default}
                 onChange={handleChange}
+                editEnabled={Boolean(params.editEnabled)}
             />
         </div>
     )

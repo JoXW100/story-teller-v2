@@ -3,6 +3,7 @@ import CreatureTemplate from './cre.json';
 import DocumentTemplate from './doc.json';
 import CharacterTemplate from './cha.json';
 import SpellTemplate from './spe.json';
+import StoryTemplate from './sto.json';
 import { FileType } from '@enums/database';
 
 export {
@@ -10,7 +11,8 @@ export {
     CreatureTemplate,
     DocumentTemplate,
     CharacterTemplate,
-    SpellTemplate
+    SpellTemplate,
+    StoryTemplate
 }
 
 const Templates = {
@@ -18,7 +20,8 @@ const Templates = {
     [FileType.Creature]: CreatureTemplate,
     [FileType.Document]: DocumentTemplate,
     [FileType.Character]: CharacterTemplate,
-    [FileType.Spell]: SpellTemplate
+    [FileType.Spell]: SpellTemplate,
+    [FileType.Story]: StoryTemplate
 }
 
 export default Templates;

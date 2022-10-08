@@ -185,7 +185,7 @@
                             {
                                 "type": "list",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1 }
+                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1, "editEnabled": true }
                             },
                             {
                                 "type": "list",

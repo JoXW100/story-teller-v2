@@ -10,10 +10,11 @@ $border: map-get($cobalt-palette, border);
 }
 
 .roundedExtension {
-    border: 2px solid map-get($cobalt-palette, darkest);
-    border-radius: 5px;
+    outline: 2px solid map-get($cobalt-palette, darkest);
+    border-radius: 10px;
     background-color: map-get($cobalt-palette, lightest);
     padding: 0 5px;
+    margin: 0 3px
 }
 
 .center {
@@ -43,13 +44,9 @@ $border: map-get($cobalt-palette, border);
 }
 
 .link {
-    display: inline-flex;
     color: map-get($cobalt-palette, darkest);
+    text-decoration: none;
     cursor: pointer;
-
-    &:hover {
-        color: map-get($cobalt-palette, dark);
-    }
 }
 
 .linkContent {
@@ -83,8 +80,6 @@ $border: map-get($cobalt-palette, border);
     align-content: stretch;
     align-items: stretch;
     flex: 1;
-
-    & > .box {  width: fit-content; }
 
     &[direction=V] {
         flex-direction: column;
@@ -170,6 +165,7 @@ $border: map-get($cobalt-palette, border);
     color: map-get($cobalt-palette, font);
     font-weight: bold;
     margin-top: 1px;
+    margin-bottom: 1px;
     display: flex;
     align-items: center;
 
@@ -183,7 +179,7 @@ $border: map-get($cobalt-palette, border);
     @extend .header;
     font-size: x-large;
     margin-top: 1px;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
 }
 
 .header2 {

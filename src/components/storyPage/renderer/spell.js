@@ -172,6 +172,7 @@ export const BuildSpell = (metadata = {}, data = {}, content) => {
                                 dice: metadata.effectDice, 
                                 num: metadata.effectDiceNum, 
                                 mod: effectMod, 
+                                mode: 'dmg',
                                 desc: `${metadata.name} Damage`
                             }}
                         >
@@ -239,11 +240,11 @@ const SpellRenderer = ({ metadata, data }) => {
         })
     }, [metadata])
 
-    const ability = useMemo(() => BuildSpell(metadata, data, open ? content : null), [metadata, data, content, open])
+    const spell = useMemo(() => BuildSpell(metadata, data, open ? content : null), [metadata, data, content, open])
 
     return (
         <div className={styles.spell} onClick={handleClick}>
-            { ability }
+            { spell }
         </div>
     )
 }

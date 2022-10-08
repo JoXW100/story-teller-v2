@@ -4,9 +4,11 @@ import CreatureRenderer from './creature';
 import AbilityRenderer from './ability';
 import CharacterRenderer from './character';
 import SpellRenderer from './spell';
-import Parser, { ParseError } from 'utils/parser';
+import DocumentRenderer from './document';
+import { ParseError } from 'utils/parser';
 import styles from 'styles/storyPage/renderer.module.scss';
 import { FileType } from '@enums/database';
+import StoryRenderer from './story';
 
 /** 
  * @param {EditorTemplate<any>} template
@@ -28,8 +30,11 @@ const BuildRenderer = async (template, metadata = {}) => {
         case FileType.Spell:
             return <SpellRenderer metadata={metadata}/>
 
+        case FileType.Story:
+            return <StoryRenderer metadata={metadata}/>
+
         case FileType.Document:
-            return Parser.parse(metadata[template.params.key], metadata)
+            return <DocumentRenderer metadata={metadata}/>
         
         default:
             return null;

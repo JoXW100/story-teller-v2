@@ -7,7 +7,8 @@ export const FileType = {
     Creature: "cre",
     Ability: "abi",
     Character: "cha",
-    Spell: "spe"
+    Spell: "spe",
+    Story: "sto"
 }
 
 /** @enum {string} */
