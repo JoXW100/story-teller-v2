@@ -16,10 +16,10 @@ const AppContext = ({ children }) => {
      * @param {string} palette 
      */
     const setPalette = (palette) => {
-        if (typeof window !== "undefined") {
+        if (palette && typeof window !== "undefined") {
             Object.keys(Palettes[palette].colors).forEach((color) => {
                 document.documentElement.style.setProperty(`--color-${color}`, 
-                    Palettes[palette].colors[color])
+                    Palettes[palette]?.colors[color] ?? "#ffffff")
             });
         }
     }
@@ -35,7 +35,7 @@ const AppContext = ({ children }) => {
         switch (action.type) {
             case 'init':
                 Localization.initialize();
-                return { ...state, loading: false, palette: Storage.get("palette") }
+                return { ...state, loading: false, palette: Storage.get("palette") ?? "cobalt" }
             case 'setPalette':
                 Storage.set("palette", action.data)
                 return { ...state, palette: action.data }
