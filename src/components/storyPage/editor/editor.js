@@ -60,7 +60,7 @@ const checkConditions = (template, metadata = {}) => {
 
 
 /** @param {EditorTemplate<any>} template */
-const buildEditor = (template, metadata, key = 0) => {
+export const buildEditor = (template, metadata, key = 0) => {
     if (!checkConditions(template, metadata))
         return null;
 
@@ -109,7 +109,11 @@ const buildEditor = (template, metadata, key = 0) => {
         case EditInputType.Number:
             Content = Components.Number;
             break;
-    
+        
+        case EditInputType.TemplateList:
+            Content = Components.TemplateList;
+            break;
+
         default:
             break;
     }

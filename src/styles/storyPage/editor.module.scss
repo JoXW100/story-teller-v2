@@ -3,9 +3,9 @@
 $size: 20px;
 
 .main {
+    @include color(background);
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #000000;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -18,9 +18,7 @@ $size: 20px;
 .editGroup {
     display: flex;
     flex-direction: column;
-    padding: 1px;
-    background-color: map-get($cobalt-palette, font-light);
-    border: 2px solid white;
+    padding: 2px;
     white-space: nowrap;
 
     &[fill=true] {
@@ -30,23 +28,20 @@ $size: 20px;
     } 
 
     & > .editGroupHeader {
+        @include colorInteract(main);
+        @include colorText();
+        user-select: none;
         position: relative;
-        color: map-get($cobalt-palette, font-light);
-        background: map-get($cobalt-palette, darkest);
         cursor: pointer;
         font-size: large;
         font-weight: bold;
-        padding: 0 5px;
-    
-        &:hover {
-            background: map-get($cobalt-palette, dark);
-        }
+        padding: 1px 5px;
 
         &[open]::after {
             position: absolute;
             right: 5px;
             top: 0.5ch;
-            border-color: transparent map-get($cobalt-palette, font-light) transparent transparent;
+            border-color: transparent map-get($palette, text) transparent transparent;
             border-width: 6px;
             border-style: solid;
             content: " ";
@@ -56,7 +51,7 @@ $size: 20px;
             position: absolute;
             right: -1px;
             top: 0.5ch;
-            border-color: transparent transparent transparent map-get($cobalt-palette, font-light);
+            border-color: transparent transparent transparent map-get($palette, text);
             border-width: 6px;
             border-style: solid;
             content: " ";
@@ -65,15 +60,20 @@ $size: 20px;
 }
 
 .label {
+    @include colorText();
     width: 120px;
     height: $size;
     flex-shrink: 0;
+    font-size: 12px;
     display: flex;
     align-items: center;
     white-space: nowrap;
+    user-select: none;
 }
 
 .editInput {
+    @include color(document);
+    @include colorText();
     min-width: 0;
     border: none;
     outline: none;
@@ -83,7 +83,7 @@ $size: 20px;
     flex: 1;
 
     &[error=true] {
-        color: red;
+        @include color(error);
     }
 
     &::-webkit-inner-spin-button{
@@ -152,25 +152,23 @@ $size: 20px;
 }
 
 .dropdown {
-    background: white !important;
+    background: map-get($palette, document) !important;
     font: inherit;
     font-size: small;
 
     & > div:first-child {
         & > * {
             &[expanded=true] {
-                outline: 1px solid map-get($cobalt-palette, font-light);
+                @include colorShadow();
             }
             
             & > * {
+                @include colorInteract(document);
                 padding: 0 5px;
                 height: $size;
-
-                &:hover {
-                    background: map-get($cobalt-palette, lightest);
-                }
+                
                 &:not(:last-child) {
-                    border-bottom: 1px solid map-get($cobalt-palette, lightest);
+                    border-bottom: 1px solid map-get($palette, second);
                     padding-top: 1px;
                 }
             }
@@ -178,7 +176,7 @@ $size: 20px;
     } 
 
     & > div:last-child {
-        background: map-get($cobalt-palette, main);
+        background: map-get($palette, main);
     }
 }
 
@@ -190,7 +188,7 @@ $size: 20px;
     & > b { @extend .label; }
 
     .selection {
-        background: white;
+        @include color(document);
         font: inherit;
         font-size: small;
         
@@ -201,17 +199,17 @@ $size: 20px;
         }
 
         & > div:last-child {
-            background: map-get($cobalt-palette, font-light);
+            @include color(forth);
         }
     }
 }
 
 .editSelectionItem {
+    @include colorText();
     @extend .editNumber;
     & > b { width: 80px; }
     & > input {
-        background: white;
-        border: 2px solid #eff8ff;
+        @include color(document);
     }
 }
 
@@ -223,14 +221,15 @@ $size: 20px;
     & > b { @extend .label; }
 
     .list {
-        background: white;
+        @include color(document);
         font: inherit;
         font-size: small;
 
         & > div:last-child {
-            background: map-get($cobalt-palette, font-light);
+            @include color(forth);
             & > div {
-                background: #f3f8ff;
+                @include color(document);
+                filter: brightness(95%)
             }
         }
 
@@ -260,6 +259,7 @@ $size: 20px;
         }
 
         & > input {
+            @include color(document);
             min-width: 0;
             border: none;
             outline: none;
@@ -269,13 +269,12 @@ $size: 20px;
             flex: 1;
     
             &[error=true] {
-                color: red;
+                @include color(error);
             }
 
             &:disabled {
+                filter: brightness(90%);
                 pointer-events: none;
-                background: #eeeeee;
-                min-width: 0;
             }
     
             &::-webkit-inner-spin-button{
@@ -285,6 +284,32 @@ $size: 20px;
     }
 }
 
+.editTemplateList {
+    display: flex;
+    margin: 2px 0 2px 5px;
+
+    & > b { @extend .label; width: 60px; }
+    
+}
+
+.editTemplateListMenu {
+    flex-shrink: 0 !important;
+    height: 130px * 4 !important;
+    border-left: 2px solid map-get($palette, forth);
+    padding-left: 5px;
+
+    & > *:first-child {
+        @include color(error);
+        height: auto !important;
+    }
+
+    & > *:last-child {
+        & > * {
+            height: auto !important;
+        }
+    }
+}
+
 .checkbox {
-    color: map-get($cobalt-palette, darkest);
+    @include colorText();
 }

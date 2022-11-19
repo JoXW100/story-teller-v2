@@ -55,8 +55,7 @@ const CreateCardBody = () => {
             <AddOutlinedIcon 
                 sx={{ 
                     width: "80%", 
-                    height: "80%", 
-                    color: 'rgb(110, 52, 52)'
+                    height: "80%"
                 }}
             />
         </div>

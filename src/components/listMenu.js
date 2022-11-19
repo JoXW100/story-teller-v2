@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import ListTemplateMenu from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
 /**
@@ -32,110 +30,36 @@ const arraysAreEqual = (a, b) => {
  * @returns {JSX.Element}
  */
 const ListMenu = ({ className, onChange, values = [], type = "text", defaultValue = "", editEnabled = false }) => {
-    const [state, setState] = useState({
-        value: defaultValue,
-        values: values ?? []
-    });
-
-    useEffect(() => {
-        if (!arraysAreEqual(values, state.values)) {
-            onChange(state.values);
-        }
-    }, [state.values])
-
-    /** @param {React.ChangeEvent<HTMLInputElement>} e */
-    const handleChange = (e, index = -1) => {
-        console.log(e, index)
-        if (index < 0)
-            setState({ ...state, value: e.target.value })
-        else {
-            values = [...state.values]
-            values[index] = e.target.value
-            setState({ ...state, values: values })
-        }
-    }
-
-    const handleAdd = () => {
-        setState({ 
-            ...state, 
-            value: defaultValue, 
-            values: [state.value, ...state.values]  
-        })
-    } 
-
-    const handleRemove = (index) => {
-        var values = [ ...state.values.slice(0, index), ...state.values.slice(index + 1) ]
-        setState({ ...state, values: values })
-    }
-
-    const rows = useMemo(() => (
-        state.values?.map((value, index) => (
-            <ListRow 
-                key={index} 
-                value={value} 
-                onClick={() => handleRemove(index)}
-                onChange={(e) => handleChange(e, index)}
-                editEnabled={editEnabled}
+    const toEditComponent = (item, handleChange) => {
+        return (
+            <input 
+                className={styles.input} 
+                value={item}
+                type={type}
+                onChange={(e) => handleChange(e.target.value)}
             />
-        ))
-    ), [state.values, values]);
+        )
+    }
+
+    const toComponent = (item, handleChange) => {
+        return editEnabled ? (
+            toEditComponent(item, handleChange)
+        ) : (
+            <div className={styles.rowContent}>
+                { item }
+            </div>
+        )
+    }
     
     return (
-        <div className={className ? `${styles.main} ${className}` : styles.main}>
-            <div className={styles.addRow}>
-                <input 
-                    className={styles.input} 
-                    value={state.value}
-                    type={type}
-                    onChange={handleChange}
-                />
-                <div 
-                    className={styles.button}
-                    onClick={handleAdd}
-                >
-                    <AddIcon sx={{ width: '100%' }}/>
-                </div>
-            </div>
-            <div className={styles.content}>
-                { rows }
-            </div>
-        </div>
-    )
-}
-
-/**
- * 
- * @param {{ 
- *  value: string,
- *  onClick: () => void,
- *  onChange: (e) => void
- *  type: string,
- *  editEnabled: boolean
- * }} 
- * @returns {JSX.Element}
- */
-const ListRow = ({ value, onClick, onChange, type, editEnabled }) => {
-    return (
-        <div className={styles.row}>
-            { editEnabled ? (
-                <input 
-                    className={styles.input} 
-                    value={value}
-                    type={type}
-                    onChange={onChange}
-                />
-            ) : (
-                <div className={styles.rowContent}>
-                    { value }
-                </div>
-            )}
-            <div 
-                className={styles.button}
-                onClick={onClick}
-            >
-                <RemoveIcon sx={{ width: '100%' }}/>
-            </div>
-        </div>
+        <ListTemplateMenu
+            className={className}
+            onChange={onChange}
+            toComponent={toComponent}
+            toEditComponent={toEditComponent}
+            defaultValue={defaultValue}
+            values={values}
+        />
     )
 }
 

@@ -1,17 +1,16 @@
 @import '../colors.scss';
 
 .createMenu {
-    @extend .box;
-
+    @include colorShadow();
+    margin: 5px;
     & > .text {
+        border-bottom: 2px solid map-get($palette, border);
         position: relative;
-        border-bottom: 1px solid black;
         height: 50px;
         padding-left: 30px;
 
         & > .backButton {
             @extend .button;
-            @extend .box;
 
             width: 70px;
             right: 5px;
@@ -19,7 +18,6 @@
 
         & > .confirmButton {
             @extend .button;
-            @extend .box;
 
             display: flex;
             align-items: center;
@@ -32,13 +30,14 @@
 }
 
 .editMenu {
+    @include colorShadow();
     @extend .box;
 
     width: min(60%, 600px);
 
     & > .text {
         position: relative;
-        border-bottom: 1px solid black;
+        border-bottom: 2px solid map-get($palette, border);
         height: 50px;
         padding-left: 15px;
 
@@ -65,22 +64,22 @@
 }
 
 .inputRow {
+    @include color(second);
     display: flex;
     align-items: center;
     position: relative;
-    border-bottom: 2px solid map-get($coral-palette, main);
+    border-bottom: 2px solid map-get($palette, main);
     padding-left: 10px;
-    background-color: map-get($coral-palette, light);
     font-weight: 200;
     height: 40px;
 
     & > input {
+        @include color(third);
         position: absolute;
         left: 180px;
         height: calc(100% - 6px);
         width: calc(100% - 183px);
         padding-left: 10px;
-        background-color: map-get($coral-palette, lighter);
         border: none;
     }
 
@@ -94,35 +93,21 @@
 }
 
 .text {
+    @include color(main);
+    @include colorText();
     display: flex;
     justify-content: left;
     align-items: center;
     user-select: none;
-    background-color: map-get($coral-palette, dark);
-    color: map-get($coral-palette, font);
     font-size: 22px;
     font-weight: 400;
 }
 
 .button {
+    @include colorShadow();
+    @include colorInteract(second);
     position: absolute;
     height: 35px;
     padding: 3px;
-    cursor: pointer;
-    background-color: map-get($coral-palette, light);
-
-    &:hover {
-        box-shadow: 0 0 3px 3px map-get($coral-palette, darker);
-    }
-
-    &:active {
-        background-color: map-get($coral-palette, dark);
-    }
-
-    &[disabled] {
-        opacity: 0.6;
-        border: 1px solid rgba(0, 0, 0, 0.6);
-        pointer-events: none;
-    }
 }
 

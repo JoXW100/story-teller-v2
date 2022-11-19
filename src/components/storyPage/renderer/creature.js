@@ -208,12 +208,10 @@ const CreatureRenderer = ({ metadata = {} }) => {
 
     useEffect(() => {
         if (metadata.spells) {
-            console.log(metadata.spells)
             fetch(`/api/database/getManyMetadata?storyId=${context.story.id}&fileIds=${metadata.spells}`)
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    console.log(res, metadata)
                     setSpells(() => (
                         ({ metadata }) => {
                             var data = { 

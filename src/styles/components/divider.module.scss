@@ -18,11 +18,11 @@ $width: 8px;
         cursor: ew-resize;
 
         &:hover {
-            background-color: rgb(226, 226, 226);
+            @include color(accents);
         }
 
         &:active {
-            background-color: rgb(226, 226, 226);
+            @include color(accents);
             cursor: ew-resize;
         }
     }

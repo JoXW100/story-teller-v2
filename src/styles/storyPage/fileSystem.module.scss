@@ -1,34 +1,26 @@
 @import '../colors.scss';
 
 .main {
+    @include color(third);
     display: flex;
     flex-direction: column;
-    background-color: map-get($cobalt-palette, lighter);
     height: 100%;
-    border-right: 1px solid map-get($cobalt-palette, border);
 
     & > .header {
+        @include color(second);
+        @include colorShadow();
         width: 100%;
-        border-bottom: 1px solid map-get($cobalt-palette, border);
-        background-color: map-get($cobalt-palette, light);
+        z-index: 100;
 
         & > * {
+            @include colorInteract(second);
+            @include colorText();
             display: inline-flex;
             align-items: center;
             justify-content: center;
             height: 30px;
             width: 30px;
-            color: map-get($cobalt-palette, darkest);
-            cursor: pointer;
             user-select: none;
-
-            &:hover {
-                color: map-get($cobalt-palette, dark);
-            }
-
-            &:active {
-                color: map-get($cobalt-palette, main);
-            }
         }
     }
 

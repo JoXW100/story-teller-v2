@@ -1,3 +1,4 @@
+@import '../colors.scss';
 
 .holder {
     display: block;
@@ -9,6 +10,7 @@
 }
 
 .input {
+    @include colorText();
     @extend .block;
     z-index: 11;
     caret-color: black;
@@ -83,6 +85,8 @@
 }
 
 .area {
+    @include color(document);
+    @include colorText();
     display: flex;
     white-space: pre;
     outline: none;

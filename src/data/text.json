@@ -15,11 +15,13 @@
             "editStoryPopup-header": "Edit Story",
             "editStoryPopup-confirmation": "Apply",
             "fileSystem-tooltip-file": "New file",
+            "storyPage-home": "Back to select story",
             "storyPage-recompile": "Recompile",
             "storyPage-openDiceMenu": "Open dice menu",
             "storyPage-closeDiceMenu": "Close dice menu",
             "storyPage-openRollHistoryMenu": "Open roll history menu",
             "storyPage-closeRollHistoryMenu": "Close roll history menu",
+            "storyPage-openSettingsMenu": "Open settings menu",
             "storyPage-failedLoadFile": "Could not load file",
             "storyPage-noSelectedFile": "Select a file to open",
             "storyPage-disableEditMode": "Disable edit mode",
@@ -49,7 +51,10 @@
             "roll-normal": "Flat",
             "roll-advantage": "Advantage",
             "roll-disadvantage": "Disadvantage",
-            "roll-crit": "Crit"
+            "roll-crit": "Crit",
+            "settingsPage-header": "Settings",
+            "settingsPage-close": "Close settings menu",
+            "settingsPage-palette": "Theme: "
         }
     }
 }

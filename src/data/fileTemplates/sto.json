@@ -15,8 +15,37 @@
                         "params": { "label": "Title", "key": "title" }
                     },
                     { 
+                        "type": "text", 
+                        "params": { "label": "Next ID", "key": "nextId" }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Prev ID", "key": "prevId" }
+                    },
+                    { 
                         "type": "textarea", 
                         "params": { "label": "Content", "key": "content" }
+                    },
+                    { 
+                        "type": "template-list", 
+                        "params": { 
+                            "label": "Parts", 
+                            "key": "parts", 
+                            "editEnabled": true,
+                            "template": {
+                                "type": "root",
+                                "content": [
+                                    { 
+                                        "type": "text", 
+                                        "params": { "label": "Title", "key": "parts.title" }
+                                    },
+                                    { 
+                                        "type": "textarea", 
+                                        "params": { "label": "Content", "key": "parts.content" }
+                                    }
+                                ]
+                            }
+                        }
                     }
                 ]
             },

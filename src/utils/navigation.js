@@ -45,6 +45,24 @@ class Navigation
         split.push('edit=' + editMode);
         return new URL(location.origin + location.pathname + '?' + split.join(','))
     }
+
+    /**
+     * @static
+     * @returns {URL}
+     */
+    static SettingsURL() {
+        return new URL(location.origin + '/settings?return=' 
+            + location.pathname + location.search)
+    }
+
+    /**
+     * @static
+     * @param {string} returnURL
+     * @returns {URL}
+     */
+     static SettingsReturnURL(returnURL) {
+        return new URL(location.origin + returnURL)
+    }
 }
 
 export default Navigation;

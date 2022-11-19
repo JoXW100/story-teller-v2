@@ -2,8 +2,9 @@ import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
 import { RollMethod } from '@enums/data';
 import Queue from 'utils/data/queue';
+import '@types/storyContext'
 
-/** @type {React.Context<import('@types/storyContext').StoryContextProvider>} */
+/** @type {React.Context<StoryContextProvider>} */
 export const Context = React.createContext({})
 
 /**
@@ -15,11 +16,10 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
         fetch('/api/database/getStory?storyId=' + storyId)
         .then((res) => res.json())
         .then((res) => {
-            if (res.success) {
-                dispatch({ type: 'initSet', data: res })
-                return;
+            if (!res.success) {
+                throw new Error(res.result)
             }
-            throw new Error(res.result)
+            dispatch({ type: 'initSet', data: res })
         })
         .catch((error) => {
             console.error(error);

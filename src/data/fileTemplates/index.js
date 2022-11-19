@@ -24,4 +24,14 @@ const Templates = {
     [FileType.Story]: StoryTemplate
 }
 
+export const CreateFileOptions = { 
+    [FileType.Document]: 'Document', 
+    [FileType.Creature]: "Creature", 
+    [FileType.Ability]: "Ability",
+    [FileType.Character]: "Character",
+    [FileType.Spell]: "Spell",
+    [FileType.Spell]: "Spell",
+    // [FileType.Story]: "Story"
+}
+
 export default Templates;

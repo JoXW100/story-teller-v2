@@ -1,0 +1,16 @@
+{
+    "name": "Dark",
+    "colors": {
+        "document": "#474747",
+        "background": "#202020",
+        "accents": "#bd7474",
+        "main": "#373737",
+        "second": "#5a5a5a",
+        "third": "#666666",
+        "forth": "#9a9a9a",
+        "text": "#dfdfdf",
+        "shadow": "#1f1f1f",
+        "border": "#1f1f1f",
+        "error": "#ff0000"
+    }
+}

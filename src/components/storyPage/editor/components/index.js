@@ -8,6 +8,7 @@ import List from './list'
 import Number from './number'
 import Option from './option';
 import Selection from './selection';
+import TemplateList from './templateList';
 
 export default {
     Boolean,
@@ -19,5 +20,6 @@ export default {
     List,
     Number,
     Option,
-    Selection
+    Selection,
+    TemplateList
 }

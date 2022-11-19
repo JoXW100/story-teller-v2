@@ -1,24 +1,24 @@
 @import '../colors.scss';
 
 .main {
+    @include color(background);
+    @include colorText();
     position: relative;
     display: flex;
-    overflow: hidden;
     width: 100%;
     height: 100%;
     align-items: flex-start;
     justify-content: center;
-    background: map-get($coral-palette, lighter);
 
     & > .userPanel {
         position: absolute;
-        height: 30px;
+        height: 45px;
         width: 100%;
         flex: 1;
     }
 
     & > .container {
-        margin: 50px;
+        margin: 65px;
         max-width: 30cm;
         flex: 1;
     }
@@ -29,14 +29,15 @@
     overflow: hidden;
 
     & > .headerBox {
-        @extend .box;
+        @include color(main);
+        @include colorShadow();
         height: 100px;
         margin-bottom: 20px;
-        background: map-get($coral-palette, dark);
 
         & > .text {
             height: 100%;
-            font-size: 50px;
+            font-size: 300%;
+            white-space: pre;
         }
     }
 
@@ -45,38 +46,25 @@
     }
 }
 
-.box {
-    border: 1px solid black;
-}
-
 .text {
+    @include colorText();
     display: flex;
     justify-content: center;
     align-items: center;
-    color: map-get($coral-palette, font);
     font-weight: 1;
     user-select: none;
 }
 
 .reconnect {
-    @extend .box;
+    @include colorInteract(main);
     @extend .text;
     
     flex-direction: column;
-    background: map-get($coral-palette, main);
     padding: 10px;
     height: 100px;
     margin: 3px;
     cursor: pointer;
 
-    &:hover {
-        box-shadow: 0 0 3px 3px map-get($coral-palette, darker);
-    }
-
-    &:active {
-        box-shadow: 0 0 3px 3px map-get($coral-palette, darkest);
-        background: map-get($coral-palette, dark);
-    }
     & > .icon {
         width: 40px;
         height: 40px;
@@ -89,15 +77,17 @@
 }
 
 .userPanel {
-    background: map-get($coral-palette, dark);
-    border-bottom: 1px solid map-get($coral-palette, border);
+    @include color(main);
+    @include colorShadow();
     display: flex;
     justify-content: right;
 }
 
 .logoutButton {
-    color: map-get($coral-palette, font);
+    @include colorText();
+    @include colorInteract(main);
     display: flex;
+    height: 100%;
     align-items: center;
     justify-content: center;
     padding: 3px 10px 0 10px;
@@ -106,9 +96,5 @@
 
     & > svg {
         margin-left: 5px;
-    }
-
-    &:hover {
-        background: map-get($coral-palette, darker);
     }
 }

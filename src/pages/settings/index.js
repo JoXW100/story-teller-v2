@@ -1,19 +1,12 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useUser } from '@auth0/nextjs-auth0';
+import { useValidation } from 'utils/handleUser'
+import SettingsPage from 'components/settingsPage/settingsPage';
 import Head from 'next/head'
 import styles from 'styles/home.module.scss'
-import LoginPage from 'components/loginPage/loginPage';
 
-const Page = () => {
+const Page = ({ props }) => {
     const router = useRouter();
-    const { user, error, isLoading } = useUser();
-
-    useEffect(() => {
-        if (user && !isLoading) {
-            router.push('../')
-        }
-    }, [user, isLoading])
+    const valid = useValidation(router);
 
     return (
         <div className={styles.container}>
@@ -24,7 +17,9 @@ const Page = () => {
             </Head>
 
             <main>
-                { isLoading ? null : <LoginPage/> }
+                { valid && 
+                    <SettingsPage returnURL={props?.return ?? ''}/>
+                }
             </main>
         </div>
     )

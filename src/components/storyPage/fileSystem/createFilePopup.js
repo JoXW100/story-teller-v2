@@ -9,6 +9,7 @@ import Localization from "classes/localization"
 import { closePopup } from "components/popupHolder";
 import { FileType } from "@enums/database";
 import { InputType } from '@types/storyPage';
+import { CreateFileOptions } from "data/fileTemplates";
 import styles from 'styles/storyPage/createFilePopup.module.scss'
 
 /**
@@ -84,14 +85,6 @@ const CreateFileContent = ({ callback }) => {
         closePopup()
     }
 
-    const options = { 
-        [FileType.Document]: 'Document', 
-        [FileType.Creature]: "Creature", 
-        [FileType.Ability]: "Ability",
-        [FileType.Character]: "Character",
-        [FileType.Spell]: "Spell"
-    }
-
     return (
         <>
             <div className={styles.inputRow}>
@@ -107,7 +100,7 @@ const CreateFileContent = ({ callback }) => {
                 <DropdownMenu 
                     className={styles.dropdown}
                     value={state.type} 
-                    values={options}
+                    values={CreateFileOptions}
                     onChange={(value) => setState({ ...state, type: value })}
                 />
             </div>

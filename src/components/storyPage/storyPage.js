@@ -1,14 +1,13 @@
 import React, { useContext, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { Context } from 'components/contexts/storyContext';
 import { D20Icon } from 'assets/dice';
-import RecompileIcon from '@mui/icons-material/CachedSharp';
 import HomeIcon from '@mui/icons-material/HomeSharp';
 import HistoryIcon from '@mui/icons-material/HistorySharp';
 import Logo from '@mui/icons-material/MenuBookSharp';
 import EnableEditIcon from '@mui/icons-material/EditSharp';
 import DisableEditIcon from '@mui/icons-material/EditOffSharp';
+import SettingsIcon from '@mui/icons-material/SettingsSharp';
 import Divider from 'components/divider'
 import FileView from './fileView';
 import FileSystem from "./fileSystem/fileSystem";
@@ -29,6 +28,7 @@ const StoryPage = () => {
                 <StoryName/>
                 <div className={styles.headerMenu}>
                     { /** <RecompileButton/> */}
+                    <SettingsButton/>
                     <EditModeButton/>
                     <DiceButton/>
                     <RollHistoryButton/>
@@ -53,15 +53,6 @@ const StoryName = () => {
         <div className={styles.name}>
             <Logo sx={{ height: "100%", margin: "0 5px 0 0" }}/>
             { context.story.name }
-        </div>
-    )
-}
-
-const RecompileButton = () => {
-    return (
-        <div className={styles.recompile} disabled>
-            <RecompileIcon sx={{ height: "100%", margin: "0 5px 0 0" }}/>
-            { Localization.toText('storyPage-recompile')}
         </div>
     )
 }
@@ -125,7 +116,7 @@ const HomeButton = () => {
         <Link href={Navigation.OriginURL()}>
             <div 
                 className={styles.home} 
-                tooltips="Back to select story"
+                tooltips={Localization.toText('storyPage-home')}
             >
                 <HomeIcon sx={{ height: "100%" }}/>
             </div>
@@ -160,4 +151,17 @@ const EditModeButton = () => {
     )
 }
 
-export default StoryPage
+const SettingsButton = () => {
+    return (
+        <Link href={Navigation.SettingsURL()}>
+            <div 
+                className={styles.settings} 
+                tooltips={Localization.toText('storyPage-openSettingsMenu')}
+            >
+                <SettingsIcon sx={{ height: "100%" }}/>
+            </div>
+        </Link>
+    )
+}
+
+export default StoryPage;

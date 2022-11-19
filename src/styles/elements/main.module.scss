@@ -1,18 +1,16 @@
 @import '../colors.scss';
 
-$border: map-get($cobalt-palette, border);
-
 .fontExtension {
+    @include colorText();
     font-weight: bold;
     font-size: small;
     text-align: center;
-    color: map-get($cobalt-palette, darkest);
 }
 
 .roundedExtension {
-    outline: 2px solid map-get($cobalt-palette, darkest);
+    @include color(forth);
+    @include colorShadow();
     border-radius: 10px;
-    background-color: map-get($cobalt-palette, lightest);
     padding: 0 5px;
     margin: 0 3px
 }
@@ -28,7 +26,6 @@ $border: map-get($cobalt-palette, border);
 
 .bold {
     font-weight: bold;
-    color: map-get($cobalt-palette, font);
 }
 
 .save {
@@ -44,7 +41,7 @@ $border: map-get($cobalt-palette, border);
 }
 
 .link {
-    color: map-get($cobalt-palette, darkest);
+    @include colorText();
     text-decoration: none;
     cursor: pointer;
 }
@@ -66,12 +63,12 @@ $border: map-get($cobalt-palette, border);
 }
 
 .line {
-    border-bottom: 2px solid $border;
+    border-bottom: 2px solid map-get($palette, border);
     margin: 5px 0;
 }
 
 .line-vertical {
-    border-right: 2px solid $border;
+    border-right: 2px solid map-get($palette, border);
     margin: 0 5px;
 }
 
@@ -109,14 +106,6 @@ $border: map-get($cobalt-palette, border);
     flex: 1;
     cursor: pointer;
 
-    &:hover {
-        background-color: map-get($cobalt-palette, light);
-    }
-
-    &:active {
-        background-color: map-get($cobalt-palette, main);
-    }
-
     & > span, & > svg {
         margin-left: 5px;
     }
@@ -131,11 +120,11 @@ $border: map-get($cobalt-palette, border);
 }
 
 .box {
-    background: map-get($cobalt-palette, lightest);
+    @include color(third);
     padding: 5px;
 
     &[border=true] {
-        border: 2px solid $border;
+        @include colorBorder();
     }
 }
 
@@ -155,14 +144,14 @@ $border: map-get($cobalt-palette, border);
     height: fit-content;
 
     &[border=true] {
-        border: 2px solid $border;
+        @include colorBorder();
     }
 
     & > img { width: 100%; }
 }
 
 .header {
-    color: map-get($cobalt-palette, font);
+    @include colorText();
     font-weight: bold;
     margin-top: 1px;
     margin-bottom: 1px;
@@ -170,7 +159,7 @@ $border: map-get($cobalt-palette, border);
     align-items: center;
 
     &[underline=true] {
-        border-bottom: 2px solid map-get($cobalt-palette, font);
+        border-bottom: 2px solid map-get($palette, border);
         margin-bottom: 6px;
     }
 }
@@ -193,17 +182,16 @@ $border: map-get($cobalt-palette, border);
 }
 
 .error {
+    @include color(error);
+    @include colorBorder();
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     flex: 1;
     height: 50px;
-    background-color: red;
-    border: 1px solid $border;
     font-size: large;
     font-weight: bold;
-    color: map-get($cobalt-palette, font);
 }
 
 .icon {
@@ -213,7 +201,7 @@ $border: map-get($cobalt-palette, border);
         width: auto;
         height: 1em;
         color: inherit;
-        fill: map-get($cobalt-palette, font-light);
+        fill: map-get($palette, forth);
     }
 }
 

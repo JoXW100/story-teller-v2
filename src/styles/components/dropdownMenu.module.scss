@@ -1,3 +1,4 @@
+@import '../colors.scss';
 $size: 30px;
 
 .main {
@@ -57,16 +58,9 @@ $size: 30px;
 }
 
 .button {
+    @include colorInteract(second);
     display: flex;
     align-items: center;
     justify-content: center;
     background: inherit;
-
-    &:hover {
-        background: #dadada;
-    }
-
-    &:active {
-        background: #b8b8b8;
-    }
 }

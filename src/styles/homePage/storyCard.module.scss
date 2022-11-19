@@ -3,10 +3,10 @@
 $iconSize: 25px;
 
 .main {
+    @include colorInteract(second);
+    @include colorShadow();
     display: block;
     position: relative;
-    border: 1px solid black;
-    background-color: map-get($coral-palette, lighter);
     cursor: pointer;
 
     & > .create {
@@ -33,14 +33,6 @@ $iconSize: 25px;
         @extend .icon;
         left: $iconSize + 6px;
     }
-
-    &:hover {
-        box-shadow: 0 0 3px 3px map-get($coral-palette, darker);
-    }
-
-    &:active {
-        box-shadow: 0 0 3px 3px map-get($coral-palette, darkest);
-    }
 }
 
 .create {
@@ -50,27 +42,25 @@ $iconSize: 25px;
 }
 
 .label {
+    @include color(main);
+    @include colorText();
+    @include colorShadow();
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     height: 40px;
-    background-color: map-get($coral-palette, light);
-    color: map-get($coral-palette, font);
-    border-bottom: 1px solid black;
 }
 
 .bottomText {
     position: absolute;
     bottom: 3px;
     height: 20px;
-    color: map-get($coral-palette, font-light);
     user-select: none;
     overflow: hidden;
 }
 
 .desc {
-    color: map-get($coral-palette, font);
     overflow: hidden;
 }
 
@@ -81,7 +71,6 @@ $iconSize: 25px;
     width: $iconSize;
     height: $iconSize;
     bottom: 3px;
-    color: map-get($coral-palette, font);
     user-select: none;
 
     & > SVG {
@@ -90,6 +79,6 @@ $iconSize: 25px;
     }
 
     &:hover {
-        color: map-get($coral-palette, font-light);
+        @include colorInteract(second);
     }
 }

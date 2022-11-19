@@ -19,5 +19,6 @@ export const EditInputType = {
     Selection: 'selection',
     Option: 'option',
     Enum: 'enum',
-    Boolean: 'boolean'
+    Boolean: 'boolean',
+    TemplateList: 'template-list'
 }

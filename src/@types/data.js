@@ -68,6 +68,15 @@
  */
 
 /**
+ * @typedef TemplateListParams
+ * @property {string} label
+ * @property {string} key
+ * @property {EditorTemplate<any>} template
+ * 
+ * @typedef {EditorTemplate<EditorTemplateParams & ListParams>} TemplateListTemplate
+ */
+
+/**
  * @template {string} T
  * @typedef OptionParams
  * @property {string} label

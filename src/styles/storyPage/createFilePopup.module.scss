@@ -4,13 +4,16 @@ $headerHeight: 35px;
 $navbarWidth: 35px;
 
 .main {
+    @include color(background);
+    @include colorText();
+    @include colorShadow();
     position: absolute;
     top: 80px;
-    background-color: map-get($cobalt-palette, light);
-    border: 1px solid map-get($cobalt-palette, border);
     width: min(60%, 600px);
 
     & > .header {
+        @include color(main);
+        @include colorShadow();
         position: relative;
         display: flex;
         align-items: center;
@@ -18,10 +21,8 @@ $navbarWidth: 35px;
         font-weight: 700;
         font-size: 18px;
         height: $headerHeight;
-        color: map-get($cobalt-palette, font);
-        background-color: map-get($cobalt-palette, main);
-        border-bottom: 1px solid map-get($cobalt-palette, border);
         user-select: none;
+        z-index: 100;
 
         & > SVG {
             height: $headerHeight;
@@ -33,12 +34,10 @@ $navbarWidth: 35px;
         & > .button {
             position: absolute;
             right: 0;
-            height: $headerHeight - 1;
-            width: $headerHeight - 1;
-            border-left: 1px solid map-get($cobalt-palette, border);
+            height: $headerHeight;
+            width: $headerHeight;
 
             & > SVG {
-                color: map-get($cobalt-palette, font-light);
                 height: 100%;
             }
         }
@@ -49,9 +48,9 @@ $navbarWidth: 35px;
         position: relative;
         
         & > .navigation {
+            @include color(third);
             display: block;
             width: $navbarWidth;
-            background-color: map-get($cobalt-palette, lighter);
 
             & > .icon {
                 width: $navbarWidth;
@@ -74,99 +73,76 @@ $navbarWidth: 35px;
 }
 
 .button {
+    @include colorInteract(second);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: map-get($cobalt-palette, darker);
-    cursor: pointer;
-    user-select: none;
-
-    &:hover {
-        background-color: map-get($cobalt-palette, dark);
-    }
-
-    &:active {
-        background-color: map-get($cobalt-palette, main);
-    }
-
-    &[disabled] {
-        background-color: rgba(map-get($cobalt-palette, darker), 0.5);
-        pointer-events: none;
-    }
 }
 
 .icon {
+    @include colorInteract(third);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: map-get($cobalt-palette, darkest);
     cursor: pointer;
     user-select: none;
 
-    &:hover {
-        color: map-get($cobalt-palette, dark);
-    }
-
-    &:active {
-        color: map-get($cobalt-palette, main);
-    }
-
     &[open] {
-        background-color: map-get($cobalt-palette, light);
+        @include colorInteract(second);
     }
 }
 
 .inputRow {
     @extend .input;
-
     height: 35px;
 
     & > div:first-child {
-        width: 100px;
+        width: 120px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        font-size: medium;
     }
 
     & > input {
+        @include color(document);
+        font: inherit;
+        font-size: small;
         border: none;
+        margin: 0;
         flex: 1;
         padding-left: 10px;
         height: 100%;
         width: 0;
-        color: map-get($cobalt-palette, font-dark);
-        background-color: map-get($cobalt-palette, lighter);
     }
 
     & > .button {
+        @include color(main);
         height: 100%;
         flex: 1;
         font-weight: 400;
-        color: map-get($cobalt-palette, font-light);
     }
 
     & > .dropdown {
-        background-color: map-get($cobalt-palette, lighter);
+        @include color(document);
         height: 30px;
 
         & > div:first-child {
             & > * > * {
+                @include colorInteract(forth);
                 padding: 3px 10px;
-                border: 1px solid map-get($cobalt-palette, lightest);
                 height: 30px;
-                &:hover {
-                    background-color: map-get($cobalt-palette, lightest);
-                }
             }
         }
 
         & > div:last-child {
-            background-color: map-get($cobalt-palette, dark);
+            @include color(main);
         }
     }
 }
 
 .inputArea {
+    @include colorText();
     @extend .input;
     height: 100%;
 
@@ -176,9 +152,10 @@ $navbarWidth: 35px;
         justify-content: center;
         flex-direction: column;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 10px);
+        margin: 5px;
         padding: 10px;
-        border: 1px dotted map-get($cobalt-palette, border);
+        border: 2px dotted map-get($palette, border);
 
         & > input {
             position: absolute;
@@ -193,7 +170,7 @@ $navbarWidth: 35px;
         }
     
         & > SVG {
-            color: rgba(map-get($cobalt-palette, font), 0.7);
+            color: rgba(map-get($palette, text), 0.7);
             height: calc(100% - 30px);
             width: 100%;
         }
@@ -202,7 +179,6 @@ $navbarWidth: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: map-get($cobalt-palette, font);
             user-select: none;
             height: 30px;
         }
@@ -210,15 +186,10 @@ $navbarWidth: 35px;
 }
 
 .input {
+    @include color(second);
+    @include colorText();
     display: flex;
     align-items: center;
-    padding: 3px;
-    border-bottom: 1px solid map-get($cobalt-palette, main);
-    background-color: map-get($cobalt-palette, light);
-    color: map-get($cobalt-palette, font-dark);
+    padding: 2.5px;
     font-weight: 200;
-
-    &:last-child {
-        border-bottom: none;
-    }
 }

@@ -1,13 +1,56 @@
+$palette: (
+    document: var(--color-document),
+    background: var(--color-background),
+    accents: var(--color-accents),
+    main: var(--color-main),
+    second: var(--color-second),
+    third: var(--color-third),
+    forth: var(--color-forth),
+    border: var(--color-border),
+    text: var(--color-text),
+    error: var(--color-error)
+);
+
+@mixin color($colorName) {
+    background-color: map-get($palette, $colorName);
+}
+
+@mixin colorText() {
+    color: var(--color-text);
+}
+
+@mixin colorShadow() {
+    box-shadow: var(--color-shadow) 0 1px 5px -1px;
+}
+
+@mixin colorBorder() {
+    border: 2px solid var(--color-border);
+}
+
+@mixin colorInteract($colorName) {
+    background-color: map-get($palette, $colorName);
+    cursor: pointer;
+    &:hover {
+        filter: brightness(105%);
+    }
+    &:active {
+        filter: brightness(110%);
+    }
+    &[disabled] {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
 
 $coral-palette: (
-    main: rgb(255, 163, 163),
-    light: rgb(250, 181, 181),
-    lighter: rgb(255, 198, 198),
-    dark: rgb(255, 147, 147),
-    darker: rgb(255, 138, 138),
-    darkest: rgb(241, 116, 116),
-    font: rgb(143, 63, 63),
-    font-light: rgb(189, 116, 116)
+    main: #ffa3a3,
+    light: #fab5b5,
+    lighter: #ffc6c6,
+    dark: #ff9393,
+    darker: #ff8a8a,
+    darkest: #f17474,
+    font: #763535,
+    font-light: #bd7474
 );
 
 $cobalt-palette: (
@@ -25,12 +68,12 @@ $cobalt-palette: (
 );
 
 $gray-palette: (
-    main: #9b9b9b,
+    main: #7c7c7c,
     light: #b6b6b6,
     lighter: #e6e6e6,
     dark: #727272,
     darker: #474747,
-    font: #0e0e0e,
-    font-light: #ffffff,
+    font: #202020,
+    font-light: #f0f0f0,
     border: #1f1f1f
 )

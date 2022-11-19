@@ -1,3 +1,5 @@
+@import '../colors.scss';
+
 $size: 20px;
 $height: 100px;
 
@@ -41,6 +43,7 @@ $height: 100px;
     }
     
     .content {
+        @include colorText();
         display: block;
         flex: 1;
         overflow-y: scroll;
@@ -54,6 +57,10 @@ $height: 100px;
             align-items: center;
             background-color: inherit;
             user-select: text;
+
+            &:not(:last-child) {
+                margin-bottom: 1px;
+            }
         
             .rowContent {
                 flex: 1;
@@ -70,18 +77,10 @@ $height: 100px;
 }
 
 .button {
+    @include colorInteract(second);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #e2e2e2;
     cursor: pointer;
     user-select: none;
-
-    &:hover {
-        background-color: #dadada;
-    }
-
-    &:active {
-        background-color: #b8b8b8;
-    }
 }

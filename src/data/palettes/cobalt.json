@@ -1,0 +1,16 @@
+{
+    "name": "Cobalt",
+    "colors": {
+        "document": "#ffffff",
+        "background": "#c8daff",
+        "accents": "#3366ff",
+        "main": "#77aaff",
+        "second": "#99c2ff",
+        "third": "#aeceff",
+        "forth": "#e4efff",
+        "text": "#0b1e42",
+        "shadow": "#111830",
+        "border": "#111830",
+        "error": "#ff0000"
+    }
+}
