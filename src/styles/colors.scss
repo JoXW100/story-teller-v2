@@ -8,7 +8,9 @@ $palette: (
     forth: var(--color-forth),
     border: var(--color-border),
     text: var(--color-text),
-    error: var(--color-error)
+    error: var(--color-error),
+    icons: var(--color-icons),
+    temp: #ffffff
 );
 
 @mixin color($colorName) {
@@ -20,7 +22,7 @@ $palette: (
 }
 
 @mixin colorShadow() {
-    box-shadow: var(--color-shadow) 0 1px 5px -1px;
+    box-shadow:  0 1px 5px -1px;
 }
 
 @mixin colorBorder() {
@@ -41,39 +43,3 @@ $palette: (
         pointer-events: none;
     }
 }
-
-$coral-palette: (
-    main: #ffa3a3,
-    light: #fab5b5,
-    lighter: #ffc6c6,
-    dark: #ff9393,
-    darker: #ff8a8a,
-    darkest: #f17474,
-    font: #763535,
-    font-light: #bd7474
-);
-
-$cobalt-palette: (
-    main: #77aaff,
-    light: #99c2ff,
-    lighter: #aeceff,
-    lightest: #c8daff,
-    dark: #5588ff,
-    darker: #3366ff,
-    darkest: #2953d1,
-    font: #1d388a,
-    font-light: #e4efff,
-    font-dark: #0b1e42,
-    border: #111830
-);
-
-$gray-palette: (
-    main: #7c7c7c,
-    light: #b6b6b6,
-    lighter: #e6e6e6,
-    dark: #727272,
-    darker: #474747,
-    font: #202020,
-    font-light: #f0f0f0,
-    border: #1f1f1f
-)

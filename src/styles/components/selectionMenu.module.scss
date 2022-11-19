@@ -43,7 +43,6 @@ $height: 100px;
     }
     
     .content {
-        @include colorText();
         display: block;
         flex: 1;
         overflow-y: scroll;

@@ -8,9 +8,10 @@
         "second": "#ff9393",
         "third": "#ffa3a3",
         "forth": "#fab5b5",
-        "text": "#763535",
+        "text": "#542525",
         "shadow": "#763535",
         "border": "#763535",
-        "error": "#ff0000"
+        "error": "#ff0000",
+        "icons": "#681d1d"
     }
 }

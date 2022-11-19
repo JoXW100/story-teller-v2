@@ -260,6 +260,7 @@ $size: 20px;
 
         & > input {
             @include color(document);
+            @include colorText();
             min-width: 0;
             border: none;
             outline: none;

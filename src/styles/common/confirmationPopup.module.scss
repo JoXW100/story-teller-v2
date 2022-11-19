@@ -1,24 +1,24 @@
 @import '../colors.scss';
 
-$headerHeight: 35px;
+$headerHeight: 45px;
 
 .main {
+    @include color(background);
+    @include colorText();
+    @include colorShadow();
     position: absolute;
     top: 80px;
-    background-color: map-get($gray-palette, light);
-    border: 1px solid map-get($gray-palette, border);
     width: min(60%, 600px);
 
     & > .header {
+        @include color(main);
+        @include colorShadow();
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 18px;
+        font-size: large;
         height: $headerHeight;
-        color: map-get($gray-palette, font);
-        background-color: map-get($gray-palette, dark);
-        border-bottom: 1px solid map-get($gray-palette, border);
         user-select: none;
 
         & > SVG {
@@ -38,33 +38,17 @@ $headerHeight: 35px;
 
         & > .buttonCancel {
             @extend .button;
-
         }
     }
 }
 
 .button {
+    @include colorInteract(third);
+    @include colorShadow();
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: map-get($gray-palette, main);
-    border: 1px solid map-get($gray-palette, border);
-    cursor: pointer;
-    user-select: none;
-    height: 30px;
-    margin: 3px;
+    height: 35px;
+    margin: 5px;
     flex: 1;
-
-    &:hover {
-        border: 1px solid map-get($gray-palette, dark);
-    }
-
-    &:active {
-        border: 1px solid map-get($gray-palette, main);
-    }
-
-    &[disabled] {
-        background-color: rgba(map-get($gray-palette, main), 0.5);
-        pointer-events: none;
-    }
 }
