@@ -2,13 +2,13 @@
     "content": [
         {
             "title": "Align",
-            "keyWords": ["align", "\\align", "center", "vertical", "horizontal", "direction"],
-            "text": "`\\align` [`direction`] { }\n ### Options\n - `direction` =\n   - `horizontal` (Default)\n   - `vertical`\n   - `h` (Short for `horizontal)`\n   - `v` (Short for `vertical`)\n ### Usage\n - `\\align` [`v`] { content } Aligns and centers 'content' vertically\n - `\\align` [`h`] { content } Aligns and centers 'content' horizontally"
+            "keyWords": ["align", "\\align", "center", "vertical", "horizontal", "direction", "weight"],
+            "text": "`\\align` [`direction`, `weight`] { }\n ### Options\n - `direction` =\n   - `h`, short for 'horizontal' (Default)\n   - `v`, short for 'vertical'\n   - `c`, short for 'center'\n   - A combination of the previous characters, etc: `hc`\n - `weight` =\n   - Numeric values, determines how large the element is when aligned with other elements, etc: `1` (Default)\n ### Usage\n - `\\align` [`v`] { content } Aligns 'content' vertically\n - `\\align` [`h`] { content } Aligns 'content' horizontally\n - `\\align` [`hc`] { content } Aligns and centers 'content' horizontally"
         },
         {
             "title": "Block",
-            "keyWords": ["block", "\\block", "section", "group"],
-            "text": "`\\block` { }\n ### Options\n None\n ### Usage\n - `\\block` { 'content' } Holds 'content' just as the root document does, used when removing alignments or grouping content"
+            "keyWords": ["block", "\\block", "section", "group", "weight", "width"],
+            "text": "`\\block` [`weight`, `width`] { }\n ### Options\n - `weight` =\n   - Numeric values, determines how large the element is when aligned with other elements, etc: `1` (Default)\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n ### Usage\n - `\\block` { 'content' } Holds 'content' just as the root document does, used when removing alignments or grouping content"
         },
         {
             "title": "Bold",
@@ -36,13 +36,18 @@
             "text": "`\\h1` [`underline`] { } (Title)\n\n`\\h2` [`underline`] { } (Section header)\n\n`\\h3` [`underline`] { } (Subsection header)\n ### Options\n - `underline` =\n   - false (Default)\n   - true\n ### Usage\n - `\\h1` [`true`] { text } 'text' will be displayed as a title with an underline, creates a line break\n - `\\h2` [`false`] { text } 'text' will be displayed as a section header, creates a line break"
         },
         {
+            "title": "Icon",
+            "keyWords": ["icon", "\\icon", "image", "picture", "figure", "tooltips"],
+            "text": "`\\icon` [`icon`, `tooltips`]\n ### Options\n - `icon` =\n   - The name of the icon to use\n   - Available icons: `advantage`, `disadvantage`, `crit`, `dragon`, `hand`, `cone`, `sphere`, `acid`, `bludgeoning`, `fire`, `piercing`, `poison`, `slashing`\n - `tooltips` =\n   - Text displayed when hovering over the icon\n ### Usage\n - `\\icon` [`sphere`] Draws a sphere icon in line with text, allowing it to be used within a text"
+        },
+        {
             "title": "Line",
             "keyWords": ["line", "\\line", "border", "vertical", "horizontal", "separator"],
             "text": "`\\line`\n ### Options\n None\n ### Usage\n - `\\line` Draws a line separator, the direction depends on the current element alignment"
         },
         {
             "title": "Image",
-            "keyWords": ["image", "\\image", "picture", "href", "border"],
+            "keyWords": ["image", "\\image", "picture", "figure", "href", "border"],
             "text": "`\\image` [`href`, `width`, `border`]\n ### Options\n - `href` =\n   - External url `https://...`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\border` [`https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png`] Displays the external google logo"
         },
         {
