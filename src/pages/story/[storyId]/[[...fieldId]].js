@@ -21,6 +21,7 @@ const Page = ({ props }) => {
                 <title>Story Teller 2</title>
                 <meta name="description" content="Story Teller 2" />
                 <link rel="icon" href="/favicon.ico" />
+                <meta name="google-site-verification" content="HLSInHx7aA7G6nENh3w_NwmSZlAPOkS7aUuSXNOeNOg" />
             </Head>
 
             <main>
