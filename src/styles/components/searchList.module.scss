@@ -1,0 +1,49 @@
+@import '../colors.scss';
+$searchSize: 30px;
+
+.main {
+    @include color(document);
+    display: block;
+    width: 100%;
+}
+
+.search {
+    @include color(third);
+    @include colorShadow();
+    height: $searchSize;
+    display: flex;
+    
+    & > text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+        font-size: 18px;
+        font-family: inherit;
+        font-weight: bold;
+        width: fit-content;
+    }
+
+    & > input {
+        @include color(forth);
+        display: flex;
+        height: $searchSize;
+        width: 100%;
+        min-width: 0;
+        flex-shrink: 0;
+        border: none;
+        outline: none;
+        font: inherit;
+        padding: 0 5px;
+        flex: 1;
+    }
+}
+
+.content {
+    height: calc(100% - $searchSize);
+    overflow-y: scroll;
+
+    & > *:last-child {
+        margin-bottom: 150px;
+    }
+}

@@ -1,0 +1,84 @@
+{
+    "content": [
+        {
+            "title": "Align",
+            "keyWords": ["align", "\\align", "center", "vertical", "horizontal", "direction"],
+            "text": "`\\align` [`direction`] { }\n ### Options\n - `direction` =\n   - `horizontal` (Default)\n   - `vertical`\n   - `h` (Short for `horizontal)`\n   - `v` (Short for `vertical`)\n ### Usage\n - `\\align` [`v`] { content } Aligns and centers 'content' vertically\n - `\\align` [`h`] { content } Aligns and centers 'content' horizontally"
+        },
+        {
+            "title": "Block",
+            "keyWords": ["block", "\\block", "section", "group"],
+            "text": "`\\block` { }\n ### Options\n None\n ### Usage\n - `\\block` { 'content' } Holds 'content' just as the root document does, used when removing alignments or grouping content"
+        },
+        {
+            "title": "Bold",
+            "keyWords": ["bold", "\\bold", "\\b", "b", "weight", "heavy"],
+            "text": "`\\bold` { }\n\n`\\b` { } (Short for `\\bold`)\n ### Options\n None\n ### Usage\n - `\\bold` { text } 'text' will be displayed in bold font"
+        },
+        {
+            "title": "Box",
+            "keyWords": ["box", "\\box", "frame", "block", "border", "color"],
+            "text": "`\\box` [`color`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n ### Usage\n - `\\box` [`white`] { content } creates a white box that contains 'content'"
+        },
+        {
+            "title": "Center",
+            "keyWords": ["center", "\\center", "align", "middle"],
+            "text": "`\\center` { }\n ### Options\n None\n ### Usage\n - `\\center` { content } Aligns 'content' to the center, vertically and horizontally"
+        },
+        {
+            "title": "Fill",
+            "keyWords": ["fill", "\\fill", "space", "align"],
+            "text": "`\\fill`\n ### Options\n None\n ### Usage\n - `\\fill` An empty element that fills the containing element in the alignment direction, can be used to evenly space elements in an alignment"
+        },
+        {
+            "title": "Header",
+            "keyWords": ["header", "h1", "h2", "h3", "\\h1", "\\h2", "\\h3", "title", "text"],
+            "text": "`\\h1` [`underline`] { } (Title)\n\n`\\h2` [`underline`] { } (Section header)\n\n`\\h3` [`underline`] { } (Subsection header)\n ### Options\n - `underline` =\n   - false (Default)\n   - true\n ### Usage\n - `\\h1` [`true`] { text } 'text' will be displayed as a title with an underline, creates a line break\n - `\\h2` [`false`] { text } 'text' will be displayed as a section header, creates a line break"
+        },
+        {
+            "title": "Line",
+            "keyWords": ["line", "\\line", "border", "vertical", "horizontal", "separator"],
+            "text": "`\\line`\n ### Options\n None\n ### Usage\n - `\\line` Draws a line separator, the direction depends on the current element alignment"
+        },
+        {
+            "title": "Image",
+            "keyWords": ["image", "\\image", "picture", "href", "border"],
+            "text": "`\\image` [`href`, `width`, `border`]\n ### Options\n - `href` =\n   - External url `https://...`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\border` [`https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png`] Displays the external google logo"
+        },
+        {
+            "title": "Link",
+            "keyWords": ["link", "\\link", "linkTitle", "\\linkTitle", "linkContent", "\\linkContent", "border", "fileId", "href"],
+            "text": "`\\link` [`href`] { }\n\n `\\linkTitle` [`fileId`]\n\n `\\linkContent` [`fileId`, `border`]\n ### Options\n - `href` =\n   - External url: `https://...`\n   - Story file/document id: `ffffffffffffffffffffffff`\n - `fileId` =\n   - Story file/document id: `ffffffffffffffffffffffff`\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\link` [`https://www.google.com/`] { text } Displays 'text' as a link that redirects to the google home page\n - `\\link` [`ffffffffffffffffffffffff`] { text } Displays 'text' as a link that redirects to the file\n - `\\linkTitle` [`ffffffffffffffffffffffff`] Displays the title of the linked file\n - `\\linkContent` [`ffffffffffffffffffffffff`] Displays a summary of the linked file's content. The file type determines how it is displayed"
+        },
+        {
+            "title": "Margin",
+            "keyWords": ["margin", "\\margin", "offset", "border"],
+            "text": "`\\margin` [`margin`] { }\n ### Options\n - `margin` =\n   - CSS units (cm, mm, px, % etc), each direction can be specified separately, separated by spaces\n   - Etc: `100%`, `10px`, `50% 5px`, `9px 8px 7px 6px` \n ### Usage\n - `\\margin` [`10px 5px 3px 2px`] { content } 'content' has a margin of `10px` on top, `5px` right, `3px` bottom, and `2px` left\n - `margin` [`10px`] { content } 'content' has a margin of `10px` on all sides"
+        },
+        {
+            "title": "Newline",
+            "keyWords": ["newline", "\\newline", "n", "\\n", "line break", "break", "space"],
+            "text": "`\\newline`\n\n `\\n` (Short for newline)\n ### Options\n None\n ### Usage\n - `\\n` insets a line break"
+        },
+        {
+            "title": "Roll",
+            "keyWords": ["roll", "\\roll", "dice", "\\dice", "d4", "d6", "d8", "d10", "d12", "d20", "mod", "num", "mode"],
+            "text": "`\\roll` [`dice`, `num`, `mod`, `mode`]\n ### Options\n - `dice` =\n   - The size of the dice to use, must be an integer value greater than 0, `20` (Default)\n - `num` = \n   - The number of dice to roll, must be an integer value greater than 0, `1` (Default)\n - `mod` =\n   - The fixed modifier applied, must be an integer value, `0` (Default)\n - `mode` =\n   - `dice` (Default if `dice` ≠ 20)\n   - `mod` (Default if `dice` = 20)\n   - `dmg`\n ### Usage\n - `\\roll` [`10`, `num`: `2`, `mod`: `-1`] Draws a dice roll element with the text `2d10 - 1` displayed, and has the following context menu choices: 'Flat', 'Advantage', and 'Disadvantage'\n - `\\roll` [`12`, `num`: `3`, `mod`: `1`, `mode`: `dmg`] Draws a dice roll figure with the text `3d12 + 1` displayed, and has the following context choices: 'Flat', and 'Crit'\n - `\\roll` [`mod`: 1] Draws a dice roll figure with the text `+1` displayed, and has the following context choices: 'Flat', 'Advantage', and 'Disadvantage'"
+        },
+        {
+            "title": "Save",
+            "keyWords": [""],
+            "text": "`\\margin` [`margin`] { }\n ### Options\n - `margin` =\n   - CSS units (cm, mm, px, % etc), each direction can be specified separately, separated by spaces\n   - Etc: `100%`, `10px`, `50% 5px`, `9px 8px 7px 6px` \n ### Usage\n - `\\margin` [`10px 5px 3px 2px`] { content } 'content' has a margin of `10px` on top, `5px` right, `3px` bottom, and `2px` left\n - `margin` [`10px`] { content } 'content' has a margin of `10px` on all sides"
+        },
+        {
+            "title": "Set",
+            "keyWords": ["set, \\set, variable, assign, value"],
+            "text": "`\\set` [`identifier`] { value }\n ### Options\n - `identifier` =\n   - The name of the variable to assign a value to\n ### Usage\n - `\\set` [`var`] { test } Sets the variable `$var` to 'test'"
+        },
+        {
+            "title": "Toggle",
+            "keyWords": ["toggle, \\toggle, variable, switch"],
+            "text": "`\\toggle` [`content`, `alt`, `state`]\n ### Options\n - `content` =\n   - The name of the variable to display if `state` = `false`\n - `alt` =\n   - The name of the variable to display if `state` = `true`\n - `state` =\n   - `false` (Default)\n   - `true`\n ### Usage\n - `\\toggle` [`a`, `alt`: `b`] Displays the content of variable `$a` and when clicked swaps to display the content of variable `$b`"
+        }
+    ]
+}

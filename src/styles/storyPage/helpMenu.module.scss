@@ -1,0 +1,110 @@
+@import '../colors.scss';
+
+$headerSize: 50px;
+
+.background {
+    position: absolute;
+    background-color: #00000075;
+    z-index: 100;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.main {
+    @include color(document);
+    @include colorShadow();
+    @include colorText();
+    display: block;
+    overflow-y: hidden;
+    margin: 10px 15% 0 15%;
+    height: calc(100% - 10px);
+}
+
+.header {
+    @include color(main);
+    @include colorShadow();
+    @include colorText();
+    margin-bottom: 1px;
+    position: relative;
+    height: $headerSize;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 26px;
+    user-select: none;
+}
+
+.closeBtn {
+    @include colorInteract(second);
+    position: absolute;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    width: $headerSize;
+    height: $headerSize;
+    user-select: none;
+
+    & > SVG {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.item {
+    @include color(forth);
+    @include colorText();
+    display: block;
+    width: calc(100% - 5px);
+    height: fit-content;
+    min-height: 30px;
+    margin: 2.5px 0;
+
+    p {
+        margin: 5px 0;
+    }
+
+    ul {
+        margin: 5px 0;
+    }
+
+    h3 {
+        margin: 10px 0;
+    }
+
+    code {
+        @include color(third);
+        @include colorShadow();
+        padding: 0 2px;
+    }
+}
+
+.itemContent {
+    @include color(document);
+    width: 100%;
+    height: fit-content;
+    padding: 2.5px 20px;
+}
+
+.itemTitle {
+    @include color(third);
+    @include colorShadow();
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 20px;
+    z-index: 10;
+    margin-bottom: 3px;
+    padding: 2px 0;
+}
+
+.list {
+    height: calc(100% - $headerSize - 1px);
+}

@@ -51,6 +51,7 @@ SVG {
     position: relative;
 
     &:hover {
+        z-index: 9000;
         /* Arrow above */
         &::before {
             display: block;

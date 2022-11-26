@@ -8,6 +8,7 @@ import Logo from '@mui/icons-material/MenuBookSharp';
 import EnableEditIcon from '@mui/icons-material/EditSharp';
 import DisableEditIcon from '@mui/icons-material/EditOffSharp';
 import SettingsIcon from '@mui/icons-material/SettingsSharp';
+import HelpIcon from '@mui/icons-material/QuestionMarkSharp';
 import Divider from 'components/divider'
 import FileView from './fileView';
 import FileSystem from "./fileSystem/fileSystem";
@@ -22,16 +23,20 @@ import '@types/fileContext'
  * @returns {JSX.Element}
  */
 const StoryPage = () => {
+    const [context, dispatch] = useContext(Context);
     return (
         <div className={styles.main}>
             <div className={styles.header}>
-                <StoryName/>
+                <div className={styles.name}>
+                    <Logo/>
+                    { String(context.story.name) }
+                </div>
                 <div className={styles.headerMenu}>
-                    { /** <RecompileButton/> */}
+                    <HelpMenuButton dispatch={dispatch}/>
                     <SettingsButton/>
-                    <EditModeButton/>
+                    <EditModeButton editEnabled={context.editEnabled}/>
                     <DiceButton/>
-                    <RollHistoryButton/>
+                    <RollHistoryButton disabled={context.rollHistory.length == 0}/>
                     <HomeButton/>
                 </div>
             </div>
@@ -47,22 +52,35 @@ const StoryPage = () => {
     )
 }
 
-const StoryName = () => {
-    const [context] = useContext(Context);
+/**
+ * 
+ * @param {{ dispatch: StoryContextDispatch }} 
+ * @returns {JSX.Element}
+ */
+const HelpMenuButton = ({ dispatch }) => {
+
+    const handleClick = () => {
+        dispatch.openHelpMenu()
+    }
+
     return (
-        <div className={styles.name}>
-            <Logo sx={{ height: "100%", margin: "0 5px 0 0" }}/>
-            { context.story.name }
+        <div 
+            className={styles.help} 
+            tooltips={Localization.toText('storyPage-helpMenu')}
+            onClick={handleClick}
+        >
+            <HelpIcon/>
         </div>
     )
 }
 
-const RollHistoryButton = () => {
-    const [context] = useContext(Context)
+/**
+ * @param {{ disabled: boolean }} 
+ * @returns {JSX.Element}
+ */
+const RollHistoryButton = ({ disabled }) => {
     const [open, setOpen] = useState(false); 
     const [toggled, setToggled] = useState(false);
-
-    const disabled = context.rollHistory.length > 0 ? undefined : true;
     const isOpen = (toggled || open) ? true : undefined;
 
     const HandleClick = () => setToggled((toggled) => !toggled);
@@ -73,7 +91,7 @@ const RollHistoryButton = () => {
         <div className={styles.holder}>
             <div 
                 className={styles.rollHistory}
-                disabled={disabled}
+                disabled={disabled ? true : undefined}
                 open={isOpen}
                 tooltips={toggled 
                     ? Localization.toText('storyPage-closeRollHistoryMenu')
@@ -124,23 +142,29 @@ const HomeButton = () => {
     )
 }
 
-const EditModeButton = () => {
-    const [context] = useContext(Context)
+/**
+ * 
+ * @param {{ editEnabled: boolean }} 
+ * @returns {JSX.Element}
+ */
+const EditModeButton = ({ editEnabled }) => {
     const data = useMemo(() => {
         var data = {};
-        if (context.editEnabled) {
+        if (editEnabled) {
+            data.href = Navigation.EditModeURL(false)
             data.tooltips = Localization.toText('storyPage-disableEditMode')
             data.icon = DisableEditIcon
         }
         else {
+            data.href = Navigation.EditModeURL(true)
             data.tooltips = Localization.toText('storyPage-enableEditMode')
             data.icon = EnableEditIcon
         }
         return data;
-    }, [context.editEnabled])
+    }, [editEnabled])
     
     return (
-        <Link href={Navigation.EditModeURL(!context.editEnabled)}>
+        <Link href={data.href}>
             <div 
                 className={styles.editMode} 
                 tooltips={data.tooltips}

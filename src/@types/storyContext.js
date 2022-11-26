@@ -11,6 +11,8 @@
  *      collection: import('utils/data/diceCollection').default, 
  *      method: import('@enums/data').RollMethod
  *  ) => void} roll
+ * @property {() => void} openHelpMenu
+ * @property {() => void} closeHelpMenu
  */
 
 /**

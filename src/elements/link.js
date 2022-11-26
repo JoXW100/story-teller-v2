@@ -27,6 +27,14 @@ const validateOptions2 = (options) => {
     });
 }
 
+const validOptions3 = ['fileId'];
+const validateOptions3 = (options) => {
+    Object.keys(options).forEach((key) => {
+        if (!validOptions2.some((x) => x === key))
+            throw new ParseError(`Unexpected link option: '${key}'`);
+    });
+}
+
 const LinkComponent = ({ href, className, children }) => {
     return href ? (
         <a href={href} className={className}>
@@ -196,8 +204,8 @@ export const element = {
     'linkTitle': {
         type: 'linkTitle',
         defaultKey: 'fileId',
-        validOptions: validOptions2,
+        validOptions: validOptions3,
         toComponent: LinkTitleElement,
-        validateOptions: validateOptions2
+        validateOptions: validateOptions3
     }
 }

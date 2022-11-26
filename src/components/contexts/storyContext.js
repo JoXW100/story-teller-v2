@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
 import { RollMethod } from '@enums/data';
 import Queue from 'utils/data/queue';
+import HelpMenu from 'components/storyPage/helpMenu';
 import '@types/storyContext'
 
 /** @type {React.Context<StoryContextProvider>} */
@@ -59,6 +60,11 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
                 
             case 'roll':
                 return { ...state };
+            
+            case 'setHelpOpen':
+                return state.helpMenuOpen == action.data 
+                    ? state
+                    : { ...state, helpMenuOpen: action.data }
 
             default:
                 return state
@@ -71,7 +77,8 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
         editEnabled: true,
         story: null,
         fileId: null,
-        rollHistory: new Queue(10)
+        rollHistory: new Queue(10),
+        helpMenuOpen: false
     })
 
     useEffect(() => storyId && dispatch({ type: 'init' }), [storyId]);
@@ -83,9 +90,12 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
             roll: (collection, method = RollMethod.Normal) => { 
                 state.rollHistory.add({ result: collection.roll(method), time: Date.now() })
                 dispatch({ type: 'roll' });
-            }
+            },
+            openHelpMenu: () => dispatch({ type: 'setHelpOpen', data: true }),
+            closeHelpMenu: () => dispatch({ type: 'setHelpOpen', data: false })
         }]}>
             { !state.loading && state.story && children }
+            { state.helpMenuOpen && <HelpMenu/>}
         </Context.Provider>
     )
 }

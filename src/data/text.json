@@ -16,6 +16,7 @@
             "editStoryPopup-confirmation": "Apply",
             "fileSystem-tooltip-file": "New file",
             "storyPage-home": "Back to select story",
+            "storyPage-helpMenu": "Open help menu",
             "storyPage-recompile": "Recompile",
             "storyPage-openDiceMenu": "Open dice menu",
             "storyPage-closeDiceMenu": "Close dice menu",
@@ -54,7 +55,10 @@
             "roll-crit": "Crit",
             "settingsPage-header": "Settings",
             "settingsPage-close": "Close settings menu",
-            "settingsPage-palette": "Theme: "
+            "settingsPage-palette": "Theme: ",
+            "helpMenu-close": "Close help menu",
+            "helpMenu-title": "Help Menu",
+            "helpMenu-prompt": "Search: "
         }
     }
 }

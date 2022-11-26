@@ -10,7 +10,7 @@
         "forth": "#9a9a9a",
         "text": "#dfdfdf",
         "shadow": "#1f1f1f",
-        "border": "#1f1f1f",
+        "border": "#ffffff",
         "error": "#ff0000",
         "icons": "#ffffff"
     }

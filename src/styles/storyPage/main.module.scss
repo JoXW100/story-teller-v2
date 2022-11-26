@@ -37,6 +37,11 @@ $entryWidth: 250px;
         font-weight: 700;
         font-size: 20px;
         user-select: none;
+
+        & > SVG {
+            height: 100%;
+            margin: 0 5px 0 0;
+        }
     }
 }
 
@@ -75,6 +80,12 @@ $entryWidth: 250px;
     justify-content: center;
     margin-left: 1px;
     user-select: none;
+}
+
+.help {
+    @extend .headerButton;
+    height: $headerHeight - 1;
+    width: $headerHeight;
 }
 
 .dice {

@@ -30,7 +30,6 @@ $numWidth: 15px;
     @include colorShadow();
     @extend .interactive;
 
-    position: relative;
     border-radius: $width / 2.0;
     margin-bottom: 2.5px;
     padding: 4px;
