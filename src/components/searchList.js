@@ -24,7 +24,7 @@ const SearchList = ({ className, items, prompt }) => {
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div className={styles.search}>
-                <text> { prompt } </text>
+                <div className={styles.text}> { prompt } </div>
                 <input value={search} onChange={handleChange}/>
             </div>
             <div className={styles.content}>

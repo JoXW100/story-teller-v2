@@ -7,7 +7,6 @@ import SearchList from 'components/searchList';
 import styles from 'styles/storyPage/helpMenu.module.scss';
 
 const helpData = require('data/help.json');
-console.log(helpData)
 
 const HelpMenu = () => {
     const [context, dispatch] = useContext(Context)

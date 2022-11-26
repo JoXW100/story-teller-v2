@@ -1,12 +1,17 @@
+import React from 'react';
 import styles from 'styles/components/textEditor.module.scss';
 
 /**
  * 
- * @param {{ text: string, handleInput: (e: React.KeyboardEvent<HTMLElement>) => void}} 
+ * @param {{ 
+ *  text: string, 
+ *  handleInput: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void,
+ *  handleContext: (e: React.MouseEvent<HTMLTextAreaElement>) => void
+ * }} 
  * @returns {JSX.Element}
  */
-const TextEditor = ({ text = "Hello World", handleInput }) => {
-
+const TextEditor = ({ text = "Hello World", handleInput, handleContext }) => {
+    
     /** @param {React.KeyboardEvent<HTMLTextAreaElement>} e */
     const handleKey = (e) => {
         if (e.code === 'Tab') {
@@ -24,6 +29,7 @@ const TextEditor = ({ text = "Hello World", handleInput }) => {
                 className={styles.area}
                 value={text}
                 onChange={handleInput}
+                onContextMenu={handleContext}
                 onKeyDown={handleKey}
                 placeholder={"Enter text here"}
                 spellCheck

@@ -58,7 +58,17 @@
             "settingsPage-palette": "Theme: ",
             "helpMenu-close": "Close help menu",
             "helpMenu-title": "Help Menu",
-            "helpMenu-prompt": "Search: "
+            "helpMenu-prompt": "Search: ",
+            "editor-insert": "Insert...",
+            "editor-copy": "Copy selection",
+            "editor-paste": "Paste from clipboard",
+            "editor-insert-align": "Align",
+            "editor-insert-block": "Block",
+            "editor-insert-bold": "Bold",
+            "editor-insert-box": "Box",
+            "editor-insert-link": "Link",
+            "editor-insert-linkTitle": "Link title",
+            "editor-insert-linkContent": "Link content"
         }
     }
 }

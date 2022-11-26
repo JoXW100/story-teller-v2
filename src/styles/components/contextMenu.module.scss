@@ -3,33 +3,60 @@
 .main {
     @include color(document);
     @include colorText();
+    @include colorShadow();
     display: block;
     position: absolute;
     z-index: 1000;
     width: 240px;
     height: auto;
+}
 
-    & > * {
-        @include colorInteract(document);
-        position: relative;
-        padding: 2.5px 10px 2.5px 2px;
-        height: 26px;
-        user-select: none;
-        width: 100%;
-        
-        & > SVG {
+.item {
+    @include colorInteract(document);
+    position: relative;
+    padding: 2.5px 10px 2.5px 2px;
+    height: 26px;
+    user-select: none;
+    width: 100%;
+    
+    & > SVG {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+    }
+    
+    & > .text {
+        position: absolute;
+        left: 25px;
+        width: calc(100% - 20px);
+        font-weight: 100;
+        white-space: pre;
+        text-overflow: clip;
+    }
+
+    &[content=true] {
+        &:after {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            right: -3px;
+            top: calc(50% - 5px);
+            border-color: transparent transparent transparent map-get($palette, icons);
+            border-width: 5px;
+            border-style: solid;
+            content: " ";
         }
 
-        & > div {
-            position: absolute;
-            left: 25px;
-            width: calc(100% - 20px);
-            font-weight: 100;
-            white-space: pre;
-            text-overflow: clip;
+        &:hover {
+            @include colorInteract(forth);
+            & > div { visibility: visible; }
+        }
+        
+        & > .content {
+            @include colorShadow();
+            visibility: hidden;
+            display: block;
+            width: 100%;
+            height: fit-content;
+            transform: translateX(calc(100% + 10px)) translateY(-2.5px);
         }
     }
 }

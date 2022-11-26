@@ -7,6 +7,7 @@ import styles from 'styles/components/contextMenu.module.scss'
  * @property {string} text
  * @property {JSX.Element} icon
  * @property {() => void} action
+ * @property {[ContextRowData]} content
  */
 
 /**
@@ -15,6 +16,7 @@ import styles from 'styles/components/contextMenu.module.scss'
  * @property {boolean} interrupt 
  * @property {{ left: number, top: number }} anchors 
  * @property {[ContextRowData]} content 
+ * @property {Object.<string, any>} data
  */
 
 /**
@@ -22,14 +24,15 @@ import styles from 'styles/components/contextMenu.module.scss'
  * @param {{ x: number, y: number }} anchors
  * @param {?boolean} interrupt
  */
-export const openContext = (content, anchors, interrupt = true) => {
+export const openContext = (content, anchors, interrupt = true, data = {}) => {
     document.dispatchEvent(new CustomEvent('contextMenu', {
         bubbles: true,
         detail: {
             show: true,
             interrupt: interrupt,
             anchors: { left: anchors.x, top: anchors.y },
-            content: content
+            content: content,
+            data: data
         }
     }))
 }
@@ -39,7 +42,8 @@ const ContextMenu = () => {
     const [state, setState] = useState({
         show: false,
         anchors: { left: 0, top: 9 },
-        content: []
+        content: [],
+        data: {}
     })
     
     const clickHandler = () => {
@@ -62,7 +66,8 @@ const ContextMenu = () => {
         (!state.show || e.detail.interrupt) && setState({
             show: e.detail.show, 
             anchors: e.detail.anchors, 
-            content: e.detail.content
+            content: e.detail.content,
+            data: e.detail.data
         })
     }
 
@@ -89,18 +94,31 @@ const ContextMenu = () => {
             className={styles.main} 
             style={state.anchors}
         >
-            { state.content.map((row, index) => (
-                <div
-                    key={index}
-                    onContextMenu={(e) => e.preventDefault()} 
-                    onClick={row.action}
-                >
-                    { row.icon && <row.icon/> }
-                    <div> { row.text } </div>
-                </div>
-            ))}
+            { state.content.map((data, index) => <ContextMenuItem key={index} data={data}/>)}
         </div>
     ) : null
+}
+
+/**
+ * 
+ * @param {{ identifier: any, data: ContextRowData }} 
+ * @returns {JSX.Element}
+ */
+const ContextMenuItem = ({ data }) => {
+    return (
+        <div
+            className={styles.item}
+            onContextMenu={(e) => e.preventDefault()}
+            content={data.content ? "true": undefined}
+            onClick={data.action}
+        >
+            { data.icon && <data.icon/> }
+            <div className={styles.text}> { data.text } </div>
+            <div className={styles.content}>
+                { data.content?.map((data, index) => <ContextMenuItem key={index} data={data}/>) }
+            </div>
+        </div>
+    )
 }
 
 export default ContextMenu;
