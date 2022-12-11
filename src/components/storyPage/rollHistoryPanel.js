@@ -70,7 +70,7 @@ const HistoryRollEntry = ({ entry }) => {
             <div key={index} chosen={(result.selectedIndex === index).toString()}>
                 { res.values.map((res, key) => (
                     <div key={key}>
-                        {`${res.num}${res.dice.text} ⟶ ${res.result}`}
+                        {`${res.num}${res.dice.text} ⟶ ${res.result.join(' ')}`}
                     </div>
                 ))}
             </div>

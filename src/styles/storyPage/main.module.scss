@@ -8,7 +8,8 @@ $entryWidth: 250px;
     @include colorText();
     display: block;
     position: relative;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: auto;
     width: 100%;
     height: 100%;
 
@@ -29,6 +30,7 @@ $entryWidth: 250px;
     z-index: 100;
     display: flex;
     justify-content: left;
+    min-width: fit-content;
 
     & > .name {
         display: flex;
@@ -53,24 +55,6 @@ $entryWidth: 250px;
     flex: 1;
     height: 100%;
     z-index: 100;
-
-    & > .home {
-        @extend .headerButton;
-        height: $headerHeight;
-        width: $headerHeight;
-    }
-
-    & > .settings {
-        @extend .headerButton;
-        height: $headerHeight;
-        width: $headerHeight;
-    }
-
-    & > .editMode {
-        @extend .headerButton;
-        height: $headerHeight;
-        width: $headerHeight;
-    }
 }
 
 .headerButton {
@@ -78,35 +62,51 @@ $entryWidth: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 1px;
     user-select: none;
+    height: $headerHeight;
+    width: $headerHeight;
 }
 
-.help {
+.editMode {
     @extend .headerButton;
-    height: $headerHeight - 1;
-    width: $headerHeight;
+    margin-left: 1px;
+}
+
+.settings {
+    @extend .headerButton; 
+    margin-left: 1px;
+}
+
+.home { 
+    @extend .headerButton;
+    margin-left: 1px;
+}
+
+.help { 
+    @extend .headerButton;
+    margin-left: 1px;
 }
 
 .dice {
     @extend .headerButton;
     padding: 3px;
-    height: $headerHeight - 1;
-    width: $headerHeight;
+    margin-left: 1px;
 }
 
 .rollHistory {
     @extend .headerButton;
-    height: $headerHeight;
-    width: $headerHeight;
-
-    &[open] {
-        width: $entryWidth;
-    }
 }
 
 .holder {
     position: relative;
+    margin-left: 1px;
+
+    &[open] {
+        @include colorShadow();
+        & > :first-child {
+            width: $entryWidth;
+        }
+    }
 }
 
 .invalidFile {

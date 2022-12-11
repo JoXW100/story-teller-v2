@@ -290,16 +290,16 @@ const CharacterRenderer = ({ metadata = {} }) => {
                     <div><Elements.Bold>Traits </Elements.Bold> { traits }</div>
                     <Elements.Line/>
                     <Elements.Header3>Appearance</Elements.Header3>
-                    { metadata.appearance }
+                    <Elements.Text> { metadata.appearance } </Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>Description</Elements.Header3>
-                    { metadata.description }
+                    <Elements.Text> { metadata.description } </Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>History</Elements.Header3>
-                    { metadata.history }
+                    <Elements.Text> { metadata.history } </Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>Notes</Elements.Header3>
-                    { metadata.notes }
+                    <Elements.Text> { metadata.notes } </Elements.Text>
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>

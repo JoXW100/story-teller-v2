@@ -27,6 +27,8 @@
             "storyPage-noSelectedFile": "Select a file to open",
             "storyPage-disableEditMode": "Disable edit mode",
             "storyPage-enableEditMode": "Enable edit mode",
+            "storyPage-dicePanel-roll": "Roll",
+            "storyPage-dicePanel-rollTooltips": "Roll selected dice",
             "create-fileTooltips": "New File",
             "create-folderTooltips": "New Folder",
             "create-uploadTooltips": "Upload",

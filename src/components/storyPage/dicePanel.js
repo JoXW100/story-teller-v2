@@ -3,6 +3,7 @@ import { Context } from 'components/contexts/storyContext';
 import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import styles from 'styles/storyPage/dicePanel.module.scss';
+import Localization from 'classes/localization';
 
 /**
  * 
@@ -25,6 +26,18 @@ const DicePanel = () => {
 
     return (
         <div className={styles.holder}>
+            
+            { state.collection.some((x) => x.num > 0) &&  (
+                <div className={styles.rollBackground}> 
+                    <div 
+                        className={styles.roll}
+                        tooltips={Localization.toText("storyPage-dicePanel-rollTooltips")}
+                        onClick={handleRoll}
+                    >
+                        { Localization.toText("storyPage-dicePanel-roll") }
+                    </div> 
+                </div>
+            )}
             <div className={styles.main}>
                 {
                     dice.map((dice, index) => (
@@ -37,21 +50,12 @@ const DicePanel = () => {
                     ))
                 }
             </div>
-            { state.collection.some((x) => x.num > 0) &&  (
-                <div 
-                    className={styles.roll}
-                    onClick={handleRoll}
-                    tooltips="Roll selected dice"
-                > 
-                    Roll 
-                </div>
-            )}
         </div>
     )
 }
 
 /**
- * @param {{ dice: Dice, num: number, onClick: (dice: Dice) => void }} 
+ * @param {{ dice: Dice, num: number, onClick: (dice: Dice) => void }}
  * @returns {JSX.Element}
  */
 const DiceItem = ({ dice, num, onClick }) => {

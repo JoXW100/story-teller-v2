@@ -5,14 +5,12 @@ $entryWidth: 250px;
 
 .main {
     @include color(background);
-    @include colorShadow();
     z-index: 1000;
     position: absolute;
     display: flex;
     flex-direction: column;
     top: 40px;
-    left: 1px;
-    width: $entryWidth;
+    width: 100%;
 }
 
 .entry {
@@ -44,7 +42,6 @@ $entryWidth: 250px;
     overflow: hidden;
 
     & > * {
-        white-space: nowrap;
         padding: 1px 3px;
         @include color(third);
 

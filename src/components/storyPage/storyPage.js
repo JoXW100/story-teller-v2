@@ -88,11 +88,10 @@ const RollHistoryButton = ({ disabled }) => {
     const handleClose = () => setOpen(false);
 
     return (
-        <div className={styles.holder}>
+        <div className={styles.holder} open={isOpen}>
             <div 
                 className={styles.rollHistory}
                 disabled={disabled ? true : undefined}
-                open={isOpen}
                 tooltips={toggled 
                     ? Localization.toText('storyPage-closeRollHistoryMenu')
                     : Localization.toText('storyPage-openRollHistoryMenu')}
@@ -149,22 +148,21 @@ const HomeButton = () => {
  */
 const EditModeButton = ({ editEnabled }) => {
     const data = useMemo(() => {
+        console.log("Update")
         var data = {};
         if (editEnabled) {
-            data.href = Navigation.EditModeURL(false)
             data.tooltips = Localization.toText('storyPage-disableEditMode')
             data.icon = DisableEditIcon
         }
         else {
-            data.href = Navigation.EditModeURL(true)
             data.tooltips = Localization.toText('storyPage-enableEditMode')
             data.icon = EnableEditIcon
         }
         return data;
-    }, [editEnabled])
+    }, [location, editEnabled])
     
     return (
-        <Link href={data.href}>
+        <Link href={Navigation.EditModeURL(!editEnabled)}>
             <div 
                 className={styles.editMode} 
                 tooltips={data.tooltips}
