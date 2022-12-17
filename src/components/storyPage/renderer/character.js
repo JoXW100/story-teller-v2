@@ -281,25 +281,25 @@ const CharacterRenderer = ({ metadata = {} }) => {
                     <Elements.Line/>
                     <Elements.Image options={{ href: metadata.portrait }}/>
                     <Elements.Line/>
-                    <div><Elements.Bold>Race </Elements.Bold> { metadata.raceText }</div>
-                    <div><Elements.Bold>Gender </Elements.Bold> { gender }</div>
-                    <div><Elements.Bold>Age </Elements.Bold> { metadata.age }</div>
-                    <div><Elements.Bold>Height </Elements.Bold> { metadata.height }</div>
-                    <div><Elements.Bold>Weight </Elements.Bold> { metadata.weight }</div>
-                    <div><Elements.Bold>Occupation </Elements.Bold> { metadata.occupation }</div>
-                    <div><Elements.Bold>Traits </Elements.Bold> { traits }</div>
+                    <div><Elements.Bold>Race </Elements.Bold>{metadata.raceText}</div>
+                    <div><Elements.Bold>Gender </Elements.Bold>{gender}</div>
+                    <div><Elements.Bold>Age </Elements.Bold>{metadata.age }</div>
+                    <div><Elements.Bold>Height </Elements.Bold>{metadata.height }</div>
+                    <div><Elements.Bold>Weight </Elements.Bold>{metadata.weight }</div>
+                    <div><Elements.Bold>Occupation </Elements.Bold>{metadata.occupation }</div>
+                    <div><Elements.Bold>Traits </Elements.Bold>{traits}</div>
                     <Elements.Line/>
                     <Elements.Header3>Appearance</Elements.Header3>
-                    <Elements.Text> { metadata.appearance } </Elements.Text>
+                    <Elements.Text>{metadata.appearance}</Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>Description</Elements.Header3>
-                    <Elements.Text> { metadata.description } </Elements.Text>
+                    <Elements.Text>{metadata.description }</Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>History</Elements.Header3>
-                    <Elements.Text> { metadata.history } </Elements.Text>
+                    <Elements.Text>{metadata.history }</Elements.Text>
                     <Elements.Line/>
                     <Elements.Header3>Notes</Elements.Header3>
-                    <Elements.Text> { metadata.notes } </Elements.Text>
+                    <Elements.Text>{metadata.notes }</Elements.Text>
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>

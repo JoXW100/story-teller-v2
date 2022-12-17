@@ -4,9 +4,9 @@ import { ParseError } from "utils/parser";
  * @param {{ options: Object.<string, string>, children: JSX.Element }} 
  * @returns {JSX.Element}
  */
- const TextElement = ({ children }) => {
-    return <span> {children} </span>
-}
+ const TextElement = (args) => (
+    <span {...args}/>
+ )
 
 /**
  * @type {Object.<string, RenderElement>}

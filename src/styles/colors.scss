@@ -10,7 +10,8 @@ $palette: (
     text: var(--color-text),
     error: var(--color-error),
     icons: var(--color-icons),
-    temp: #ffffff
+    temp: #ffffff,
+    x: #ff7171
 );
 
 @mixin color($colorName) {
@@ -18,7 +19,7 @@ $palette: (
 }
 
 @mixin colorText() {
-    color: var(--color-text);
+    color: map-get($palette, text);
 }
 
 @mixin colorShadow() {
@@ -26,7 +27,7 @@ $palette: (
 }
 
 @mixin colorBorder() {
-    border: 2px solid var(--color-border);
+    border: 2px solid map-get($palette, border);
 }
 
 @mixin colorInteract($colorName) {

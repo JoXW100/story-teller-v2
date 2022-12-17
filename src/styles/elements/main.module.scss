@@ -41,9 +41,13 @@
 }
 
 .link {
-    @include colorText();
+    color: map-get($palette, accents);
     text-decoration: none;
     cursor: pointer;
+    
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .linkContent {
