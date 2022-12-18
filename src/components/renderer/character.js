@@ -308,18 +308,26 @@ const CharacterRenderer = ({ file = {} }) => {
                     <div><Elements.Bold>Weight </Elements.Bold>{data.weight }</div>
                     <div><Elements.Bold>Occupation </Elements.Bold>{data.occupation }</div>
                     <div><Elements.Bold>Traits </Elements.Bold>{traits}</div>
-                    <Elements.Line/>
-                    <Elements.Header3>Appearance</Elements.Header3>
-                    <Elements.Text>{data.appearance}</Elements.Text>
-                    <Elements.Line/>
-                    <Elements.Header3>Description</Elements.Header3>
-                    <Elements.Text>{data.description}</Elements.Text>
-                    <Elements.Line/>
-                    <Elements.Header3>History</Elements.Header3>
-                    <Elements.Text>{data.history}</Elements.Text>
-                    <Elements.Line/>
-                    <Elements.Header3>Notes</Elements.Header3>
-                    <Elements.Text>{data.notes}</Elements.Text>
+                    { data.appearance ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Appearance</Elements.Header3>
+                        <Elements.Text>{data.appearance}</Elements.Text>
+                    </> : null }
+                    { data.description ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Description</Elements.Header3>
+                        <Elements.Text>{data.description}</Elements.Text>
+                    </> : null }
+                    { data.history ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>History</Elements.Header3>
+                        <Elements.Text>{data.history}</Elements.Text>
+                    </> : null }
+                    { data.notes ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Notes</Elements.Header3>
+                        <Elements.Text>{data.notes}</Elements.Text>
+                    </> : null }
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>

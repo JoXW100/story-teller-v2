@@ -1,3 +1,4 @@
+import { useContext, useRef } from 'react'
 import { Context as FileContext } from 'components/contexts/fileContext'
 import { Context as StoryContext } from 'components/contexts/storyContext'
 import useRenderer from 'components/renderer'
@@ -6,7 +7,6 @@ import HomeButton from 'components/storyPage/homeButton'
 import RollHistoryButton from 'components/storyPage/rollHistoryButton'
 import SettingsButton from 'components/storyPage/settingsButton'
 import Templates from 'data/fileTemplates'
-import { useContext, useRef } from 'react'
 import styles from 'styles/renderer.module.scss'
 
 /**
