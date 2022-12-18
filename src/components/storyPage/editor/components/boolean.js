@@ -28,7 +28,7 @@ const BooleanComponent = ({ params }) => {
         <div className={styles.editText}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <Checkbox className={styles.checkbox} value={value} onChange={handleChange} />
-            { href && value ? <Link href={href} children={String(href)}/> : null  }
+            { href && value ? <Link href={href}>{String(href)}</Link> : null  }
         </div>
     )
 }
