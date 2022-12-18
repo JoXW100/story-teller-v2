@@ -3,6 +3,8 @@ import styles from 'styles/home.module.scss'
 import ViewPage from 'components/viewPage/viewPage'
 import FileContext from 'components/contexts/fileContext'
 import StoryContext from 'components/contexts/storyContext'
+import { useValidation } from 'utils/handleUser'
+import { useRouter } from 'next/router'
 
 /**
  * 
@@ -11,6 +13,8 @@ import StoryContext from 'components/contexts/storyContext'
  */
 
 const Page = ({ props }) => {
+    const router = useRouter();
+    useValidation(router);
     
     return (
         <div className={styles.container}>
