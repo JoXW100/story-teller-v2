@@ -100,6 +100,7 @@ $pageHeight: 14in; /* A4 */
 }
 
 .container {
+    @include colorText();
     height: inherit;
     position: relative;
     overflow: hidden;
