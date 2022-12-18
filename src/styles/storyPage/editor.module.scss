@@ -71,6 +71,10 @@ $size: 20px;
     user-select: none;
 }
 
+.editEditor {
+    padding-bottom: 50px !important;
+}
+
 .editInput {
     @include color(document);
     @include colorText();
@@ -108,6 +112,19 @@ $size: 20px;
         outline: none;
         height: 100px;
         flex: 1;
+    }
+
+    & > a {
+        @include color(document);
+        color: map-get($palette, accents);
+        margin-left: 5px;
+        padding-left: 5px;
+        flex: 1;
+        cursor: pointer;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
     }
 }
 
@@ -313,4 +330,6 @@ $size: 20px;
 
 .checkbox {
     @include colorText();
+    width: 20px;
+    height: 20px;
 }

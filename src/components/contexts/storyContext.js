@@ -9,9 +9,9 @@ import '@types/storyContext'
 export const Context = React.createContext({})
 
 /**
- * @param {{ storyId: string, fileId: ?string, children: JSX.Element }}
+ * @param {{ storyId: string, fileId: ?string, editMode: ?bool, viewMode: ?bool, children: JSX.Element }}
  */
-const StoryContext = ({ storyId, fileId, editMode, children }) => {
+const StoryContext = ({ storyId, fileId, editMode, viewMode, children }) => {
     const router = useRouter()
     const fetchStory = (storyId) => {
         fetch('/api/database/getStory?storyId=' + storyId)
@@ -36,7 +36,9 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
     const reducer = (state, action) => {
         switch (action.type) {
             case 'init':
-                !state.story && fetchStory(storyId)
+                if (viewMode)
+                    return { ...state, loading: false, story: {} }
+                storyId && !state.story && fetchStory(storyId)
                 return state; 
 
             case 'initSet':
@@ -57,7 +59,7 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
             
             case 'setEditMode': 
                 return { ...state, editEnabled: action.data }
-                
+
             case 'roll':
                 return { ...state };
             
@@ -81,7 +83,7 @@ const StoryContext = ({ storyId, fileId, editMode, children }) => {
         helpMenuOpen: false
     })
 
-    useEffect(() => storyId && dispatch({ type: 'init' }), [storyId]);
+    useEffect(() => dispatch({ type: 'init' }), [storyId]);
     useEffect(() => storyId && dispatch({ type: 'setFile', data: fileId }), [fileId]);
     useEffect(() => storyId && dispatch({ type: 'setEditMode', data: editMode }), [editMode]);
 

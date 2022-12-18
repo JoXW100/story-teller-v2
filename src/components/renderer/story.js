@@ -1,16 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Elements from 'elements';
 import Parser, { ParseError } from 'utils/parser';
-import styles from 'styles/storyPage/renderer.module.scss';
+import styles from 'styles/renderer.module.scss';
 
-export const BuildDocument = (metadata, content) => (
+export const BuildStory = (metadata, content) => (
     <>
         <Elements.Header3> {metadata.title} </Elements.Header3>
         { content }
     </>
 ) 
 
-export const DocumentRenderer = ({ metadata = {} }) => {
+export const StoryRenderer = ({ metadata = {} }) => {
     const [content, setContent] = useState(null)
     
     useEffect(() => {
@@ -39,4 +39,4 @@ export const DocumentRenderer = ({ metadata = {} }) => {
     </>
 }
 
-export default DocumentRenderer
+export default StoryRenderer

@@ -201,10 +201,10 @@ class Parser
      * @param {ParserObject} tree 
      */
     static #buildComponent(tree, key = 0, metadata = {}) {
-        if (!(tree.type in ElementDictionary))
-            throw new ParseError(`Unknown command '${tree.type}'`);
         if (tree.type === 'set')
             return null;
+        if (!(tree.type in ElementDictionary))
+            throw new ParseError(`Unknown command '${tree.type}'`);
         if (tree.type === 'text' && typeof tree.content === 'object')
             tree.content = tree.content[0] ?? '';
         if (tree.type === 'text' && tree.content?.trim() == '')

@@ -93,6 +93,11 @@ $entryWidth: 250px;
     margin-left: 1px;
 }
 
+.publish {
+    @extend .headerButton;
+    margin-left: 1px;
+}
+
 .rollHistory {
     @extend .headerButton;
 }

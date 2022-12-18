@@ -5,14 +5,15 @@ import { Context } from 'components/contexts/storyContext';
 import Elements from 'elements';
 import RollElement from 'elements/roll';
 import Dice from 'utils/data/dice';
-import SpellSlotToggle from '../spellSlotToggle';
+import SpellSlotToggle from '../storyPage/spellSlotToggle';
 import Parser, { ParseError } from 'utils/parser';
 import AbilityRenderer from './ability';
 import SpellRenderer from './spell';
-import styles from 'styles/storyPage/renderer.module.scss';
-
+import styles from 'styles/renderer.module.scss';
+import { FileData, CreatureContent, CreatureMetadata } from '@types/database';
 
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
+
 const getHealth = (metadata) => {
     switch (metadata.health?.type) {
         case CalculationMode.Override:
@@ -47,7 +48,7 @@ const getAC = (metadata) => {
             return metadata.ac.value ?? 0;
         case CalculationMode.Modify:
             var mod = getAttributeModifier(metadata.dex);
-            return 10 + mod + (metadata.health.value ?? 0);
+            return 10 + mod + (metadata.ac.value ?? 0);
         case CalculationMode.Auto:
         default:
             return 10 + getAttributeModifier(metadata.dex);
@@ -76,12 +77,13 @@ const getInitiative = (metadata) => {
             return getAttributeModifier(metadata.dex);
     }
 }
-const getChallenge = (metadata) => (
-    metadata.challenge 
-        ? ((metadata.challenge < 1) 
-            ? `1/${Math.floor(1/metadata.challenge)}` 
-            : metadata.challenge) 
-        : 0
+const getChallenge = (data) => (
+    `${data.challenge 
+        ? ((data.challenge < 1) 
+            ? `1/${Math.floor(1/data.challenge)}` 
+            : String(data.challenge)) 
+        : '0'
+    } (${data.xp ?? 0} XP)`
 );
 
 const AlignmentTranslation = {
@@ -96,76 +98,33 @@ const AlignmentTranslation = {
     [Alignment.LawfulNeutral]: "Lawful Neutral",
     [Alignment.None]: "None"
 }
-
 /**
- * 
- * @param {{ metadata: import('@types/database').CreatureMetadata }} 
+ * @param {FileData<CreatureContent, CreatureMetadata>} file
  * @returns {JSX.Element}
  */
-const CreatureRenderer = ({ metadata = {} }) => {
+const useAbilities = (file) => {
+    const [state, setState] = useState(null);
     const [context] = useContext(Context)
-    const alignment = AlignmentTranslation[metadata.alignment ?? 0]
-    const type = Object.keys(CreatureType).find((key) => CreatureType[key] == metadata.type) ?? "None"
-    const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == metadata.size) ?? "Medium"
-    const speed = metadata.speed && Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ');
-    const saves = metadata.saves && Object.keys(metadata.saves).map((key, index) => (
-        <RollElement key={index} options={{ mod: metadata.saves[key], desc: `${key.toUpperCase()} Save` }}>
-            {` ${key.toUpperCase()}`}
-        </RollElement>
-    ));
-    const skills = metadata.skills && Object.keys(metadata.skills).map((key, index) => {
-        var skill = Object.keys(Skill).find((k) => Skill[k] == key);
-        return (
-            <RollElement key={index} options={{ mod: metadata.skills[key], desc: `${skill} Check` }}>
-                {` ${skill}`}
-            </RollElement>
-        )
-    });
-    const health = getHealth(metadata);
-    const ac = getAC(metadata);
-    const proficiency = getProficiency(metadata);
-    const initiative = getInitiative(metadata);
-    const challenge =  getChallenge(metadata);
-
-    const [content, setContent] = useState(null);
-    const [Abilities, setAbilities] = useState(null);
-    const [Spells, setSpells] = useState(null);
-
+    const data = file.metadata ?? {}
     useEffect(() => {
-        Parser.parse(metadata.$text, metadata)
-        .then((res) => setContent(res))
-        .catch((error) => {
-            if (error.type === ParseError.type) {
-                setContent(
-                    <div className={styles.error}> 
-                        {error.message} 
-                    </div>
-                );
-            }
-            else {
-                setContent(null);
-                throw error;
-            }
-        })
-    }, [metadata])
-
-    useEffect(() => {
-        if (metadata.abilities) {
-            fetch(`/api/database/getManyMetadata?storyId=${context.story.id}&fileIds=${metadata.abilities}`)
+        if (data.abilities && data.abilities.length > 0) {
+            fetch(`/api/database/getManyMetadata?storyId=${context?.story?.id}&fileIds=${data.abilities}`)
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    setAbilities(() => (
-                        ({ metadata }) => {
-                            var data = { 
-                                str: metadata.str, 
-                                dex: metadata.dex, 
-                                con: metadata.con, 
-                                int: metadata.int, 
-                                wis: metadata.wis,
-                                cha: metadata.cha,
-                                proficiency: proficiency,
-                                spellAttribute: metadata.spellAttribute ?? OptionalAttribute.None
+                    setState(() => (
+                        ({ data }) => {
+                            if (!data)
+                                return null
+                            var attributes = { 
+                                str: data.str, 
+                                dex: data.dex, 
+                                con: data.con, 
+                                int: data.int, 
+                                wis: data.wis,
+                                cha: data.cha,
+                                proficiency: getProficiency(data),
+                                spellAttribute: data.spellAttribute ?? OptionalAttribute.None
                             }
                             var abilities = {
                                 [ActionType.None]: { header: null, content: [] },
@@ -177,7 +136,7 @@ const CreatureRenderer = ({ metadata = {} }) => {
                             res.result.forEach((file, index) => {
                                 if (file.type === 'abi') {
                                     abilities[file.metadata.action ?? "action"].content.push(
-                                        <AbilityRenderer key={index} metadata={file.metadata} data={data}/>
+                                        <AbilityRenderer key={index} file={file} data={attributes}/>
                                     )
                                 }
                             })
@@ -193,95 +152,157 @@ const CreatureRenderer = ({ metadata = {} }) => {
                             ) : null)
                         }
                     ));
-                }
-                else {
+                } else {
                     console.warn(res.result);
-                    setAbilities(null);
+                    setState(null);
                 }
             })
             .catch(console.error)
+        } else {
+            setState(null);
         }
-        else {
-            setAbilities(null);
-        }
-    }, [metadata.abilities, context.story])
+    }, [file.metadata.abilities])
+    return state
+}
 
+/**
+ * @param {FileData<CreatureContent, CreatureMetadata>} file
+ * @returns {JSX.Element}
+ */
+const useSpells = (file) => {
+    const [state, setState] = useState(null);
+    const [context] = useContext(Context)
+    const data = file.metadata ?? {}
     useEffect(() => {
-        if (metadata.spells) {
-            fetch(`/api/database/getManyMetadata?storyId=${context.story.id}&fileIds=${metadata.spells}`)
+        if (data.spells && data.spells.length > 0) {
+            fetch(`/api/database/getManyMetadata?storyId=${context?.story?.id}&fileIds=${data.spells}`)
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    setSpells(() => (
-                        ({ metadata }) => {
-                            var data = { 
-                                str: metadata.str, 
-                                dex: metadata.dex, 
-                                con: metadata.con, 
-                                int: metadata.int, 
-                                wis: metadata.wis,
-                                cha: metadata.cha,
-                                proficiency: proficiency,
-                                spellAttribute: metadata.spellAttribute ?? OptionalAttribute.None
+                    setState(() => (
+                        ({ data }) => {
+                            if (!data)
+                                return null
+                            var attributes = { 
+                                str: data.str, 
+                                dex: data.dex, 
+                                con: data.con, 
+                                int: data.int, 
+                                wis: data.wis,
+                                cha: data.cha,
+                                proficiency: getProficiency(data),
+                                spellAttribute: data.spellAttribute ?? OptionalAttribute.None
                             }
-                            var abilities = []
+                            var spells = {}
                             res.result.forEach((file, index) => {
                                 if (file.type === 'spe') {
                                     var level = file.metadata.level ?? 1
-                                    if (!abilities[level]) 
-                                        abilities[level] = []
-                                    abilities[level].push(
-                                        <SpellRenderer key={index} metadata={file.metadata} data={data}/>
-                                    )
+                                    spells[level] = [
+                                        ...spells[level] ?? [], 
+                                        <SpellRenderer key={index} file={file} data={attributes}/>
+                                    ]
                                 }
                             })
-                            return Object.keys(abilities)
-                                .filter((type) => type == 0 || metadata.spellSlots[type - 1])
+                            return Object.keys(spells)
+                                .filter((type) => type == 0 || data.spellSlots[type - 1])
                                 .map((type) => (
                                     <React.Fragment key={type}>
                                         <Elements.Row>
                                             <Elements.Bold> 
-                                                { type == 0 
-                                                    ? 'Cantrips:'
-                                                    : `Level ${type}:`
-                                                } 
+                                                {type == 0 ? 'Cantrips:' : `Level ${type}:`} 
                                             </Elements.Bold>
-                                            { type > 0 && Array.from({length: metadata.spellSlots[type - 1] }, (_,i) => (
+                                            { type > 0 && Array.from({length: data.spellSlots[type - 1] }, (_,i) => (
                                                 <SpellSlotToggle key={i}/>
                                             ))}
                                         </Elements.Row>
-                                        { abilities[type] }
+                                        { spells[type] }
                                     </React.Fragment>
                                 )
                             )
                         }
                     ));
-                }
-                else {
+                } else {
                     console.warn(res.result);
-                    setSpells(null);
+                    setState(null);
                 }
             })
             .catch(console.error)
+        } else {
+            setState(null);
         }
-        else {
-            setSpells(null);
-        }
-    }, [metadata.spells, context.story])
+    }, [file.metadata.spells])
+    return state
+}
+
+/**
+ * @param {FileData<CreatureContent, CreatureMetadata>} file
+ * @returns {JSX.Element}
+ */
+const useContent = (file) => {
+    const [state, setState] = useState(null)
+    useEffect(() => {
+        Parser.parse(file.content.text, file.metadata)
+        .then((res) => setState(res))
+        .catch((error) => {
+            if (error.type === ParseError.type) {
+                setState(<div className={styles.error}>{error.message}</div>);
+            }
+            else {
+                setState(null);
+                throw error;
+            }
+        })
+    }, [file?.content?.text, file?.metadata])
+    return state
+}
+
+
+/**
+ * 
+ * @param {{ file: FileData<CreatureContent, CreatureMetadata> }} 
+ * @returns {JSX.Element}
+ */
+const CreatureRenderer = ({ file = {} }) => {
+    /** @type {CreatureMetadata} */
+    let data = file.metadata ?? {}
+    const alignment = AlignmentTranslation[data.alignment ?? 0]
+    const type = Object.keys(CreatureType).find((key) => CreatureType[key] == data.type) ?? "None"
+    const size = Object.keys(CreatureSize).find((key) => CreatureSize[key] == data.size) ?? "Medium"
+    const speed = data.speed && Object.keys(data.speed).map((key) => `${key} ${data.speed[key]}ft`).join(', ');
+    const saves = data.saves && Object.keys(data.saves).map((key, index) => (
+        <RollElement key={index} options={{ mod: data.saves[key], desc: `${key.toUpperCase()} Save` }}>
+            {` ${key.toUpperCase()}`}
+        </RollElement>
+    ));
+    const skills = data.skills && Object.keys(data.skills).map((key, index) => {
+        var skill = Object.keys(Skill).find((k) => Skill[k] == key);
+        return (
+            <RollElement key={index} options={{ mod: data.skills[key], desc: `${skill} Check` }}>
+                {` ${skill}`}
+            </RollElement>
+        )
+    });
+    const health = getHealth(data);
+    const proficiency = getProficiency(data);
+    const initiative = getInitiative(data);
+    const challenge =  getChallenge(data);
+    const Content = useContent(file);
+    const Abilities = useAbilities(file);
+    const Spells = useSpells(file);
 
     return (
         <>
             <Elements.Align>
                 <Elements.Block>
-                    <Elements.Header1> {metadata.name} </Elements.Header1>
+                    <Elements.Header1> {data.name} </Elements.Header1>
                     {`${size} ${type}, ${alignment}`}
                     <Elements.Line/>
-                    <Elements.Image options={{ href: metadata.portrait }}/>
+                    <Elements.Image options={{ href: data.portrait }}/>
                     <Elements.Line/>
                     <Elements.Header2>Description</Elements.Header2>
-                    { metadata.description }
+                    { data.description }
                     <Elements.Line/>
-                    <div><Elements.Bold>Armor Class </Elements.Bold>{ac}</div>
+                    <div><Elements.Bold>Armor Class </Elements.Bold>{getAC(data)}</div>
                     <div><Elements.Bold>Hit Points </Elements.Bold>{ `${health.value} ` }{ health.element }</div>
                     <div><Elements.Bold>Speed </Elements.Bold>{ speed ?? "" }</div>
                     <div>
@@ -292,44 +313,41 @@ const CreatureRenderer = ({ metadata = {} }) => {
                     <Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>STR</Elements.Bold>
-                                { metadata.str ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.str), desc: "STR Check" }}/>
+                                { data.str ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.str), desc: "STR Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>DEX</Elements.Bold>
-                                { metadata.dex ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.dex), desc: "DEX Check" }}/>
+                                { data.dex ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.dex), desc: "DEX Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>CON</Elements.Bold>
-                                { metadata.con ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.con), desc: "CON Check" }}/>
+                                { data.con ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.con), desc: "CON Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>INT</Elements.Bold>
-                                { metadata.int ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.int), desc: "INT Check" }}/>
+                                { data.int ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.int), desc: "INT Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>WIS</Elements.Bold>
-                                { metadata.wis ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.wis), desc: "WIS Check" }}/>
+                                { data.wis ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.wis), desc: "WIS Check" }}/>
                         </Elements.Align>
                         <Elements.Align options={{ direction: 'vc' }}>
                             <Elements.Bold>CHA</Elements.Bold>
-                                { metadata.cha ?? 0 }
-                            <Elements.Roll options={{ mod: getAttributeModifier(metadata.cha), desc: "CHA Check" }}/>
+                                { data.cha ?? 0 }
+                            <Elements.Roll options={{ mod: getAttributeModifier(data.cha), desc: "CHA Check" }}/>
                         </Elements.Align>
                     </Elements.Align>
                     <Elements.Line/>
                     <div><Elements.Bold>Saving Throws </Elements.Bold>{ saves }</div>
                     <div><Elements.Bold>Skills </Elements.Bold>{skills}</div>
-                    <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses ?? "" }</div>
-                    <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages ?? "" }</div>
-                    <div>
-                        <Elements.Bold>Challenge </Elements.Bold>
-                        { `${challenge} (${metadata.xp ?? 0} XP)`}
-                    </div>
+                    <div><Elements.Bold>Senses </Elements.Bold>{data.senses ?? "" }</div>
+                    <div><Elements.Bold>Languages </Elements.Bold>{data.languages ?? "" }</div>
+                    <div><Elements.Bold>Challenge </Elements.Bold>{challenge}</div>
                     <div>
                         <Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ mod: proficiency, desc: "Proficient Check" }}/>
@@ -337,18 +355,18 @@ const CreatureRenderer = ({ metadata = {} }) => {
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    { Abilities && <Abilities metadata={metadata}/> }
+                    { Abilities && <Abilities data={data}/> }
                 </Elements.Block>
             </Elements.Align>
-            { metadata.spellAttribute != OptionalAttribute.None && Spells &&
+            { data.spellAttribute != OptionalAttribute.None && Spells &&
                 <>
                     <Elements.Line/>
                     <Elements.Header2> Spells: </Elements.Header2>
-                    <Spells metadata={metadata}/>
+                    <Spells data={data}/>
                 </>
             }
-            <Elements.Line/>
-            {content}
+            {Content && <Elements.Line/>}
+            {Content && Content}
         </>
     )
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from 'styles/storyPage/renderer.module.scss';
+import styles from 'styles/renderer.module.scss';
 
 const SpellSlotToggle = () => {
     const [toggle, setToggle] = useState(false)

@@ -4,13 +4,14 @@ import styles from 'styles/components/textEditor.module.scss';
 /**
  * 
  * @param {{ 
- *  text: string, 
+ *  text: string,
+ *  className: string, 
  *  handleInput: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void,
  *  handleContext: (e: React.MouseEvent<HTMLTextAreaElement>) => void
  * }} 
  * @returns {JSX.Element}
  */
-const TextEditor = ({ text = "Hello World", handleInput, handleContext }) => {
+const TextEditor = ({ className, text = "Hello World", handleInput, handleContext }) => {
     
     /** @param {React.KeyboardEvent<HTMLTextAreaElement>} e */
     const handleKey = (e) => {
@@ -26,7 +27,7 @@ const TextEditor = ({ text = "Hello World", handleInput, handleContext }) => {
     return (
         <div className={styles.holder}>
             <textarea 
-                className={styles.area}
+                className={className ? `${className} ${styles.area}` : styles.area}
                 value={text}
                 onChange={handleInput}
                 onContextMenu={handleContext}

@@ -19,6 +19,7 @@
  * @typedef StoryContextState
  * @property {boolean} loading
  * @property {boolean} editEnabled
+ * @property {boolean} filePublished
  * @property {?import('@types/database').StoryData} story
  * @property {?ObjectId} fileId
  * @property {import('utils/data/queue').default} rollHistory

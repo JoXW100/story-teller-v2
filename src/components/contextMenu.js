@@ -54,9 +54,15 @@ const ContextMenu = () => {
      * @param {{ detail: ContextEventDetails }} e 
      */
     const contextHandler = (e) => {
+        console.log(e.detail.content)
         let contentHeight = e.detail.content.length * 26;
-        let contentWidth = 150;
-
+        let contentWidth = 240;
+        e.detail.content.forEach((data, index) => {
+            if ('content' in data) {
+                contentHeight = Math.max(contentHeight, (index + data.content.length) * 26)
+                contentWidth = 240 * 2
+            }
+        })
         if (e.detail.anchors.top + contentHeight > window.innerHeight) {
             e.detail.anchors.top -= contentHeight;
         }

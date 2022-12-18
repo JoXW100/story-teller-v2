@@ -25,6 +25,7 @@ import '@types/data';
  * @property {ObjectId} _storyId
  * @property {ObjectId?} _holderId
  * @property {import('@enums/database').FileType} type
+ * @property {bool} public
  * @property {T} content
  * @property {DateValue} dateCreated
  * @property {DateValue} dateUpdated
@@ -87,6 +88,28 @@ import '@types/data';
  * @property {string} description
  * @property {import('@enums/database').CreatureSize} size
  * @property {import('@enums/database').CreatureType} type
+ * @property {import('@enums/database').Alignment} alignment
+ * @property {string | ObjectId} portrait
+ * @property {number} level
+ * @property {Option} ac
+ * @property {Option} health
+ * @property {Option} initiative
+ * @property {Speeds} speed 
+ * @property {Attributes} attributes
+ * 
+ * @typedef {DBContent<CreatureMetadata> & CreatureContent} DBCreatureContent
+ * 
+ * @typedef {DBFile<DBCreatureContent>} DBCreatureFile
+ */
+
+/**
+ * @private
+ * @typedef CharacterContent
+ * @property {string} text
+ * 
+ * @typedef CharacterMetadata
+ * @property {string} name
+ * @property {string} description
  * @property {import('@enums/database').Alignment} alignment
  * @property {string | ObjectId} portrait
  * @property {number} level
@@ -192,3 +215,4 @@ import '@types/data';
  * @property {?[StructureFile]} children
  */
 
+export const Types = []

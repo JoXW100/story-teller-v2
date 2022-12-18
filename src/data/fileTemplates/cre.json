@@ -11,6 +11,10 @@
                         "params": { "label": "Name", "key": "name", "default": "Creature name" }
                     },
                     { 
+                        "type": "boolean", 
+                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                    },
+                    { 
                         "type": "enum", 
                         "params": { "label": "Size", "key": "size", "type": "creatureSize", "default": "medium" }
                     },

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/storyContext';
-import { BuildAbility } from 'components/storyPage/renderer/ability';
-import { BuildCharacter } from 'components/storyPage/renderer/character';
-import { BuildCreature } from 'components/storyPage/renderer/creature';
-import { BuildSpell } from 'components/storyPage/renderer/spell';
-import { BuildDocument } from 'components/storyPage/renderer/document';
+import { BuildAbility } from 'components/renderer/ability';
+import { BuildCharacter } from 'components/renderer/character';
+import { BuildCreature } from 'components/renderer/creature';
+import { BuildSpell } from 'components/renderer/spell';
+import { BuildDocument } from 'components/renderer/document';
 import { useMetadata } from 'utils/handleMetadata';
 import Parser, { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
@@ -88,12 +88,13 @@ export const LinkContentElement = ({ options = {} }) => {
                 return Navigation.FileURL(options.fileId)
             return undefined;
         } catch (error) {
+            console.error(error)
             console.warn("Invalid URL", options.fileId)
             return undefined;
         }
     }, [options]);
 
-    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId)
+    const [loaded, metadata, type] = useMetadata(context?.story?.id, options.fileId)
     const [content, setContent] = useState(null);
     const border = options.border ?? "true";
 
@@ -159,7 +160,7 @@ export const LinkTitleElement = ({ options }) => {
         }
     }, [options]);
 
-    const [loaded, metadata, type] = useMetadata(context.story.id, options.fileId);
+    const [loaded, metadata, type] = useMetadata(context?.story?.id, options.fileId);
 
     const title = useMemo(() => {
         if (!type)

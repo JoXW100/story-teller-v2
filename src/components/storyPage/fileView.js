@@ -3,9 +3,9 @@ import FileContext, { Context } from 'components/contexts/fileContext';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import Divider from 'components/divider'
 import Editor from './editor/editor'
-import Renderer from './renderer/renderer'
 import Templates from 'data/fileTemplates';
 import Localization from 'classes/localization'
+import Renderer from './renderer';
 import styles from 'styles/storyPage/main.module.scss'
 import '@types/fileContext'
 
@@ -20,6 +20,7 @@ const FileView = () => {
         </FileContext>
     );
 }
+
 
 const setDefaults = (template, metadata) => {
     switch (template.type)
@@ -40,11 +41,11 @@ const FileContent = () => {
     const [storyContext] = useContext(StoryContext);
 
     const Content = useMemo(() => {
-        if (!context.file) {
-            if (context.fileSelected)
-                return <InvalidFileView/>
+        if (!context.file && context.fileSelected)
+            return <InvalidFileView/>
+        if (!context.file)
             return <NoSelectedFileView/>;
-        }
+            
         /** @type {FileTemplate} */
         var template = Templates[context.file.type]
         if (template) {
@@ -59,7 +60,7 @@ const FileContent = () => {
                 />  
                 : <Renderer template={template.renderer}/>
         }
-        console.error("No template for file type found");
+        console.error("No template for file type found, type:", context?.file?.type);
         return null;
         
     }, [context, storyContext.editEnabled]);

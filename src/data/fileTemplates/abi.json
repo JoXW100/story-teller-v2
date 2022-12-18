@@ -11,6 +11,10 @@
                         "params": { "label": "Name", "key": "name", "default": "Ability name" }
                     },
                     { 
+                        "type": "boolean", 
+                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                    },
+                    { 
                         "type": "enum", 
                         "params": { "label": "Ability Type", "key": "type", "type": "abilityType", "default": "feature" }
                     },

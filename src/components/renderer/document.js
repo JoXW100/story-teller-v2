@@ -1,20 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Elements from 'elements';
 import Parser, { ParseError } from 'utils/parser';
-import styles from 'styles/storyPage/renderer.module.scss';
+import { FileData, DocumentContent, DocumentMetadata } from '@types/database';
+import styles from 'styles/renderer.module.scss';
 
-export const BuildStory = (metadata, content) => (
+export const BuildDocument = (metadata, content) => (
     <>
         <Elements.Header3> {metadata.title} </Elements.Header3>
         { content }
     </>
 ) 
 
-export const StoryRenderer = ({ metadata = {} }) => {
+/**
+ * 
+ * @param {{ file: FileData<DocumentContent, DocumentMetadata>}} 
+ * @returns {JSX.Element}
+ */
+export const DocumentRenderer = ({ file = {} }) => {
     const [content, setContent] = useState(null)
     
     useEffect(() => {
-        Parser.parse(metadata.$text, metadata)
+        Parser.parse(file.content?.text, file.metadata)
         .then((res) => setContent(res))
         .catch((error) => {
             if (error.type === ParseError.type) {
@@ -29,14 +35,14 @@ export const StoryRenderer = ({ metadata = {} }) => {
                 throw error;
             }
         })
-    }, [metadata])
+    }, [file])
 
     return <>
         <Elements.Header1 options={{ underline: 'true' }}> 
-            {metadata.title} 
+            {file.metadata?.title} 
         </Elements.Header1>
         { content }
     </>
 }
 
-export default StoryRenderer
+export default DocumentRenderer

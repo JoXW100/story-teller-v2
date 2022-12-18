@@ -17,12 +17,25 @@ class Navigation
      * @returns {URL}
      */
     static FileURL(fileId, storyId = undefined) {
+        var page = 'story'
         if (!storyId) {
-            const expr = /\/story\/([^\/\?]+)/i
+            const expr = /\/([A-z]+)\/([^\/\?]+)/i
             var match = expr.exec(location.pathname);
-            storyId = match[1];
+            page = match[1];
+            storyId = match[2];
         }
-        return new URL(`${location.origin}/story/${storyId}/${fileId}${location.search}`);
+        if (page === "view")
+            return new URL(`${location.origin}/${page}/${fileId}`);
+        return new URL(`${location.origin}/${page}/${storyId}/${fileId}${location.search}`);
+    }
+    
+    /**
+     * @static
+     * @param {string} fileId 
+     * @returns {URL}
+     */
+    static ViewURL(fileId) {
+        return new URL(`${location.origin}/view/${fileId}`);
     }
 
     /**

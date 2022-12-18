@@ -15,6 +15,7 @@ export {
     StoryTemplate
 }
 
+/** @type {Object.<string,FileTemplate>} */
 const Templates = {
     [FileType.Ability]: AbilityTemplate,
     [FileType.Creature]: CreatureTemplate,

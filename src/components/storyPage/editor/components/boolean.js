@@ -1,4 +1,6 @@
 import React, { useContext } from 'react'
+import Link from 'next/link';
+import Navigation from 'utils/navigation';
 import { Context } from 'components/contexts/fileContext';
 import Checkbox from 'components/checkbox';
 import styles from 'styles/storyPage/editor.module.scss'
@@ -11,6 +13,7 @@ import '@types/data';
  */
 const BooleanComponent = ({ params }) => {
     const [context, dispatch] = useContext(Context)
+    const href = params.viewURL && Navigation.ViewURL(context.file?.id)
     const defaultValue = params.default ?? 0;
     const value = context.file?.metadata 
         ? context.file.metadata[params.key] ?? defaultValue
@@ -25,6 +28,7 @@ const BooleanComponent = ({ params }) => {
         <div className={styles.editText}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <Checkbox className={styles.checkbox} value={value} onChange={handleChange} />
+            { href && value ? <Link href={href} children={String(href)}/> : null  }
         </div>
     )
 }

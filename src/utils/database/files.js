@@ -59,8 +59,7 @@ class FilesInterface
         {
             let result = (await this.#collection.aggregate([
                 { $match: {
-                    _userId: userId,
-                    _storyId: ObjectId(storyId),
+                    $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
                     _id: ObjectId(fileId)
                 }},
                 { $project: {
@@ -95,8 +94,7 @@ class FilesInterface
         {
             let result = (await this.#collection.aggregate([
                 { $match: {
-                    _userId: userId,
-                    _storyId: ObjectId(storyId),
+                    $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
                     _id: ObjectId(fileId)
                 }},
                 { $project: {
@@ -129,8 +127,7 @@ class FilesInterface
                 return failure("No fileIds provided");
             let result = await this.#collection.aggregate([
                 { $match: {
-                    _userId: userId,
-                    _storyId: ObjectId(storyId),
+                    $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
                     _id: { $in: ids.map(x => ObjectId(x)) }
                 }},
                 { $project: {

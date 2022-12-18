@@ -11,6 +11,7 @@ import BlockIcon from '@mui/icons-material/GridViewSharp';
 import BoldIcon from '@mui/icons-material/FormatBoldSharp';
 import LinkIcon from '@mui/icons-material/InsertLinkSharp';
 import Localization from 'classes/localization';
+import styles from 'styles/storyPage/editor.module.scss'
 
 /** @returns {JSX.Element} */
 const EditorComponent = () => {
@@ -96,6 +97,7 @@ const EditorComponent = () => {
 
     return (
         <TextEditor 
+            className={styles.editEditor}
             text={context.file?.content.text} 
             handleInput={handleInput}
             handleContext={handleContext}

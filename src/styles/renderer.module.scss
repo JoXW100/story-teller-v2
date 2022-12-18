@@ -1,4 +1,4 @@
-@import '../colors.scss';
+@import 'colors.scss';
 
 $pageWidth: 8.5in; /* A4 */
 $pageHeight: 14in; /* A4 */
@@ -88,5 +88,24 @@ $pageHeight: 14in; /* A4 */
         width: auto;
         height: auto;
         content: " ";
+    }
+}
+
+.header {
+    @include color(main);
+    display: flex;
+    flex-direction: row-reverse;
+    margin: auto;
+    top: 0;
+}
+
+.container {
+    height: inherit;
+    position: relative;
+    overflow: hidden;
+
+    & > *:last-child {
+        height: calc(100% - 40px);
+        overflow: auto;
     }
 }

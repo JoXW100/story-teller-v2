@@ -15,6 +15,10 @@
                         "params": { "label": "Title", "key": "title" }
                     },
                     { 
+                        "type": "boolean", 
+                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                    },
+                    { 
                         "type": "textarea", 
                         "params": { "label": "Content", "key": "content" }
                     }

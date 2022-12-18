@@ -3,8 +3,8 @@ import { CalculationMode } from '@enums/editor';
 import Elements from 'elements';
 import React, { useEffect, useMemo, useState } from 'react';
 import Parser, { ParseError } from 'utils/parser';
-import styles from 'styles/storyPage/renderer.module.scss';
-
+import { FileData, AbilityContent, AbilityMetadata } from '@types/database';
+import styles from 'styles/renderer.module.scss';
 
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
 
@@ -21,7 +21,6 @@ const getScaling = (data = {}, scaling) => {
 
     }
 }
-
 const getConditionModifier = (metadata, data = {}) => {
     var mod = metadata.conditionModifier?.value ?? 0
     var prof = data.proficiency ?? 0;
@@ -35,7 +34,6 @@ const getConditionModifier = (metadata, data = {}) => {
             return mod + prof
     }
 }
-
 const getEffectModifier = (metadata, data = {}) => {
     switch (metadata.effectModifier?.type) {
         case CalculationMode.Auto:
@@ -48,21 +46,23 @@ const getEffectModifier = (metadata, data = {}) => {
     }
 }
 
+const AbilityTypes = {
+    [AbilityType.Feature]: "Feature",
+    [AbilityType.MeleeAttack]: "Melee Attack",
+    [AbilityType.MeleeWeapon]: "Melee Weapon Attack",
+    [AbilityType.RangedAttack]: "Ranged Attack",
+    [AbilityType.RangedWeapon]: "Ranged Weapon Attack",
+    [AbilityType.Skill]: "Skill",
+    [AbilityType.Special]: "Special",
+    [AbilityType.Trait]: "Trait",
+}
+
 export const BuildAbility = (metadata = {}, data = {}, content) => {
     const range = metadata.range ?? 0;
     const longRange = metadata.rangeLong ?? 0;
     const conditionMod = getConditionModifier(metadata, data);
     const effectMod = getEffectModifier(metadata, data)
-    const type = {
-        [AbilityType.Feature]: "Feature",
-        [AbilityType.MeleeAttack]: "Melee Attack",
-        [AbilityType.MeleeWeapon]: "Melee Weapon Attack",
-        [AbilityType.RangedAttack]: "Ranged Attack",
-        [AbilityType.RangedWeapon]: "Ranged Weapon Attack",
-        [AbilityType.Skill]: "Skill",
-        [AbilityType.Special]: "Special",
-        [AbilityType.Trait]: "Trait",
-    }[metadata.type];
+    const type = AbilityTypes[metadata.type];
     switch(metadata.type) {
         case AbilityType.Feature:
         default:
@@ -163,10 +163,11 @@ export const BuildAbility = (metadata = {}, data = {}, content) => {
 
 /**
  * 
- * @param {{ metadata: import('@types/database').AbilityMetadata , data: AbilityData }} 
+ * @param {{ file: FileData<AbilityContent, AbilityMetadata>, data: AbilityData }} 
  * @returns {JSX.Element}
  */
-const AbilityRenderer = ({ metadata, data }) => {
+const AbilityRenderer = ({ file, data }) => {
+    let metadata = file.metadata ?? {}
     const [content, setContent] = useState(null)
     const [open, setOpen] = useState(metadata.type === AbilityType.Feature);
 
@@ -195,7 +196,7 @@ const AbilityRenderer = ({ metadata, data }) => {
                 throw error;
             }
         })
-    }, [metadata])
+    }, [file.metadata])
 
     const ability = useMemo(() => BuildAbility(metadata, data, open ? content : null), [metadata, data, content, open])
 

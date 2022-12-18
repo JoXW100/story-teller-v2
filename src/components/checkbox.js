@@ -1,5 +1,5 @@
-import styles from 'styles/components/checkbox.module.scss';
 import CheckIcon from '@mui/icons-material/CheckSharp';
+import styles from 'styles/components/checkbox.module.scss';
 
 /**
  * @param {{ 
@@ -15,7 +15,7 @@ const Checkbox = ({ className, value, onChange }) => {
             className={className ? `${styles.main} ${className}` : styles.main}
             onClick={() => onChange(!value)}
         >
-            { value && <CheckIcon sx={{ height: '100%' }}/>}
+            { value ? <CheckIcon sx={{ height: '100%' }}/> : null }
         </span>
     )
 }

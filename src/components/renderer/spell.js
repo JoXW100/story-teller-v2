@@ -3,7 +3,8 @@ import { CalculationMode } from '@enums/editor';
 import Elements from 'elements';
 import React, { useEffect, useMemo, useState } from 'react';
 import Parser, { ParseError } from 'utils/parser';
-import styles from 'styles/storyPage/renderer.module.scss';
+import styles from 'styles/renderer.module.scss';
+import { FileData, SpellContent, SpellMetadata } from '@types/database';
 
 
 const getAttributeModifier = (attr) => attr ? Math.ceil((attr - 11) / 2.0) : 0 
@@ -206,10 +207,11 @@ export const BuildSpell = (metadata = {}, data = {}, content) => {
 
 /**
  * 
- * @param {{ metadata: import('@types/database').AbilityMetadata, data: AbilityData }} 
+ * @param {{ file: FileData<SpellContent,SpellMetadata>, data: AbilityData }} 
  * @returns {JSX.Element}
  */
-const SpellRenderer = ({ metadata, data }) => {
+const SpellRenderer = ({ file = {}, data }) => {
+    var metadata = file.metadata ?? {}
     const [content, setContent] = useState(null)
     const [open, setOpen] = useState(false);
 
