@@ -2,17 +2,14 @@ import React, { useContext } from 'react'
 import DropdownMenu from 'components/common/dropdownMenu';
 import { Context } from 'components/contexts/fileContext';
 import { CalculationMode } from 'types/database/editor';
+import { OptionTypes } from '../data';
+import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
-import { OptionTypes, OptionType } from '../data';
-
-type OptionComponentProps = React.PropsWithChildren<{
-    params: OptionTemplateParams
-}>
+import styles from 'styles/storyPage/editor.module.scss';
 
 type OptionData = { type: string | number, value: number }
 
-const OptionComponent = ({ params }: OptionComponentProps): JSX.Element => {
+const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const CalcOption = OptionTypes['calc']
     
@@ -49,7 +46,7 @@ const OptionComponent = ({ params }: OptionComponentProps): JSX.Element => {
                 <input
                     type={params.type}
                     onChange={handleInput}
-                    value={String(data?.value ?? "")}
+                    value={data?.value ?? ''}
                     disabled={data.type as CalculationMode == CalculationMode.Auto}
                 />
             </div>

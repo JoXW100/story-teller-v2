@@ -8,8 +8,14 @@ import List from './list'
 import Number from './number'
 import Option from './option';
 import Selection from './selection';
+import { FileTemplateParams } from 'types/templates';
 
-export default {
+type TemplateComponentProps<T extends FileTemplateParams> = React.PropsWithChildren<{
+    params: T
+}>
+
+
+const Components = {
     Boolean,
     Editor,
     Enum,
@@ -21,3 +27,9 @@ export default {
     Option,
     Selection
 }
+
+export type {
+    TemplateComponentProps
+}
+
+export default Components

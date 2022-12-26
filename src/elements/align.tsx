@@ -1,7 +1,7 @@
 import React from 'react';
 import { ParseError } from 'utils/parser';
 import type { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface AlignOptions extends Variables {
     direction?: string
@@ -19,9 +19,13 @@ const validateOptions = (options: Variables): Queries => {
 
     if (options.direction) {
         var chars = options.direction.split('');
+        var taken = Object.values(validDirections).reduce((prev, val) => ({ 
+            ...prev, [val]: false 
+        }), {})
         chars.forEach((key) => {
-            if (!validDirections.has(key))
+            if (!validDirections.has(key) || taken[key])
                 throw new ParseError(`Invalid align option value. direction: '${options.direction}'`);
+            taken[key] = true
         })
     }
 
@@ -35,17 +39,14 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const AlignElement = ({ options = {}, children }: ElementParams<AlignOptions>): any => {
-    const vertical = options.direction?.includes('v');
-    const center = options.direction?.includes('c')
     const weight = parseFloat(options.weight ?? '1')
+    options.direction = options.direction ?? 'h'
 
     return (
         <div
             className={styles.align} 
             style={{ flex: weight }}
-            // @ts-ignore
-            direction={vertical ? "V" : "H"}
-            center={center ? "C" : undefined}
+            data={options.direction}
         >
             { children }
         </div>

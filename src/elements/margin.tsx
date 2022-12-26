@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface MarginOptions extends Variables {
     fileId?: string

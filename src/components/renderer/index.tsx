@@ -11,6 +11,9 @@ import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 
 const useRenderer = (template: FileRendererTemplate, file: FileData<any, any>): JSX.Element => {
+    if (!file)
+        throw Error("File was null in useRenderer: " + String(file?.id))
+
     const Renderer = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
         switch (template.type) {
             case FileType.Creature:

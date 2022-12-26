@@ -27,13 +27,13 @@ $entryWidth: 250px;
     display: inline-flex;
     user-select: none; 
 
-    & > [type] {
+    & > [data] {
         margin-left: auto;
         margin-right: 10px;
 
-        &[type=adv] { color: green; }
-        &[type=dis] { color: red; }
-        &[type=crit] { color: yellow; }
+        &[data=adv] { color: green; }
+        &[data=dis] { color: red; }
+        &[data=crit] { color: yellow; }
     }
 }
 
@@ -49,7 +49,7 @@ $entryWidth: 250px;
             margin-bottom: 3px;
         }
     
-        &[chosen=false] {
+        &[data=false] {
             opacity: 0.5;
         }
     }

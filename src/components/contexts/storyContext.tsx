@@ -40,8 +40,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                 if (viewMode)
                     return { ...state, loading: false, story: {} }
                 storyId && !state.story && fetchStory(storyId)
-                return state; 
-
+                return state
             case 'initSet':
                 if (action.data.success && action.data.result) {
                     return { 
@@ -54,32 +53,26 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                 }
                 router.push('../');
                 return state
-            
             case 'setFile': 
                 return action.data !== state.fileId 
                     ? { ...state, fileId: action.data ?? null }
                     : state
-            
             case 'setEditMode': 
                 return action.data !== state.editEnabled 
                     ? { ...state, editEnabled: action.data }
                     : state
-
             case 'roll':
                 state.rollHistory.add(action.data)
-                return { ...state };
-
+                return { ...state }
             case 'clearRolls':
                 state.rollHistory.modify((event) => {
                     return { ...event, time: 0 }
                 })
-                return { ...state };
-            
+                return { ...state }
             case 'setHelpOpen':
                 return state.helpMenuOpen == action.data 
                     ? state
                     : { ...state, helpMenuOpen: action.data }
-
             default:
                 return state
         }
@@ -99,7 +92,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
             dispatch({ type: 'init', data: null })
         } else if (state.fileId !== fileId && state.story) {
             dispatch({ type: 'setFile', data: fileId })
-        }else if (state.editEnabled !== editMode && state.story && state.fileId) {
+        } else if (state.editEnabled !== editMode && state.story && state.fileId) {
             dispatch({ type: 'setEditMode', data: editMode })
         }
     }, [storyId, fileId, editMode]);

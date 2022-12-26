@@ -39,13 +39,11 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
             <div className={styles.menu}>
                 <div className={styles.header}>
                     { Localization.toText("settingsPage-header")}
-                    <Link 
-                        href={Navigation.settingsReturnURL(returnURL)}
-                        passHref
-                        // @ts-ignore
-                        tooltips={Localization.toText("settingsPage-close")}
-                    >
-                        <div className={styles.close}>
+                    <Link href={Navigation.settingsReturnURL(returnURL)} passHref>
+                        <div 
+                            className={styles.close}
+                            tooltips={Localization.toText("settingsPage-close")}
+                        >
                             <CloseIcon/>
                         </div>
                     </Link>

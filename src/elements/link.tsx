@@ -6,7 +6,7 @@ import { AbilityRenderer, CharacterRenderer, CreatureRenderer, SpellRenderer, Do
 import { Queries, QueryType, ElementObject, ElementParams, Variables } from 'types/elements';
 import { FileContent, FileMetadata, FileType } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 const validOptions1 = new Set(['href']);
 const validateOptions1 = (options: Variables): Queries => {
@@ -46,7 +46,7 @@ type LinkParams = React.PropsWithChildren<{
 
 const LinkComponent = ({ href, className, children }: LinkParams): JSX.Element => {
     return href ? (
-        <Link href={String(href)}>
+        <Link href={href}>
             <span className={className}>
                 { children }
             </span>
@@ -123,11 +123,11 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
         }
     }, [file])
 
-    return href ? (
+    return href && file ? (
         <LinkComponent href={href} className={styles.linkContent}>
             {/** @ts-ignore */}
             <div border={border}>
-                <Content.linkRenderer file={metadata.$queries[options.fileId]}/>
+                <Content.linkRenderer file={file}/>
             </div>
         </LinkComponent>
     ) : <div className={styles.error}> Error </div>;

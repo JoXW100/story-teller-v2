@@ -41,7 +41,6 @@ const CreateStoryMenu = ({ state, setStatus }: CreateStoryMenuProps): JSX.Elemen
                 <div
                     className={styles.confirmButton}
                     onClick={handleConfirm}
-                    // @ts-ignore
                     disabled={disabled}
                 >
                     { Localization.toText('createStory-confirmation') }

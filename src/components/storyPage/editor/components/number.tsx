@@ -1,13 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from 'components/contexts/fileContext';
+import { TemplateComponentProps } from '.';
 import { NumberTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss'
 
-type NumberComponentProps = React.PropsWithChildren<{
-    params: NumberTemplateParams
-}>
-
-const NumberComponent = ({ params }: NumberComponentProps): JSX.Element => {
+const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const [state, setState] = useState({
         text: "",
@@ -43,8 +40,7 @@ const NumberComponent = ({ params }: NumberComponentProps): JSX.Element => {
                 type="number" 
                 value={state.text} 
                 onChange={handleInput}
-                // @ts-ignore
-                error={String(state.error)}
+                data={state.error ? "error" : undefined}
             />
         </div>
     )

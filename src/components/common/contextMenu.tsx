@@ -108,8 +108,7 @@ const ContextMenuItem = ({ data }: ContextMenuItemProps): JSX.Element => {
             className={styles.item}
             onContextMenu={(e) => e.preventDefault()}
             onClick={data.action}
-            // @ts-ignore
-            content={data.content ? "true" : undefined}
+            data={data.content ? "content" : undefined}
         >
             { data.icon && <data.icon/> }
             <div className={styles.text}> { data.text } </div>

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface ImageOptions extends Variables {
     href?: string
@@ -36,15 +36,13 @@ const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Elemen
         }
     }, [options]);
 
-    const border = options.border ?? "false";
     const width = options.width ?? "100%";
 
     return (
         <div
             className={styles.image} 
             style={{ width: width, flex: width == '100%' ? 1 : undefined }}
-            // @ts-ignore
-            border={border}
+            data={options.border == "border" ? "border" : undefined }
         >
             <img src={href ? String(href) : '/defaultImage.jpg'}/>
         </div>

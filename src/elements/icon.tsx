@@ -1,7 +1,7 @@
 import { ParseError } from 'utils/parser';
 import Icons from 'assets/icons';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface IconOptions extends Variables {
     icon?: string
@@ -22,7 +22,6 @@ const IconElement = ({ options = {} }: ElementParams<IconOptions>): JSX.Element 
     return (
         <span 
             className={styles.icon}
-            // @ts-ignore
             tooltips={options.tooltips}
         > <Icon/> </span>
     )

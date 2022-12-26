@@ -72,7 +72,6 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
                 <div 
                     className={styles.button} 
                     onClick={() => closePopup()}
-                    // @ts-ignore
                     tooltips={Localization.toText("createFilePopup-closeTooltips")}
                 > 
                     <CloseIcon/>
@@ -85,8 +84,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
                             key={index} 
                             className={styles.icon}
                             onClick={() => setSelected(key as InputType)}
-                            // @ts-ignore
-                            open={key === selected}
+                            data={key === selected ? "open" : "closed"}
                             tooltips={pageMap[key].tooltips}
                         > 
                             { pageMap[key].icon }
@@ -133,7 +131,6 @@ const CreateFileContent = ({ callback }: CreateFileContentProps): JSX.Element =>
                 <div 
                     className={styles.button}
                     onClick={handleClick}
-                    // @ts-ignore
                     disabled={!state.name || !state.type}
                 > 
                     {Localization.toText('createFilePopup-button')}
@@ -169,7 +166,6 @@ const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Elemen
                 <div 
                     className={styles.button}
                     onClick={handleClick}
-                    // @ts-ignore
                     disabled={!state.name}
                 > 
                     {Localization.toText('createFilePopup-button')}

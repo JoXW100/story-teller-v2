@@ -1,6 +1,6 @@
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface BoxOptions extends Variables {
     color?: string
@@ -22,8 +22,7 @@ const BoxElement = ({ options = {}, children }: ElementParams<BoxOptions>): JSX.
         <div 
             className={styles.box}
             style={options.color ? { background: options.color } : undefined}
-            // @ts-ignore
-            border={border}
+            data={border}
         >
             { children }
         </div>

@@ -1,14 +1,11 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import TextEditor from 'components/common/textEditor';
+import { TemplateComponentProps } from '.';
 import { TextAreaTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss';
 
-type TextAreaComponentProps = React.PropsWithChildren<{
-    params: TextAreaTemplateParams
-}>
-
-const TextareaComponent = ({ params }: TextAreaComponentProps): JSX.Element => {
+const TextareaComponent = ({ params }: TemplateComponentProps<TextAreaTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const value: string = context.file?.metadata 
         ? context.file.metadata[params.key] ?? ''
@@ -21,8 +18,7 @@ const TextareaComponent = ({ params }: TextAreaComponentProps): JSX.Element => {
     return (
         <div 
             className={styles.editTextArea}
-            // @ts-ignore
-            fill={String(params.fill)}
+            data={params.fill ? 'fill' : undefined}
         >
             <b> {`${params.label ?? "label"}:`} </b>
             <TextEditor text={value} handleInput={handleInput}/>

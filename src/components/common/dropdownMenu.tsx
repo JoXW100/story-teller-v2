@@ -60,14 +60,12 @@ const DropdownMenu = ({ className, values, value, showButton = true, onChange }:
         <div 
             className={className ? `${styles.main} ${className}` : styles.main}
             onClick={openHandler}
-            // @ts-ignore
             disabled={disabled}
         >
             <div className={styles.content} onMouseLeave={clickHandler}> 
                 <div 
                     className={styles.menu}
-                    // @ts-ignore
-                    expanded={String(open)}
+                    data={open ? "true" : "false"}
                 > { rows } </div>
             </div>
             { showButton &&

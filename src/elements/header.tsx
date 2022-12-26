@@ -1,6 +1,6 @@
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface HeaderOptions extends Variables {
     underline?: string
@@ -20,8 +20,7 @@ export const Header1 = ({ options = {}, children }: ElementParams<HeaderOptions>
     return (
         <div 
             className={styles.header1}
-            // @ts-ignore
-            underline={options?.underline ?? "false"}
+            data={options?.underline ? "underline" : undefined}
         > { children } </div>
     )
 }
@@ -30,8 +29,7 @@ export const Header2 = ({ options = {}, children }: ElementParams<HeaderOptions>
     return (
         <div 
             className={styles.header2} 
-            // @ts-ignore
-            underline={options?.underline ?? "false"}
+            data={options?.underline ? "underline" : undefined}
         > { children } </div>
     )
 }
@@ -40,8 +38,7 @@ export const Header3 = ({ options = {}, children }: ElementParams<HeaderOptions>
     return (
         <div 
             className={styles.header3} 
-            // @ts-ignore
-            underline={options?.underline ?? "false"}
+            data={options?.underline ? "underline" : undefined}
         > { children } </div>
     )
 }

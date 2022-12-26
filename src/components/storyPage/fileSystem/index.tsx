@@ -27,7 +27,6 @@ const FileMenuHeader = (): JSX.Element => {
             <div 
                 className={styles.file}
                 onClick={() => dispatch.openCreateFileMenu(InputType.File)}
-                // @ts-ignore
                 tooltips={Localization.toText('create-fileTooltips')}
             > 
                 <FileIcon/> 
@@ -35,7 +34,6 @@ const FileMenuHeader = (): JSX.Element => {
             <div 
                 className={styles.folder}
                 onClick={() => dispatch.openCreateFileMenu(InputType.Folder)}
-                // @ts-ignore
                 tooltips={Localization.toText('create-folderTooltips')}
             > 
                 <FolderIcon/> 
@@ -43,7 +41,6 @@ const FileMenuHeader = (): JSX.Element => {
             <div 
                 className={styles.upload}
                 onClick={() => dispatch.openCreateFileMenu(InputType.Upload)}
-                // @ts-ignore
                 tooltips={Localization.toText('create-uploadTooltips')}
             > 
                 <UploadIcon/> 
@@ -84,30 +81,24 @@ const FileMenu = (): JSX.Element => {
     }
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            // @ts-ignore
             window.dragData && (window.dragData.target = null);
         }
     }
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
             
-            // @ts-ignore
             var file = window.dragData?.file;
             if (file && (file.holderId !== storyContext.story.root)) {
                 dispatch.moveFile(file, null)
             }
 
-            // @ts-ignore
             window.dragData.target = null;
-            // @ts-ignore
             window.dragData.file = null;
         }
     }

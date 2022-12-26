@@ -1,14 +1,11 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import ListMenu from 'components/common/listMenu';
-import styles from 'styles/storyPage/editor.module.scss';
+import { TemplateComponentProps } from '.';
 import { ListTemplateParams } from 'types/templates';
+import styles from 'styles/storyPage/editor.module.scss';
 
-type ListComponentProps = React.PropsWithChildren<{
-    params: ListTemplateParams
-}>
-
-const ListComponent = ({ params }: ListComponentProps): JSX.Element => {
+const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const values = context.file?.metadata[params.key] ?? []
         

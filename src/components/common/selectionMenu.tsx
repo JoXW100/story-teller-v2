@@ -70,7 +70,6 @@ const SelectionMenu = ({ className, values, alternate, selection, onChange }: Se
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div 
                 className={styles.addRow}
-                // @ts-ignore
                 disabled={Object.values(options).length === 0}
             >
                 <DropdownMenu 

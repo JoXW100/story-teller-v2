@@ -67,8 +67,7 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
         var content = result.results.map((res, index) => (
             <div 
                 key={index}
-                // @ts-ignore
-                chosen={String(result.selectedIndex === index)}
+                data={result.selectedIndex === index ? 'true' : 'false'}
             >
                 { res.values.map((res, key) => (
                     <div key={key}>
@@ -81,12 +80,9 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
         return <>
             <div className={styles.entryHeader}>
                 <b>{`${result.desc}:`} </b>
-                { /** @ts-ignore */}
-                { result.method === RollMethod.Advantage && <b type='adv'>+ADV</b> } 
-                { /** @ts-ignore */}
-                { result.method === RollMethod.Disadvantage && <b type='dis'>-DIS</b> }
-                { /** @ts-ignore */}
-                { result.method === RollMethod.Crit && <b type='crit'>+CRIT</b> }
+                { result.method === RollMethod.Advantage && <b data='adv'>+ADV</b> } 
+                { result.method === RollMethod.Disadvantage && <b data='dis'>-DIS</b> }
+                { result.method === RollMethod.Crit && <b data='crit'>+CRIT</b> }
             </div>
             <div className={styles.entryContent}>
                 { content }

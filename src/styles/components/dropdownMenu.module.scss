@@ -33,12 +33,12 @@ $size: 30px;
             width: 100%;
             overflow-y: auto;
 
-            &[expanded=false] {
+            &[data=false] {
                 height: inherit;
                 overflow: hidden;
             }
 
-            &[expanded=true] {
+            &[data=true] {
                 z-index: 15;
                 max-height: 500%;
             }

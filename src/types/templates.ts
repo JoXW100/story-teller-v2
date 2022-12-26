@@ -158,6 +158,7 @@ export enum EditInputType {
 
 export type {
     FileTemplate,
+    FileTemplateParams,
     FileRendererTemplate,
     TemplateComponent,
     TemplateCondition,

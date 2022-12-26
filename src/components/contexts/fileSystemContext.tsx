@@ -11,9 +11,6 @@ import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
 import { FileAddResult, FileDeleteFromResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
 
-
-
-
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
 
 const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Element => {

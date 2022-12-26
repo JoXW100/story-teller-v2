@@ -11,9 +11,11 @@ import BlockIcon from '@mui/icons-material/GridViewSharp';
 import BoldIcon from '@mui/icons-material/FormatBoldSharp';
 import LinkIcon from '@mui/icons-material/InsertLinkSharp';
 import Localization from 'utils/localization';
+import { TemplateComponentProps } from '.';
+import { FileTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss'
 
-const EditorComponent = (): JSX.Element => {
+const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
 
     const handleInput = (value: string) => {

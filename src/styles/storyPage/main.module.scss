@@ -106,7 +106,7 @@ $entryWidth: 250px;
     position: relative;
     margin-left: 1px;
 
-    &[open] {
+    &[data=open] {
         @include colorShadow();
         & > :first-child {
             width: $entryWidth;

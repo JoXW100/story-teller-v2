@@ -31,7 +31,7 @@
     @extend .file;
     position: relative;
 
-    &[open]::after {
+    &[data=open]::after {
         position: absolute;
         right: 3px;
         top: calc(50% - 5px);
@@ -41,7 +41,7 @@
         content: " ";
     }
 
-    &:not([open])::after {
+    &[data=closed]::after {
         position: absolute;
         right: -3px;
         top: calc(50% - 5px);
@@ -69,7 +69,7 @@ input.input {
 .folderHolder {
     display: block;
 
-    &[highlight=true] {
+    &[data=highlight] {
         filter: brightness(105%);
     }
 }

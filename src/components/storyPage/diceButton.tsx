@@ -12,7 +12,6 @@ const DiceButton = (): JSX.Element => {
             <div 
                 className={styles.dice}
                 onClick={() => setOpen(!open)}
-                // @ts-ignore
                 tooltips={open 
                     ? Localization.toText('storyPage-closeDiceMenu')
                     : Localization.toText('storyPage-openDiceMenu')}

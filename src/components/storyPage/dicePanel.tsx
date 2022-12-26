@@ -35,7 +35,6 @@ const DicePanel = (): JSX.Element => {
                     <div 
                         className={styles.roll}
                         onClick={handleRoll}
-                        // @ts-ignore
                         tooltips={Localization.toText("storyPage-dicePanel-rollTooltips")}
                     >
                         { Localization.toText("storyPage-dicePanel-roll") }
@@ -64,7 +63,6 @@ const DiceItem = ({ dice, num, onClick }: DiceItemProps): JSX.Element => {
         <div
             className={styles.dice} 
             onClick={() => onClick(dice)}
-            // @ts-ignore
             tooltips={dice.text}
         >
             <Icon/>

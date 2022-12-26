@@ -26,14 +26,13 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
     }, [toggled])
 
     return (
-        <div // @ts-ignore
-            open={isOpen}
+        <div
+            data={isOpen ? "open" : "closed"}
             className={styles.holder}
         >
             <div 
                 className={styles.rollHistory}
                 onClick={HandleClick}
-                // @ts-ignore
                 disabled={disabled ? true : undefined}
                 tooltips={toggled 
                     ? Localization.toText('storyPage-closeRollHistoryMenu')

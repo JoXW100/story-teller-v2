@@ -1,4 +1,4 @@
-@import '../colors.scss';
+@import 'colors.scss';
 
 .fontExtension {
     @include colorText();
@@ -82,17 +82,18 @@
     align-items: stretch;
     flex: 1;
 
-    &[direction=V] {
+    &[data=v], &[data=vc], &[data=cv] {
         flex-direction: column;
         justify-content: space-between;
     }
 
-    &[direction=H] {
+    &[data=h], &[data=hc], &[data=ch] {
         flex-direction: row;
         & > .line { @extend .line-vertical; border-bottom: none; }
     }
 
-    &[center=C] {
+    &[data=c], &[data=hc], &[data=ch], &[data=vc], &[data=cv], 
+    &[data=vch], &[data=vhc], &[data=vch], &[data=hcv], &[data=vhc], &[data=hvc] {
         align-items: center;
         & > .line { align-self: stretch; }
     }
@@ -127,7 +128,7 @@
     @include color(third);
     padding: 5px;
 
-    &[border=true] {
+    &[data=border] {
         @include colorShadow();
     }
 }
@@ -162,7 +163,7 @@
     display: flex;
     align-items: center;
 
-    &[underline=true] {
+    &[data=underline] {
         border-bottom: 2px solid map-get($palette, border);
         margin-bottom: 6px;
     }

@@ -3,14 +3,11 @@ import Link from 'next/link';
 import Navigation from 'utils/navigation';
 import { Context } from 'components/contexts/fileContext';
 import Checkbox from 'components/common/checkbox';
+import { TemplateComponentProps } from '.';
 import { BooleanTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss'
 
-type BooleanComponentProps = React.PropsWithChildren<{
-    params: BooleanTemplateParams
-}>
-
-const BooleanComponent = ({ params }: BooleanComponentProps): JSX.Element => {
+const BooleanComponent = ({ params }: TemplateComponentProps<BooleanTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const href = params.viewURL && Navigation.viewURL(context.file?.id)
     const defaultValue = params.default ?? 0;

@@ -2,16 +2,11 @@ import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import DropdownMenu from 'components/common/dropdownMenu';
 import { OptionTypes } from '../data';
+import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss'
 
-
-
-type EnumComponentProps = React.PropsWithChildren<{
-    params: EnumTemplateParams
-}>
-
-const EnumComponent = ({ params }: EnumComponentProps): JSX.Element => {
+const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const OptionType = OptionTypes[params.type];
     if (!OptionType){

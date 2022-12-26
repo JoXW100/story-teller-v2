@@ -14,7 +14,6 @@ const HelpMenuButton = (): JSX.Element => {
         <div 
             className={styles.help} 
             onClick={handleClick}
-            // @ts-ignore
             tooltips={Localization.toText('storyPage-helpMenu')}
         >
             <HelpIcon/>

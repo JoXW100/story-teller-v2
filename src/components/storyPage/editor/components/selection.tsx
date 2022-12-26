@@ -2,12 +2,9 @@ import React, { ReactNode, useContext, useMemo } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/selectionMenu';
 import { OptionTypes } from '../data';
+import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss';
-
-type SelectionComponentProps = React.PropsWithChildren<{
-    params: SelectionTemplateParams
-}>
 
 type SelectionItemElementProps = React.PropsWithChildren<{
     item: ReactNode
@@ -16,7 +13,7 @@ type SelectionItemElementProps = React.PropsWithChildren<{
     onChange: (value: string) => void
 }>
 
-const SelectionComponent = ({ params }: SelectionComponentProps): JSX.Element => {
+const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const optionType = OptionTypes[params.enum];
 

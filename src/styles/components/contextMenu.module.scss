@@ -34,7 +34,7 @@
         text-overflow: clip;
     }
 
-    &[content=true] {
+    &[data=content] {
         &:after {
             position: absolute;
             right: -3px;

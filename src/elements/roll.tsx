@@ -9,7 +9,7 @@ import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'utils/localization';
 import { RollMethod } from 'types/dice';
 import { Queries, ElementObject, ElementParams, Variables, RollMode } from 'types/elements';
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 
 interface MarginOptions extends Variables {
     dice?: string
@@ -122,7 +122,6 @@ const RollElement = ({ children, options }: ElementParams<MarginOptions>): JSX.E
             className={styles.dice}
             onClick={handleClick}
             onContextMenu={handleContext}
-            // @ts-ignore
             tooltips={options.tooltips}
         >
             { !show ? modText

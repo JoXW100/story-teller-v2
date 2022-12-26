@@ -9,7 +9,6 @@ const SettingsButton = (): JSX.Element => {
         <Link href={Navigation.settingsURL()} passHref>
             <div 
                 className={styles.settings}
-                // @ts-ignore
                 tooltips={Localization.toText('storyPage-openSettingsMenu')}
             >
                 <SettingsIcon sx={{ height: "100%" }}/>

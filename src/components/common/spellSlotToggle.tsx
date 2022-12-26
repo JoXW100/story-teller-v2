@@ -7,8 +7,7 @@ const SpellSlotToggle = (): JSX.Element => {
         <div 
             className={styles.spellSlotToggle} 
             onClick={() => setToggle(!toggle)}
-            // @ts-ignore
-            active={String(toggle)}
+            data={toggle ? 'active' : undefined}
         />
     )
 }

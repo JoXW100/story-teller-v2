@@ -31,7 +31,6 @@ const HelpMenu = (): JSX.Element => {
                     <div 
                         className={styles.closeBtn}
                         onClick={handleClick}
-                        // @ts-ignore
                         tooltips={Localization.toText('helpMenu-close')}
                     >
                         <CloseIcon/>

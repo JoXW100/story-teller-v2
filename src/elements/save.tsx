@@ -1,4 +1,4 @@
-import styles from 'styles/elements/main.module.scss';
+import styles from 'styles/elements.module.scss';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
 import { ParseError } from 'utils/parser';
 
@@ -30,7 +30,6 @@ const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element 
     return (
         <span 
             className={styles.save}
-            // @ts-ignore
             tooltips={options.tooltips}
         > 
             {`DC:${value} ${attr}`} 

@@ -96,7 +96,6 @@ const File = ({ file }: FileProps): JSX.Element => {
     }
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
         window.dragData = { file: file }
     }
 

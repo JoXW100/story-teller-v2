@@ -87,7 +87,7 @@ $navbarWidth: 35px;
     cursor: pointer;
     user-select: none;
 
-    &[open] {
+    &[data=open] {
         @include colorInteract(second);
     }
 }

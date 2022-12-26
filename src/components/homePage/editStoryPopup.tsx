@@ -36,7 +36,6 @@ const EditStoryPopup = ({ values, callback }: EditStoryPopupProps):JSX.Element =
                 <div 
                     className={styles.confirmButton}
                     onClick={handleConfirm}
-                    // @ts-ignore
                     disabled={disabled}
                 >
                     { Localization.toText('editStoryPopup-confirmation') }

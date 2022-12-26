@@ -13,6 +13,7 @@ import FileInput from './fileInput';
 import { FileStructure } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import { InputType } from 'types/context/fileSystemContext';
+import { DragData } from 'index';
 import styles from 'styles/storyPage/file.module.scss';
 
 const hasSelectedChild = (file: FileStructure, fileId: ObjectId): boolean => {
@@ -94,8 +95,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
-        var data: { file?: FileStructure, target?: ObjectId } = window.dragData
+        var data: DragData = window.dragData
         if (data?.file) {
             e.preventDefault();
             e.stopPropagation();
@@ -111,7 +111,6 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
@@ -119,7 +118,6 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
         var data: { file?: FileStructure, target?: ObjectId } = window.dragData
         if (data?.file) {
             e.preventDefault();
@@ -133,16 +131,13 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDrag = () => {
-        // @ts-ignore
         window.dragData = { file: file }
     }
 
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        // @ts-ignore
-        var data: { file?: FileStructure, target?: ObjectId } = window.dragData
-        if (data?.file) {
+        if (window.dragData?.file) {
             e.preventDefault();
-            if (data.target !== file.id) {
+            if (window.dragData.target !== file.id) {
                 setState((state) => ({ ...state, highlight: false }));
             }
         }
@@ -159,16 +154,14 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
             onDragLeave={handleDragLeave}
             onDragEnter={handleDragEnter}
             onDrop={handleDrop}
-            // @ts-ignore
-            highlight={String(state.highlight)}
+            data={state.highlight ? "highlight" : undefined}
         >
             <div 
                 className={className} 
                 onClick={changeState}
                 onDragStart={handleDrag}
                 onContextMenu={handleContext}
-                // @ts-ignore
-                open={state.open}
+                data={state.open ? "open" : "closed"}
                 draggable
             >
                 <Icon/>
