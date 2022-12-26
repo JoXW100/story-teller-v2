@@ -6,7 +6,6 @@ const BoldElement = ({ children }: ElementParams<{}>): JSX.Element => {
     return <b className={styles.bold}> {children} </b>
 }
 
-/** @type {ElementObject} */
 const x: ElementObject = {
     type: 'bold',
     defaultKey: null,

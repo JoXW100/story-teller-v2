@@ -63,8 +63,7 @@ const File = ({ file }: FileProps): JSX.Element => {
         setState((state) => ({ ...state, selected: context.fileId === file.id }))
     }, [context.fileId, file.id])
 
-    /** @param {React.MouseEvent<HTMLDivElement, React.MouseEvent>} e */
-    const handleContext = (e) => {
+    const handleContext = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
         openContext([

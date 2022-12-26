@@ -132,10 +132,7 @@ const RollElement = ({ children, options }: ElementParams<MarginOptions>): JSX.E
     )
 }
 
-/**
- * @type {Object.<string, ElementObject>}
- */
- export const element = {
+export const element: { [key: string]: ElementObject } = {
     'roll': {
         type: 'roll',
         defaultKey: 'dice',

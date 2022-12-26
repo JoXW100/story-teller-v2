@@ -13,13 +13,7 @@ class StoriesInterface
         this.collection = database.collection('stories');
     }
 
-    /**
-     * Adds a story to the database
-     * @param {string} userId The id of the user
-     * @param {string} name The name of the story to add
-     * @param {string} desc The description of the story to add
-     * @returns {Promise<DBResponse<ObjectId>>} The id of the story inside the database
-     */
+    /** Adds a story to the database */
     async add(userId: string, name: string, desc: string): Promise<DBResponse<StoryAddResult>> {
         try {
             let request: DBStory = {

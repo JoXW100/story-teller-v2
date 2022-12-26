@@ -3,22 +3,20 @@ import { useRouter } from 'next/router'
 import type { Point, ContextRowData, ContextMenuData, ContextEventDetails } from 'types/contextMenu'
 import styles from 'styles/components/contextMenu.module.scss'
 
-export const openContext = (content: ContextRowData[], point: Point, interrupt: boolean = true, data: ContextMenuData = {}) => {
-    document.dispatchEvent(new CustomEvent('contextMenu', {
-        bubbles: true,
-        detail: {
-            show: true,
-            interrupt: interrupt,
-            anchors: { left: point.x, top: point.y },
-            content: content,
-            data: data
-        }
-    }))
+interface ContextMenuState {
+    show: boolean
+    anchors: { left: number, top: number }
+    content: ContextRowData[]
+    data: ContextMenuData
 }
+
+type ContextMenuItemProps = React.PropsWithRef<{
+    data: ContextRowData
+}>
 
 const ContextMenu = () => {
     const router = useRouter()
-    const [state, setState] = useState({
+    const [state, setState] = useState<ContextMenuState>({
         show: false,
         anchors: { left: 0, top: 9 },
         content: [],
@@ -29,7 +27,7 @@ const ContextMenu = () => {
         state.show && setState({ ...state, show: false })
     }
 
-    const getDepthHeight = (row: ContextRowData) => {
+    const getDepthHeight = (row: ContextRowData): { height: number, depth: number } => {
         return row.content?.reduce((pre, cur, index) => {
             if ('content' in cur) {
                 let { height, depth } = getDepthHeight(cur)
@@ -104,12 +102,7 @@ const ContextMenu = () => {
     ) : null
 }
 
-/**
- * 
- * @param {{ data: ContextRowData }} 
- * @returns {JSX.Element}
- */
-const ContextMenuItem = ({ data }) => {
+const ContextMenuItem = ({ data }: ContextMenuItemProps): JSX.Element => {
     return (
         <div
             className={styles.item}
@@ -127,6 +120,19 @@ const ContextMenuItem = ({ data }) => {
             </div>
         </div>
     )
+}
+
+export const openContext = (content: ContextRowData[], point: Point, interrupt: boolean = true, data: ContextMenuData = {}) => {
+    document.dispatchEvent(new CustomEvent('contextMenu', {
+        bubbles: true,
+        detail: {
+            show: true,
+            interrupt: interrupt,
+            anchors: { left: point.x, top: point.y },
+            content: content,
+            data: data
+        }
+    }))
 }
 
 export default ContextMenu;

@@ -12,11 +12,6 @@ type OptionComponentProps = React.PropsWithChildren<{
 
 type OptionData = { type: string | number, value: number }
 
-/**
- * 
- * @param {{ children: JSX.Element, params: OptionParams<any> }} 
- * @returns {JSX.Element}
- */
 const OptionComponent = ({ params }: OptionComponentProps): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const CalcOption = OptionTypes['calc']

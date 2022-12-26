@@ -2,10 +2,6 @@ import { ParseError } from 'utils/parser';
 import { ElementObject, ElementParams } from 'types/elements';
 import styles from 'styles/elements/main.module.scss';
 
-/**
- * @param {ElementParams<{}>} 
- * @returns {JSX.Element}
- */
 const FillElement = ({ children }: ElementParams<{}>): JSX.Element => {
     return (
         <div className={styles.fill}> {children} </div>

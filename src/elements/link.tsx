@@ -90,10 +90,6 @@ interface LinkContentOptions extends Variables {
     border?: string
 } 
 
-/**
- * @param {} 
- * @returns {JSX.Element}
- */
 export const LinkContentElement = ({ options = {}, metadata }: ElementParams<LinkContentOptions>): JSX.Element => {
     const file = metadata.$queries[options.fileId]
     const href = useMemo(() => {

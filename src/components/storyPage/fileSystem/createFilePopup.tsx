@@ -21,6 +21,14 @@ type CreateFileContentProps = React.PropsWithRef<{
     callback: CreateFilePopupCallback
 }>
 
+type CreateFolderContentProps = React.PropsWithRef<{
+    callback: CreateFilePopupCallback
+}>
+
+type CreateUploadContentProps = React.PropsWithRef<{
+    callback: CreateFilePopupCallback
+}>
+
 interface CreateFilePopupResult {
     type: InputType
     data: CreateFilePopupData
@@ -135,11 +143,7 @@ const CreateFileContent = ({ callback }: CreateFileContentProps): JSX.Element =>
     )
 }
 
-/**
- * @param {{ callback: import('@types/storyPage').CreateFileCallback }} 
- * @returns {JSX.Element}
- */
-const CreateFolderContent = ({ callback }) => {
+const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Element => {
     const [state, setState] = useState<CreateFilePopupData>({ 
         name: "", 
         type: FileType.Folder 
@@ -175,11 +179,7 @@ const CreateFolderContent = ({ callback }) => {
     )
 }
 
-/**
- * @param {{ callback: import('@types/storyPage').CreateFileCallback }} 
- * @returns {JSX.Element}
- */
-const CreateUploadContent = ({ callback }) => {
+const CreateUploadContent = ({ callback }: CreateUploadContentProps): JSX.Element => {
     const [state, setState] = useState({ file: null })
 
     const handleFileUpload = () => {
