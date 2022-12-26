@@ -16,7 +16,7 @@ const LoginPage = ({ returnURL }: LoginPageProps): JSX.Element => {
             <div className={styles.panel}>
                 <div className={styles.header}> Login Required </div>
                 <div className={styles.body}>
-                    <Link href={href}>
+                    <Link href={href} passHref>
                         <div className={styles.loginButton}>
                             { Localization.toText('loginPage-prompt') }
                             <LoginIcon/>

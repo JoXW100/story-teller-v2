@@ -6,7 +6,7 @@ import styles from 'styles/storyPage/main.module.scss'
 
 const SettingsButton = (): JSX.Element => {
     return (
-        <Link href={Navigation.settingsURL()}>
+        <Link href={Navigation.settingsURL()} passHref>
             <div 
                 className={styles.settings}
                 // @ts-ignore

@@ -41,6 +41,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                     { Localization.toText("settingsPage-header")}
                     <Link 
                         href={Navigation.settingsReturnURL(returnURL)}
+                        passHref
                         // @ts-ignore
                         tooltips={Localization.toText("settingsPage-close")}
                     >

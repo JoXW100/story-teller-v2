@@ -115,7 +115,7 @@ const HomePage = (): JSX.Element => {
     return (
         <div className={styles.main}>
             <div className={styles.mainPanel}>
-                <Link href="/api/auth/logout">
+                <Link href="/api/auth/logout" passHref>
                     <div className={styles.logoutButton}>
                         {`Logout ${user?.name}`}
                         <LogoutIcon/>

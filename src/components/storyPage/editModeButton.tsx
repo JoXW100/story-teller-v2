@@ -27,7 +27,7 @@ const EditModeButton = ({ editEnabled }: EditModeButtonProps): JSX.Element => {
     ), [location, editEnabled])
     
     return (
-        <Link href={Navigation.editModeURL(!editEnabled)}>
+        <Link href={Navigation.editModeURL(!editEnabled)} passHref>
             <div 
                 className={styles.editMode} 
                 // @ts-ignore

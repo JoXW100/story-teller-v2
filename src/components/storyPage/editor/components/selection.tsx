@@ -19,10 +19,6 @@ type SelectionItemElementProps = React.PropsWithChildren<{
 const SelectionComponent = ({ params }: SelectionComponentProps): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const optionType = OptionTypes[params.enum];
-    if (!optionType){
-        console.error("No option type of type: " + params.type)
-        return null;
-    }
 
     const selection: { [s: string]: any; } = context.file?.metadata 
         ? context.file.metadata[params.key] ?? {}
@@ -40,7 +36,7 @@ const SelectionComponent = ({ params }: SelectionComponentProps): JSX.Element =>
     }
 
     const values = useMemo<{[key: string]: ReactNode }>(() => (
-        Object.keys(optionType.options).reduce((prev, key) => 
+        Object.keys(optionType?.options ?? {}).reduce((prev, key) => 
             ({ ...prev, [key]: (
                 <SelectionItemElement 
                     item={optionType.options[key]} 
@@ -51,6 +47,12 @@ const SelectionComponent = ({ params }: SelectionComponentProps): JSX.Element =>
             )})
         , {})
     ), [selection, context.file.metadata])
+    
+    // UseMemo above must not be used conditionally
+    if (!optionType){
+        console.error("No option type of type: " + params.type)
+        return null;
+    }
     
     return (
         <div className={styles.editSelection}>

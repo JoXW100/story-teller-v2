@@ -106,7 +106,7 @@ const File = ({ file }: FileProps): JSX.Element => {
         : styles.file;
 
     return (
-        <Link href={Navigation.fileURL(file.id)}>        
+        <Link href={Navigation.fileURL(file.id)} passHref>        
             <div 
                 className={className} 
                 onDragStart={handleDrag}

@@ -14,7 +14,7 @@ const Page = ({ props }: { props: PageProps }): JSX.Element => {
     useEffect(() => {
         if (user && !isLoading)
             router.push('../')
-    }, [user, isLoading])
+    }, [user, isLoading, router])
 
     return !isLoading && <LoginPage returnURL={props?.return}/>
 }

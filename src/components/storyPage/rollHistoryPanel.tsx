@@ -37,8 +37,7 @@ const RollHistoryPanel = ({ open, close, isOpen }: RollHistoryPanelProps): JSX.E
     useEffect(() => {
         if (state.active) {
             open();
-        }
-        else {
+        } else {
             close();
             clearInterval(state.interrupt);
         }
