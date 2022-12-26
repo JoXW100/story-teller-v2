@@ -1,5 +1,6 @@
 # Elements
 Elements are the available commands that can be used within the editor.
+
 ### Content 
 * `\align` [`direction`]
     - Default option: `direction`

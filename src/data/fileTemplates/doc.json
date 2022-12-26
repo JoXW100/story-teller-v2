@@ -39,8 +39,5 @@
             }
         ]
     },
-    "renderer": {
-        "type": "doc",
-        "params": { "key": "$text"  }
-    }
+    "renderer": { "type": "doc" }
 }

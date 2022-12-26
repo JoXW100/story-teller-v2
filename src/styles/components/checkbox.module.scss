@@ -11,4 +11,9 @@ $size: 20px;
     background: inherit;
     cursor: pointer;
     user-select: none;
+
+    & > svg {
+        height: 100%;
+        width: 100%;
+    }
 }

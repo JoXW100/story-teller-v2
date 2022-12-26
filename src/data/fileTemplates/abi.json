@@ -6,7 +6,7 @@
                 "type": "group",
                 "params": { "label": "Metadata", "open": true },
                 "content": [
-                    { 
+                    {
                         "type": "text", 
                         "params": { "label": "Name", "key": "name", "default": "Ability name" }
                     },
