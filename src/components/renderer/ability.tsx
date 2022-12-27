@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Elements from 'elements';
 import { useParser } from 'utils/parser';
-import { getConditionModifier, getEffectModifier } from 'utils/calculations';
+import { getConditionModifier, getEffectModifier, getKeyName } from 'utils/calculations';
 import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
 import { CharacterStats } from 'types/database/files/character';
 import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
-import { AbilityType, ActionType, Attribute, DamageType, EffectCondition } from 'types/database/dnd';
+import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { RollMode } from 'types/elements';
 import { DBResponse } from 'types/database';
 import styles from 'styles/renderer.module.scss';
+import { OptionTypes } from 'data/optionData';
 
 interface AbilityCategory {
     [key: string | ActionType]: { header: string, content: JSX.Element[] }
@@ -36,14 +37,6 @@ type AbilityProps = React.PropsWithRef<{
     open: boolean
 }>
 
-const AbilityTypes = {
-    [AbilityType.Feature]: "Feature",
-    [AbilityType.MeleeAttack]: "Melee Attack",
-    [AbilityType.MeleeWeapon]: "Melee Weapon Attack",
-    [AbilityType.RangedAttack]: "Ranged Attack",
-    [AbilityType.RangedWeapon]: "Ranged Weapon Attack"
-}
-
 const getRange = (metadata: AbilityMetadata) => {
     switch (metadata.type)
     {
@@ -61,9 +54,8 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
     let description = useParser(metadata.description, metadata)
     let conditionMod = getConditionModifier(metadata, stats);
     let effectMod = getEffectModifier(metadata, stats)
-    let damageName = Object.keys(DamageType).find((key) => DamageType[key] === metadata.damageType)
+    let damageName = getKeyName(DamageType, metadata.damageType, DamageType.None)
     let range = getRange(metadata)
-
     switch(metadata.type) {
         case AbilityType.Feature:
         default:
@@ -80,7 +72,7 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                 <Elements.Align>
                     <div style={{ width: '50%'}}>
                         <Elements.Bold>{ metadata.name }</Elements.Bold><br/>
-                        { AbilityTypes[metadata.type] }
+                        { OptionTypes["abilityType"].options[metadata.type] }
                     </div>
                     <Elements.Line/>
                     <div>
@@ -120,25 +112,72 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                                 { metadata.effectText }
                             </div>
                             :
-                            <div>
-                                <Elements.Bold>Damage</Elements.Bold>
-                                <Elements.Roll 
-                                    options={{ 
-                                        dice: metadata.effectDice as any, 
-                                        num: metadata.effectDiceNum as any, 
-                                        mod: effectMod as any,
-                                        mode: RollMode.DMG,
-                                        desc: `${metadata.name} Damage`
-                                    }}
-                                >
-                                    <Elements.Icon 
-                                        options={{ 
-                                            icon: metadata.damageType,
-                                            tooltips: damageName 
-                                        }}
-                                    />
-                                </Elements.Roll>
-                            </div>
+                            <>
+                                <div>
+                                    <Elements.Bold>Damage</Elements.Bold>
+                                    { metadata.effectDice == DiceType.None ?
+                                        <>
+                                            {`${effectMod ?? 0} `}
+                                            <Elements.Icon 
+                                                options={{ 
+                                                    icon: metadata.damageType,
+                                                    tooltips: damageName 
+                                                }}
+                                            />
+                                        </> 
+                                        :
+                                        <Elements.Roll 
+                                            options={{ 
+                                                dice: metadata.effectDice as any, 
+                                                num: metadata.effectDiceNum ?? 1 as any, 
+                                                mod: effectMod ?? 0 as any,
+                                                mode: RollMode.DMG,
+                                                desc: `${metadata.name} Damage`
+                                            }}
+                                        >
+                                            <Elements.Icon 
+                                                options={{ 
+                                                    icon: metadata.damageType,
+                                                    tooltips: damageName 
+                                                }}
+                                            />
+                                        </Elements.Roll>
+                                    }
+                                </div>
+                                { metadata.versatile && 
+                                    <div>
+                                        <Elements.Bold>2-Hand</Elements.Bold>
+                                        { metadata.effectVersatileDice == DiceType.None ?
+                                            <>
+                                                {`${effectMod ?? 0} `}
+                                                <Elements.Icon 
+                                                    options={{ 
+                                                        icon: metadata.damageType,
+                                                        tooltips: damageName 
+                                                    }}
+                                                />
+                                            </> 
+                                            :
+                                            <Elements.Roll 
+                                                options={{ 
+                                                    dice: metadata.effectVersatileDice as any, 
+                                                    num: metadata.effectDiceNum ?? 1 as any, 
+                                                    mod: effectMod ?? 0 as any,
+                                                    mode: RollMode.DMG,
+                                                    desc: `${metadata.name} 2-Hand Damage`
+                                                }}
+                                            >
+                                                <Elements.Icon 
+                                                    options={{ 
+                                                        icon: metadata.damageType,
+                                                        tooltips: damageName 
+                                                    }}
+                                                />
+                                            </Elements.Roll>
+                                        }
+                                    </div>
+                                }
+                            </>
                         }{ metadata.notes && (metadata.notes.length > 0) && 
                             <div> 
                                 <Elements.Bold>Notes </Elements.Bold> 

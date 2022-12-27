@@ -7,8 +7,9 @@ import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
-import { Alignment, Attribute, CreatureType, SizeType } from 'types/database/dnd';
+import { Attribute, CreatureType, SizeType } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
+import { OptionTypes } from 'data/optionData';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata>
@@ -18,22 +19,9 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CreatureMetadata>
 }>
 
-const AlignmentTranslation = {
-    [Alignment.None]: "None",
-    [Alignment.ChaoticEvil]: "Chaotic Evil",
-    [Alignment.ChaoticGood]: "Chaotic Good",
-    [Alignment.ChaoticNeutral]: "Chaotic Neutral",
-    [Alignment.TrueNeutral]: "Neutral",
-    [Alignment.NeutralEvil]: "Neutral Evil",
-    [Alignment.NeutralGood]: "Neutral Good",
-    [Alignment.LawfulEvil]: "Lawful Evil",
-    [Alignment.LawfulGood]: "Lawful Good",
-    [Alignment.LawfulNeutral]: "Lawful Neutral"
-}
-
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     let metadata = file.metadata ?? {}
-    let alignment = AlignmentTranslation[metadata.alignment] ?? "None"
+    let alignment = OptionTypes["alignment"].options[metadata.alignment] ?? OptionTypes["alignment"].default
     let type = getKeyName(CreatureType, metadata.type, CreatureType.None)
     let size = getKeyName(SizeType, metadata.size, SizeType.Medium)
     let speed = getSpeed(metadata)

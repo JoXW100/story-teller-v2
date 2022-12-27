@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import DropdownMenu from 'components/common/dropdownMenu';
-import { OptionTypes } from '../data';
+import { OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss'

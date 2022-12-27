@@ -8,7 +8,8 @@ import { SpellGroups } from './spell';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
-import { Alignment, Attribute, CreatureType, Gender, SizeType } from 'types/database/dnd';
+import { Attribute, CreatureType, Gender, SizeType } from 'types/database/dnd';
+import { OptionTypes } from 'data/optionData';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata>
@@ -18,22 +19,9 @@ type CharacterLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CharacterMetadata>
 }>
 
-const AlignmentTranslation = {
-    [Alignment.ChaoticEvil]: "Chaotic Evil",
-    [Alignment.ChaoticGood]: "Chaotic Good",
-    [Alignment.ChaoticNeutral]: "Chaotic Neutral",
-    [Alignment.TrueNeutral]: "Neutral",
-    [Alignment.NeutralEvil]: "Neutral Evil",
-    [Alignment.NeutralGood]: "Neutral Good",
-    [Alignment.LawfulEvil]: "Lawful Evil",
-    [Alignment.LawfulGood]: "Lawful Good",
-    [Alignment.LawfulNeutral]: "Lawful Neutral",
-    [Alignment.None]: "None"
-}
-
 const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     let metadata = file.metadata ?? {}
-    let alignment = AlignmentTranslation[metadata.alignment ?? 0]
+    let alignment = OptionTypes["alignment"].options[metadata.alignment] ?? OptionTypes["alignment"].default
     let type = getKeyName(CreatureType, metadata.type, CreatureType.None)
     let size = getKeyName(SizeType, metadata.size, SizeType.Medium)
     let gender = getKeyName(Gender, metadata.gender, Gender.Male)
@@ -41,7 +29,7 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
     var saves = getSaves(metadata)
     var skills = getSkills(metadata)
     var traits = metadata.traits?.join(', ');
-    var health = getHealth(file.metadata ?? {});
+    var health = getHealth(metadata);
     var ac = getAC(metadata);
     var proficiency = getProficiency(metadata);
     var initiative = getInitiative(metadata);

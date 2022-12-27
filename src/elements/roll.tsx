@@ -55,7 +55,6 @@ const validateOptions = (options: Variables): Queries => {
 
 const RollElement = ({ children, options }: ElementParams<MarginOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
-
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
     const mode = options.mode ? options.mode : (dice.num === 20 || dice.num === 0) ? 'mod' : 'dice';
     const num = options.num ? parseInt(options.num) : 1;

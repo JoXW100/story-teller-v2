@@ -12,6 +12,7 @@ interface AbilityMetadata {
     description?: string
     notes?: string
     type?: AbilityType
+    versatile?: boolean
     action?: ActionType
     // Hit condition
     condition?: EffectCondition
@@ -32,6 +33,7 @@ interface AbilityMetadata {
     effectProficiency?: boolean
     effectModifier?: OptionType<number>
     effectDice?: DiceType
+    effectVersatileDice?: DiceType
     effectDiceNum?: number
 }
 

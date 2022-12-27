@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import DropdownMenu from 'components/common/dropdownMenu';
 import { Context } from 'components/contexts/fileContext';
 import { CalculationMode } from 'types/database/editor';
-import { OptionTypes } from '../data';
+import { OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss';

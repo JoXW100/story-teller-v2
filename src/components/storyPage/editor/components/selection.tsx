@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useMemo } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/selectionMenu';
-import { OptionTypes } from '../data';
+import { OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss';

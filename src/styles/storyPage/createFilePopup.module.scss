@@ -106,6 +106,7 @@ $navbarWidth: 35px;
 
     & > input {
         @include color(document);
+        @include colorText();
         font: inherit;
         font-size: small;
         border: none;

@@ -7,7 +7,7 @@ interface OptionType {
     options: { [key: string]: string }
 }
 
-export const OptionTypes: { [key: string]: OptionType } = {
+export const OptionTypes = {
     "creatureSize": {
         enum: SizeType,
         default: SizeType.Medium,
@@ -19,7 +19,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [SizeType.Small]: "Small",
             [SizeType.Tiny]: "Tiny"
         }
-    },
+    } as OptionType,
     "creatureType": {
         enum: CreatureType,
         default: CreatureType.None,
@@ -40,7 +40,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CreatureType.Plant]: "Plant",
             [CreatureType.Undead]: "Undead"
         }
-    },
+    } as OptionType,
     "alignment": {
         enum: Alignment,
         default: Alignment.None,
@@ -56,7 +56,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Alignment.NeutralGood]: "Neutral Good",
             [Alignment.TrueNeutral]: "True Neutral"
         }
-    },
+    } as OptionType,
     "attr": {
         enum: Attribute,
         default: Attribute.STR,
@@ -68,7 +68,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Attribute.WIS]: "WIS",
             [Attribute.CHA]: "CHA"
         }
-    },
+    } as OptionType,
     "dice": {
         enum: DiceType,
         default: DiceType.None,
@@ -81,7 +81,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [DiceType.D12]: "D12",
             [DiceType.D20]: "D20"
         }
-    },
+    } as OptionType,
     "movement": {
         enum: MovementType,
         default: MovementType.Walk,
@@ -93,7 +93,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [MovementType.Swim]: "Swim",
             [MovementType.Walk]: "Walk"
         }
-    },
+    } as OptionType,
     "skill": {
         enum: Skill,
         default: Skill.Acrobatics,
@@ -117,7 +117,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Skill.Stealth]: "Stealth",
             [Skill.Survival]: "Survival"
         }
-    },
+    } as OptionType,
     "abilityType": {
         enum: AbilityType,
         default: AbilityType.Feature,
@@ -129,7 +129,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [AbilityType.RangedWeapon]: "Ranged Weapon",
             [AbilityType.ThrownWeapon]: "Thrown Weapon"
         }
-    },
+    } as OptionType,
     "effectCondition": {
         enum: EffectCondition,
         default: EffectCondition.None,
@@ -138,7 +138,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [EffectCondition.Hit]: "Hit",
             [EffectCondition.Save]: "Save"
         }
-    },
+    } as OptionType,
     "scaling": {
         enum: ScalingType,
         default: ScalingType.None,
@@ -153,7 +153,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [ScalingType.WIS]: "WIS",
             [ScalingType.CHA]: "CHA"
         }
-    },
+    } as OptionType,
     "damageType": {
         enum: DamageType,
         default: DamageType.None,
@@ -175,7 +175,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [DamageType.Slashing]: "Slashing",
             [DamageType.Thunder]: "Thunder"
         }
-    },
+    } as OptionType,
     "action": {
         enum: ActionType,
         default: ActionType.None,
@@ -186,7 +186,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [ActionType.Reaction]: "Reaction",
             [ActionType.Special]: "Special"
         }
-    },
+    } as OptionType,
     "optionalAttr": {
         enum: OptionalAttribute,
         default: OptionalAttribute.None,
@@ -199,7 +199,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [OptionalAttribute.WIS]: "WIS",
             [OptionalAttribute.CHA]: "CHA"
         }
-    },
+    } as OptionType,
     "gender": {
         enum: Gender,
         default: Gender.Male,
@@ -208,7 +208,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Gender.Female]: "Female",
             [Gender.Other]: "Other"
         }
-    },
+    } as OptionType,
     "target": {
         enum: TargetType,
         default: TargetType.None,
@@ -218,7 +218,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [TargetType.Single]: "Single",
             [TargetType.Point]: "Point"
         }
-    },
+    } as OptionType,
     "magicSchool": {
         enum: MagicSchool,
         default: MagicSchool.Abjuration,
@@ -233,7 +233,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [MagicSchool.Necromancy]: "Necromancy",
             [MagicSchool.Transmutation]: "Transmutation"
         }
-    },
+    } as OptionType, 
     "castingTime": {
         enum: CastingTime,
         default: CastingTime.Action,
@@ -245,7 +245,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CastingTime.Hour]: "Hour",
             [CastingTime.Custom]: "Custom"
         }
-    },
+    } as OptionType,
     "duration": {
         enum: Duration,
         default: Duration.Instantaneous,
@@ -257,7 +257,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Duration.Day]: "Day",
             [Duration.Custom]: "Custom"
         }
-    },
+    } as OptionType,
     "area": {
         enum: AreaType,
         default: AreaType.None,
@@ -269,7 +269,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [AreaType.Sphere]: "Sphere",
             [AreaType.Cylinder]: "Cylinder"
         }
-    },
+    } as OptionType,
     "calc": {
         enum: CalculationMode,
         default: CalculationMode.Auto,
@@ -278,7 +278,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CalculationMode.Modify]: "Modify",
             [CalculationMode.Override]: "Override"
         }
-    }
+    } as OptionType
 }
 
 export type {

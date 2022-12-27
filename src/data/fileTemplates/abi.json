@@ -120,12 +120,21 @@
                                         "params": { "label": "Proficiency", "key": "effectProficiency", "default": false }
                                     },
                                     { 
+                                        "type": "boolean", 
+                                        "params": { "label": "Versatile", "key": "versatile", "default": false }
+                                    },
+                                    { 
                                         "type": "option", 
                                         "params": { "label": "Modifier", "key": "effectModifier", "type": "number" }
                                     },
-                                    { 
+                                    {
                                         "type": "enum", 
                                         "params": { "label": "Dice", "key": "effectDice", "type": "dice", "default": 0 }
+                                    },
+                                    {
+                                        "type": "enum", 
+                                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "versatile" }, true] }],
+                                        "params": { "label": "Versatile Dice", "key": "effectVersatileDice", "type": "dice", "default": 0 }
                                     },
                                     { 
                                         "type": "number", 
