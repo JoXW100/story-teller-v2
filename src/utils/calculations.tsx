@@ -8,7 +8,7 @@ import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
 
 export const getAttributeModifier = (stats: CharacterStats = {}, attr: Attribute): number => {
-    return stats[attr] ? Math.ceil((Number(stats[attr]) - 11) / 2.0) : 0
+    return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
 }
 
 export const getScaling = (stats: CharacterStats = {}, scaling: ScalingType): number => {
@@ -178,7 +178,7 @@ export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number =>
             return metadata.ac.value ?? 0;
         case CalculationMode.Modify:
             var mod = getAttributeModifier(stats, Attribute.DEX);
-            return 10 + mod + (metadata.health.value ?? 0);
+            return 10 + mod + (metadata.health?.value ?? 0);
         case CalculationMode.Auto:
         default:
             return 10 + getAttributeModifier(stats, Attribute.DEX);
@@ -189,10 +189,10 @@ export const getInitiative = (metadata: CharacterMetadata | CreatureMetadata): n
     var stats = getStats(metadata)
     switch (metadata.initiative?.type) {
         case CalculationMode.Override:
-            return metadata.initiative.value ?? 0;
+            return metadata.initiative?.value ?? 0;
         case CalculationMode.Modify:
             var mod = getAttributeModifier(stats, Attribute.DEX);
-            return mod + (metadata.initiative.value ?? 0);
+            return mod + (metadata.initiative?.value ?? 0);
         case CalculationMode.Auto:
         default:
             return getAttributeModifier(stats, Attribute.DEX);

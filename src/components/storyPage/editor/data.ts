@@ -159,6 +159,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
         options: {
             [DamageType.None]: "None",
             [DamageType.Special]: "Special",
+            [DamageType.Special]: "Special",
             [DamageType.Acid]: "Acid",
             [DamageType.Bludgeoning]: "Bludgeoning",
             [DamageType.Cold]: "Cold",
@@ -170,7 +171,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [DamageType.Poison]: "Poison",
             [DamageType.Psychic]: "Psychic",
             [DamageType.Radiant]: "Radiant",
-            [DamageType.Special]: "Special",
+            [DamageType.Slashing]: "Slashing",
             [DamageType.Thunder]: "Thunder"
         }
     },
