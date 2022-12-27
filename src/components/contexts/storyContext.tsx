@@ -62,7 +62,6 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                     ? { ...state, editEnabled: action.data }
                     : state
             case 'roll':
-                state.rollHistory.add(action.data)
                 return { ...state }
             case 'clearRolls':
                 state.rollHistory.modify((event) => {
@@ -101,7 +100,8 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         <Context.Provider value={[state, { 
             roll: (collection, method = RollMethod.Normal) => {
                 let event: RollEvent = { result: collection.roll(method), time: Date.now() }
-                dispatch({ type: 'roll', data: event });
+                state.rollHistory.add(event)
+                dispatch({ type: 'roll', data: null });
             },
             openHelpMenu: () => dispatch({ type: 'setHelpOpen', data: true }),
             closeHelpMenu: () => dispatch({ type: 'setHelpOpen', data: false }),
