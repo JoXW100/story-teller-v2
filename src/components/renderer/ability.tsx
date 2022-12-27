@@ -44,13 +44,25 @@ const AbilityTypes = {
     [AbilityType.RangedWeapon]: "Ranged Weapon Attack"
 }
 
-const RangedTypes = new Set([AbilityType.RangedAttack, AbilityType.RangedWeapon])
+const getRange = (metadata: AbilityMetadata) => {
+    switch (metadata.type)
+    {
+        case AbilityType.RangedAttack:
+        case AbilityType.RangedWeapon:
+            return { title: "Range ", text: `${metadata.range ?? 0} (${metadata.rangeLong ?? 0}) ft` }
+        default:
+        case AbilityType.Feature:
+        case AbilityType.ThrownWeapon:
+            return { title: "Reach ", text: `${metadata.range ?? 0} ft` }
+    }
+}
 
 const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
     let description = useParser(metadata.description, metadata)
     let conditionMod = getConditionModifier(metadata, stats);
     let effectMod = getEffectModifier(metadata, stats)
     let damageName = Object.keys(DamageType).find((key) => DamageType[key] === metadata.damageType)
+    let range = getRange(metadata)
 
     switch(metadata.type) {
         case AbilityType.Feature:
@@ -63,6 +75,7 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
         case AbilityType.RangedWeapon:
         case AbilityType.MeleeAttack:
         case AbilityType.MeleeWeapon:
+        case AbilityType.ThrownWeapon:
             return <>
                 <Elements.Align>
                     <div style={{ width: '50%'}}>
@@ -71,15 +84,14 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                     </div>
                     <Elements.Line/>
                     <div>
-                        { RangedTypes.has(metadata.type) ?
+                        <div> 
+                            <Elements.Bold>{range.title}</Elements.Bold> 
+                            {range.text}
+                        </div>
+                        { metadata.type === AbilityType.ThrownWeapon &&
                             <div> 
                                 <Elements.Bold>Range </Elements.Bold> 
-                                {`${metadata.range ?? 0} (${metadata.rangeLong ?? 0}) ft `}
-                            </div>
-                            :
-                            <div> 
-                                <Elements.Bold>Reach </Elements.Bold> 
-                                {`${metadata.range ?? 0} ft`}
+                                {`${metadata.rangeThrown ?? 0} (${metadata.rangeLong ?? 0}) ft`}
                             </div>
                         }
                         { metadata.condition === EffectCondition.Hit &&

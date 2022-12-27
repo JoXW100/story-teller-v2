@@ -20,7 +20,7 @@ export const getScaling = (stats: CharacterStats = {}, scaling: ScalingType): nu
         case ScalingType.None:
             return 0;
         default:
-            return stats[scaling] ? getAttributeModifier(stats, Attribute[scaling]) : 0
+            return stats[scaling] ? getAttributeModifier(stats, scaling as unknown as Attribute) : 0
     }
 }
 

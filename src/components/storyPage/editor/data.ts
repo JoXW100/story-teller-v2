@@ -126,7 +126,8 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [AbilityType.MeleeAttack]: "Melee Attack",
             [AbilityType.MeleeWeapon]: "Melee Weapon",
             [AbilityType.RangedAttack]: "Ranged Attack",
-            [AbilityType.RangedWeapon]: "Ranged Weapon"
+            [AbilityType.RangedWeapon]: "Ranged Weapon",
+            [AbilityType.ThrownWeapon]: "Thrown Weapon"
         }
     },
     "effectCondition": {

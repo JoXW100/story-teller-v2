@@ -24,13 +24,13 @@
                     },
                     { 
                         "type": "text", 
-                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "thrownWeapon", "skill"] }] }],
                         "params": { "label": "Notes", "key": "notes" }
                     },
                     {
                         "type": "group",
                         "params": { "label": "Effect", "open": true },
-                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "skill"] }] }],
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "thrownWeapon", "skill"] }] }],
                         "content": [
                             { 
                                 "type": "enum", 
@@ -53,10 +53,18 @@
                             { 
                                 "type": "number", 
                                 "conditions": [
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "thrownWeapon", "meleeWeapon"] }] },
                                     { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
                                 ],
                                 "params": { "label": "Reach", "key": "range" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["thrownWeapon"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
+                                ],
+                                "params": { "label": "Range", "key": "rangeThrown" }
                             },
                             { 
                                 "type": "number", 
@@ -69,7 +77,7 @@
                             { 
                                 "type": "number", 
                                 "conditions": [
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon"] }] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon", "thrownWeapon"] }] },
                                     { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
                                 ],
                                 "params": { "label": "Range (Long)", "key": "rangeLong" }

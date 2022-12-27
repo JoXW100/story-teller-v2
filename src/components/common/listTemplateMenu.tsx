@@ -17,42 +17,30 @@ type ListTemplateMenuProps = React.PropsWithoutRef<{
 
 const ListTemplateMenu = ({ className, onChange, toComponent, toEditComponent, 
                             defaultValue = {}, values = [] }: ListTemplateMenuProps): JSX.Element => {
-    const [state, setState] = useState({
-        value: defaultValue,
-        values: values ?? []
-    });
-
-    useEffect(() => {
-        if (!arraysAreEqual(values, state.values)) {
-            onChange(state.values);
-        }
-    }, [state.values])
+    const [value, setValue] = useState(defaultValue);
 
     const handleEditChange = (value: ListItem) => {
-        setState({ ...state, value: value })
+        setValue(value)
     }
 
     const handleChange = (value: ListItem, index: number) => {
-        values = [...state.values]
+        values = [...values]
         values[index] = value
-        setState({ ...state, values: values })
+        onChange(values)
+        
     }
 
     const handleAdd = () => {
-        setState({ 
-            ...state, 
-            value: defaultValue, 
-            values: [state.value, ...state.values]  
-        })
+        onChange([value, ...values]);
+        setValue(defaultValue)
     } 
 
     const handleRemove = (index: number) => {
-        var values = [ ...state.values.slice(0, index), ...state.values.slice(index + 1) ]
-        setState({ ...state, values: values })
+        onChange([ ...values.slice(0, index), ...values.slice(index + 1) ])
     }
 
     const rows = useMemo(() => (
-        state.values?.map((value, index) => (
+        values?.map((value, index) => (
             <TemplateListRow 
                 key={index} 
                 onClick={() => handleRemove(index)}
@@ -60,13 +48,13 @@ const ListTemplateMenu = ({ className, onChange, toComponent, toEditComponent,
                 { toComponent(value, (value) => handleChange(value, index)) }
             </TemplateListRow>
         ))
-    ), [state.values, values]);
+    ), [values]);
     
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div className={styles.addRow}>
                 <div className={styles.collection}>
-                    { toEditComponent(state.value, handleEditChange) }
+                    { toEditComponent(value, handleEditChange) }
                 </div>
                 <div className={styles.button} onClick={handleAdd}>
                     <AddIcon sx={{ width: '100%' }}/>

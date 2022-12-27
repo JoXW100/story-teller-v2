@@ -145,7 +145,8 @@ export enum AbilityType {
     MeleeAttack = 'meleeAttack',
     RangedAttack = 'rangedAttack',
     MeleeWeapon = 'meleeWeapon',
-    RangedWeapon = 'rangedWeapon'
+    RangedWeapon = 'rangedWeapon',
+    ThrownWeapon = 'thrownWeapon'
 }
 
 export enum ActionType {

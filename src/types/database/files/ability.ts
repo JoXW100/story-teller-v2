@@ -21,6 +21,7 @@ interface AbilityMetadata {
     // Range
     range?: number
     rangeLong?: number
+    rangeThrown?: number
     // Hit condition roll scaling
     conditionScaling?: ScalingType
     conditionProficiency?: boolean
