@@ -6,6 +6,7 @@ import Localization from "utils/localization";
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import UploadIcon from '@mui/icons-material/Upload';
+import ImportIcon from '@mui/icons-material/DownloadSharp';
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/storyPage/fileSystem.module.scss';
 
@@ -25,25 +26,31 @@ const FileMenuHeader = (): JSX.Element => {
     return (
         <div className={styles.header}> 
             <div 
-                className={styles.file}
                 onClick={() => dispatch.openCreateFileMenu(InputType.File)}
                 tooltips={Localization.toText('create-fileTooltips')}
             > 
                 <FileIcon/> 
             </div>
             <div 
-                className={styles.folder}
                 onClick={() => dispatch.openCreateFileMenu(InputType.Folder)}
                 tooltips={Localization.toText('create-folderTooltips')}
             > 
                 <FolderIcon/> 
             </div>
+            {/**
             <div 
                 className={styles.upload}
                 onClick={() => dispatch.openCreateFileMenu(InputType.Upload)}
                 tooltips={Localization.toText('create-uploadTooltips')}
             > 
                 <UploadIcon/> 
+            </div>
+             */}
+            <div 
+                onClick={() => dispatch.openCreateFileMenu(InputType.Import)}
+                tooltips={Localization.toText('create-importTooltips')}
+            > 
+                <ImportIcon/> 
             </div>
         </div>
     )

@@ -75,33 +75,31 @@ export const getDuration = (metadata: SpellMetadata = {}): string => {
 
 export const getRange = (metadata: SpellMetadata = {}): string => {
     var area = null;
-    switch (metadata.area) 
-    {
-        case AreaType.None:
-            break;
+    switch (metadata.area) {
         case AreaType.Cone:
-            area = `${metadata.areaSize}ft `;
+            area = `${metadata.areaSize ?? 0}ft `;
             break;
         case AreaType.Cube:
-            area = `${metadata.areaSize}ft `;
+            area = `${metadata.areaSize ?? 0}ft `;
             break;
         case AreaType.Cylinder:
-            area = `${metadata.areaSize}x${metadata.areaHeight}ft `;
+            area = `${metadata.areaSize ?? 0}x${metadata.areaHeight ?? 0}ft `;
             break;
         case AreaType.Line:
-            area = `${metadata.areaSize}ft `;
+            area = `${metadata.areaSize ?? 0}ft `;
             break;
         case AreaType.Sphere:
-            area = `${metadata.areaSize}ft `;
+            area = `${metadata.areaSize ?? 0}ft `;
+            break;
+        default:
             break;
     }
-    switch (metadata.target)
-    {
+    switch (metadata.target) {
         case TargetType.Self:
             return area ? `Self, ${area}` : "Self"
         case TargetType.Point:
         case TargetType.Single:
-            return area ? `${metadata.range}ft/${area}` : `${metadata.range}ft`
+            return area ? `${metadata.range ?? 0}ft/${area}` : `${metadata.range}ft`
         default:
     }
 }

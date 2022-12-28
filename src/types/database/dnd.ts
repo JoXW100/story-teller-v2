@@ -129,6 +129,7 @@ export enum TargetType {
     None = "none",
     Self = "self",
     Single = "single",
+    Multiple = "multiple",
     Point = "point"
 }
 

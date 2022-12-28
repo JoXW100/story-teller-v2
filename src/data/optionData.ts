@@ -217,6 +217,7 @@ export const OptionTypes = {
             [TargetType.None]: "None",
             [TargetType.Self]: "Self",
             [TargetType.Single]: "Single",
+            [TargetType.Multiple]: "Multiple",
             [TargetType.Point]: "Point"
         }
     } as OptionType,

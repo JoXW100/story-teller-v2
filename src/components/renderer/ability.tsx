@@ -11,7 +11,7 @@ import { RollMode } from 'types/elements';
 import { DBResponse } from 'types/database';
 import styles from 'styles/renderer.module.scss';
 import { OptionTypes } from 'data/optionData';
-import { toAbility } from 'importer/stringFormatAbilityImporter';
+import { toAbility } from 'importers/stringFormatAbilityImporter';
 
 interface AbilityCategory {
     [key: string | ActionType]: { header: string, content: JSX.Element[] }

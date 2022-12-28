@@ -181,10 +181,6 @@ class Parser
         var queries: Queries = this.getQueries(tree)
         var keys = Object.keys(queries)
         var filtered = keys.filter((key) => !(key in this.queries))
-        //console.log(`local [${Object.keys(this.queries).length}]:`, this.queries, 
-        //    `\nqueries [${keys.length}]:`, queries, 
-        //    `\nfiltered [${filtered.length}]:`, filtered)
-
         
         if (filtered.length > 0) {
             var response: DBResponse<FileGetManyMetadataResult>

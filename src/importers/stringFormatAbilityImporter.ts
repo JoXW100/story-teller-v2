@@ -102,6 +102,7 @@ const toAbility = async (text: string): Promise<AbilityMetadata> => {
     return result
 }
 
+
 export {
     toAbility
 }

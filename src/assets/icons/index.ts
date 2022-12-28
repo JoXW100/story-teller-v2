@@ -11,6 +11,8 @@ import PoisonIcon from './dmg/poison.svg';
 import SlashingIcon from './dmg/slashing.svg';
 import ConeIcon from './shapes/cone.svg';
 import SphereIcon from './shapes/sphere.svg';
+import LineIcon from './shapes/line.svg'
+import CubeIcon from './shapes/cube.svg'
 
 export {
     AdvantageIcon,
@@ -36,6 +38,8 @@ export const Icons: { [key: string]: React.FunctionComponent<React.SVGAttributes
     piercing: PiercingIcon,
     poison: PoisonIcon,
     slashing: SlashingIcon,
+    line: LineIcon,
+    cube: CubeIcon
 }
 
 export default Icons;

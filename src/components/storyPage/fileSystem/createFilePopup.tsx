@@ -10,9 +10,9 @@ import { closePopup } from "components/common/popupHolder";
 import Localization from "utils/localization"
 import { FileMetadata, FileType } from "types/database/files";
 import { CreateFileOptions } from "data/fileTemplates";
+import roll20Importer from "importers/roll20Importer";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/storyPage/createFilePopup.module.scss'
-import { importRoll20Monster } from "importer/dndbeyondMonsterImporter";
 
 type FileProps = React.PropsWithRef<{
     type: InputType
@@ -201,15 +201,15 @@ const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [name, setName] = useState("")
     const [value, setValue] = useState("")
-
+    // callback = null
     const handleClick = () => {
-        importRoll20Monster(value)
+        roll20Importer(value)
         .then((res) => res && callback && callback({
             type: InputType.Import,
             data: {
-                type: FileType.Creature,
+                type: res.type,
                 name: name,
-                data: res
+                data: res.metadata
             }
         }))
         .catch(console.error)

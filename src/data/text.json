@@ -52,7 +52,7 @@
             "createFilePopup-typePrompt": "File type",
             "createFilePopup-typePlaceholder": "The type of the file...",
             "createFilePopup-button": "Create",
-            "createFilePopup-button-import": "Import creature from Roll20",
+            "createFilePopup-button-import": "Import creature or spell from Roll20",
             "createFilePopup-closeTooltips": "Close",
             "loginPage-prompt": "Login",
             "roll-normal": "Flat",

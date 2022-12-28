@@ -29,7 +29,6 @@ interface SpellMetadata {
     target?: TargetType
     // Range
     range?: number
-    rangeLong?: number
     area?: AreaType
     areaSize?: number
     areaHeight?: number
