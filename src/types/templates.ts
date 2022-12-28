@@ -95,6 +95,7 @@ interface ListTemplateParams extends FileTemplateParams {
     type: string
     default?: string | number
     editEnabled?: boolean
+    placeholder?: string
 }
 
 interface NumberTemplateParams extends FileTemplateParams {

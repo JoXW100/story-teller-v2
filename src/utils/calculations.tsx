@@ -26,7 +26,8 @@ export const getScaling = (stats: CharacterStats = {}, scaling: ScalingType): nu
 
 export const getConditionModifier = (metadata: AbilityMetadata | SpellMetadata = {}, data: CharacterStats = {}) => {
     var mod = metadata.conditionModifier?.value ?? 0
-    var prof = data.proficiency ?? 0;
+    var useProf = metadata.conditionProficiency ?? false
+    var prof = useProf ? data.proficiency ?? 0 : 0;
     switch (metadata.conditionModifier?.type) {
         case CalculationMode.Modify:
             return getScaling(data, metadata.conditionScaling) + mod + prof
@@ -39,14 +40,17 @@ export const getConditionModifier = (metadata: AbilityMetadata | SpellMetadata =
 }
 
 export const getEffectModifier = (metadata: AbilityMetadata | SpellMetadata = {}, data: CharacterStats = {}) => {
+    var mod = metadata.effectModifier?.value ?? 0
+    var useProf = metadata.effectProficiency ?? false
+    var prof = useProf ? data.proficiency ?? 0 : 0;
     switch (metadata.effectModifier?.type) {
         case CalculationMode.Modify:
-            return getScaling(data, metadata.effectScaling) + (metadata.effectModifier?.value ?? 0)
+            return getScaling(data, metadata.effectScaling) + mod + prof
         case CalculationMode.Override:
-            return metadata.effectModifier?.value ?? 0
+            return mod + prof
         case CalculationMode.Auto:
         default:
-            return getScaling(data, metadata.effectScaling)
+            return getScaling(data, metadata.effectScaling) + prof
         
     }
 }

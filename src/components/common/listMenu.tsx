@@ -8,15 +8,17 @@ type ListMenuProps = React.PropsWithRef<{
     type: string
     defaultValue: string | number, 
     editEnabled: boolean,
+    placeholder?: string
 }>
 
-const ListMenu = ({ className, onChange, values = [], type = "text", defaultValue = "", editEnabled = false }: ListMenuProps): JSX.Element => {
+const ListMenu = ({ className, onChange, values = [], type = "text", defaultValue = "", editEnabled = false, placeholder }: ListMenuProps): JSX.Element => {
     const toEditComponent = (item: string, handleChange: (value: string) => void) => {
         return (
             <input 
                 className={styles.input} 
                 value={item}
                 type={type}
+                placeholder={placeholder}
                 onChange={(e) => handleChange(e.target.value)}
             />
         )

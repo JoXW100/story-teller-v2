@@ -46,6 +46,7 @@ export const OptionTypes = {
         default: Alignment.None,
         options: {
             [Alignment.None]: "None",
+            [Alignment.Unaligned]: "Unaligned",
             [Alignment.ChaoticEvil]: "Chaotic Evil",
             [Alignment.ChaoticGood]: "Chaotic Good",
             [Alignment.ChaoticNeutral]: "Chaotic Neutral",

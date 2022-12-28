@@ -9,6 +9,9 @@ const speedMatchExpr = /(?:([A-z]+) *)?([0-9]+)/g
 const first = (res: any[]) => res ? res[0] : res
 const getAlignment = (alignment: string) => {
     switch (true) {
+        case /unaligned/.test(alignment):
+            return Alignment.Unaligned
+            
         case /chaotic evil/.test(alignment):
             return Alignment.ChaoticEvil
 
@@ -129,14 +132,15 @@ export const importRoll20Monster = async (url: string): Promise<CreatureMetadata
 const toMonster = (results: {[key: string]: string}): CreatureMetadata => {
     var ac = Number(results['ac'] ? first(/-?[0-9]+/.exec(results['ac'])) : undefined)
     var { hp, num, dice, mod } = splitHP(results['hp'])
-    var senses = [`passive perception ${results['passive perception'] ?? "10"}` , results['senses']]
+    var passive = `passive perception ${results['passive perception'] ?? "10"}`
+    var senses = results['senses'] ? [passive , results['senses']] : [passive]
     var fileContent: CreatureMetadata = {
         name: results['title'] ?? "Missing name",
         type: getType(results['type']),
         size: getSize(results['size']),
         alignment: getAlignment(results['alignment']),
         level: num ? num : 1,
-        hitDice: dice ? dice : DiceType.None,
+        hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
         health: hp 
             ? { type: CalculationMode.Override, value: hp } 
             : { type: CalculationMode.Auto } as OptionType<number>,

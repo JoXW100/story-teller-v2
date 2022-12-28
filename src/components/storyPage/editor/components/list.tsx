@@ -22,6 +22,7 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
                 type={params.type}
                 defaultValue={params.default}
                 onChange={handleChange}
+                placeholder={params.placeholder}
                 editEnabled={Boolean(params.editEnabled)}
             />
         </div>

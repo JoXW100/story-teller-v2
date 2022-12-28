@@ -36,7 +36,7 @@
                     },
                     {
                         "type": "list",
-                        "params": { "label": "Abilities", "key": "abilities", "type": "text" }
+                        "params": { "label": "Abilities", "key": "abilities", "type": "text", "placeholder": "Ability file ID ...", "objectID": "creature" }
                     },
                     { 
                         "type": "group",
@@ -164,7 +164,7 @@
                             {
                                 "type": "list",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spells", "key": "spells", "type": "text" }
+                                "params": { "label": "Spells", "key": "spells", "type": "text", "placeholder": "Spell file ID ..." }
                             }
                         ]
                     }

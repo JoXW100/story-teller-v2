@@ -64,6 +64,7 @@ export enum Attribute {
 
 export enum Alignment {
     None,
+    Unaligned,
     LawfulGood,
     LawfulNeutral,
     LawfulEvil,

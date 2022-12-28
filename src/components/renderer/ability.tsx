@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Elements from 'elements';
 import { useParser } from 'utils/parser';
 import { getConditionModifier, getEffectModifier, getKeyName } from 'utils/calculations';
-import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';
 import { CharacterStats } from 'types/database/files/character';
 import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
 import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
@@ -11,6 +11,7 @@ import { RollMode } from 'types/elements';
 import { DBResponse } from 'types/database';
 import styles from 'styles/renderer.module.scss';
 import { OptionTypes } from 'data/optionData';
+import { toAbility } from 'importer/stringFormatAbilityImporter';
 
 interface AbilityCategory {
     [key: string | ActionType]: { header: string, content: JSX.Element[] }
@@ -239,16 +240,32 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
     
     useEffect(() => {
         if (abilityIds && abilityIds.length > 0) {
-            fetch(`/api/database/getManyMetadata?fileIds=${abilityIds}`)
-            .then((res) => res.json())
-            .then((res: DBResponse<FileGetManyMetadataResult>) => {
-                if (res.success) {
-                    setAbilities(res.result as FileGetManyMetadataResult)
-                } else {
-                    console.warn(res.result);
-                    setAbilities([])
+            new Promise(async (resolve) => {
+                var results = await Promise.all(abilityIds?.map((id) => toAbility(id)))
+                var { resolved, ids } = results.reduce((prev, value, index) => (
+                    value 
+                    ? { resolved: [...prev.resolved, value], ids: prev.ids }
+                    : { ids: [...prev.ids, abilityIds[index]], resolved: prev.resolved }
+                ), { resolved: [], ids: [] } as { resolved: AbilityMetadata[], ids: string[] })
+
+                var tempFiles = resolved.map((x) => (
+                    { id: null, type: FileType.Ability, metadata: x }
+                )) as FileGetManyMetadataResult
+
+                if (ids?.length > 0) {
+                    var response = await fetch(`/api/database/getManyMetadata?fileIds=${ids}`)
+                    var res: DBResponse<FileGetManyMetadataResult> = await response.json()
+                    if (res.success) {
+                        
+                        resolve([...tempFiles, ...res.result as FileGetManyMetadataResult])
+                    } else {
+                        console.warn(res.result);
+                        resolve(tempFiles)
+                    }
                 }
+                resolve(tempFiles)
             })
+            .then((res: FileGetManyMetadataResult) => setAbilities(res))
             .catch(console.error)
         } else {
             setAbilities([])
@@ -264,11 +281,9 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
             [ActionType.Special]: { header: "Special", content: [] },
         } as AbilityCategory
         abilities.forEach((file, index) => {
-            if (file.type === 'abi') {
-                categories[file.metadata.action ?? "action"].content.push(
-                    <AbilityToggleRenderer key={index} file={file} stats={data}/>
-                )
-            }
+            categories[file.metadata.action ?? ActionType.None].content.push(
+                <AbilityToggleRenderer key={index} file={file} stats={data}/>
+            )
         })
         setCategories(categories)
     }, [abilities])
