@@ -34,7 +34,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     let challenge =  getChallenge(metadata);
     let stats = getStats(metadata)
 
-    const Content = file.content.text ? useParser(file.content.text, file.metadata) : null;
+    const Content = useParser(file.content.text, file.metadata);
     const Spells = <SpellGroups spellIds={metadata.spells} spellSlots={metadata.spellSlots} data={stats}/>
 
     return (

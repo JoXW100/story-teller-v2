@@ -37,7 +37,7 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
     var stats = getStats(metadata)
 
     const Spells = <SpellGroups spellIds={metadata.spells} spellSlots={metadata.spellSlots} data={stats}/>
-    const Content = file.content.text ? useParser(file.content.text, file.metadata) : null;
+    const Content = useParser(file.content.text, file.metadata);
 
     return (
         <>
