@@ -4,28 +4,22 @@ import CloseIcon from '@mui/icons-material/CloseSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import UploadIcon from '@mui/icons-material/Upload';
+import ImportIcon from '@mui/icons-material/DownloadSharp';
 import DropdownMenu from "components/common/dropdownMenu";
 import { closePopup } from "components/common/popupHolder";
 import Localization from "utils/localization"
-import { FileType } from "types/database/files";
+import { FileMetadata, FileType } from "types/database/files";
 import { CreateFileOptions } from "data/fileTemplates";
-import styles from 'styles/storyPage/createFilePopup.module.scss'
 import { InputType } from "types/context/fileSystemContext";
+import styles from 'styles/storyPage/createFilePopup.module.scss'
+import { importRoll20Monster } from "importer/dndbeyondMonsterImporter";
 
 type FileProps = React.PropsWithRef<{
     type: InputType
     callback: CreateFilePopupCallback
 }>
 
-type CreateFileContentProps = React.PropsWithRef<{
-    callback: CreateFilePopupCallback
-}>
-
-type CreateFolderContentProps = React.PropsWithRef<{
-    callback: CreateFilePopupCallback
-}>
-
-type CreateUploadContentProps = React.PropsWithRef<{
+type CreateContentProps = React.PropsWithRef<{
     callback: CreateFilePopupCallback
 }>
 
@@ -37,6 +31,7 @@ interface CreateFilePopupResult {
 interface CreateFilePopupData {
     type: FileType
     name: string
+    data?: FileMetadata
 }
 
 type CreateFilePopupCallback = (selected: CreateFilePopupResult) => void
@@ -46,23 +41,31 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
 
     const pageMap = {
         [InputType.File]: {
-            icon: <FileIcon/>,
-            tooltips: Localization.toText('create-fileTooltips'),
+            icon: FileIcon,
+            tooltips: 'create-fileTooltips',
             content: CreateFileContent
         },
         [InputType.Folder]: {
-            icon: <FolderIcon/>,
-            tooltips: Localization.toText('create-folderTooltips'),
+            icon: FolderIcon,
+            tooltips: 'create-folderTooltips',
             content: CreateFolderContent
         },
+        /**
         [InputType.Upload]: {
-            icon: <UploadIcon/>,
-            tooltips: Localization.toText('create-uploadTooltips'),
+            icon: UploadIcon,
+            tooltips: 'create-uploadTooltips',
             content: CreateUploadContent
+        },
+         */
+        [InputType.Import]: {
+            icon: ImportIcon,
+            tooltips: 'create-importTooltips',
+            content: CreateImportContent
         }
     }
 
     const Content = useMemo(() => pageMap[selected]?.content, [selected])
+    
 
     return (
         <div className={styles.main}>
@@ -79,17 +82,20 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             </div>
             <div className={styles.body}>
                 <div className={styles.navigation}>
-                    { Object.keys(pageMap).map((key, index) => (
-                        <div 
-                            key={index} 
-                            className={styles.icon}
-                            onClick={() => setSelected(key as InputType)}
-                            data={key === selected ? "open" : "closed"}
-                            tooltips={pageMap[key].tooltips}
-                        > 
-                            { pageMap[key].icon }
-                        </div>
-                    ))}
+                    { Object.keys(pageMap).map((key, index) => {
+                        var page = pageMap[key]
+                        return (
+                            <div 
+                                key={index} 
+                                className={styles.icon}
+                                onClick={() => setSelected(key as InputType)}
+                                data={key === selected ? "open" : "closed"}
+                                tooltips={Localization.toText(page.tooltips)}
+                            > 
+                                <page.icon/>
+                            </div>
+                        )
+                    })}
                 </div>
                 <div className={styles.content}>
                     { Content && <Content callback={callback}/>}
@@ -98,7 +104,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
         </div>
     )
 }
-const CreateFileContent = ({ callback }: CreateFileContentProps): JSX.Element => {
+const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState<CreateFilePopupData>({ 
         name: "", type: FileType.Document
     })
@@ -140,14 +146,11 @@ const CreateFileContent = ({ callback }: CreateFileContentProps): JSX.Element =>
     )
 }
 
-const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Element => {
-    const [state, setState] = useState<CreateFilePopupData>({ 
-        name: "", 
-        type: FileType.Folder 
-    })
+const CreateFolderContent = ({ callback }: CreateContentProps): JSX.Element => {
+    const [value, setValue] = useState("")
     
     const handleClick = () => {
-        callback({ type: InputType.Folder, data: state })
+        callback({ type: InputType.Folder, data: { name: value, type: FileType.Folder } })
         closePopup()
     }
 
@@ -156,8 +159,8 @@ const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Elemen
             <div className={styles.inputRow}>
                 <div>{Localization.toText('createFilePopup-folderNamePrompt')}:</div>
                 <input 
-                    value={state.name} 
-                    onChange={(e) => setState({ ...state, name: e.target.value})}
+                    value={value} 
+                    onChange={(e) => setValue(e.target.value)}
                     placeholder={Localization.toText('createFilePopup-folderNamePlaceholder')}
                 />
             </div>
@@ -166,7 +169,7 @@ const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Elemen
                 <div 
                     className={styles.button}
                     onClick={handleClick}
-                    disabled={!state.name}
+                    disabled={!value}
                 > 
                     {Localization.toText('createFilePopup-button')}
                 </div>
@@ -175,7 +178,7 @@ const CreateFolderContent = ({ callback }: CreateFolderContentProps): JSX.Elemen
     )
 }
 
-const CreateUploadContent = ({ callback }: CreateUploadContentProps): JSX.Element => {
+const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState({ file: null })
 
     const handleFileUpload = () => {
@@ -189,6 +192,55 @@ const CreateUploadContent = ({ callback }: CreateUploadContentProps): JSX.Elemen
                     <input type="file" onChange={handleFileUpload}/>
                     <UploadIcon/>
                     <div>Click or drag to upload file</div>
+                </div>
+            </div>
+        </>
+    )
+}
+
+const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
+    const [name, setName] = useState("")
+    const [value, setValue] = useState("")
+
+    const handleClick = () => {
+        importRoll20Monster(value)
+        .then((res) => res && callback && callback({
+            type: InputType.Import,
+            data: {
+                type: FileType.Creature,
+                name: name,
+                data: res
+            }
+        }))
+        .catch(console.error)
+        closePopup()
+    }
+
+    return (
+        <>
+            <div className={styles.inputRow}>
+                <div>{Localization.toText('createFilePopup-fileNamePrompt')}:</div>
+                <input 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={Localization.toText('createFilePopup-fileNamePlaceholder')}
+                />
+            </div>
+            <div className={styles.inputRow}>
+                <div>{Localization.toText('createFilePopup-importURLPrompt')}:</div>
+                <input 
+                    value={value} 
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder={Localization.toText('createFilePopup-importURLPlaceholder')}
+                />
+            </div>
+            <div className={styles.inputRow}>
+                <div 
+                    className={styles.button}
+                    onClick={handleClick}
+                    disabled={!value || !name}
+                > 
+                    {Localization.toText('createFilePopup-button-import')}
                 </div>
             </div>
         </>

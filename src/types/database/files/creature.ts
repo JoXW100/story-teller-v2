@@ -25,6 +25,10 @@ interface CreatureMetadata {
     ac?: OptionType<number>
     proficiency?: OptionType<number>
     initiative?: OptionType<number>
+    resistances?: string
+    advantages?: string
+    dmgImmunities?: string
+    conImmunities?: string
     speed?: { [key: string | MovementType]: number }
     // Attributes
     str?: number

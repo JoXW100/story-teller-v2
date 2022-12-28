@@ -215,7 +215,7 @@ export const getSpeed = (metadata: CharacterMetadata | CreatureMetadata): string
 }
 
 export const getSaves = (metadata: CharacterMetadata | CreatureMetadata): JSX.Element => {
-    return metadata.saves 
+    return metadata.saves && Object.keys(metadata.saves).length > 0
         ? <>{ Object.keys(metadata.saves).map((key, index) => (
                 <Elements.Roll 
                     key={index} 
@@ -229,8 +229,8 @@ export const getSaves = (metadata: CharacterMetadata | CreatureMetadata): JSX.El
 }
 
 export const getSkills = (metadata: CharacterMetadata | CreatureMetadata): JSX.Element => {
-    return metadata.saves 
-        ? <>{ Object.keys(metadata.saves).map((key, index) => {
+    return metadata.skills && Object.keys(metadata.skills).length > 0
+        ? <>{ Object.keys(metadata.skills).map((key, index) => {
             var skill = Object.keys(Skill)[key] ?? null
             return skill ? (
                 <Elements.Roll 

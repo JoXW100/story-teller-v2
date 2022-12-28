@@ -21,7 +21,7 @@ type CharacterLinkRendererProps = React.PropsWithRef<{
 
 const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     let metadata = file.metadata ?? {}
-    let alignment = OptionTypes["alignment"].options[metadata.alignment] ?? OptionTypes["alignment"].default
+    let alignment = OptionTypes["alignment"].options[metadata.alignment ?? OptionTypes["alignment"].default]
     let type = getKeyName(CreatureType, metadata.type, CreatureType.None)
     let size = getKeyName(SizeType, metadata.size, SizeType.Medium)
     let gender = getKeyName(Gender, metadata.gender, Gender.Male)
@@ -37,7 +37,7 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
     var stats = getStats(metadata)
 
     const Spells = <SpellGroups spellIds={metadata.spells} spellSlots={metadata.spellSlots} data={stats}/>
-    const Content = useParser(file.content.text, file.metadata);
+    const Content = file.content.text ? useParser(file.content.text, file.metadata) : null;
 
     return (
         <>
@@ -104,8 +104,14 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                         ))}
                     </Elements.Align>
                     <Elements.Line/>
-                    <div><Elements.Bold>Saving Throws </Elements.Bold>{ saves }</div>
-                    <div><Elements.Bold>Skills </Elements.Bold>{skills}</div>
+                    { saves && <div><Elements.Bold>Saving Throws </Elements.Bold>{saves}</div> }
+                    { skills && <div><Elements.Bold>Skills </Elements.Bold>{skills}</div> }
+                    { metadata.resistances && <div><Elements.Bold>Resistances </Elements.Bold>{metadata.resistances}</div> }
+                    { metadata.advantages && <div><Elements.Bold>Advantages </Elements.Bold>{metadata.advantages}</div> }
+                    { metadata.dmgImmunities && <div><Elements.Bold>DMG Immunities </Elements.Bold>{metadata.dmgImmunities}</div> }
+                    { metadata.conImmunities && <div><Elements.Bold>COND Immunities </Elements.Bold>{metadata.conImmunities}</div> }
+                    { metadata.senses && <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses}</div> }
+                    { metadata.languages && <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages}</div> }
                     <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses ?? "" }</div>
                     <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages ?? "" }</div>
                     <div>

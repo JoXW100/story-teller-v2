@@ -19,6 +19,8 @@ class FilesInterface
 
     /** Adds a file to the database */
     async add(userId: string, storyId: string, holderId: string | null, type: FileType, content: DBContent<any>): Promise<DBResponse<FileAddResult>> {
+        if (type !== FileType.Folder)
+            content.metadata = content.metadata ?? {}
         try {
             let date = Date.now();
             var file: DBFile<FileMetadata> = {

@@ -44,14 +44,15 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         openPopup(
             <CreateFilePopup 
                 type={type} 
-                callback={(response) => {
-                    fetch('/api/database/addFile', {
+                callback={(res) => {
+                    fetch(`/api/database/${res.type === InputType.Import ? 'addFileFromData' : 'addFile'}`, {
                         method: 'PUT',
                         body: JSON.stringify({ 
                             storyId: context.story.id, 
                             holderId: holder,
-                            name: response.data.name, 
-                            type: response.data.type
+                            name: res.data.name, 
+                            type: res.data.type,
+                            data: res.data.data
                         })
                     })
                     .then((res) => res.json())

@@ -67,6 +67,22 @@
                                 "params": { "label": "Initiative", "key": "initiative", "type": "number" }
                             },
                             { 
+                                "type": "text", 
+                                "params": { "label": "Resistances", "key": "resistances", "type": "string" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "Advantages", "key": "advantages", "type": "string" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "DMG Immunities", "key": "dmgImmunities", "type": "string" }
+                            },
+                            { 
+                                "type": "text", 
+                                "params": { "label": "COND Immunities", "key": "conImmunities", "type": "string" }
+                            },
+                            { 
                                 "type": "selection", 
                                 "params": { "label": "Speed", "key": "speed", "enum": "movement", "type": "number", "default": 0 }
                             }

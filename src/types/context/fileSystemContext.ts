@@ -24,7 +24,8 @@ type FileSystemContextProvider = ContextProvider<FileSystemContextState, FileSys
 export enum InputType {
     File = "file",
     Upload = "upload",
-    Folder = "folder"
+    Folder = "folder",
+    Import = "import"
 }
 
 export type {

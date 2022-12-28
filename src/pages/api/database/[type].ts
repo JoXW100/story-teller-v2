@@ -63,6 +63,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                     case 'addFile':
                         return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body)));
     
+                    case 'addFileFromData':
+                        return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body, body.data)));
+                        
                     case 'renameFile':
                         return res.status(200).json(await Database.files.rename(userId, body.storyId, body.fileId, body.name));
                     
@@ -102,14 +105,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: { [key: string]: string }): DBContent<FileMetadata> => {
+const fileToContent = (data: { [key: string]: string }, metadata: FileMetadata = {}): DBContent<FileMetadata> => {
     switch (data.type) {
         case FileType.Document:
         case FileType.Creature:
         case FileType.Ability:
         case FileType.Character:
         case FileType.Spell:
-            return { name: data.name, text: "", metadata: {} };
+            return { name: data.name, text: "", metadata: metadata };
         case FileType.Folder:
             return { name: data.name, open: false };
         default:
