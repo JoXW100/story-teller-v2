@@ -6,6 +6,7 @@ $palette: (
     second: var(--color-second),
     third: var(--color-third),
     forth: var(--color-forth),
+    shadow: var(--color-shadow),
     border: var(--color-border),
     text: var(--color-text),
     error: var(--color-error),
@@ -21,7 +22,8 @@ $palette: (
 }
 
 @mixin colorShadow() {
-    box-shadow: 0 0 7px -1px;
+    box-shadow: map-get($palette, shadow) 0 0 5px 1px;
+    
 }
 
 @mixin colorBorder() {

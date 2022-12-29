@@ -3,6 +3,8 @@ import DisadvantageIcon from './disadvantage.svg';
 import CritIcon from './crit.svg';
 import DragonIcon from './dragon.svg';
 import HandIcon from './hand.svg';
+import ConcentrationIcon from './concentration.svg'
+import RitualIcon from './ritual.svg'
 import AcidIcon from './dmg/acid.svg';
 import BludgeoningIcon from './dmg/bludgeoning.svg';
 import FireIcon from './dmg/fire.svg';
@@ -22,6 +24,8 @@ export {
     CritIcon,
     ConeIcon,
     SphereIcon,
+    LineIcon,
+    CubeIcon
 }
 
 export const Icons: { [key: string]: React.FunctionComponent<React.SVGAttributes<SVGElement>> } = {
@@ -30,16 +34,18 @@ export const Icons: { [key: string]: React.FunctionComponent<React.SVGAttributes
     crit: CritIcon,
     dragon: DragonIcon,
     hand: HandIcon,
+    concentration: ConcentrationIcon,
+    ritual: RitualIcon,
     cone: ConeIcon,
     sphere: SphereIcon,
+    line: LineIcon,
+    cube: CubeIcon,
     acid: AcidIcon,
     bludgeoning: BludgeoningIcon,
     fire: FireIcon,
     piercing: PiercingIcon,
     poison: PoisonIcon,
-    slashing: SlashingIcon,
-    line: LineIcon,
-    cube: CubeIcon
+    slashing: SlashingIcon
 }
 
 export default Icons;

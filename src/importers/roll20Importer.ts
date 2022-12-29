@@ -5,6 +5,9 @@ import { CreatureMetadata } from "types/database/files/creature"
 import { SpellMetadata } from "types/database/files/spell"
 
 const hpSplitExpr = /([0-9]+) *\(([0-9]+)d([0-9]+)([\+\-][0-9]+)?\)/
+const areaMatchExpr = /([0-9]+)[- ]*(?:foot|feet)[- ]*([A-z]+)[- ]*(sphere|centered|cylinder)?/g
+const saveMatchExpr = /([A-z-]+) *saving throw/
+const durationMatchExpr = /([0-9]+)? *([A-z]+)/g
 const challengeMatchExpr = /([0-9]+)(?:\/([0-9]+))?/
 const speedMatchExpr = /(?:([A-z]+) *)?([0-9]+)/g
 
@@ -21,25 +24,67 @@ const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, 
 }
 
 const getDuration = (duration: string): { duration: Duration, durationValue: number } => {
-    var res = /([0-9]+)? *([A-z-]+)/.exec(duration) ?? []
-    var type = Object.values(Duration).includes(res[2] as Duration) 
-        ? res[2] as Duration 
-        : Duration.Custom 
+    let expr = new RegExp(durationMatchExpr)
+    let value: number = 0
+    let type: Duration = Duration.Custom
+    let hit: RegExpExecArray = null;
+
+    while(null != (hit = expr.exec(duration?.toLowerCase() ?? ""))){
+        if (type == Duration.Custom) {
+            value = Number(hit[1]) ? Number(hit[1]) : value
+        }
+        switch (hit[2]) {
+            case "instantaneous":
+                type = Duration.Instantaneous
+                break 
+            case "round":
+            case "rounds":
+                type = Duration.Round
+                break 
+            case "minute":
+            case "minutes":
+                type = Duration.Minute
+                break 
+            case "hour":
+            case "hours":
+                type = Duration.Hour
+                break 
+            case "day":
+            case "days":
+                type = Duration.Day
+                break 
+            default:
+                break
+        }
+    }
+
     return {
         duration: type,
-        durationValue: Number(res[1]) ? Number(res[1]) : 1
+        durationValue: value
     }
 }
 
-const getCondition = (results: {[key: string]: string}): EffectCondition => {
-    if (results['save']) {
-        return EffectCondition.Save
-    }
+const getCondition = (results: {[key: string]: string}): { cond: EffectCondition, attr?: Attribute } => {
     if (results['spell attack']) {
-        return EffectCondition.Hit
+        return { cond: EffectCondition.Hit }
+    }
+    if (results['save']) {
+        let attr: Attribute = results['save']?.substring(0, 3) as Attribute
+        return { 
+            cond: EffectCondition.Save, 
+            attr: Object.values(Attribute).includes(attr) ? attr : undefined 
+        }
     }
 
-    return EffectCondition.None
+    let res = saveMatchExpr.exec(results['content']?.toLowerCase() ?? "") ?? []
+    if (res[1]) {
+        let attr: Attribute = res[1].slice(0, 3) as Attribute
+        return {
+            cond: EffectCondition.Save,
+            attr: Object.values(Attribute).includes(attr) ? attr : undefined
+        }
+    }
+    return{ cond: EffectCondition.None }
 }
 
 const getTarget = (target: string) : TargetType => {
@@ -52,7 +97,7 @@ const getTarget = (target: string) : TargetType => {
         return TargetType.Multiple
     if (t.includes("self"))
         return TargetType.Self
-    if (t.includes("point"))
+    if (/(point|cube|sphere|square|line|cylinder|cone)/.test(t ?? ""))
         return TargetType.Point
     return TargetType.None
 }
@@ -80,6 +125,64 @@ const getRange = (range: string): { range: number, area?: AreaType, areaSize?: n
     }
 }
 
+const getArea = (content: string): { area: AreaType, areaSize: number, areaHeight?: number } => {
+    var expr = new RegExp(areaMatchExpr)
+    var area: AreaType = AreaType.None
+    var size: number = 0
+    var height: number = 0
+    var hit: RegExpExecArray = null;
+    while(null != (hit = expr.exec(content?.toLowerCase() ?? ""))){
+        switch (hit[3]) {
+            case "centered":
+            case "sphere":
+                area = AreaType.Sphere
+                break;
+            case "cylinder":
+                area = AreaType.Cylinder
+                break;
+            default:
+                break;
+        }
+        switch (hit[2]) {
+            case "radius":
+                if (area == AreaType.None)
+                    area = AreaType.Sphere
+                size = Number(hit[1]) ? Number(hit[1]) : size
+                break;
+            case "square":
+                area = AreaType.Square
+                size = Number(hit[1]) ? Number(hit[1]) : size
+                break;
+            case "cube":
+                area = AreaType.Cube
+                size = Number(hit[1]) ? Number(hit[1]) : size
+                break;
+            case "cone":
+                area = AreaType.Cone
+                size = Number(hit[1]) ? Number(hit[1]) : size
+                break;
+            case "long":
+                if (area == AreaType.None)
+                    area = AreaType.Line
+                size = Number(hit[1]) ? Number(hit[1]) : size
+            case "wide":
+                if (area == AreaType.None)
+                    area = AreaType.Line
+                height = Number(hit[1]) ? Number(hit[1]) : size
+            case "tall":
+                if (area == AreaType.None)
+                    area = AreaType.Cylinder
+                height = Number(hit[1]) ? Number(hit[1]) : size
+            default:
+                break;
+        }
+        if (size && height && area !== AreaType.None)
+            break
+    }
+
+    return { area: area, areaSize: size, areaHeight: height }
+}
+
 const getDamage = (damage: string): { effectText?: string, effectModifier?: OptionType<number>, 
                                       effectDice?: DiceType, effectDiceNum?: number } => {
     var res = /([0-9]+)d([0-9]+)/.exec(damage) ?? [] // Todo expand
@@ -88,8 +191,6 @@ const getDamage = (damage: string): { effectText?: string, effectModifier?: Opti
         effectDice: Number(res[2]) ? Number(res[2]) : DiceType.None
     }
 }   
-
-const first = (res: any[]) => res ? res[0] : res
 
 const getAlignment = (alignment: string) => {
     switch (true) {
@@ -134,12 +235,12 @@ const getAlignment = (alignment: string) => {
 }
 
 const splitHP = (hp: string) => {
-    var res = hpSplitExpr.exec(hp ?? "")
+    var res = hpSplitExpr.exec(hp ?? "") ?? []
     return {
-        hp: Number(res[1]),
-        num: Number(res[2]),
-        dice: Number(res[3]),
-        mod: Number(res[4])
+        hp: Number(res[1]) ? Number(res[1]) : 0,
+        num: Number(res[2]) ? Number(res[2]) : 0,
+        dice: Number(res[3]) ? Number(res[3]) : 0,
+        mod: Number(res[4]) ? Number(res[4]) : 0
     }
 }
 
@@ -189,7 +290,8 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
 
         // Replace links
         results['content'] = contentRes[1]?.replace(/<br> *<br>/g, '\n')
-            .replace(linkContentExpr, (...x) => x[1] ?? '').trim();
+            .replace(linkContentExpr, (...x) => x[1] ?? '').trim()
+            .replace(/[\n\r]/g, '\n\\n\n')
         if (results['content']?.startsWith('<')) {
             results['content'] = ''
             console.warn("Failed to import description")
@@ -206,7 +308,6 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
                 key = hit[2]?.toLowerCase()
             }
         }
-        console.log("id", id)
         switch (id) {
             case "spells":
                 return { type: FileType.Spell, metadata: toSpell(results) }
@@ -224,7 +325,7 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
 const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
     var type = results['type'] as CreatureType
     var size = results['size'] as SizeType
-    var ac = Number(results['ac'] ? first(/-?[0-9]+/.exec(results['ac'])) : undefined)
+    var ac = Number(results['ac'] ? (/(-?[0-9]+)/.exec(results['ac']) ?? [])[1] : undefined)
     var { hp, num, dice } = splitHP(results['hp'])
     var passive = `passive perception ${results['passive perception'] ?? "10"}`
     var senses = results['senses'] ? [passive , results['senses']] : [passive]
@@ -258,8 +359,6 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
         challenge: getChallenge(results['challenge rating'])
     }
 
-    console.log({ file: fileContent, result: results })
-
     return fileContent
 }
 
@@ -269,8 +368,11 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
     var { effectDice, effectDiceNum } = getDamage(results['damage'])
-    var { range, area } = getRange(results['range'])
-    var saveAttr: Attribute = results['save']?.substring(0, 3) as Attribute
+    var { range, area, areaSize } = getRange(results['range'])
+    var { cond, attr } = getCondition(results)
+    if (area === AreaType.None) {
+        var { area, areaSize, areaHeight } = getArea(results['content'] ?? "")
+    }
     var damageType: DamageType = results['damage type'] as DamageType
 
     var fileContent: SpellMetadata = {
@@ -289,12 +391,14 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
         materials: results['material'] ?? "",
         componentSomatic: results['components']?.includes('s') || false ,
         componentVerbal: results['components']?.includes('v') || false,
-        condition: getCondition(results),
-        saveAttr: Object.values(Attribute).includes(saveAttr) ? saveAttr : undefined,
+        condition: cond,
+        saveAttr: attr,
         damageType: Object.values(DamageType).includes(damageType) ? damageType : DamageType.None,
         target: getTarget(results['target']),
         range: range,
         area: area,
+        areaSize: areaSize ?? 0,
+        areaHeight: areaHeight ?? 0,
         conditionScaling: ScalingType.SpellModifier,
         conditionProficiency: true,
         effectDice: effectDice,
@@ -304,9 +408,8 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     if (fileContent.damageType === DamageType.None) {
         fileContent.effectText = results["title"]
     }
-
-    console.log({ file: fileContent, result: results })
-
+    if (process.env.NODE_ENV == "development")
+        console.log("toSpell", { file: fileContent, result: results })
     return fileContent
 }
 

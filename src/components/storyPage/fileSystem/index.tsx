@@ -74,10 +74,17 @@ const FileMenu = (): JSX.Element => {
                 icon: FolderIcon, 
                 action: () => dispatch.openCreateFileMenu(InputType.Folder)
             },
+            /**
             { 
                 text: Localization.toText('create-uploadTooltips'), 
                 icon: UploadIcon, 
                 action: () => dispatch.openCreateFileMenu(InputType.Upload)
+            }
+            */
+            {
+                text: Localization.toText('create-importTooltips'), 
+                icon: ImportIcon, 
+                action: () => dispatch.openCreateFileMenu(InputType.Import)
             }
         ], { x: e.pageX, y: e.pageY }, true)
     }

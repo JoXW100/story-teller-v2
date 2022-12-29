@@ -7,9 +7,8 @@ import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
-import { Attribute, CreatureType, SizeType } from 'types/database/dnd';
+import { Attribute } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { OptionTypes } from 'data/optionData';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata>
@@ -21,9 +20,9 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     let metadata = file.metadata ?? {}
-    let alignment = OptionTypes["alignment"].options[metadata.alignment ?? OptionTypes["alignment"].default]
-    let type = getKeyName(CreatureType, metadata.type, CreatureType.None)
-    let size = getKeyName(SizeType, metadata.size, SizeType.Medium)
+    let alignment = getKeyName("alignment", metadata.alignment)
+    let type = getKeyName("creatureType", metadata.type)
+    let size = getKeyName("creatureSize", metadata.size)
     let speed = getSpeed(metadata)
     let saves = getSaves(metadata)
     let ac = getAC(metadata)

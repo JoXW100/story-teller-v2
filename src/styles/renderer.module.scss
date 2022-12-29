@@ -3,13 +3,20 @@
 $pageWidth: 8.5in; /* A4 */
 $pageHeight: 14in; /* A4 */
 
-.borderExtension {
+@mixin fontComponent(){
+    @include colorText();
+    font-size: normal;
+}
+
+@mixin borderExtension(){
     @include color(third);
     @include colorShadow();
 }
 
 .main {
     @include color(background);
+    @include fontComponent();
+    font-family: Mrs Eaves;
     position: relative;
     justify-content: center;
     width: 100%;
@@ -42,32 +49,31 @@ $pageHeight: 14in; /* A4 */
 }
 
 .ability {
-    @extend .borderExtension;
+    @include borderExtension();
+    @include fontComponent();
     padding: 5px;
     margin-bottom: 10px;
-    font-size: 14px;
     cursor: pointer;
 }
 
 .spell {
-    @extend .borderExtension;
+    @include borderExtension();
+    @include fontComponent();
     padding: 5px;
     margin: 3px 0 7px 0;
-    font-size: 14px;
     cursor: pointer;
 }
 
-.spellAreaRow {
+.iconRow {
     display: flex;
-
-    & > * {
-        margin-right: 5px;
+    & > span {
+        margin-left: 5px;
     }
 }
 
 .spellSlotToggle {
     @include color(forth);
-    @extend .borderExtension;
+    @include borderExtension();
     display: flex;
     position: relative;
     height: 15px;

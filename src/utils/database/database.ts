@@ -44,6 +44,8 @@ class Database
     }
 
     static log (name: string, data: any) {
+        if (process.env.NODE_ENV != "development")
+            return
         var date = new Date()
         var year = date.getFullYear()
         var month = date.getMonth()

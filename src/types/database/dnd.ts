@@ -137,6 +137,7 @@ export enum AreaType {
     None = "none",
     Cone = "cone",
     Cube = "cube",
+    Square = "square",
     Line = "line",
     Sphere = "sphere",
     Cylinder = "cylinder"

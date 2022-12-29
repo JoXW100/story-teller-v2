@@ -7,7 +7,7 @@ interface OptionType {
     options: { [key: string]: string }
 }
 
-export const OptionTypes = {
+export const OptionTypes: { [key: string]: OptionType } = {
     "creatureSize": {
         enum: SizeType,
         default: SizeType.Medium,
@@ -267,9 +267,10 @@ export const OptionTypes = {
             [AreaType.None]: "None",
             [AreaType.Cone]: "Cone",
             [AreaType.Cube]: "Cube",
+            [AreaType.Cylinder]: "Cylinder",
             [AreaType.Line]: "Line",
             [AreaType.Sphere]: "Sphere",
-            [AreaType.Cylinder]: "Cylinder"
+            [AreaType.Square]: "Square",
         }
     } as OptionType,
     "calc": {

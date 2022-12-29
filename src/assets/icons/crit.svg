@@ -1,6 +1,6 @@
 <svg 
     fill='none' 
-    viewBox='0 0 32 32'
+    viewBox="0 0 48 48"
     xmlns='http://www.w3.org/2000/svg'
 >
     <!--
@@ -10,21 +10,17 @@
         stroke-width='1'
     />
     -->
-
     <path 
-        d="M16,2 l-11.7,7.2 v11.7 l11.7,9 l11.7,-9 v-11.7 z"
-        stroke='currentColor' 
-        fill="#b09000" 
-        stroke-width='1.5'
+        fill="#c6aa29" 
+        d="M44.39,12.1,23.89.39,3.5,12.29,3.61,35.9l20.5,11.71L44.5,35.71Z"
     />
+
     <text 
-        font-size="16"
-        fill="currentColor"
-        font-family="Verdana"
+        font-size="42"
+        fill="#fff"
+        font-family="Mrs Eaves"
         text-anchor="middle"
-        x="16"
-        y="21"
-    >
-    20
-    </text>
+        x="23"
+        y="38"
+    > C </text>
 </svg>

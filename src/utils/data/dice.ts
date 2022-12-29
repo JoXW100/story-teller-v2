@@ -28,11 +28,11 @@ class Dice {
         }
     }
 
-    get text(): string {
+    public get text(): string {
         return `d${this.type}`;
     }
-
-    get num(): number {
+    
+    public get num(): number {
         return this.type;
     }
 

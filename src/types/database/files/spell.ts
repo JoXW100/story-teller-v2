@@ -9,6 +9,7 @@ interface SpellMetadata {
     name?: string
     public?: boolean
     description?: string
+    notes?: string
     level?: number
     school?: MagicSchool
     time?: CastingTime

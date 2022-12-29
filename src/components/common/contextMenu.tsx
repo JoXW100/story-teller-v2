@@ -79,11 +79,13 @@ const ContextMenu = () => {
 
     useEffect(() => {
         window.addEventListener("click", clickHandler);
+        window.addEventListener("scroll", clickHandler)
         window.addEventListener("contextmenu", clickHandler)
         document.addEventListener("contextMenu", contextHandler)
 
         return () => {
             window.removeEventListener("click", clickHandler)
+            window.removeEventListener("scroll", clickHandler)
             window.removeEventListener("contextmenu", clickHandler)
             document.removeEventListener("contextMenu", contextHandler)
         }

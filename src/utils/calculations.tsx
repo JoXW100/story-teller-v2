@@ -6,6 +6,7 @@ import { AbilityMetadata } from "types/database/files/ability";
 import { CharacterMetadata, CharacterStats } from "types/database/files/character";
 import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
+import { OptionTypes } from 'data/optionData';
 
 export const getAttributeModifier = (stats: CharacterStats = {}, attr: Attribute): number => {
     return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
@@ -58,14 +59,14 @@ export const getEffectModifier = (metadata: AbilityMetadata | SpellMetadata = {}
 export const getCastingTime = (metadata: SpellMetadata = {}): string => {
     if (metadata.time === CastingTime.Custom)
         return metadata.timeCustom
-    var time = getKeyName(CastingTime, metadata.time, CastingTime.Action)
+    var time = getKeyName("castingTime", metadata.time)
     return metadata.timeValue > 1 
         ? `${metadata.timeValue} ${time}s`
         : `${metadata.timeValue} ${time}`
 }
 
 export const getDuration = (metadata: SpellMetadata = {}): string => {
-    var time = getKeyName(Duration, metadata.duration, Duration.Instantaneous)
+    var time = getKeyName("duration", metadata.duration)
     if (metadata.duration === Duration.Instantaneous)
         return time;
     return metadata.durationValue > 1 
@@ -77,30 +78,27 @@ export const getRange = (metadata: SpellMetadata = {}): string => {
     var area = null;
     switch (metadata.area) {
         case AreaType.Cone:
-            area = `${metadata.areaSize ?? 0}ft `;
-            break;
         case AreaType.Cube:
-            area = `${metadata.areaSize ?? 0}ft `;
+        case AreaType.Square:
+        case AreaType.Sphere:
+        case AreaType.Line:
+            area = `${metadata.areaSize ?? 0}ft`;
             break;
         case AreaType.Cylinder:
-            area = `${metadata.areaSize ?? 0}x${metadata.areaHeight ?? 0}ft `;
-            break;
-        case AreaType.Line:
-            area = `${metadata.areaSize ?? 0}ft `;
-            break;
-        case AreaType.Sphere:
-            area = `${metadata.areaSize ?? 0}ft `;
+            area = `${metadata.areaSize ?? 0}x${metadata.areaHeight ?? 0}ft`;
             break;
         default:
             break;
     }
     switch (metadata.target) {
         case TargetType.Self:
-            return area ? `Self, ${area}` : "Self"
+            return area ? `Self/${area}` : "Self"
         case TargetType.Point:
-        case TargetType.Single:
             return area ? `${metadata.range ?? 0}ft/${area}` : `${metadata.range}ft`
         default:
+        case TargetType.Single:
+        case TargetType.Multiple:
+            return `${metadata.range ?? 0}ft`
     }
 }
 
@@ -247,7 +245,17 @@ export const getSkills = (metadata: CharacterMetadata | CreatureMetadata): JSX.E
         : null
 }
 
-export const getKeyName = (collection: {[key: string]: string }, value: string, def: string): string => {
-    var cmp = value ?? def
-    return Object.keys(collection).find((key) => collection[key] === cmp) ?? def
+export const getKeyName = (collection: string, value: string | number): string => {
+    return OptionTypes[collection].options[value] ?? OptionTypes[collection].options[OptionTypes[collection].default]
+}
+
+export const getComponents = (metadata: SpellMetadata): string[] => {
+    let components: string[] = []
+    if (metadata.componentVerbal)
+        components.push('V')
+    if (metadata.componentSomatic)
+        components.push('S')
+    if (metadata.componentMaterial)
+        components.push('M')
+    return components
 }

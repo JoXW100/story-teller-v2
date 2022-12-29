@@ -46,7 +46,7 @@ const getRange = (range: string): { range: number, rangeLong?: number } => {
     return res
 }
 
-const getAction = (action: string): ActionType => {
+const getAction = (action: string, type: AbilityType): ActionType => {
     switch (action?.toLowerCase()) {
         case "none":
             return ActionType.None
@@ -57,15 +57,18 @@ const getAction = (action: string): ActionType => {
         case "bonus action":
         case "bonus":
             return ActionType.BonusAction
-        default:
+        case "action":
             return ActionType.Action
+        default:
+            return type === AbilityType.Feature 
+                ? ActionType.None
+                : ActionType.Action
     }
 }
 
 const roll20AbilityExpr = /^^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,[A-z ]+([0-9]+(?:\/[0-9]+)?) [^.]+\., *([^.]+)[^:]+: *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)\) *([A-z]+)[^.]+. *)?(.*)?/m
 const toAbility = async (text: string): Promise<AbilityMetadata> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
-    console.log("toAbility", text, res)
     if (!res || !res[2])
         return null
     var type = getAbilityType(res[3])
@@ -75,7 +78,8 @@ const toAbility = async (text: string): Promise<AbilityMetadata> => {
             result = {
                 name: res[2] ?? "Missing name",
                 description: res[11] ?? "",
-                type: type
+                type: type,
+                action: getAction(res[1], type)
             }
             break;
         default:
@@ -85,7 +89,7 @@ const toAbility = async (text: string): Promise<AbilityMetadata> => {
                 name: res[2] ?? "Missing name",
                 description: res[11] ?? "",
                 type: type,
-                action: getAction(res[1]),
+                action: getAction(res[1], type),
                 condition: EffectCondition.Hit,
                 conditionModifier: { type: CalculationMode.Override, value: getRollMod(res[4]) },
                 effectDiceNum: dmgNumDice ? dmgNumDice : 1,
@@ -98,7 +102,8 @@ const toAbility = async (text: string): Promise<AbilityMetadata> => {
             }
             break
     }
-    console.log("toAbility", { file: result, result: res })
+    if (process.env.NODE_ENV == "development")
+        console.log("toAbility", { file: result, result: res })
     return result
 }
 

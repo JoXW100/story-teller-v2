@@ -20,10 +20,7 @@ const validateOptions = (options: Variables): Queries => {
 const IconElement = ({ options = {} }: ElementParams<IconOptions>): JSX.Element => {
     const Icon = Icons[options.icon] ?? (() => null)
     return (
-        <span 
-            className={styles.icon}
-            tooltips={options.tooltips}
-        > <Icon/> </span>
+        <span tooltips={options.tooltips} className={styles.icon}> <Icon/> </span>
     )
 }
 

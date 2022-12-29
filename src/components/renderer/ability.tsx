@@ -55,7 +55,7 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
     let description = useParser(metadata.description, metadata)
     let conditionMod = getConditionModifier(metadata, stats);
     let effectMod = getEffectModifier(metadata, stats)
-    let damageName = getKeyName(DamageType, metadata.damageType, DamageType.None)
+    let damageName = getKeyName("damageType", metadata.damageType)
     let range = getRange(metadata)
     switch(metadata.type) {
         case AbilityType.Feature:
@@ -241,7 +241,8 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
     useEffect(() => {
         if (abilityIds && abilityIds.length > 0) {
             new Promise(async (resolve) => {
-                var results = await Promise.all(abilityIds?.map((id) => toAbility(id)))
+                var results = await Promise.all(abilityIds?.map((id) => 
+                    abilities.find((x) => String(x.id) == id) ?? toAbility(id)))
                 var { resolved, ids } = results.reduce((prev, value, index) => (
                     value 
                     ? { resolved: [...prev.resolved, value], ids: prev.ids }
@@ -256,7 +257,6 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
                     var response = await fetch(`/api/database/getManyMetadata?fileIds=${ids}`)
                     var res: DBResponse<FileGetManyMetadataResult> = await response.json()
                     if (res.success) {
-                        
                         resolve([...tempFiles, ...res.result as FileGetManyMetadataResult])
                     } else {
                         console.warn(res.result);

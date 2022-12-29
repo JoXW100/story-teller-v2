@@ -2,6 +2,8 @@
 
 html { height: 100%; }
 
+$font: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+
 body {
     margin: 0;
     height: 100%;
@@ -20,8 +22,7 @@ div, p, span, textarea {
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', 
-    monospace;
+    font-family: $font;
 }
 
 a {
@@ -68,6 +69,7 @@ SVG {
             @include color(document);
             @include colorText();
             @include colorShadow();
+            font-family: $font;;
             display: block;
             position: absolute;
             z-index: 9000;

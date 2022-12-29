@@ -74,7 +74,9 @@
             "editor-insert-box": "Box",
             "editor-insert-link": "Link",
             "editor-insert-linkTitle": "Link title",
-            "editor-insert-linkContent": "Link content"
+            "editor-insert-linkContent": "Link content",
+            "spellConcentration": "Concentration",
+            "spellRitual": "Ritual"
         }
     }
 }

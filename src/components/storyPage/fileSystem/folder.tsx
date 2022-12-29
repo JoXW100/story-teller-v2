@@ -7,6 +7,7 @@ import IconClosed from '@mui/icons-material/FolderSharp';
 import IconOpen from '@mui/icons-material/FolderOpenSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import UploadIcon from '@mui/icons-material/Upload';
+import ImportIcon from '@mui/icons-material/DownloadSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import FileInput from './fileInput';
@@ -76,10 +77,17 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
                 icon: IconClosed, 
                 action: () => dispatch.openCreateFileMenu(InputType.Folder, file.id)
             },
+            /**
             { 
                 text: Localization.toText('create-uploadTooltips'), 
                 icon: UploadIcon, 
                 action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
+            }
+            */
+            {
+                text: Localization.toText('create-importTooltips'), 
+                icon: ImportIcon, 
+                action: () => dispatch.openCreateFileMenu(InputType.Import, file.id)
             },
             { 
                 text: Localization.toText('create-rename'), 

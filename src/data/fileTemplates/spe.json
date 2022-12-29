@@ -23,6 +23,10 @@
                         "params": { "label": "School", "key": "school", "type": "magicSchool", "default": "abjuration" }
                     },
                     { 
+                        "type": "text", 
+                        "params": { "label": "Notes", "key": "notes", "default": "" }
+                    },
+                    { 
                         "type": "enum", 
                         "params": { "label": "Casting Time", "key": "time", "type": "castingTime", "default": "action" }
                     },
@@ -37,10 +41,6 @@
                         "params": { "label": "Time Value", "key": "timeValue", "default": 1 }
                     },
                     { 
-                        "type": "boolean", 
-                        "params": { "label": "Ritual", "key": "ritual", "default": false }
-                    },
-                    { 
                         "type": "enum", 
                         "params": { "label": "Duration", "key": "duration", "type": "duration", "default": "instantaneous" }
                     },
@@ -48,6 +48,10 @@
                         "type": "number", 
                         "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "duration" }, "instantaneous"] }],
                         "params": { "label": "Duration Value", "key": "durationValue", "default": 1 }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Ritual", "key": "ritual", "default": false }
                     },
                     { 
                         "type": "boolean", 
@@ -94,36 +98,47 @@
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["single", "point"] } ] }],
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["single", "multiple", "point"] } ] }],
                                 "params": { "label": "Range", "key": "range" }
                             },
                             {
                                 "type": "enum",
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] }],
                                 "params": { "label": "Area", "key": "area", "type": "area", "default": "none" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cone"] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cone"] }],
                                 "params": { "label": "Cone Size (ft)", "key": "areaSize" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cube"] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cube"] }],
                                 "params": { "label": "Side Length (ft)", "key": "areaSize" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, { "type": "any", "value": ["cylinder", "sphere"] }] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, { "type": "any", "value": ["cylinder", "sphere"] }] }],
                                 "params": { "label": "Radius (ft)", "key": "areaSize" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cylinder"] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "cylinder"] }],
                                 "params": { "label": "Height (ft)", "key": "areaHeight" }
                             },
                             { 
                                 "type": "number", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "line"] }],
+                                "conditions": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, { "type": "any", "value": ["self", "point"] } ] },
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "line"] }],
                                 "params": { "label": "Width (ft)", "key": "areaSize" }
                             },
                             { 

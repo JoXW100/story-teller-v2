@@ -8,8 +8,7 @@ import { SpellGroups } from './spell';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
-import { Attribute, CreatureType, Gender, SizeType } from 'types/database/dnd';
-import { OptionTypes } from 'data/optionData';
+import { Attribute } from 'types/database/dnd';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata>
@@ -21,10 +20,10 @@ type CharacterLinkRendererProps = React.PropsWithRef<{
 
 const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     let metadata = file.metadata ?? {}
-    let alignment = OptionTypes["alignment"].options[metadata.alignment ?? OptionTypes["alignment"].default]
-    let type = getKeyName(CreatureType, metadata.type, CreatureType.None)
-    let size = getKeyName(SizeType, metadata.size, SizeType.Medium)
-    let gender = getKeyName(Gender, metadata.gender, Gender.Male)
+    let alignment = getKeyName("alignment", metadata.alignment)
+    let type = getKeyName("creatureType", metadata.type)
+    let size = getKeyName("creatureSize", metadata.size)
+    let gender = getKeyName("gender", metadata.gender)
     let speed = getSpeed(metadata)
     var saves = getSaves(metadata)
     var skills = getSkills(metadata)

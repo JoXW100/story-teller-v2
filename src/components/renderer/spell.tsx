@@ -2,8 +2,8 @@ import Elements from 'elements';
 import React, { useEffect, useState } from 'react';
 import SpellSlotToggle from 'components/common/spellSlotToggle';
 import { useParser } from 'utils/parser';
-import { getCastingTime, getConditionModifier, getDuration, getEffectModifier, getKeyName, getRange } from 'utils/calculations';
-import { AreaType, Attribute, DamageType, EffectCondition, MagicSchool, TargetType } from 'types/database/dnd';
+import { getCastingTime, getComponents, getConditionModifier, getDuration, getEffectModifier, getKeyName, getRange } from 'utils/calculations';
+import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
 import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
 import { SpellContent, SpellMetadata } from 'types/database/files/spell';
 import { CharacterStats } from 'types/database/files/character';
@@ -11,6 +11,7 @@ import { RendererObject } from 'types/database/editor';
 import { DBResponse } from 'types/database';
 import { RollMode } from 'types/elements';
 import styles from 'styles/renderer.module.scss';
+import Localization from 'utils/localization';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
@@ -42,68 +43,63 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
     let description = useParser(metadata.description, metadata)
     let conditionMod = getConditionModifier(metadata, stats);
     let effectMod = getEffectModifier(metadata, stats)
-    let school = getKeyName(MagicSchool, metadata.school, MagicSchool.Evocation)
+    let school = getKeyName("magicSchool", metadata.school)
     let castingTime = getCastingTime(metadata);
     let duration = getDuration(metadata);
     let range = getRange(metadata)
-    let area = getKeyName(AreaType, metadata.area, AreaType.None)
+    let area = getKeyName("area", metadata.area)
+    let components = getComponents(metadata).join(' ')
+    let damageType = getKeyName("damageType", metadata.damageType)
 
     return (
         <>
             <Elements.Align>
                 <Elements.Align options={{ direction: "v", weight: "1.5" }}>
-                    <Elements.Bold> {metadata.name} </Elements.Bold>
+                    <Elements.Bold>{metadata.name}</Elements.Bold>
                     {`Level ${metadata.level}, ${school}`}
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
-                    <Elements.Bold> Casting Time </Elements.Bold>
-                    {castingTime}
+                    <div><Elements.Bold>Casting</Elements.Bold> {components ? `(${components})` : null}</div>
+                    <div className={styles.iconRow}>
+                        {castingTime} 
+                        { metadata.ritual && 
+                            <Elements.Icon options={{
+                                icon: 'ritual',
+                                tooltips: Localization.toText('spellRitual')  
+                            }}/>
+                        }
+                    </div>
+                    <Elements.Bold> Duration </Elements.Bold>
+                    <div className={styles.iconRow}>
+                        {duration} 
+                        { metadata.concentration &&
+                            <Elements.Icon options={{
+                                icon: 'concentration',
+                                tooltips: Localization.toText('spellConcentration')  
+                            }}/>
+                        }
+                    </div>
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
-                    <Elements.Bold> Duration </Elements.Bold>
-                    { metadata.concentration ? `${duration} (C)` : duration }
-                </Elements.Align>
-                { metadata.target !== TargetType.None &&
-                    <Elements.Align options={{ direction: "v" }}>
-                        <div className={styles.spellAreaRow}>
-                            <Elements.Bold> Range/Area </Elements.Bold>
+                    <div className={styles.iconRow}>
+                        <Elements.Bold> Range/Area </Elements.Bold>
+                        { metadata.target !== TargetType.None &&
                             <Elements.Icon options={{ 
                                 icon: metadata.area, tooltips: area 
                             }}/>
-                        </div>
-                        {range}
-                    </Elements.Align>
-                }
-                { metadata.condition === EffectCondition.Hit &&
-                    <Elements.Align options={{ direction: "v", weight: "0.85"  }}>
-                        <Elements.Bold>HIT/DC </Elements.Bold>
-                        <Elements.Roll 
-                            options={{ 
-                                mod: conditionMod as any, 
-                                desc: `${metadata.name} Attack` 
-                            }}
-                        />
-                    </Elements.Align>
-                }
-                { metadata.condition === EffectCondition.Save &&
-                    <Elements.Align options={{ direction: "v", weight: "0.85"  }}>
-                        <Elements.Bold>HIT/DC </Elements.Bold>
-                        <Elements.Save
-                            options={{
-                                attr: metadata.saveAttr ?? Attribute.STR,
-                                value: String(8 + conditionMod)
-                            }}
-                        />
-                    </Elements.Align>
-                }
-                { metadata.damageType === DamageType.None && (
-                    <Elements.Align options={{ direction: "v", weight: "0.7"  }}>
+                        }
+                    </div>
+                    {metadata.target !== TargetType.None ? range : '-'}
+                    <Elements.Bold> Notes </Elements.Bold>
+                    <div className={styles.iconRow}>
+                        {metadata.notes ? metadata.notes : '-'}
+                    </div>
+                </Elements.Align>
+                <Elements.Align options={{ direction: "v" }}>
+                    { metadata.damageType === DamageType.None && <>
                         <Elements.Bold>Effect </Elements.Bold>
                         { metadata.effectText }
-                    </Elements.Align>
-                )}
-                { metadata.damageType !== DamageType.None && (
-                    <Elements.Align options={{ direction: "v", weight: "0.7" }}>
+                    </>}{ metadata.damageType !== DamageType.None && <>
                         <Elements.Bold>Damage </Elements.Bold>
                         <Elements.Roll 
                             options={{ 
@@ -113,19 +109,32 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
                                 mode: RollMode.DMG,
                                 desc: `${metadata.name} Damage`
                             }}
-                        >
-                            <Elements.Icon 
-                                options={{ 
-                                    icon: metadata.damageType,
-                                    tooltips: Object.keys(DamageType).find((key) => DamageType[key] === metadata.damageType) 
-                                }}
-                            />
+                        ><Elements.Icon options={{ icon: metadata.damageType, tooltips: damageType}}/>
                         </Elements.Roll>
-                    </Elements.Align >
-                )}
+                    </>}
+                    <Elements.Bold>HIT/DC </Elements.Bold>
+                    { metadata.condition === EffectCondition.Hit && 
+                        <Elements.Roll 
+                            options={{ 
+                                mod: conditionMod as any, 
+                                desc: `${metadata.name} Attack` 
+                            }}
+                        />
+                    }{ metadata.condition === EffectCondition.Save &&
+                        <Elements.Save
+                            options={{
+                                attr: metadata.saveAttr ?? Attribute.STR,
+                                value: String(8 + conditionMod)
+                            }}
+                        />
+                    }{ metadata.condition === EffectCondition.None && '-'}
+                </Elements.Align>
             </Elements.Align>
-            { open && description && <>
+            { open && (description || components) && <>
                 <Elements.Line/>
+                { components && metadata.componentMaterial && <> 
+                    <b>Materials: </b> {metadata.materials}<br/><Elements.Line/>
+                </>}
                 { description }
             </>}
         </>
