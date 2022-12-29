@@ -117,11 +117,14 @@ $size: 20px;
     & > a {
         @include color(document);
         color: map-get($palette, accents);
+        display: flex;
+        align-items: center;
+        flex: 1;
         margin-left: 5px;
         padding-left: 5px;
-        flex: 1;
-        cursor: pointer;
+        font-size: small;
         text-decoration: none;
+        cursor: pointer;
         &:hover {
             text-decoration: underline;
         }
@@ -329,7 +332,6 @@ $size: 20px;
 }
 
 .checkbox {
-    @include colorText();
     width: 20px;
     height: 20px;
 }

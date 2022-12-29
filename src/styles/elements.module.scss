@@ -28,10 +28,6 @@
     justify-content: center;
 }
 
-.bold {
-    font-weight: bold;
-}
-
 .save {
     @include fontExtension();
     @include roundedExtension();
@@ -109,6 +105,7 @@
     display: inline-flex;
     width: fit-content;
     align-items: center;
+    justify-content: center;
     white-space: nowrap;
     user-select: none;
     flex: 1;
@@ -210,13 +207,12 @@
     width: 0.9em;
 
     & > svg {
-        display: flex;
         position: absolute;
         color: inherit;
         fill: map-get($palette, forth);
         padding: 1px;
         aspect-ratio: 1;
-        left: calc(50% - 0.45em);
+        left: 0;
         top: calc(50% - 0.45em);
         height: 0.9em;
     }

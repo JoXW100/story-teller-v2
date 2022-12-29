@@ -1,18 +1,21 @@
+@import '../colors.scss';
+
 $size: 20px;
 
 .main {
+    @include colorText();
     display:  inline-flex;
     align-items: center;
     justify-content: center;
     aspect-ratio: 1;
     height: $size;
-    color: inherit;
-    border: 2px solid;
     background: inherit;
-    cursor: pointer;
     user-select: none;
+    cursor: pointer;
 
-    & > svg {
+    & > div, & > svg {
+        @include colorText();
+        @include color(document);
         height: 100%;
         width: 100%;
     }

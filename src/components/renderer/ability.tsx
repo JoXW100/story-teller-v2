@@ -82,7 +82,7 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                             {range.text}
                         </div>
                         { metadata.type === AbilityType.ThrownWeapon &&
-                            <div> 
+                            <div className={styles.iconRow}> 
                                 <Elements.Bold>Range </Elements.Bold> 
                                 {`${metadata.rangeThrown ?? 0} (${metadata.rangeLong ?? 0}) ft`}
                             </div>
@@ -114,26 +114,39 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                             </div>
                             :
                             <>
-                                <div>
+                                <div className={styles.iconRow}>
                                     <Elements.Bold>Damage</Elements.Bold>
-                                    { metadata.effectDice == DiceType.None ?
-                                        <>
-                                            {`${effectMod ?? 0} `}
-                                            <Elements.Icon 
-                                                options={{ 
-                                                    icon: metadata.damageType,
-                                                    tooltips: damageName 
-                                                }}
-                                            />
-                                        </> 
-                                        :
+                                    <Elements.Roll 
+                                        options={{ 
+                                            dice: metadata.effectDice as any, 
+                                            num: metadata.effectDiceNum ?? 1 as any, 
+                                            mod: effectMod ?? 0 as any,
+                                            mode: metadata.effectDice == DiceType.None 
+                                                ? RollMode.Mod 
+                                                : RollMode.DMG,
+                                            desc: `${metadata.name} Damage`
+                                        }}
+                                    >
+                                        <Elements.Icon 
+                                            options={{ 
+                                                icon: metadata.damageType,
+                                                tooltips: damageName 
+                                            }}
+                                        />
+                                    </Elements.Roll>
+                                </div>
+                                { metadata.versatile && 
+                                    <div className={styles.iconRow}>
+                                        <Elements.Bold>2-Hand </Elements.Bold>
                                         <Elements.Roll 
                                             options={{ 
-                                                dice: metadata.effectDice as any, 
+                                                dice: metadata.effectVersatileDice as any, 
                                                 num: metadata.effectDiceNum ?? 1 as any, 
                                                 mod: effectMod ?? 0 as any,
-                                                mode: RollMode.DMG,
-                                                desc: `${metadata.name} Damage`
+                                                mode: metadata.effectVersatileDice == DiceType.None 
+                                                    ? RollMode.Mod 
+                                                    : RollMode.DMG,
+                                                desc: `${metadata.name} 2H Damage`
                                             }}
                                         >
                                             <Elements.Icon 
@@ -143,39 +156,6 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                                                 }}
                                             />
                                         </Elements.Roll>
-                                    }
-                                </div>
-                                { metadata.versatile && 
-                                    <div>
-                                        <Elements.Bold>2-Hand</Elements.Bold>
-                                        { metadata.effectVersatileDice == DiceType.None ?
-                                            <>
-                                                {`${effectMod ?? 0} `}
-                                                <Elements.Icon 
-                                                    options={{ 
-                                                        icon: metadata.damageType,
-                                                        tooltips: damageName 
-                                                    }}
-                                                />
-                                            </> 
-                                            :
-                                            <Elements.Roll 
-                                                options={{ 
-                                                    dice: metadata.effectVersatileDice as any, 
-                                                    num: metadata.effectDiceNum ?? 1 as any, 
-                                                    mod: effectMod ?? 0 as any,
-                                                    mode: RollMode.DMG,
-                                                    desc: `${metadata.name} 2-Hand Damage`
-                                                }}
-                                            >
-                                                <Elements.Icon 
-                                                    options={{ 
-                                                        icon: metadata.damageType,
-                                                        tooltips: damageName 
-                                                    }}
-                                                />
-                                            </Elements.Roll>
-                                        }
                                     </div>
                                 }
                             </>

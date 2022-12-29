@@ -12,7 +12,7 @@ const Checkbox = ({ className, value, onChange }: CheckboxProps): JSX.Element =>
     const name = className ? `${styles.main} ${className}` : styles.main
     return (
         <span className={name} onClick={onClick}>
-            { value ? <CheckIcon/> : null }
+            { value ? <CheckIcon/> : <div/> }
         </span>
     )
 }

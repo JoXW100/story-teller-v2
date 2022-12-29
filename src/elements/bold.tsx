@@ -1,9 +1,8 @@
 import { ParseError } from 'utils/parser';
 import { ElementObject, ElementParams } from 'types/elements';
-import styles from 'styles/elements.module.scss';
 
-const BoldElement = ({ children }: ElementParams<{}>): JSX.Element => {
-    return <b className={styles.bold}> {children} </b>
+const BoldElement = ({ children, ...args }: ElementParams<{}>): JSX.Element => {
+    return <b {...{...args, children: children}}/>
 }
 
 const x: ElementObject = {
