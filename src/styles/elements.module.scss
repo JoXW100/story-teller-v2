@@ -203,17 +203,14 @@
 .icon {
     display: inline;
     position: relative;
-    height: 100%;
+    height: 0.9em;
     width: 0.9em;
 
     & > svg {
-        position: absolute;
         color: inherit;
         fill: map-get($palette, forth);
         padding: 1px;
         aspect-ratio: 1;
-        left: 0;
-        top: calc(50% - 0.45em);
         height: 0.9em;
     }
 }

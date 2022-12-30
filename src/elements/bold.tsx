@@ -1,8 +1,8 @@
 import { ParseError } from 'utils/parser';
 import { ElementObject, ElementParams } from 'types/elements';
 
-const BoldElement = ({ children, ...args }: ElementParams<{}>): JSX.Element => {
-    return <b {...{...args, children: children}}/>
+const BoldElement = ({ options, metadata, ...args }: ElementParams<{}>): JSX.Element => {
+    return <b {...args}/>
 }
 
 const x: ElementObject = {

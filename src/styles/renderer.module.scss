@@ -81,6 +81,7 @@ $pageHeight: 14in; /* A4 */
     margin-left: 5px;
     content: " ";
     cursor: pointer;
+    
     &[data=active]::after {
         @include color(text);
         position: absolute;

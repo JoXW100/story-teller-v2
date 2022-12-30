@@ -183,12 +183,27 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
     return { area: area, areaSize: size, areaHeight: height }
 }
 
-const getDamage = (damage: string): { effectText?: string, effectModifier?: OptionType<number>, 
+const getDamage = (results: {[key: string]: string}): { damageType?: DamageType, effectText?: string, effectModifier?: OptionType<number>, 
                                       effectDice?: DiceType, effectDiceNum?: number } => {
-    var res = /([0-9]+)d([0-9]+)/.exec(damage) ?? [] // Todo expand
+    let effectDiceNum: number = 1
+    let effectDice: DiceType = DiceType.None
+    let damageType: DamageType = DamageType.None
+    if (results['damage']) {
+        let res = /([0-9]+)d([0-9]+)/.exec(results['damage']) ?? [] // Todo expand
+        effectDiceNum =  Number(res[1]) ? Number(res[1]) : effectDiceNum
+        effectDice = Number(res[2]) ? Number(res[2]) as DiceType : effectDice
+        damageType = results['damage type'] as DamageType
+    } else {
+        let res = /([0-9]+)d([0-9]+) *([A-z]+) *damage/.exec(results['content']?.toLocaleLowerCase() ?? '') ?? []
+        effectDiceNum =  Number(res[1]) ? Number(res[1]) : effectDiceNum
+        effectDice = Number(res[2]) ? Number(res[2]) as DiceType : effectDice
+        damageType = res[3] as DamageType
+    }
+    
     return {
-        effectDiceNum: Number(res[1]) ? Number(res[1]) : 1,
-        effectDice: Number(res[2]) ? Number(res[2]) : DiceType.None
+        effectDiceNum: effectDiceNum,
+        effectDice: Object.values(DiceType).includes(effectDice) ? effectDice : DiceType.None,
+        damageType: Object.values(DamageType).includes(damageType) ? damageType : DamageType.None,
     }
 }   
 
@@ -367,13 +382,12 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     var school = results['school'] as MagicSchool
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
-    var { effectDice, effectDiceNum } = getDamage(results['damage'])
+    var { damageType, effectDice, effectDiceNum } = getDamage(results)
     var { range, area, areaSize } = getRange(results['range'])
     var { cond, attr } = getCondition(results)
     if (area === AreaType.None) {
         var { area, areaSize, areaHeight } = getArea(results['content'] ?? "")
     }
-    var damageType: DamageType = results['damage type'] as DamageType
 
     var fileContent: SpellMetadata = {
         name: results['title'] ?? "Missing name",
@@ -393,7 +407,7 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
         componentVerbal: results['components']?.includes('v') || false,
         condition: cond,
         saveAttr: attr,
-        damageType: Object.values(DamageType).includes(damageType) ? damageType : DamageType.None,
+        damageType: damageType,
         target: getTarget(results['target']),
         range: range,
         area: area,
