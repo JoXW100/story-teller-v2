@@ -26,6 +26,7 @@ $searchSize: 30px;
 
     & > input {
         @include color(forth);
+        @include colorText();
         display: flex;
         height: $searchSize;
         width: 100%;

@@ -48,7 +48,7 @@
         {
             "title": "Image",
             "keyWords": ["image", "\\image", "picture", "figure", "href", "border"],
-            "text": "`\\image` [`href`, `width`, `border`]\n ### Options\n - `href` =\n   - External url `https://...`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\border` [`https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png`] Displays the external google logo"
+            "text": "`\\image` [`href`, `width`, `border`]\n ### Options\n - `href` =\n   - External url `https://...`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\image` [`https://app.roll20.net/v2/images/roll20-logo.png`, `width`: `100px`] Displays a 100px wide Roll20 logo without borders"
         },
         {
             "title": "Link",

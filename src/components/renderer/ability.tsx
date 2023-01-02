@@ -235,7 +235,7 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
         if (abilityIds && abilityIds.length > 0) {
             new Promise(async (resolve) => {
                 let results = await Promise.all(abilityIds?.map((id) => 
-                    abilities.find((x) => x.id == x.id) ?? parseText(id)))
+                    abilities.find((x) => x.id == x.id && x.id != null) ?? parseText(id)))
                 
                 let { resolved, ids } = results.reduce((prev, value, index) => (
                     value

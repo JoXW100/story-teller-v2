@@ -206,19 +206,17 @@ $componentColor: document;
 }
 
 .dropdown {
-    @include color($componentColor);
     background: map-get($palette, $componentColor) !important;
     font: inherit;
     font-size: small;
 
-    & > div:first-child {
+    & > :first-child {
         & > * {
             &[data=true] {
                 @include colorShadow();
             }
             
             & > * {
-                @include colorInteract(forth);
                 padding: 0 5px;
                 height: $size;
                 
@@ -228,7 +226,7 @@ $componentColor: document;
                 }
             }
         }
-    } 
+    }
 
     & > div:last-child {
         background: map-get($palette, main);
@@ -262,7 +260,8 @@ $componentColor: document;
 .editSelectionItem {
     @include colorText();
     @extend .editNumber;
-    & > b { width: 80px; }
+
+    & > b { width: 120px; }
     & > input {
         @include color($componentColor);
     }
@@ -294,8 +293,6 @@ $componentColor: document;
     }
 }
 
-
-
 .editOption {
     display: flex;
     margin: 2px 0 2px 5px;
@@ -308,6 +305,7 @@ $componentColor: document;
         display: flex;
         flex: 1;
         min-width: 0;
+        
         & > div {
             width: 100px;
             flex: initial;
