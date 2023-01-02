@@ -183,8 +183,9 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
     return { area: area, areaSize: size, areaHeight: height }
 }
 
-const getDamage = (results: {[key: string]: string}): { damageType?: DamageType, effectText?: string, effectModifier?: OptionType<number>, 
-                                      effectDice?: DiceType, effectDiceNum?: number } => {
+const getDamage = (results: {[key: string]: string}): { damageType?: DamageType, 
+                   effectModifier?: OptionType<number>, effectDice?: DiceType, 
+                   effectDiceNum?: number } => {
     let effectDiceNum: number = 1
     let effectDice: DiceType = DiceType.None
     let damageType: DamageType = DamageType.None
@@ -378,7 +379,6 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
 }
 
 const toSpell = (results: {[key: string]: string}): SpellMetadata => {
-    var level = Number(results['level'])
     var school = results['school'] as MagicSchool
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
@@ -392,7 +392,7 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     var fileContent: SpellMetadata = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
-        level: level ? level : 0,
+        level: Number(results['level']) ? Number(results['level']) : 0,
         school: Object.values(MagicSchool).includes(school) ? school : MagicSchool.Abjuration,
         time: time,
         timeCustom: timeCustom,
@@ -401,18 +401,18 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
         durationValue: durationValue,
         ritual: results['ritual'] == "yes",
         concentration: results['concentration'] == "yes",
-        componentMaterial: results['components']?.includes('m') || false,
+        componentMaterial: Boolean(results['components']?.includes('m')),
         materials: results['material'] ?? "",
-        componentSomatic: results['components']?.includes('s') || false ,
-        componentVerbal: results['components']?.includes('v') || false,
+        componentSomatic: Boolean(results['components']?.includes('s')),
+        componentVerbal: Boolean(results['components']?.includes('v')),
         condition: cond,
         saveAttr: attr,
         damageType: damageType,
         target: getTarget(results['target']),
         range: range,
         area: area,
-        areaSize: areaSize ?? 0,
-        areaHeight: areaHeight ?? 0,
+        areaSize: areaSize,
+        areaHeight: areaHeight,
         conditionScaling: ScalingType.SpellModifier,
         conditionProficiency: true,
         effectDice: effectDice,

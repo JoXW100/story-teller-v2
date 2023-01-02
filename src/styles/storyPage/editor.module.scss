@@ -1,9 +1,30 @@
 @import '../colors.scss';
 
 $size: 20px;
+$componentColor: document;
+
+@mixin componentScroll() {
+    cursor: auto;
+    &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        @include color(forth);
+        visibility: hidden;
+        
+        &:hover { visibility: visible; }
+    }
+        
+    &::-webkit-scrollbar-thumb {
+        @include colorInteract(main);
+    }
+}
 
 .main {
-    @include color(background);
+    @include color(document);
+    @include componentScroll();
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -16,6 +37,7 @@ $size: 20px;
 }
 
 .editGroup {
+    @include color(forth);
     display: flex;
     flex-direction: column;
     padding: 2px;
@@ -25,7 +47,7 @@ $size: 20px;
         flex: 1;
         height: 100%;
         min-height: 200px;
-    } 
+    }
 
     & > .editGroupHeader {
         @include colorInteract(main);
@@ -36,6 +58,7 @@ $size: 20px;
         font-size: large;
         font-weight: bold;
         padding: 1px 5px;
+        overflow: hidden;
 
         &[data=open]::after {
             position: absolute;
@@ -72,11 +95,13 @@ $size: 20px;
 }
 
 .editEditor {
+    @include color($componentColor);
+    @include componentScroll();
     padding-bottom: 50px !important;
 }
 
 .editInput {
-    @include color(document);
+    @include color($componentColor);
     @include colorText();
     min-width: 0;
     border: none;
@@ -92,6 +117,11 @@ $size: 20px;
 
     &::-webkit-inner-spin-button{
         appearance: none;
+    }
+
+    &::placeholder {
+        @include colorText();
+        opacity: 60%;
     }
 }
 
@@ -115,7 +145,6 @@ $size: 20px;
     }
 
     & > a {
-        @include color(document);
         color: map-get($palette, accents);
         display: flex;
         align-items: center;
@@ -142,6 +171,11 @@ $size: 20px;
         min-width: 0;
         height: inherit;
         flex: 1;
+    }
+
+    & textarea {
+        @include color($componentColor);
+        @include componentScroll();
     }
 
     &[data=fill] {
@@ -172,7 +206,8 @@ $size: 20px;
 }
 
 .dropdown {
-    background: map-get($palette, document) !important;
+    @include color($componentColor);
+    background: map-get($palette, $componentColor) !important;
     font: inherit;
     font-size: small;
 
@@ -183,7 +218,7 @@ $size: 20px;
             }
             
             & > * {
-                @include colorInteract(document);
+                @include colorInteract(forth);
                 padding: 0 5px;
                 height: $size;
                 
@@ -208,7 +243,7 @@ $size: 20px;
     & > b { @extend .label; }
 
     .selection {
-        @include color(document);
+        @include color($componentColor);
         font: inherit;
         font-size: small;
         
@@ -229,7 +264,7 @@ $size: 20px;
     @extend .editNumber;
     & > b { width: 80px; }
     & > input {
-        @include color(document);
+        @include color($componentColor);
     }
 }
 
@@ -241,14 +276,14 @@ $size: 20px;
     & > b { @extend .label; }
 
     .list {
-        @include color(document);
+        @include color($componentColor);
         font: inherit;
         font-size: small;
 
         & > div:last-child {
-            @include color(forth);
+            @include color(document);
             & > div {
-                @include color(document);
+                @include color($componentColor);
                 filter: brightness(95%)
             }
         }
@@ -279,7 +314,7 @@ $size: 20px;
         }
 
         & > input {
-            @include color(document);
+            @include color($componentColor);
             @include colorText();
             min-width: 0;
             border: none;
@@ -334,4 +369,16 @@ $size: 20px;
 .checkbox {
     width: 20px;
     height: 20px;
+
+    svg, div {
+        @include color($componentColor);
+    }
+}
+
+.loading {
+    width: 100%;
+    margin-top: 100px + 0.75cm !important;
+    & svg {
+        height: 0.85in;
+    }
 }

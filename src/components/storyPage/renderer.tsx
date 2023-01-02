@@ -1,8 +1,9 @@
-import { useContext } from 'react';
+import { useContext, SyntheticEvent } from 'react';
+import Loading from 'components/common/loading';
 import { Context } from 'components/contexts/fileContext';
 import useRenderer from 'components/renderer';
-import styles from 'styles/renderer.module.scss';
 import { FileRendererTemplate } from 'types/templates';
+import styles from 'styles/renderer.module.scss';
 
 type RendererProps = React.PropsWithRef<{
     template: FileRendererTemplate
@@ -11,10 +12,16 @@ type RendererProps = React.PropsWithRef<{
 const Renderer = ({ template }: RendererProps): JSX.Element => {
     const [context] = useContext(Context);
     const render = useRenderer(template, context?.file)
+
     return (
         <div className={styles.main}>
             <div className={styles.innerPage}>
-                { render }
+                { context.fetching
+                    ? <Loading className={styles.loading}/>
+                    : <div className={styles.contentHolder}>
+                        {render}
+                    </div> 
+                }
             </div>
         </div>
     )

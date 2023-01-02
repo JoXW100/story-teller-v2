@@ -43,11 +43,13 @@ const RollHistoryPanel = ({ open, close, isOpen }: RollHistoryPanelProps): JSX.E
         }
     }, [state.active])
 
+    const date = Date.now()
+    const display = isOpen || context.rollHistory.some((x) => date - x.time < duration)
+
     return (
-        <div className={styles.main}>
+        <div className={styles.main} data={String(display)}>
             { context.rollHistory
-                .filter((x) => isOpen || Date.now() - x.time < duration)
-                .sort((a, b) => b.time - a.time)
+                .filter((x) => isOpen || date - x.time < duration)
                 .map((entry, index) => (
                     <HistoryRollEntry key={index} entry={entry}/>
                 )) 

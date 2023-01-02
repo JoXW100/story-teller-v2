@@ -109,7 +109,7 @@
                             {
                                 "type": "group",
                                 "params": { "label": "Effect Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "any", "value": ["none", "null"] }] }],
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "all", "value": ["none", "null"] }] }],
                                 "content": [
                                     { 
                                         "type": "enum", 
@@ -138,7 +138,7 @@
                                     },
                                     { 
                                         "type": "number", 
-                                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "effectDice" }, { "type": "any", "value": [0, null] }] }],
+                                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "effectDice" }, { "type": "all", "value": [0, "0", null] }] }],
                                         "params": { "label": "Num Dice", "key": "effectDiceNum" }
                                     }
                                 ]

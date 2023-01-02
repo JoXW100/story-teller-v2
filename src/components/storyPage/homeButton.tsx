@@ -7,12 +7,12 @@ import styles from 'styles/storyPage/main.module.scss'
 const HomeButton = (): JSX.Element => {
     return (
         <Link href={Navigation.originURL()} passHref>
-            <div 
+            <button 
                 className={styles.home}
                 tooltips={Localization.toText('storyPage-home')}
             >
                 <HomeIcon sx={{ height: "100%" }}/>
-            </div>
+            </button>
         </Link>
     )
 }

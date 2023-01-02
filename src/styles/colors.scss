@@ -23,7 +23,10 @@ $palette: (
 
 @mixin colorShadow() {
     box-shadow: map-get($palette, shadow) 0 0 5px 1px;
-    
+}
+
+@mixin colorInShadow() {
+    box-shadow: inset map-get($palette, shadow) 0 0 5px 1px;
 }
 
 @mixin colorBorder() {

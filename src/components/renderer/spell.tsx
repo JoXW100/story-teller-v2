@@ -48,9 +48,13 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
     let duration = getDuration(metadata);
     let range = getRange(metadata)
     let area = getKeyName("area", metadata.area)
-    let components = getComponents(metadata).join(' ')
     let damageType = getKeyName("damageType", metadata.damageType)
-
+    let components = getComponents(metadata).map((x, i) => (
+        <span key={i}
+            className={styles.spellComponent} 
+            tooltips={Localization.toText(`spell-component-${x}`)}
+        >{x}</span>
+    ))
     return (
         <>
             <Elements.Align>
@@ -59,31 +63,31 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
                     {`Level ${metadata.level}, ${school}`}
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
-                    <div><Elements.Bold>Casting</Elements.Bold> {components ? `(${components})` : null}</div>
+                    <div><Elements.Bold>Casting</Elements.Bold>{components}</div>
                     <div className={styles.iconRow}>
                         {castingTime} 
-                        { metadata.ritual && 
+                        {metadata.ritual && 
                             <Elements.Icon options={{
                                 icon: 'ritual',
-                                tooltips: Localization.toText('spellRitual')  
+                                tooltips: Localization.toText('spell-ritual')  
                             }}/>
                         }
                     </div>
                     <Elements.Bold> Duration </Elements.Bold>
                     <div className={styles.iconRow}>
                         {duration} 
-                        { metadata.concentration &&
+                        {metadata.concentration &&
                             <Elements.Icon options={{
                                 icon: 'concentration',
-                                tooltips: Localization.toText('spellConcentration')  
+                                tooltips: Localization.toText('spell-concentration')  
                             }}/>
                         }
                     </div>
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
                     <div className={styles.iconRow}>
-                        <Elements.Bold> Range/Area </Elements.Bold>
-                        { metadata.target !== TargetType.None &&
+                        <Elements.Bold>Range/Area</Elements.Bold>
+                        {metadata.target !== TargetType.None &&
                             <Elements.Icon options={{ 
                                 icon: metadata.area, tooltips: area 
                             }}/>
@@ -113,21 +117,21 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
                         </Elements.Roll>
                     </>}
                     <Elements.Bold>HIT/DC </Elements.Bold>
-                    { metadata.condition === EffectCondition.Hit && 
+                    {metadata.condition === EffectCondition.Hit && 
                         <Elements.Roll 
                             options={{ 
                                 mod: conditionMod as any, 
                                 desc: `${metadata.name} Attack` 
                             }}
                         />
-                    }{ metadata.condition === EffectCondition.Save &&
+                    }{metadata.condition === EffectCondition.Save &&
                         <Elements.Save
                             options={{
                                 attr: metadata.saveAttr ?? Attribute.STR,
                                 value: String(8 + conditionMod)
                             }}
                         />
-                    }{ metadata.condition === EffectCondition.None && '-'}
+                    }{metadata.condition === EffectCondition.None && '-'}
                 </Elements.Align>
             </Elements.Align>
             { open && (description || components) && <>
@@ -141,7 +145,11 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
     )
 }
 
-const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.Element => {
+const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.Element => (
+    <SpellToggleRenderer metadata={file.metadata} stats={stats}/>
+)
+
+const SpellToggleRenderer = ({ metadata, stats }: { metadata: SpellMetadata, stats: CharacterStats }): JSX.Element => {
     const [open, setOpen] = useState(false);
 
     const handleClick = () => {
@@ -150,21 +158,7 @@ const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.El
 
     return (
         <div className={styles.spell} onClick={handleClick}>
-            <Spell metadata={file.metadata} stats={stats} open={open}/>
-        </div>
-    )
-}
-
-const AbilityToggleRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element => {
-    const [open, setOpen] = useState(false);
-
-    const handleClick = () => {
-        setOpen(!open);
-    }
-
-    return (
-        <div className={styles.spell} onClick={handleClick}>
-            <Spell metadata={file.metadata} stats={stats} open={open}/>
+            <Spell metadata={metadata} stats={stats} open={open}/>
         </div>
     )
 }
@@ -202,7 +196,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
                 var level = file.metadata.level as number ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 
-                    <AbilityToggleRenderer key={index} file={file} stats={data}/>
+                    <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>
                 ]
             }
         })

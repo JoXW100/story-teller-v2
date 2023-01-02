@@ -4,6 +4,7 @@ import Components from './components';
 import { AllTemplateCondition, AnyTemplateCondition, EditInputType, EqualsTemplateCondition, MetadataTemplateCondition, NotEqualsTemplateCondition, RootTemplateComponent, TemplateComponent, TemplateCondition, TemplateConditionType, ValueTemplateCondition } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import styles from 'styles/storyPage/editor.module.scss'
+import Loading from 'components/common/loading';
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent
@@ -16,45 +17,50 @@ interface ConditionsData {
 }
 
 const handleCondition = (condition: TemplateCondition | string | boolean, data: ConditionsData) => {
-    if (typeof condition === "string" || typeof condition === "boolean")
-        return handleCondition({ type: TemplateConditionType.Value, value: condition }, data)
-    switch (condition.type) {
-        case TemplateConditionType.Equals:
-            var params = { ...data, cmp: "$empty", mode: "equals" };
-            return (condition as EqualsTemplateCondition)
-                .value?.every((x) => handleCondition(x, params)) ?? false;
-        case TemplateConditionType.NotEquals:
-            var params = { ...data, cmp: "$empty", mode: "notEquals" };
-            return (condition as NotEqualsTemplateCondition)
-                .value?.every((x) => handleCondition(x, params)) ?? false;
-        case TemplateConditionType.Metadata:
-            if (data.cmp === "$empty") {
-                data.cmp = data.metadata[(condition as MetadataTemplateCondition).value];
+    try {
+        if (typeof condition === "string" || typeof condition === "boolean" || condition == null)
+            return handleCondition({ type: TemplateConditionType.Value, value: condition }, data)
+        switch (condition.type) {
+            case TemplateConditionType.Equals:
+                var params = { ...data, cmp: "$empty", mode: "equals" };
+                return (condition as EqualsTemplateCondition)
+                    .value?.every((x) => handleCondition(x, params)) ?? false;
+            case TemplateConditionType.NotEquals:
+                var params = { ...data, cmp: "$empty", mode: "notEquals" };
+                return (condition as NotEqualsTemplateCondition)
+                    .value?.every((x) => handleCondition(x, params)) ?? false;
+            case TemplateConditionType.Metadata:
+                if (data.cmp === "$empty") {
+                    data.cmp = data.metadata[(condition as MetadataTemplateCondition).value];
+                    return true;
+                }
+                if (data.mode === "equals")
+                    return data.metadata[(condition as MetadataTemplateCondition).value] == data.cmp
+                if (data.mode === "notEquals")
+                    return data.metadata[(condition as MetadataTemplateCondition).value] != data.cmp
+                return false;
+            case TemplateConditionType.Value: 
+                if (data.cmp === "$empty"){
+                    data.cmp = (condition as ValueTemplateCondition).value;
+                    return true;
+                }
+                if (data.mode === "equals")
+                    return (condition as ValueTemplateCondition).value == data.cmp
+                if (data.mode === "notEquals")
+                    return (condition as ValueTemplateCondition).value != data.cmp
+                return false;
+            case TemplateConditionType.Any:
+                return (condition as AnyTemplateCondition)
+                    .value?.some((x) => handleCondition(x, data)) ?? false;
+            case TemplateConditionType.All:
+                return (condition as AllTemplateCondition)
+                    .value?.every((x) => handleCondition(x, data)) ?? false;
+            default:
                 return true;
-            }
-            if (data.mode === "equals")
-                return data.metadata[(condition as MetadataTemplateCondition).value] == data.cmp
-            if (data.mode === "notEquals")
-                return data.metadata[(condition as MetadataTemplateCondition).value] != data.cmp
-            return false;
-        case TemplateConditionType.Value: 
-            if (data.cmp === "$empty"){
-                data.cmp = (condition as ValueTemplateCondition).value;
-                return true;
-            }
-            if (data.mode === "equals")
-                return (condition as ValueTemplateCondition).value == data.cmp
-            if (data.mode === "notEquals")
-                return (condition as ValueTemplateCondition).value != data.cmp
-            return false;
-        case TemplateConditionType.Any:
-            return (condition as AnyTemplateCondition)
-                .value?.some((x) => handleCondition(x, data)) ?? false;
-        case TemplateConditionType.All:
-            return (condition as AllTemplateCondition)
-                .value?.every((x) => handleCondition(x, data)) ?? false;
-        default:
-            return true;
+        }
+    } catch (error) {
+        console.error(error)
+        return false
     }
 }
 
@@ -133,14 +139,23 @@ const Editor = ({ template }: EditorProps): JSX.Element => {
         }
     }, [])
     const content = useMemo<JSX.Element>(() => {
-        return context.file
-            ? buildEditor(template, { ...context.file.metadata })
-            : null
+        try {
+            return context.file
+                ? buildEditor(template, { ...context.file.metadata })
+                : null
+        } catch (error) {
+            if (process.env.NODE_ENV == "development")
+                throw error;
+            return null
+        }
     }, [context.file, template])
 
-    return (
+    return  (
         <div className={styles.main}>
-           { content }
+           { context.loading
+                ? <Loading className={styles.loading}/>
+                :content 
+            }
         </div>
     )
 }

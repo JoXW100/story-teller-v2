@@ -3,12 +3,16 @@ class RequestQueue {
     private waitTime = 1000;
     private requestWorkerTimeout: { [id: string]: NodeJS.Timeout } = {};
 
-    get requestIsQueued() {
+    public get requestIsQueued() {
         return Object.values(this.requestWorkerTimeout).some(x => x !== null);
     }
 
+    public constructor(waitTime: number = 1000){
+        this.waitTime = waitTime
+    }
+
     /** Adds a request to the queue */
-    addRequest(action: (...params: any[]) => any, id: string, ...params: any[]) {
+    public addRequest(action: (...params: any[]) => any, id: string, ...params: any[]) {
         clearTimeout(this.requestWorkerTimeout[id]);
         this.requestWorkerTimeout[id] = setTimeout(
             this.handleRequest, 

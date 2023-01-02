@@ -23,7 +23,6 @@ $width: 8px;
 
         &:active {
             @include color(accents);
-            cursor: ew-resize;
         }
     }
 
@@ -31,5 +30,6 @@ $width: 8px;
         position: absolute;
         z-index: 3;
         height: 100%;
+        transition: 100ms ease;
     }
 }

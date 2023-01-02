@@ -8,6 +8,7 @@ import RollHistoryButton from 'components/storyPage/rollHistoryButton'
 import SettingsButton from 'components/storyPage/settingsButton'
 import Templates from 'data/fileTemplates'
 import styles from 'styles/renderer.module.scss'
+import Loading from './common/loading'
 
 const ViewPage = (): JSX.Element => {
     const [context] = useContext(FileContext)
@@ -24,7 +25,10 @@ const ViewPage = (): JSX.Element => {
             </div>
             <div className={styles.main}>
                 <div ref={ref} className={styles.innerPage}>
-                    { render }
+                    { context.fetching || true
+                        ? <Loading className={styles.loading}/> 
+                        : render 
+                    }
                 </div>
             </div>
         </div>

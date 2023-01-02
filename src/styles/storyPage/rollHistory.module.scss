@@ -1,4 +1,5 @@
 @import '../colors.scss';
+@import '../animations.scss';
 
 $width: 40px;
 $entryWidth: 250px;
@@ -8,9 +9,18 @@ $entryWidth: 250px;
     z-index: 1000;
     position: absolute;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     top: 40px;
     width: 100%;
+
+    &[data=true] {
+        @include contentSlideIn(400ms);
+        display: flex;
+    }
+    &[data=false] {
+        @include contentSlideOut(400ms);
+        display: none;
+    }
 }
 
 .entry {

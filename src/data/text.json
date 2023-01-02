@@ -75,8 +75,11 @@
             "editor-insert-link": "Link",
             "editor-insert-linkTitle": "Link title",
             "editor-insert-linkContent": "Link content",
-            "spellConcentration": "Concentration",
-            "spellRitual": "Ritual"
+            "spell-concentration": "Concentration",
+            "spell-ritual": "Ritual",
+            "spell-component-V": "Verbal",
+            "spell-component-S": "Somatic",
+            "spell-component-M": "Material"
         }
     }
 }

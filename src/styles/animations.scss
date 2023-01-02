@@ -1,0 +1,48 @@
+
+@mixin contentSlideIn($duration) {
+    transform-origin: top;
+    animation-duration: $duration;
+    transition: $duration ease-in;
+    animation-name: contentSlideIn;
+}
+
+@mixin contentSlideOut($duration) {
+    transform-origin: top;
+    animation-duration: $duration;
+    transition: $duration ease-out;
+    animation-name: contentSlideIn;
+}
+
+@keyframes contentSlideIn {
+    from {
+        display: none;
+        visibility: hidden;
+        transform: scaleY(0);
+    }
+    10% {
+        display: inherit;
+        visibility: visible;
+    }
+    to {
+        display: inherit;
+        visibility: visible;
+        transform: scaleY(1);
+    }
+}
+
+@keyframes contentSlideOut {
+    from {
+        transform: scaleY(1);
+        display: inherit;
+        visibility: visible;
+    }
+    90% {
+        display: inherit;
+        visibility: visible;
+    }
+    to {
+        transform: scaleY(0);
+        display: none;
+        visibility: hidden;
+    }
+}

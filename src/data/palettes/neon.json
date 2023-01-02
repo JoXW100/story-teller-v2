@@ -1,0 +1,17 @@
+{
+    "name": "Neon",
+    "colors": {
+        "document": "#121c2b",
+        "background": "#4663a0",
+        "accents": "#7290de",
+        "main": "#0a2647",
+        "second": "#144272",
+        "third": "#193c6b",
+        "forth": "#305689",
+        "text": "#b5d9ff",
+        "shadow": "#192538",
+        "border": "#192538",
+        "error": "#ff0000",
+        "icons": "#b3e3ff"
+    }
+}

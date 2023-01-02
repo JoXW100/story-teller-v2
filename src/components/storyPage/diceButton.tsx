@@ -9,7 +9,7 @@ const DiceButton = (): JSX.Element => {
 
     return (
         <div className={styles.holder}>
-            <div 
+            <button 
                 className={styles.dice}
                 onClick={() => setOpen(!open)}
                 tooltips={open 
@@ -18,8 +18,8 @@ const DiceButton = (): JSX.Element => {
                 
             >
                 <D20Icon/>
-            </div>
-            { open && <DicePanel/> }
+            </button>
+            <DicePanel open={open}/>
         </div>
     )
 }

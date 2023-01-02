@@ -13,7 +13,7 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
     const [_, dispatch] = useContext(Context);
     const [open, setOpen] = useState(false); 
     const [toggled, setToggled] = useState(false);
-    const isOpen = (toggled || open) ? true : undefined;
+    const isOpen = toggled || open;
 
     const HandleClick = () => setToggled((toggled) => !toggled);
     const handleOpen = () => setOpen(true);
@@ -30,7 +30,7 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
             data={isOpen ? "open" : "closed"}
             className={styles.holder}
         >
-            <div 
+            <button 
                 className={styles.rollHistory}
                 onClick={HandleClick}
                 disabled={disabled ? true : undefined}
@@ -40,7 +40,7 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
             >
                 <HistoryIcon sx={{ height: "100%", width: "100%" }}/>
                 { Localization.toText('storyPage-rollHistory')}
-            </div>
+            </button>
             <RollHistoryPanel 
                 open={handleOpen} 
                 close={handleClose} 

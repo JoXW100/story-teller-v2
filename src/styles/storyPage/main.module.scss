@@ -1,10 +1,11 @@
 @import '../colors.scss';
+@import '../animations.scss';
 
 $headerHeight: 40px;
 $entryWidth: 250px;
 
 .main {
-    @include color(document);
+    @include color(background);
     @include colorText();
     display: block;
     position: relative;
@@ -65,6 +66,7 @@ $entryWidth: 250px;
     user-select: none;
     height: $headerHeight;
     width: $headerHeight;
+    border: none;
 }
 
 .editMode {
@@ -124,4 +126,10 @@ $entryWidth: 250px;
     font-weight: 600;
     font-size: 1.4em;
     user-select: none;
+}
+
+.content {
+    width: calc(100% - 10px);
+    height: calc(100% - 5px);
+    margin: 5px 5px 0px;
 }

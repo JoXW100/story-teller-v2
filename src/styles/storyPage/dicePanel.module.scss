@@ -1,4 +1,5 @@
 @import '../colors.scss';
+@import '../animations.scss';
 
 $width: 40px;
 $diceWidth: 35px;
@@ -10,11 +11,22 @@ $numWidth: 15px;
     z-index: 100;
     left: 1px;
     right: 0;
+
+    &[data=true] {
+        @include contentSlideIn(200ms);
+        display: block;
+    }
+
+    &[data=false] {
+        @include contentSlideOut(200ms);
+        display: none;
+    }
 }
 
 .main {
     @include color(third);
     @include colorShadow();
+    
     position: relative;
     display: flex;
     flex-direction: column;

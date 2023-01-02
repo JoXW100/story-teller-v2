@@ -11,13 +11,13 @@ const HelpMenuButton = (): JSX.Element => {
     }
 
     return (
-        <div 
+        <button 
             className={styles.help} 
             onClick={handleClick}
             tooltips={Localization.toText('storyPage-helpMenu')}
         >
             <HelpIcon/>
-        </div>
+        </button>
     )
 }
 

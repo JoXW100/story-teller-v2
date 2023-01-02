@@ -13,7 +13,12 @@ class Localization
 
     /** Returns a text corresponding to the given key  */
     public static toText(key: string): string {
-        return this.data[this.language].content[key]
+        try {
+            return this.data[this.language]?.content[key] ?? ""
+        } catch (error) {
+            console.warn("No localization text for: " + key)
+            return ""
+        }
     }
 }
 

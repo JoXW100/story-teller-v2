@@ -74,41 +74,37 @@ class Parser
     }
 
     private static parseVariables(splits: string[], data: Variables): Variables {
-        try {
-            var counter = 0;
-            var variable: ParserObject = null;
-            var content: string[] = [];
-            splits.forEach((part) => {
-                switch (part){
-                    case '\{':
-                        counter++;
-                        if (counter > 1 && variable)
-                            content.push(part);
-                        break;
-                    case '\}':
-                        counter--;
-                        if (counter === 0 && variable) {
-                            data[variable.options[0].value] = content.join('');
-                            variable = null;
-                        } else if (variable) 
-                            content.push(part);
-                        break;
-                    default:
-                        if (variable) {
-                            content.push(part);
-                        } else {;
-                            var x = this.parseFunction(part, null);
-                            if (x?.type === 'set' && x.options.length > 0){
-                                variable = x;
-                                content = [];
-                            }
+        var counter = 0;
+        var variable: ParserObject = null;
+        var content: string[] = [];
+        splits.forEach((part) => {
+            switch (part){
+                case '\{':
+                    counter++;
+                    if (counter > 1 && variable)
+                        content.push(part);
+                    break;
+                case '\}':
+                    counter--;
+                    if (counter === 0 && variable) {
+                        data[variable.options[0].value] = content.join('');
+                        variable = null;
+                    } else if (variable) 
+                        content.push(part);
+                    break;
+                default:
+                    if (variable) {
+                        content.push(part);
+                    } else {;
+                        var x = this.parseFunction(part, null);
+                        if (x?.type === 'set' && x.options.length > 0){
+                            variable = x;
+                            content = [];
                         }
-                        break;
-                }
-            });
-        } catch (error) {
-           throw error;
-        }
+                    }
+                    break;
+            }
+        });
         return data;
     }
     
@@ -235,7 +231,8 @@ export const useParser = (text: string, metadata: Metadata): JSX.Element => {
             }
             else {
                 setState(null);
-                throw error;
+                if (process.env.NODE_ENV == "development")
+                    throw error;
             }
         })
     }, [text, metadata])

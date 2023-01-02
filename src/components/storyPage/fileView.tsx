@@ -46,8 +46,7 @@ const FileContent = (): JSX.Element => {
         if (template) {
             setDefaults(template.editor, context.file.metadata ?? {})
             return storyContext.editEnabled 
-                ? <Divider 
-                    className={styles.content}
+                ? <Divider
                     minLeft={70}
                     minRight={50}
                     left={<Editor template={template.editor}/>}
@@ -60,7 +59,11 @@ const FileContent = (): JSX.Element => {
         
     }, [context, storyContext.editEnabled]);
     
-    return Content;
+    return (
+        <div className={styles.content}>
+            {Content}
+        </div>
+    );
 }
 
 const InvalidFileView = (): JSX.Element => {

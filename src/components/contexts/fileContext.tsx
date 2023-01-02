@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer } from 'react'
+import RequestQueue from 'utils/data/requestQueue'
 import { DBResponse, ObjectId } from 'types/database'
 import { DispatchAction } from 'types/context'
 import { FileContextProvider, FileContextState } from 'types/context/fileContext'
-import RequestQueue from 'utils/data/requestQueue'
 import { FileGetResult, FileSetPropertyResult } from 'types/database/files'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])

@@ -2,6 +2,7 @@
 
 .main {
     @include color(third);
+    @include colorShadow();
     display: flex;
     flex-direction: column;
     height: 100%;

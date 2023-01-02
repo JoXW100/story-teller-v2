@@ -1,11 +1,12 @@
 @import 'colors.scss';
+@import 'animations.scss';
 
 $pageWidth: 8.5in; /* A4 */
 $pageHeight: 14in; /* A4 */
 
 @mixin fontComponent(){
     @include colorText();
-    font-size: normal;
+    font-size: medium;
 }
 
 @mixin borderExtension(){
@@ -13,15 +14,35 @@ $pageHeight: 14in; /* A4 */
     @include colorShadow();
 }
 
+@mixin componentScroll() {
+    &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        @include color(forth);
+        visibility: hidden;
+        
+        &:hover { visibility: visible; }
+    }
+        
+    &::-webkit-scrollbar-thumb {
+        @include colorInteract(main);
+    }
+}
+
 .main {
     @include color(background);
     @include fontComponent();
+    @include componentScroll();
+    
     font-family: Mrs Eaves;
     position: relative;
     justify-content: center;
     width: 100%;
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
     margin: auto;
 }
 
@@ -36,6 +57,12 @@ $pageHeight: 14in; /* A4 */
     min-height: 100%;
     margin: auto;
 }
+
+.contentHolder {
+    @include contentSlideIn(200ms);
+}
+
+
 
 .error {
     @include color(error);
@@ -68,6 +95,18 @@ $pageHeight: 14in; /* A4 */
     & > span {
         margin-left: 5px;
     }
+}
+
+.spellComponent {
+    @include colorInteract(third);
+    border-radius: 3px;
+    display: inline-flex;
+    position: relative;
+    justify-content: center;
+    width: 0.9em;
+    height: 0.9em;
+    font-size: smaller;
+    margin-left: 3px
 }
 
 .spellSlotToggle {
@@ -114,5 +153,14 @@ $pageHeight: 14in; /* A4 */
     & > *:last-child {
         height: calc(100% - 40px);
         overflow: auto;
+    }
+}
+
+.loading {
+    width: 100%;
+    height: 100%;
+    margin-top: 100px;
+    & svg {
+        height: 0.85in;
     }
 }
