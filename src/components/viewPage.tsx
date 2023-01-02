@@ -25,7 +25,7 @@ const ViewPage = (): JSX.Element => {
             </div>
             <div className={styles.main}>
                 <div ref={ref} className={styles.innerPage}>
-                    { context.fetching || true
+                    { context.fetching
                         ? <Loading className={styles.loading}/> 
                         : render 
                     }

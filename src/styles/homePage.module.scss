@@ -131,6 +131,7 @@ $iconSize: 25px;
     
         & > input {
             @include color(third);
+            @include colorText();
             position: absolute;
             left: 180px;
             height: calc(100% - 6px);
