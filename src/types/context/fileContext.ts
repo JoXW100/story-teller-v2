@@ -1,4 +1,4 @@
-import type { FileData } from "types/database/files";
+import type { FileContent, FileData, FileMetadata } from "types/database/files";
 import type RequestQueue from "utils/data/requestQueue";
 import type { ContextDispatch, ContextState, ContextProvider } from ".";
 
@@ -6,7 +6,7 @@ interface FileContextState extends ContextState {
     loading: boolean
     fetching: boolean
     fileSelected: boolean
-    file: FileData<any, any>
+    file: FileData<FileContent, FileMetadata>
     queue: RequestQueue
 }
 

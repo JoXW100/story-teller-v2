@@ -46,10 +46,8 @@ type LinkParams = React.PropsWithChildren<{
 
 const LinkComponent = ({ href, className, children }: LinkParams): JSX.Element => {
     return href ? (
-        <Link href={href} passHref>
-            <a className={className}>
-                { children }
-            </a>
+        <Link href={href} className={className} passHref>
+            { children }
         </Link>
     ) : (
         <span className={className}>

@@ -46,6 +46,11 @@
             "text": "`\\line`\n ### Options\n None\n ### Usage\n - `\\line` Draws a line separator, the direction depends on the current element alignment"
         },
         {
+            "title": "Space",
+            "keyWords": ["space", "\\space", "room", "blank", "vertical", "horizontal", "separator"],
+            "text": "`\\space`\n ### Options\n None\n ### Usage\n - `\\space` Draws an empty separator, the direction depends on the current element alignment"
+        },
+        {
             "title": "Image",
             "keyWords": ["image", "\\image", "picture", "figure", "href", "border"],
             "text": "`\\image` [`href`, `width`, `border`]\n ### Options\n - `href` =\n   - External url `https://...`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n - `border` =\n   - false (Default)\n   - true\n ### Usage\n - `\\image` [`https://app.roll20.net/v2/images/roll20-logo.png`, `width`: `100px`] Displays a 100px wide Roll20 logo without borders"
@@ -72,8 +77,8 @@
         },
         {
             "title": "Save",
-            "keyWords": [""],
-            "text": "`\\margin` [`margin`] { }\n ### Options\n - `margin` =\n   - CSS units (cm, mm, px, % etc), each direction can be specified separately, separated by spaces\n   - Etc: `100%`, `10px`, `50% 5px`, `9px 8px 7px 6px` \n ### Usage\n - `\\margin` [`10px 5px 3px 2px`] { content } 'content' has a margin of `10px` on top, `5px` right, `3px` bottom, and `2px` left\n - `margin` [`10px`] { content } 'content' has a margin of `10px` on all sides"
+            "keyWords": ["save", "\\save", "dc", "attribute", "attr", "tooltips"],
+            "text": "`\\save` [`dc`, `attr`, `type`, `tooltips`]\n ### Options\n - `dc` =\n   - Integer values ≥ 0 \n - `attr` or `type` =\n   - What kind of save, etc: str \n - `tooltips` =\n   - Text displayed on hover over the element \n ### Usage\n - `\\save` [10, attr:str] displays an element containing `DC:10 STR`"
         },
         {
             "title": "Set",
@@ -84,6 +89,16 @@
             "title": "Toggle",
             "keyWords": ["toggle, \\toggle, variable, switch"],
             "text": "`\\toggle` [`content`, `alt`, `state`]\n ### Options\n - `content` =\n   - The name of the variable to display if `state` = `false`\n - `alt` =\n   - The name of the variable to display if `state` = `true`\n - `state` =\n   - `false` (Default)\n   - `true`\n ### Usage\n - `\\toggle` [`a`, `alt`: `b`] Displays the content of variable `$a` and when clicked swaps to display the content of variable `$b`"
+        },
+        {
+            "title": "Importing",
+            "keyWords": ["import", "importing"],
+            "text": "It is possible to import some characters and spells from the roll20 compendium, this can be done by selecting import when creating a new file. In the import menu paste the url of the spell or creature to import in the URL field and give the file a name.\nSome spells or creatures may not be imported correctly so always verify the values."
+        },
+        {
+            "title": "Quick Abilities",
+            "keyWords": ["ability", "abilities", "creature", "importing", "import", "quick"],
+            "text": "It is possible to quickly add new abilities to a creature by entering the ability description in the abilities field of the creature. The format of te description is important for the ability to be interpreted correctly, use the same format that roll20 uses in the monster sheets.\n\n### Formats\n - {action type}: {name}. {ability type}: {attack mod} to hit, {range}., one target. Hit: ({dmg dice} {dmg modifier}) {dmg type} damage.\n - {action type}: {name}. {description}\n### Examples\n - Action: Scimitar. Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: (1d6 + 1) slashing damage.\n - Reaction: Light Crossbow. Ranged Weapon Attack: +3 to hit, reach 80/320 ft., one target. Hit: (1d8 + 1) piercing damage.\n - Keen Smell. The creature has advantage on Wisdom (Perception) checks that rely on smell."
         }
     ]
 }

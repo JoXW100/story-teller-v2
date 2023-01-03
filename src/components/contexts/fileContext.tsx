@@ -3,16 +3,22 @@ import RequestQueue from 'utils/data/requestQueue'
 import { DBResponse, ObjectId } from 'types/database'
 import { DispatchAction } from 'types/context'
 import { FileContextProvider, FileContextState } from 'types/context/fileContext'
-import { FileGetResult, FileSetPropertyResult } from 'types/database/files'
+import { FileContent, FileData, FileGetResult, FileMetadata, FileSetPropertyResult } from 'types/database/files'
+import Head from 'next/head'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])
 
 type FileContextProps = React.PropsWithChildren<{
     storyId?: ObjectId,
-    fileId: ObjectId
+    fileId: ObjectId,
+    viewMode?: boolean
 }>
 
-const FileContext = ({ storyId, fileId, children }: FileContextProps): JSX.Element => {
+type FileHeaderProps = React.PropsWithoutRef<{
+    file: FileData<FileContent, FileMetadata>
+}>
+
+const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContextProps): JSX.Element => {
 
     const fetchFile = (storyId: ObjectId, fileId: ObjectId) => {
         fetch(`/api/database/getFile?storyId=${storyId}&fileId=${fileId}`)
@@ -133,15 +139,39 @@ const FileContext = ({ storyId, fileId, children }: FileContextProps): JSX.Eleme
     })
 
     useEffect(() => { dispatch({ type: 'init', data: fileId }) }, [fileId])
+    useEffect(() => {
+        if (state.file) {
+
+        }
+    }, [state.file])
     
     return (
         <Context.Provider value={[state, {
             setText: (text) => dispatch({ type: 'setText', data: text }),
             setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } })
         } ]}>
-            { !state.loading && children }
+            { !state.loading && <>
+                <FileHeader file={state.file}/>
+                {children}
+            </>}
         </Context.Provider>
     )
+}
+
+const FileHeader = ({ file }) => {
+    let file_title = file?.metadata?.title ?? file?.metadata?.name
+    file_title = (file_title ? file_title + " - " : "") + "Story Teller 2"
+    let file_description = file?.metadata?.content ?? file?.metadata?.description ?? "Create your own story!"
+
+    return file && (
+        <Head>
+            <title key="title">{file_title}</title>
+            <meta key="description" name="description" content={file_description} />
+            <meta key="og:title" property="og:title" content={file_title}/>
+            <meta key="og:description" property="og:description" content={file_description}/>
+        </Head>
+    )
+        
 }
 
 export default FileContext

@@ -8,7 +8,7 @@ interface SaveOptions extends Variables {
     tooltips?: string
 }
 
-const validOptions = new Set(['value', 'attr', 'tooltips']);
+const validOptions = new Set(['dc', 'attr', 'type', 'tooltips']);
 
 const validateOptions = (options: Variables): Queries => {
     Object.keys(options).forEach((key) => {
@@ -16,23 +16,23 @@ const validateOptions = (options: Variables): Queries => {
             throw new ParseError(`Unexpected save option: '${key}'`);
     })
 
-    if (options.value) {
-        var num = parseInt(options.value)
+    if (options.dc) {
+        var num = parseInt(options.dc)
         if (isNaN(num) || num < 0)
-            throw new ParseError(`Invalid save value: '${options.value}', must be a number > 0`);
+            throw new ParseError(`Invalid save dc: '${options.dc}', must be a number >= 0`);
     }
     return {}
 }
 
 const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element => {
-    const value = options.value ?? '0';
-    const attr = (options.attr ?? 'NONE').toUpperCase();
+    const dc = options.dc ?? '0';
+    const attr = (options.attr ?? options.type ?? 'NONE').toUpperCase();
     return (
         <span 
             className={styles.save}
             tooltips={options.tooltips}
         > 
-            {`DC:${value} ${attr}`} 
+            {`DC:${dc} ${attr}`} 
         </span>
     )
 }
@@ -40,7 +40,7 @@ const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element 
 export const element: { [s: string]: ElementObject; } = {
     'save': {
         type: 'save',
-        defaultKey: 'value',
+        defaultKey: 'dc',
         validOptions: validOptions,
         toComponent: SaveElement,
         validate: validateOptions

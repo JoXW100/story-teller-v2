@@ -73,6 +73,15 @@
 
 .line-vertical {
     border-right: 2px solid map-get($palette, border);
+    border-bottom: none !important;
+    margin: 0 5px;
+}
+
+.space {
+    margin: 5px 0;
+}
+
+.space-vertical {
     margin: 0 5px;
 }
 
@@ -88,7 +97,8 @@
 
     &[data=h], &[data=hc], &[data=ch] {
         flex-direction: row;
-        & > .line { @extend .line-vertical; border-bottom: none; }
+        & > .line { @extend .line-vertical; }
+        & > .space { @extend .space-vertical; }
     }
 
     &[data=c], &[data=hc], &[data=ch], &[data=vc], &[data=cv], 

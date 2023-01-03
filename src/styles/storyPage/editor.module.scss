@@ -272,16 +272,16 @@ $componentColor: document;
     margin: 2px 0 2px 5px;
     flex-shrink: 0;
 
-    & > b { @extend .label; }
+    b { @extend .label; }
 
     .list {
         @include color($componentColor);
         font: inherit;
         font-size: small;
 
-        & > div:last-child {
+        div:last-child {
             @include color(document);
-            & > div {
+            div {
                 @include color($componentColor);
                 filter: brightness(95%)
             }
