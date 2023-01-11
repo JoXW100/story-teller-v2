@@ -112,6 +112,7 @@ const fileToContent = (data: { [key: string]: string }, metadata: FileMetadata =
         case FileType.Ability:
         case FileType.Character:
         case FileType.Spell:
+        case FileType.Encounter:
             return { name: data.name, text: "", metadata: metadata };
         case FileType.Folder:
             return { name: data.name, open: false };

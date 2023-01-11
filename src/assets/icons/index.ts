@@ -5,11 +5,13 @@ import DragonIcon from './dragon.svg';
 import HandIcon from './hand.svg';
 import ConcentrationIcon from './concentration.svg'
 import RitualIcon from './ritual.svg'
+import CrossedSwords from './crossedSwords.svg';
 import AcidIcon from './dmg/acid.svg';
 import BludgeoningIcon from './dmg/bludgeoning.svg';
 import ColdIcon from './dmg/cold.svg';
 import FireIcon from './dmg/fire.svg';
 import ForceIcon from './dmg/force.svg';
+import HealthIcon from './dmg/health.svg';
 import LightningIcon from './dmg/lightning.svg';
 import NecroticIcon from './dmg/necrotic.svg';
 import PiercingIcon from './dmg/piercing.svg';
@@ -29,6 +31,9 @@ export {
     DisadvantageIcon,
     DragonIcon,
     HandIcon,
+    ConcentrationIcon,
+    RitualIcon,
+    CrossedSwords,
     CritIcon,
     ConeIcon,
     SphereIcon,
@@ -53,6 +58,7 @@ export const Icons: { [key: string]: React.FunctionComponent<React.SVGAttributes
     cold: ColdIcon,
     fire: FireIcon,
     force: ForceIcon,
+    health: HealthIcon,
     lightning: LightningIcon,
     necrotic: NecroticIcon,
     piercing: PiercingIcon,

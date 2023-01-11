@@ -1,6 +1,6 @@
 import React from "react"
 import { FileContent, FileData, FileMetadata, FileMetadataQueryResult } from "./files"
-import { CharacterStats } from "./files/character"
+import ICreatureStats from "./files/iCreatureStats"
 
 export enum CalculationMode {
     Auto,
@@ -24,8 +24,8 @@ interface OptionType<T> {
 }
 
 interface RendererObject<A extends FileContent,B extends FileMetadata> {
-    fileRenderer: (props: React.PropsWithRef<{ file: FileData<A, B>, stats?: CharacterStats }>) => JSX.Element
-    linkRenderer: (props: React.PropsWithRef<{ file: FileMetadataQueryResult<B>, stats?: CharacterStats }>) => JSX.Element
+    fileRenderer: (props: React.PropsWithRef<{ file: FileData<A, B>, stats?: ICreatureStats }>) => JSX.Element
+    linkRenderer: (props: React.PropsWithRef<{ file: FileMetadataQueryResult<B>, stats?: ICreatureStats }>) => JSX.Element
 }
 
 export type {

@@ -64,6 +64,7 @@ export const Elements = {
     Roll: Roll.default,
     Row: Row.default,
     Save: Save.default,
+    Space: Space.default,
     Text: Text.default,
     Toggle: Toggle.default
 }

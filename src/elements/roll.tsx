@@ -11,7 +11,7 @@ import { RollMethod } from 'types/dice';
 import { Queries, ElementObject, ElementParams, Variables, RollMode } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
-interface MarginOptions extends Variables {
+interface RollOptions extends Variables {
     dice?: string
     num?: string
     mod?: string
@@ -53,7 +53,7 @@ const validateOptions = (options: Variables): Queries => {
     return {}
 }
 
-const RollElement = ({ children, options }: ElementParams<MarginOptions>): JSX.Element => {
+const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
     const dice = options.dice ? new Dice(options.dice) : new Dice(20);
     const mode = options.mode ? options.mode : (dice.num === 20 || dice.num === 0) ? 'mod' : 'dice';
@@ -141,3 +141,6 @@ export const element: { [key: string]: ElementObject } = {
 }
 
 export default RollElement;
+export type {
+    RollOptions
+}

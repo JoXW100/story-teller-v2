@@ -47,6 +47,10 @@
     
     &:hover {
         text-decoration: underline;
+        filter: brightness(105%);
+    }
+    &:active {
+        filter: brightness(110%);
     }
 }
 
@@ -139,8 +143,8 @@
     @include borderExtension();
     padding: 5px;
 
-    &[data=border] {
-        @include colorShadow();
+    &[data=true] {
+        @include colorBorder();
     }
 }
 

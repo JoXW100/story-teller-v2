@@ -164,3 +164,54 @@ $pageHeight: 14in; /* A4 */
         height: 0.85in;
     }
 }
+
+.encounterButton {
+    @include colorInteract(second);
+    @include colorShadow();
+    @include colorText();
+    border: none;
+    font: inherit;
+    flex: 1;
+    padding: 5px;
+}
+
+.encounterCardHolder {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    
+    & > * {
+        user-select: none;
+    }
+}
+
+.encounterCardTextarea {
+    @include colorInShadow();
+    @include colorText();
+    @include color(document);
+    display: flex;
+    font: inherit;
+    border: none;
+    outline: none;
+    padding: 3px;
+    width: 100%;
+    resize: vertical;
+}
+
+.encounterCardInput {
+    @include colorInShadow();
+    @include colorText();
+    @include color(document);
+    display: inline-flex;
+    font: inherit;
+    border: none;
+    outline: none;
+    width: 55px;
+}
+
+.spaceOutRolls {
+    & > span:not(:last-child) {
+        margin-right: 5px;
+    }
+}

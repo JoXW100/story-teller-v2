@@ -7,7 +7,7 @@ import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
 import CharacterIcon from '@mui/icons-material/PersonSharp';
 import SpellIcon from '@mui/icons-material/AutoAwesomeSharp';
-import { DragonIcon, HandIcon } from 'assets/icons';
+import { CrossedSwords, DragonIcon, HandIcon } from 'assets/icons';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
@@ -43,6 +43,8 @@ const File = ({ file }: FileProps): JSX.Element => {
                 return CharacterIcon
             case FileType.Spell:
                 return SpellIcon
+            case FileType.Encounter:
+                return CrossedSwords
             default: 
                 return DocumentIcon
         }

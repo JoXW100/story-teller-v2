@@ -45,7 +45,8 @@ export enum FileType {
     Creature =  "cre",
     Ability = "abi",
     Character = "cha",
-    Spell = "spe"
+    Spell = "spe",
+    Encounter = "enc",
 }
 
 interface FileData<A extends FileContent, B extends FileMetadata> {
@@ -63,8 +64,8 @@ type FileDeleteFromResult = boolean
 type FileRenameResult = boolean
 type FileMoveResult = boolean
 type FileSetPropertyResult = boolean
-type FileGetMetadataResult = FileMetadataQueryResult<FileMetadata>
-type FileGetManyMetadataResult = FileGetMetadataResult[]
+type FileGetMetadataResult<T extends FileMetadata = FileMetadata> = FileMetadataQueryResult<T>
+type FileGetManyMetadataResult<T extends FileMetadata = FileMetadata> = FileGetMetadataResult<T>[]
 type FileGetStructureResult = FileStructure[]
 
 export type {

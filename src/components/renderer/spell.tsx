@@ -2,16 +2,17 @@ import Elements from 'elements';
 import React, { useEffect, useState } from 'react';
 import SpellSlotToggle from 'components/common/spellSlotToggle';
 import { useParser } from 'utils/parser';
-import { getCastingTime, getComponents, getConditionModifier, getDuration, getEffectModifier, getKeyName, getRange } from 'utils/calculations';
+import { getComponents, getSpellRange } from 'utils/calculations';
 import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
 import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
 import { SpellContent, SpellMetadata } from 'types/database/files/spell';
-import { CharacterStats } from 'types/database/files/character';
 import { RendererObject } from 'types/database/editor';
 import { DBResponse } from 'types/database';
 import { RollMode } from 'types/elements';
 import styles from 'styles/renderer.module.scss';
 import Localization from 'utils/localization';
+import SpellData from 'structures/spell';
+import ICreatureStats from 'types/database/files/iCreatureStats';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
@@ -20,36 +21,35 @@ interface SpellCategory {
 type SpellGroupsProps = React.PropsWithRef<{
     spellIds: string[]
     spellSlots: number[]
-    data?: CharacterStats
+    data?: ICreatureStats
 }>
 
 type SpellProps = React.PropsWithRef<{
     metadata: SpellMetadata
-    stats?: CharacterStats
+    stats?: ICreatureStats
     open: boolean
 }>
 
 type SpellFileRendererProps = React.PropsWithRef<{
     file: FileData<SpellContent,SpellMetadata>
-    stats?: CharacterStats
+    stats?: ICreatureStats
 }>
 
 type SpellLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<SpellMetadata>
-    stats?: CharacterStats
+    stats?: ICreatureStats
+}>
+
+type SpellToggleRendererProps = React.PropsWithRef<{
+    metadata: SpellMetadata, 
+    stats: ICreatureStats
 }>
 
 const Spell = ({ metadata, stats, open }: SpellProps) => {
-    let description = useParser(metadata.description, metadata)
-    let conditionMod = getConditionModifier(metadata, stats);
-    let effectMod = getEffectModifier(metadata, stats)
-    let school = getKeyName("magicSchool", metadata.school)
-    let castingTime = getCastingTime(metadata);
-    let duration = getDuration(metadata);
-    let range = getRange(metadata)
-    let area = getKeyName("area", metadata.area)
-    let damageType = getKeyName("damageType", metadata.damageType)
-    let components = getComponents(metadata).map((x, i) => (
+    let spell = new SpellData(metadata, stats)
+    let description = useParser(spell.description, spell.metadata)
+    let range = getSpellRange(spell)
+    let components = getComponents(spell).map((x, i) => (
         <span key={i}
             className={styles.spellComponent} 
             tooltips={Localization.toText(`spell-component-${x}`)}
@@ -59,14 +59,14 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
         <>
             <Elements.Align>
                 <Elements.Align options={{ direction: "v", weight: "1.5" }}>
-                    <Elements.Bold>{metadata.name}</Elements.Bold>
-                    {`Level ${metadata.level}, ${school}`}
+                    <Elements.Bold>{spell.name}</Elements.Bold>
+                    {`Level ${spell.level}, ${spell.schoolName}`}
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
                     <div><Elements.Bold>Casting</Elements.Bold>{components}</div>
                     <div className={styles.iconRow}>
-                        {castingTime} 
-                        {metadata.ritual && 
+                        {spell.timeText} 
+                        {spell.ritual && 
                             <Elements.Icon options={{
                                 icon: 'ritual',
                                 tooltips: Localization.toText('spell-ritual')  
@@ -75,8 +75,8 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
                     </div>
                     <Elements.Bold> Duration </Elements.Bold>
                     <div className={styles.iconRow}>
-                        {duration} 
-                        {metadata.concentration &&
+                        {spell.durationText} 
+                        {spell.concentration &&
                             <Elements.Icon options={{
                                 icon: 'concentration',
                                 tooltips: Localization.toText('spell-concentration')  
@@ -87,57 +87,57 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
                 <Elements.Align options={{ direction: "v" }}>
                     <div className={styles.iconRow}>
                         <Elements.Bold>Range/Area</Elements.Bold>
-                        {metadata.target !== TargetType.None &&
+                        {spell.target != TargetType.None &&
                             <Elements.Icon options={{ 
-                                icon: metadata.area, tooltips: area 
+                                icon: spell.area, tooltips: spell.areaName 
                             }}/>
                         }
                     </div>
-                    {metadata.target !== TargetType.None ? range : '-'}
+                    {spell.target != TargetType.None ? range : '-'}
                     <Elements.Bold> Notes </Elements.Bold>
                     <div className={styles.iconRow}>
-                        {metadata.notes ? metadata.notes : '-'}
+                        {spell.notes.length > 0 ? spell.notes : '-'}
                     </div>
                 </Elements.Align>
                 <Elements.Align options={{ direction: "v" }}>
-                    { metadata.damageType === DamageType.None && <>
+                    { spell.damageType == DamageType.None && <>
                         <Elements.Bold>Effect </Elements.Bold>
-                        { metadata.effectText }
-                    </>}{ metadata.damageType !== DamageType.None && <>
+                        { spell.effectText }
+                    </>}{ spell.damageType != DamageType.None && <>
                         <Elements.Bold>Damage </Elements.Bold>
                         <Elements.Roll 
                             options={{ 
-                                dice: metadata.effectDice as any, 
-                                num: metadata.effectDiceNum as any, 
-                                mod: effectMod as any, 
+                                dice: spell.effectDice as any, 
+                                num: spell.effectDiceNum as any, 
+                                mod: spell.effectModifierValue as any, 
                                 mode: RollMode.DMG,
-                                desc: `${metadata.name} Damage`
+                                desc: `${spell.name} Damage`
                             }}
-                        ><Elements.Icon options={{ icon: metadata.damageType, tooltips: damageType}}/>
+                        ><Elements.Icon options={{ icon: spell.damageType, tooltips: spell.damageTypeName}}/>
                         </Elements.Roll>
                     </>}
                     <Elements.Bold>HIT/DC </Elements.Bold>
-                    {metadata.condition === EffectCondition.Hit && 
+                    {spell.condition == EffectCondition.Hit && 
                         <Elements.Roll 
                             options={{ 
-                                mod: conditionMod as any, 
-                                desc: `${metadata.name} Attack` 
+                                mod: spell.conditionModifierValue as any, 
+                                desc: `${spell.name} Attack` 
                             }}
                         />
-                    }{metadata.condition === EffectCondition.Save &&
+                    }{spell.condition == EffectCondition.Save &&
                         <Elements.Save
                             options={{
-                                attr: metadata.saveAttr ?? Attribute.STR,
-                                value: String(8 + conditionMod)
+                                attr: spell.saveAttr ?? Attribute.STR,
+                                dc: String(8 + spell.conditionModifierValue)
                             }}
                         />
-                    }{metadata.condition === EffectCondition.None && '-'}
+                    }{spell.condition == EffectCondition.None && '-'}
                 </Elements.Align>
             </Elements.Align>
             { open && (description || components) && <>
                 <Elements.Line/>
-                { components && metadata.componentMaterial && <> 
-                    <b>Materials: </b> {metadata.materials}<br/><Elements.Line/>
+                { components && spell.componentMaterial && <> 
+                    <b>Materials: </b> {spell.materials}<br/><Elements.Line/>
                 </>}
                 { description }
             </>}
@@ -149,7 +149,7 @@ const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.El
     <SpellToggleRenderer metadata={file.metadata} stats={stats}/>
 )
 
-const SpellToggleRenderer = ({ metadata, stats }: { metadata: SpellMetadata, stats: CharacterStats }): JSX.Element => {
+const SpellToggleRenderer = ({ metadata, stats }: SpellToggleRendererProps): JSX.Element => {
     const [open, setOpen] = useState(false);
 
     const handleClick = () => {

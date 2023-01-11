@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import FileContext, { Context } from 'components/contexts/fileContext';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import Divider from 'components/common/divider'
-import Editor from './editor/editor'
+import Editor from './editor'
 import Templates from 'data/fileTemplates';
 import Localization from 'utils/localization'
 import Renderer from './renderer';
@@ -51,7 +51,7 @@ const FileContent = (): JSX.Element => {
                     minRight={50}
                     left={<Editor template={template.editor}/>}
                     right={<Renderer template={template.renderer}/>}
-                />  
+                />
                 : <Renderer template={template.renderer}/>
         }
         console.error("No template for file type found, type:", context?.file?.type);

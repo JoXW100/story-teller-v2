@@ -1,8 +1,10 @@
-interface DocumentContent {
+import { FileContent, FileMetadata } from "."
+
+interface DocumentContent extends FileContent {
     text: string
 }
 
-interface DocumentMetadata {
+interface DocumentMetadata extends FileMetadata {
     title?: string
     publish?: boolean
     content?: string

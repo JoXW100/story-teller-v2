@@ -26,16 +26,8 @@
             },
             { 
                 "type": "group",
-                "params": { 
-                    "label": "Editor", 
-                    "open": true, 
-                    "fill": true 
-                },
-                "content": [
-                    { 
-                        "type": "editor"
-                    }
-                ]
+                "params": { "label": "Editor", "open": true, "fill": true },
+                "content": [ { "type": "editor" } ]
             }
         ]
     },

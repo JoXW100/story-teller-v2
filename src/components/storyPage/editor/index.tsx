@@ -138,6 +138,7 @@ const Editor = ({ template }: EditorProps): JSX.Element => {
             }
         }
     }, [])
+    
     const content = useMemo<JSX.Element>(() => {
         try {
             return context.file

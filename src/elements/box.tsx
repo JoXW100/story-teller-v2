@@ -17,7 +17,7 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const BoxElement = ({ options = {}, children }: ElementParams<BoxOptions>): JSX.Element => {
-    const border = options.border ?? "true";
+    const border = options.border ?? "false";
     return (
         <div 
             className={styles.box}

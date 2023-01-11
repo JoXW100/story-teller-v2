@@ -3,17 +3,17 @@ import Elements from 'elements';
 import { useParser } from 'utils/parser';
 import { DocumentContent, DocumentMetadata } from 'types/database/files/document';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
-import { CharacterStats } from 'types/database/files/character';
 import { RendererObject } from 'types/database/editor';
+import ICreatureStats from 'types/database/files/iCreatureStats';
 
 type DocumentFileRendererProps = React.PropsWithRef<{
     file: FileData<DocumentContent,DocumentMetadata>
-    stats?: CharacterStats
+    stats?: ICreatureStats
 }>
 
 type DocumentLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<DocumentMetadata>
-    stats?: CharacterStats
+    stats?: ICreatureStats
 }>
 
 const DocumentFileRenderer = ({ file }: DocumentFileRendererProps): JSX.Element => {

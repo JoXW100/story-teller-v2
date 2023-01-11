@@ -1,23 +1,21 @@
+import { FileContent, FileMetadata } from "."
 import { Alignment, Attribute, CreatureType, DiceType, MovementType, SizeType, Skill } from "../dnd"
-import { OptionalAttribute, OptionType } from "../editor"
+import { OptionType } from "../editor"
+import ICreatureStats from "./iCreatureStats"
 
-interface CreatureContent {
+interface CreatureContent extends FileContent {
     text: string
 }
 
-interface CreatureMetadata {
+interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficiency"> {
     name?: string
     public?: boolean
     type?: CreatureType
     size?: SizeType
     alignment?: Alignment
     portrait?: string
-    abilities?: string[]
-    // Texts
-    appearance?: string
     description?: string
-    history?: string
-    notes?: string
+    abilities?: string[]
     // Stats
     level?: number
     hitDice?: DiceType
@@ -30,13 +28,6 @@ interface CreatureMetadata {
     dmgImmunities?: string
     conImmunities?: string
     speed?: { [key: string | MovementType]: number }
-    // Attributes
-    str?: number
-    dex?: number
-    con?: number
-    int?: number
-    wis?: number
-    cha?: number
     // Info
     saves?: { [key: string | Attribute]: number }
     skills?: { [key: number | Skill]: number }
@@ -45,7 +36,6 @@ interface CreatureMetadata {
     challenge?: number
     xp?: number
     // Spells
-    spellAttribute?: OptionalAttribute
     spellSlots?: number[]
     spells?: string[]
 }

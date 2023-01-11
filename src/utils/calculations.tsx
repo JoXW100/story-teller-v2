@@ -1,18 +1,20 @@
 import Elements from 'elements';
 import Dice from './data/dice';
-import { AreaType, Attribute, CastingTime, Duration, ScalingType, Skill, TargetType } from "types/database/dnd";
+import { AreaType, Attribute, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionalAttribute } from "types/database/editor";
-import { AbilityMetadata } from "types/database/files/ability";
-import { CharacterMetadata, CharacterStats } from "types/database/files/character";
+import { CharacterMetadata } from "types/database/files/character";
 import { CreatureMetadata } from "types/database/files/creature";
-import { SpellMetadata } from "types/database/files/spell";
 import { OptionTypes } from 'data/optionData';
+import IConditionalHitEffect from 'types/database/files/iConditionalHitEffect';
+import CreatureData from 'structures/creature';
+import SpellData from 'structures/spell';
+import ICreatureStats from 'types/database/files/iCreatureStats';
 
-export const getAttributeModifier = (stats: CharacterStats = {}, attr: Attribute): number => {
+export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
     return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
 }
 
-export const getScaling = (stats: CharacterStats = {}, scaling: ScalingType): number => {
+export const getScaling = (stats: ICreatureStats = {}, scaling: ScalingType): number => {
     switch (scaling) {
         case ScalingType.Finesse:
             return Math.max(getScaling(stats, ScalingType.DEX), getScaling(stats, ScalingType.STR));
@@ -25,22 +27,7 @@ export const getScaling = (stats: CharacterStats = {}, scaling: ScalingType): nu
     }
 }
 
-export const getConditionModifier = (metadata: AbilityMetadata | SpellMetadata = {}, data: CharacterStats = {}) => {
-    var mod = metadata.conditionModifier?.value ?? 0
-    var useProf = metadata.conditionProficiency ?? false
-    var prof = useProf ? data.proficiency ?? 0 : 0;
-    switch (metadata.conditionModifier?.type) {
-        case CalculationMode.Modify:
-            return getScaling(data, metadata.conditionScaling) + mod + prof
-        case CalculationMode.Override:
-            return mod + prof
-        case CalculationMode.Auto:
-        default:
-            return getScaling(data, metadata.conditionScaling) + prof
-    }
-}
-
-export const getEffectModifier = (metadata: AbilityMetadata | SpellMetadata = {}, data: CharacterStats = {}) => {
+export const getEffectModifier = (metadata: IConditionalHitEffect = {}, data: ICreatureStats = {}) => {
     var mod = metadata.effectModifier?.value ?? 0
     var useProf = metadata.effectProficiency ?? false
     var prof = useProf ? data.proficiency ?? 0 : 0;
@@ -56,49 +43,31 @@ export const getEffectModifier = (metadata: AbilityMetadata | SpellMetadata = {}
     }
 }
 
-export const getCastingTime = (metadata: SpellMetadata = {}): string => {
-    if (metadata.time === CastingTime.Custom)
-        return metadata.timeCustom
-    var time = getKeyName("castingTime", metadata.time)
-    return metadata.timeValue > 1 
-        ? `${metadata.timeValue} ${time}s`
-        : `${metadata.timeValue} ${time}`
-}
-
-export const getDuration = (metadata: SpellMetadata = {}): string => {
-    var time = getKeyName("duration", metadata.duration)
-    if (metadata.duration === Duration.Instantaneous)
-        return time;
-    return metadata.durationValue > 1 
-        ? `${metadata.durationValue} ${time}s`
-        : `${metadata.durationValue} ${time}`
-}
-
-export const getRange = (metadata: SpellMetadata = {}): string => {
+export const getSpellRange = (spell: SpellData): string => {
     var area = null;
-    switch (metadata.area) {
+    switch (spell.area) {
         case AreaType.Cone:
         case AreaType.Cube:
         case AreaType.Square:
         case AreaType.Sphere:
         case AreaType.Line:
-            area = `${metadata.areaSize ?? 0}ft`;
+            area = `${spell.areaSize}ft`;
             break;
         case AreaType.Cylinder:
-            area = `${metadata.areaSize ?? 0}x${metadata.areaHeight ?? 0}ft`;
+            area = `${spell.areaSize}x${spell.areaHeight}ft`;
             break;
         default:
             break;
     }
-    switch (metadata.target) {
+    switch (spell.target) {
         case TargetType.Self:
             return area ? `Self/${area}` : "Self"
         case TargetType.Point:
-            return area ? `${metadata.range ?? 0}ft/${area}` : `${metadata.range}ft`
+            return area ? `${spell.range}ft/${area}` : `${spell.range}ft`
         default:
         case TargetType.Single:
         case TargetType.Multiple:
-            return `${metadata.range ?? 0}ft`
+            return `${spell.range}ft`
     }
 }
 
@@ -114,7 +83,7 @@ export const getProficiency = (data: CharacterMetadata | CreatureMetadata = {}):
     }
 }
 
-export const getStats = (metadata: CharacterMetadata | CreatureMetadata = {}): CharacterStats => {
+export const getStats = (metadata: CharacterMetadata | CreatureMetadata = {}): ICreatureStats => {
     return {
         str: metadata.str ?? 10,
         dex: metadata.dex ?? 10,
@@ -178,7 +147,7 @@ export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number =>
             return metadata.ac.value ?? 0;
         case CalculationMode.Modify:
             var mod = getAttributeModifier(stats, Attribute.DEX);
-            return 10 + mod + (metadata.health?.value ?? 0);
+            return 10 + mod + (metadata.ac?.value ?? 0);
         case CalculationMode.Auto:
         default:
             return 10 + getAttributeModifier(stats, Attribute.DEX);
@@ -199,44 +168,43 @@ export const getInitiative = (metadata: CharacterMetadata | CreatureMetadata): n
     }
 }
 
-export const getChallenge = (metadata: CharacterMetadata | CreatureMetadata): string => {
-    let fraction = metadata.challenge 
-        ? ((metadata.challenge < 1) 
-            ? `1/${Math.floor(1/metadata.challenge)}` 
-            : String(metadata.challenge)) 
+export const getChallenge = (creature: CreatureData): string => {
+    let fraction = creature.challenge > 0
+        ? ((creature.challenge < 1) 
+            ? `1/${Math.floor(1/creature.challenge)}` 
+            : String(creature.challenge)) 
         : '0'
-    return `${fraction} (${metadata.xp ?? 0} XP)`
+    return `${fraction} (${creature.xp} XP)`
 };
 
-export const getSpeed = (metadata: CharacterMetadata | CreatureMetadata): string => {
-    return metadata.speed 
-        ? Object.keys(metadata.speed).map((key) => `${key} ${metadata.speed[key]}ft`).join(', ')
-        : ''
+export const getSpeed = (creature: CreatureData): string => {
+    return Object.keys(creature.speed)
+        .map((key) => `${key} ${creature.speed[key]}ft`).join(', ')
 }
 
-export const getSaves = (metadata: CharacterMetadata | CreatureMetadata): JSX.Element => {
-    return metadata.saves && Object.keys(metadata.saves).length > 0
-        ? <>{ Object.keys(metadata.saves).map((key, index) => (
+export const getSaves = (creature: CreatureData): JSX.Element => {
+    return creature.saves && Object.keys(creature.saves).length > 0
+        ? <>{ Object.keys(creature.saves).map((key, index) => (
                 <Elements.Roll 
                     key={index} 
                     options={{ 
-                        mod: metadata.saves[key] ?? 0 as any, 
+                        mod: creature.saves[key] ?? 0 as any, 
                         desc: `${key.toUpperCase()} Save` 
                     }}
-                > {` ${key.toUpperCase()}`} </Elements.Roll >
+                >{` ${key.toUpperCase()}`}</Elements.Roll >
             ))}</>
         : null
 }
 
-export const getSkills = (metadata: CharacterMetadata | CreatureMetadata): JSX.Element => {
-    return metadata.skills && Object.keys(metadata.skills).length > 0
-        ? <>{ Object.keys(metadata.skills).map((key, index) => {
-            var skill = Object.keys(Skill)[key] ?? null
+export const getSkills = (creature: CreatureData): JSX.Element => {
+    return creature.skills && Object.keys(creature.skills).length > 0
+        ? <>{ Object.keys(creature.skills).map((key, index) => {
+            var skill = getKeyName("skill", key)
             return skill ? (
                 <Elements.Roll 
                     key={index} 
                     options={{ 
-                        mod: metadata.skills[key], 
+                        mod: creature.skills[key], 
                         desc: `${skill} Check` 
                     }}
                 > {` ${skill}`} </Elements.Roll>
@@ -249,13 +217,13 @@ export const getKeyName = (collection: string, value: string | number): string =
     return OptionTypes[collection].options[value] ?? OptionTypes[collection].options[OptionTypes[collection].default]
 }
 
-export const getComponents = (metadata: SpellMetadata): string[] => {
+export const getComponents = (spell: SpellData): string[] => {
     let components: string[] = []
-    if (metadata.componentVerbal)
+    if (spell.componentVerbal)
         components.push('V')
-    if (metadata.componentSomatic)
+    if (spell.componentSomatic)
         components.push('S')
-    if (metadata.componentMaterial)
+    if (spell.componentMaterial)
         components.push('M')
     return components
 }

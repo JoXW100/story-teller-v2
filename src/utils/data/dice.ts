@@ -1,13 +1,13 @@
 import { DXIcon, D4Icon, D6Icon, D8Icon, D10Icon, D12Icon, D20Icon, D100Icon } from "assets/dice";
 
 class Dice {
-    private type: number;
+    private readonly type: number;
     
     constructor(type: number | string) {
         this.type = parseInt(String(type));
     }
 
-    get icon(): any {
+    public get icon(): any {
         switch(this.type) {
             case 4:
                 return D4Icon;
@@ -44,9 +44,19 @@ class Dice {
             : Math.floor((t + 1) / 2.0 * num)
     }
 
-    /** Returns a number of random values in the range [1..num] */
-    roll(num: number = 1): number[] {
-        return [...Array(num)].map(() => Math.ceil(Math.random() * this.type));
+    /** Returns a list of numbers of random values in the range [1..num] */
+    public roll(num: number = 1): number[] {
+        return [...Array(num)].map(() => this.rollOnce());
+    }
+
+    /** Returns a number of random values in the range [num..num * type] */
+    public rollSum(num: number = 1): number {
+        return this.roll(num).reduce((prev, value) => prev + value, 0)
+    }
+
+    /** Returns a number of random values in the range [1..type] */
+    public rollOnce(): number {
+        return Math.ceil(Math.random() * this.type);
     }
 }
 

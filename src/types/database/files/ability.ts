@@ -1,40 +1,20 @@
 import { FileContent, FileMetadata } from "."
-import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition, ScalingType, TargetType } from "../dnd"
-import { OptionType } from "../editor"
+import { AbilityType, ActionType, DiceType } from "../dnd"
+import ICreatureActionData from "./iConditionalHitEffect"
 
-interface AbilityContent {
+interface AbilityContent extends FileContent {
     text: string
 }
 
-interface AbilityMetadata {
-    name?: string
-    public?: boolean
-    description?: string
-    notes?: string
+interface AbilityMetadata extends FileMetadata, ICreatureActionData {
     type?: AbilityType
     versatile?: boolean
     action?: ActionType
-    // Hit condition
-    condition?: EffectCondition
-    saveAttr?: Attribute
-    damageType?: DamageType
-    target?: TargetType
     // Range
     range?: number
     rangeLong?: number
     rangeThrown?: number
-    // Hit condition roll scaling
-    conditionScaling?: ScalingType
-    conditionProficiency?: boolean
-    conditionModifier?: OptionType<number>
-    // Hit effect roll scaling
-    effectText?: string
-    effectScaling?: ScalingType
-    effectProficiency?: boolean
-    effectModifier?: OptionType<number>
-    effectDice?: DiceType
     effectVersatileDice?: DiceType
-    effectDiceNum?: number
 }
 
 export type {

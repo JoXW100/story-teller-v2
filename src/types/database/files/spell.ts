@@ -1,15 +1,12 @@
-import { Duration, AreaType, Attribute, CastingTime, DamageType, DiceType, EffectCondition, MagicSchool, ScalingType, TargetType } from "../dnd"
-import { OptionType } from "../editor"
+import { FileContent, FileMetadata } from "."
+import { Duration, AreaType, CastingTime, MagicSchool } from "../dnd"
+import ICreatureActionData from "./iConditionalHitEffect"
 
-interface SpellContent {
+interface SpellContent extends FileContent {
     text: string
 }
 
-interface SpellMetadata {
-    name?: string
-    public?: boolean
-    description?: string
-    notes?: string
+interface SpellMetadata extends FileMetadata, ICreatureActionData {
     level?: number
     school?: MagicSchool
     time?: CastingTime
@@ -23,27 +20,11 @@ interface SpellMetadata {
     componentSomatic?: boolean
     componentMaterial?: boolean
     materials?: string
-    // Hit condition
-    condition?: EffectCondition
-    saveAttr?: Attribute
-    damageType?: DamageType
-    target?: TargetType
     // Range
     range?: number
     area?: AreaType
     areaSize?: number
     areaHeight?: number
-    // Hit condition roll scaling
-    conditionScaling?: ScalingType
-    conditionProficiency?: boolean
-    conditionModifier?: OptionType<number>
-    // Hit effect roll scaling
-    effectText?: string
-    effectScaling?: ScalingType
-    effectProficiency?: boolean
-    effectModifier?: OptionType<number>
-    effectDice?: DiceType
-    effectDiceNum?: number
 }
 
 export type {

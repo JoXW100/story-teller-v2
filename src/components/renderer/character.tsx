@@ -2,13 +2,15 @@ import React from 'react';
 import Elements from 'elements';
 import RollElement from 'elements/roll';
 import { useParser } from 'utils/parser';
-import { getAC, getAttributeModifier, getChallenge, getHealth, getInitiative, getKeyName, getProficiency, getSaves, getSkills, getSpeed, getStats } from 'utils/calculations';
+import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
 import { Attribute } from 'types/database/dnd';
+import CharacterData from 'structures/character';
+import styles from 'styles/renderer.module.scss';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata>
@@ -19,71 +21,63 @@ type CharacterLinkRendererProps = React.PropsWithRef<{
 }>
 
 const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
-    let metadata = file.metadata ?? {}
-    let alignment = getKeyName("alignment", metadata.alignment)
-    let type = getKeyName("creatureType", metadata.type)
-    let size = getKeyName("creatureSize", metadata.size)
-    let gender = getKeyName("gender", metadata.gender)
-    let speed = getSpeed(metadata)
-    var saves = getSaves(metadata)
-    var skills = getSkills(metadata)
-    var traits = metadata.traits?.join(', ');
-    var health = getHealth(metadata);
-    var ac = getAC(metadata);
-    var proficiency = getProficiency(metadata);
-    var initiative = getInitiative(metadata);
-    var challenge = getChallenge(metadata);
-    var stats = getStats(metadata)
+    let character = new CharacterData(file.metadata)
+    let stats = character.getStats()
+    let speed = getSpeed(character)
+    let saves = getSaves(character)
+    let skills = getSkills(character)
 
-    const Spells = <SpellGroups spellIds={metadata.spells} spellSlots={metadata.spellSlots} data={stats}/>
     const Content = useParser(file.content.text, file.metadata);
 
     return (
         <>
             <Elements.Align>
                 <Elements.Block>
-                    <Elements.Header1> {metadata.name} </Elements.Header1>
-                    {`${size} ${type}, ${alignment}`}
+                    <Elements.Header1> {character.name} </Elements.Header1>
+                    {`${character.size} ${character.type}, ${character.alignment}`}
                     <Elements.Line/>
-                    <Elements.Image options={{href: metadata.portrait}}/>
+                    <Elements.Image options={{href: character.portrait}}/>
                     <Elements.Line/>
-                    <div><Elements.Bold>Race </Elements.Bold>{metadata.raceText}</div>
-                    <div><Elements.Bold>Gender </Elements.Bold>{gender}</div>
-                    <div><Elements.Bold>Age </Elements.Bold>{metadata.age}</div>
-                    <div><Elements.Bold>Height </Elements.Bold>{metadata.height}</div>
-                    <div><Elements.Bold>Weight </Elements.Bold>{metadata.weight}</div>
-                    <div><Elements.Bold>Occupation </Elements.Bold>{metadata.occupation}</div>
-                    <div><Elements.Bold>Traits </Elements.Bold>{traits}</div>
-                    { metadata.appearance ? <>
+                    <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
+                    <div><Elements.Bold>Gender </Elements.Bold>{character.gender}</div>
+                    <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
+                    <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
+                    <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
+                    <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
+                    <div><Elements.Bold>Traits </Elements.Bold>{character.traits}</div>
+                    { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>
-                        <Elements.Text>{metadata.appearance}</Elements.Text>
+                        <Elements.Text>{character.appearance}</Elements.Text>
                     </> : null }
-                    { metadata.description ? <>
+                    { character.description.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Description</Elements.Header3>
-                        <Elements.Text>{metadata.description}</Elements.Text>
+                        <Elements.Text>{character.description}</Elements.Text>
                     </> : null }
-                    { metadata.history ? <>
+                    { character.history.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>History</Elements.Header3>
-                        <Elements.Text>{metadata.history}</Elements.Text>
+                        <Elements.Text>{character.history}</Elements.Text>
                     </> : null }
-                    { metadata.notes ? <>
+                    { character.notes.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Notes</Elements.Header3>
-                        <Elements.Text>{metadata.notes}</Elements.Text>
+                        <Elements.Text>{character.notes}</Elements.Text>
                     </> : null }
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <div><Elements.Bold>Armor Class </Elements.Bold>{ac}</div>
-                    <div><Elements.Bold>Hit Points </Elements.Bold>{health.value} {health.element}</div>
+                    <div><Elements.Bold>Armor Class </Elements.Bold>{character.acValue}</div>
+                    <div><Elements.Bold>Hit Points </Elements.Bold>
+                        {`${character.healthValue} `}
+                        <Elements.Roll options={character.healthRoll}/>
+                    </div>
                     <div><Elements.Bold>Speed </Elements.Bold>{speed}</div>
                     <div>
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
-                            mod: initiative as any, 
+                            mod: character.initiativeValue as any, 
                             desc: "Initiative" }}
                         />
                     </div>
@@ -93,9 +87,9 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                             <React.Fragment key={index}>
                                 <Elements.Align options={{ direction: 'vc' }}>
                                     <Elements.Bold>{attr}</Elements.Bold>
-                                    { metadata[Attribute[attr]] ?? 0 }
+                                    { character[Attribute[attr]] ?? 0 }
                                     <Elements.Roll options={{ 
-                                        mod: getAttributeModifier(stats, Attribute[attr]) as any, 
+                                        mod: character.getAttributeModifier(Attribute[attr]) as any, 
                                         desc: `${attr} Check`
                                     }}/>
                                 </Elements.Align>
@@ -103,36 +97,68 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                         ))}
                     </Elements.Align>
                     <Elements.Line/>
-                    { saves && <div><Elements.Bold>Saving Throws </Elements.Bold>{saves}</div> }
-                    { skills && <div><Elements.Bold>Skills </Elements.Bold>{skills}</div> }
-                    { metadata.resistances && <div><Elements.Bold>Resistances </Elements.Bold>{metadata.resistances}</div> }
-                    { metadata.advantages && <div><Elements.Bold>Advantages </Elements.Bold>{metadata.advantages}</div> }
-                    { metadata.dmgImmunities && <div><Elements.Bold>DMG Immunities </Elements.Bold>{metadata.dmgImmunities}</div> }
-                    { metadata.conImmunities && <div><Elements.Bold>COND Immunities </Elements.Bold>{metadata.conImmunities}</div> }
-                    { metadata.senses && <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses}</div> }
-                    { metadata.languages && <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages}</div> }
-                    <div><Elements.Bold>Senses </Elements.Bold>{metadata.senses ?? "" }</div>
-                    <div><Elements.Bold>Languages </Elements.Bold>{metadata.languages ?? "" }</div>
+                    { saves && 
+                        <div className={styles.spaceOutRolls}>
+                            <Elements.Bold>Saving Throws </Elements.Bold>
+                            {saves}
+                        </div> 
+                    }{ skills && 
+                        <div className={styles.spaceOutRolls}>
+                            <Elements.Bold>Skills </Elements.Bold>
+                            {skills}
+                        </div> 
+                    }{ character.resistances.length > 0 && 
+                        <div>
+                            <Elements.Bold>Resistances </Elements.Bold>
+                            {character.resistances}
+                        </div> 
+                    }{ character.advantages.length > 0 && 
+                        <div><Elements.Bold>Advantages </Elements.Bold>
+                            {character.advantages}
+                        </div> 
+                    }{ character.dmgImmunities.length > 0 && 
+                        <div><Elements.Bold>DMG Immunities </Elements.Bold>
+                            {character.dmgImmunities}
+                        </div> 
+                    }{ character.conImmunities.length > 0 && 
+                        <div><Elements.Bold>COND Immunities </Elements.Bold>
+                            {character.conImmunities}
+                        </div>
+                    }{ character.senses.length > 0 && 
+                        <div><Elements.Bold>Senses </Elements.Bold>
+                            {character.senses}
+                        </div>
+                    }{ character.languages.length > 0 && 
+                        <div><Elements.Bold>Languages </Elements.Bold>
+                            {character.languages}
+                        </div> 
+                    }
+                    <div><Elements.Bold>Senses </Elements.Bold>{character.senses}</div>
+                    <div><Elements.Bold>Languages </Elements.Bold>{character.languages}</div>
                     <div>
                         <Elements.Bold>Challenge </Elements.Bold>
-                        {challenge}
+                        {character.challengeText}
                     </div>
                     <div>
                         <Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ 
-                            mod: String(proficiency), 
+                            mod: String(character.proficiencyValue), 
                             desc: "Proficient Check" 
                         }}/>
                     </div>
                     <Elements.Line/>
-                    <AbilityGroups abilityIds={metadata.abilities} data={stats}/>
+                    <AbilityGroups abilityIds={character.abilities} data={stats}/>
                 </Elements.Block>
             </Elements.Align>
-            { metadata.spellAttribute !== OptionalAttribute.None && Spells &&
+            { character.spellAttribute !== OptionalAttribute.None && character.spells.length > 0 &&
                 <>
                     <Elements.Line/>
                     <Elements.Header2> Spells: </Elements.Header2>
-                    { Spells }
+                    <SpellGroups 
+                        spellIds={character.spells} 
+                        spellSlots={character.spellSlots} 
+                        data={stats}
+                    />
                 </>
             }  
             {Content && <Elements.Line/>}
@@ -144,11 +170,11 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
 const CharacterLinkRenderer = ({ file }: CharacterLinkRendererProps): JSX.Element => {
     return (
         <Elements.Align>
-            <Elements.Image options={{ width: '120px', href: file.metadata.portrait }}/>
+            <Elements.Image options={{ width: '120px', href: file.metadata?.portrait }}/>
             <Elements.Line/>
             <Elements.Block>
-                <Elements.Header3>{ file.metadata.name }</Elements.Header3>
-                { file.metadata.description }
+                <Elements.Header3>{ file.metadata?.name }</Elements.Header3>
+                { file.metadata?.description }
             </Elements.Block>
         </Elements.Align>
     )

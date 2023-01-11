@@ -4,6 +4,7 @@ import CreatureRenderer from './creature';
 import CharacterRenderer from './character';
 import SpellRenderer from './spell';
 import DocumentRenderer from './document';
+import EncounterRenderer from './encounter';
 import { ParseError } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
 import { FileType, FileData, FileContent, FileMetadata } from 'types/database/files';
@@ -26,6 +27,8 @@ const useRenderer = (template: FileRendererTemplate, file: FileData<any, any>): 
                 return SpellRenderer
             case FileType.Document:
                 return DocumentRenderer
+            case FileType.Encounter:
+                return EncounterRenderer
             default:
                 console.error("No renderer for template type exists: " + template.type)
                 return DocumentRenderer

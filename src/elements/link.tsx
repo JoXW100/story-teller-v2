@@ -7,6 +7,7 @@ import { Queries, QueryType, ElementObject, ElementParams, Variables } from 'typ
 import { FileContent, FileMetadata, FileType } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
+import EncounterRenderer from 'components/renderer/encounter';
 
 const validOptions1 = new Set(['href']);
 const validateOptions1 = (options: Variables): Queries => {
@@ -116,6 +117,8 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
                 return CharacterRenderer
             case FileType.Spell:
                 return SpellRenderer
+            case FileType.Encounter:
+                return EncounterRenderer
             default:
                 return DocumentRenderer
         }
@@ -155,6 +158,7 @@ export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleO
             case FileType.Ability:
             case FileType.Character:
             case FileType.Creature:
+            case FileType.Encounter:
                 return data?.metadata.name ?? null;
             case FileType.Document:
             default:

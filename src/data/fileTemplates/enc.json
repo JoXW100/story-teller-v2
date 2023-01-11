@@ -1,0 +1,43 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true, "fill": false },
+                "content": [
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name" }
+                    },
+                    { 
+                        "type": "boolean",
+                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                    },
+                    { 
+                        "type": "textarea", 
+                        "params": { "label": "Description", "key": "description" }
+                    },
+                    {
+                        "type": "list",
+                        "params": { "label": "Creatures", "key": "creatures", "type": "text", "placeholder": "Creature or Character file IDs ...", "objectID": "creature" }
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "Challenge", "key": "challenge", "allowFloat": true }
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "XP", "key": "xp" }
+                    }
+                ]
+            },
+            { 
+                "type": "group",
+                "params": { "label": "Editor", "open": true, "fill": true },
+                "content": [ { "type": "editor" } ]
+            }
+        ]
+    },
+    "renderer": { "type": "enc" }
+}

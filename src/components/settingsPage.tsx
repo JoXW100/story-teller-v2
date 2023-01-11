@@ -6,7 +6,7 @@ import DropdownMenu from 'components/common/dropdownMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import Palettes from 'data/palettes';
-import styles from 'styles/settingsPage/main.module.scss'
+import styles from 'styles/settingsPage.module.scss'
 
 type PaletteObject = { [key: string]: JSX.Element }
 

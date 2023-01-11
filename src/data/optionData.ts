@@ -3,7 +3,7 @@ import { CalculationMode, OptionalAttribute } from 'types/database/editor';
 
 interface OptionType {
     enum: any
-    default: string | number,
+    default: any,
     options: { [key: string]: string }
 }
 
