@@ -189,24 +189,26 @@ const EncounterCard = ({ file, card, num }: EncounterCardProps): JSX.Element => 
 
     const onHealthChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         var value = parseInt(e.currentTarget.value)
-        card.health = Math.max(0, Math.min(isNaN(value) ? card.health : value, card.maxHealth))
+        card.health = Math.max(0, isNaN(value) ? card.health : value)
     }
 
     return (
-        <div>
+        <div className={styles.encounterCard}>
             <Elements.Box>
-                <Elements.Header3 options={{ underline: 'true' }}>
-                    { num > 0 ? `${creature.name} (${num})` : creature.name}
-                </Elements.Header3>
-                <Elements.Link options={{ href: String(file.id) }}>
-                    <Elements.Image options={{ href: creature.portrait }}/>
+                <Elements.Link options={{ href: String(file.id), newTab: "true" }}>
+                    <div className={styles.encounterCardHeader}>
+                        { num > 0 ? `${creature.name} (${num})` : creature.name}
+                    </div>
+                    <div className={styles.encounterImage}>
+                        <Elements.Image options={{ href: creature.portrait }}/>
+                    </div>
                 </Elements.Link>
                 <Elements.Line/>
                 <div>
                     <Elements.Bold>Initiative: </Elements.Bold>
                     { `${card.initiative} (${initiative >= 0 ? `+${initiative}` : initiative})` }
                 </div>
-                <div>
+                <div className={styles.encounterInputRow}>
                     <Elements.Bold>HP: </Elements.Bold>
                     <input
                         className={styles.encounterCardInput} 
@@ -215,6 +217,10 @@ const EncounterCard = ({ file, card, num }: EncounterCardProps): JSX.Element => 
                         onChange={onHealthChange}
                     />
                     {` / ${card.maxHealth}`}
+                </div>
+                <div>
+                    <Elements.Bold>AC: </Elements.Bold>
+                    {creature.acValue}
                 </div>
                 <div>
                     <Elements.Bold>Notes: </Elements.Bold>

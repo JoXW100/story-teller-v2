@@ -10,9 +10,26 @@ import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
 
 type LinkParams = React.PropsWithChildren<{
-    href?: URL
+    href?: URL,
+    newTab: boolean,
     className: string
 }>
+
+interface LinkOptions extends Variables {
+    href?: string,
+    newTab?: string
+} 
+
+interface LinkContentOptions extends Variables {
+    fileId?: string
+    border?: string,
+    newTab?: string
+}
+
+interface LinkTitleOptions extends Variables {
+    fileId?: string,
+    newTab?: string
+} 
 
 class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
     protected readonly options: LinkOptions | LinkContentOptions | LinkTitleOptions;
@@ -31,26 +48,23 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
     }
 
     public get border(): string {
-        return this.options.border == "true" 
+        return this.options.border?.toLowerCase() == "true" 
             ? "true"
             : "false"
     }
+
+    public get newTab(): string {
+        return this.options.newTab?.toLowerCase() == "true" 
+            ? "true"
+            : "false"
+    }
+
+    public get newTabValue(): boolean {
+        return this.newTab == "true"
+    }
 }
 
-interface LinkOptions extends Variables {
-    href?: string
-} 
-
-interface LinkContentOptions extends Variables {
-    fileId?: string
-    border?: string
-}
-
-interface LinkTitleOptions extends Variables {
-    fileId?: string
-} 
-
-const validOptions1 = new Set(['href']);
+const validOptions1 = new Set(['href', 'newTab']);
 const validateOptions1 = (options: LinkOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions1.has(key))
@@ -59,7 +73,7 @@ const validateOptions1 = (options: LinkOptions): Queries => {
     return {}
 }
 
-const validOptions2 = new Set(['fileId', 'border']);
+const validOptions2 = new Set(['fileId', 'border', 'newTab']);
 const validateOptions2 = (options: LinkContentOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions2.has(key))
@@ -70,7 +84,7 @@ const validateOptions2 = (options: LinkContentOptions): Queries => {
         : {}
 }
 
-const validOptions3 = new Set(['fileId']);
+const validOptions3 = new Set(['fileId', 'newTab']);
 const validateOptions3 = (options: LinkTitleOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions3.has(key))
@@ -97,7 +111,7 @@ export const LinkElement = ({ options, children }: ElementParams<LinkOptions>): 
     }, [options]);
 
     return  (
-        <LinkComponent href={href} className={styles.link}>
+        <LinkComponent className={styles.link} href={href} newTab={linkOptions.newTabValue}>
             { children }
         </LinkComponent>
     );
@@ -136,7 +150,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
     }, [file])
 
     return href && file ? (
-        <LinkComponent href={href} className={styles.linkContent}>
+        <LinkComponent className={styles.linkContent} href={href} newTab={linkOptions.newTabValue}>
             <div data={linkOptions.border}>
                 <Content.linkRenderer file={file}/>
             </div>
@@ -172,7 +186,7 @@ export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleO
     }, [options.fileId, metadata.$queries[linkOptions.fileId]])
 
     return href ? (
-        <LinkComponent href={href} className={styles.link}>
+        <LinkComponent className={styles.linkTitle} href={href} newTab={linkOptions.newTabValue}>
             { title ?? 'Missing Title' }
         </LinkComponent>
     ) : <LinkError/>
@@ -182,9 +196,11 @@ const LinkError = () => (
     <span className={styles.error}> Error </span>
 )
 
-const LinkComponent = ({ href, className, children }: LinkParams): JSX.Element => {
+const LinkComponent = ({ href, newTab, className, children }: LinkParams): JSX.Element => {
+    let rel = newTab ? "noopener noreferrer" : undefined
+    let target = newTab ? "_blank" : undefined
     return href ? (
-        <Link href={href} className={className} passHref>
+        <Link href={href} className={className} target={target} rel={rel} passHref>
             { children }
         </Link>
     ) : (

@@ -177,38 +177,73 @@ $pageHeight: 14in; /* A4 */
 
 .encounterCardHolder {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-column-gap: 10px;
     grid-row-gap: 10px;
+}
+
+.encounterCard {
+    user-select: none;
+    font-size: small;
+
+    .encounterCardHeader {
+        @include colorText();
+        border-bottom: 2px solid map-get($palette, border);
+        margin-bottom: 6px;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .encounterImage {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1;
+        width: 100%;
+    }
+
+    .encounterInputRow {
+        display: flex;
+    }
     
-    & > * {
-        user-select: none;
+    .encounterCardInput {
+        @include colorInShadow();
+        @include colorText();
+        @include color(document);
+        display: inline-flex;
+        justify-self: baseline;
+        align-self: center;
+        font: inherit;
+        border: none;
+        outline: none;
+        width: 50px;
+        height: 16px; 
+        margin: 0 4px;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            display: none;
+        }
+    }
+
+    .encounterCardTextarea {
+        @include colorInShadow();
+        @include colorText();
+        @include color(document);
+        display: flex;
+        font: inherit;
+        border: none;
+        outline: none;
+        padding: 2px;
+        width: 100%;
+        min-height: 22px;
+        resize: vertical;
     }
 }
 
-.encounterCardTextarea {
-    @include colorInShadow();
-    @include colorText();
-    @include color(document);
-    display: flex;
-    font: inherit;
-    border: none;
-    outline: none;
-    padding: 3px;
-    width: 100%;
-    resize: vertical;
-}
 
-.encounterCardInput {
-    @include colorInShadow();
-    @include colorText();
-    @include color(document);
-    display: inline-flex;
-    font: inherit;
-    border: none;
-    outline: none;
-    width: 55px;
-}
 
 .spaceOutRolls {
     & > span:not(:last-child) {
