@@ -26,7 +26,7 @@ type EncounterLinkRendererProps = React.PropsWithRef<{
 
 type EncounterCardProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CreatureMetadata>,
-    data?: IEncounterCardData,
+    card?: IEncounterCardData,
     num?: number
 }>
 
@@ -37,34 +37,33 @@ interface EncounterCardSortingData {
 }
 
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
-    const encounter = new EncounterData(file.metadata)
-    const [cardData, setCardData] = useState(encounter.data)
+    const cards = useState<IEncounterCardData[]>([])
+    const encounter = new EncounterData(file.metadata, cards)
     const creatures = useFiles<CreatureMetadata>(encounter.creatures)
     const content = useParser(file.content.text, file.metadata)
 
     const onRollInitiative = () => {
         creatures.forEach((file, index) => {
-            let card = encounter.getData(index)
+            let card = encounter.getCard(index)
             let creature = new CreatureData(file.metadata)
             card.initiative = new Dice(20).rollOnce() + creature.initiativeValue
         })
-        setCardData([...cardData])
     }
 
     const onResetStats = () => {
-        cardData.forEach((card) => {
+        creatures.forEach((_, index) => {
+            let card = encounter.getCard(index)
             card.health = card.maxHealth
             card.initiative = 0
             card.notes = ""
         })
-        setCardData([...cardData])
     }
 
     const onRandomizeHealth = () => {
         creatures.forEach((file, index) => {
-            let card = encounter.getData(index)
+            let card = encounter.getCard(index)
             let creature = new CreatureData(file.metadata)
-            let value = creature.health?.value ?? 0
+            let value = creature.health.value ?? 0
             let maxHealth = 0
             switch (creature.health.type) {
                 case CalculationMode.Override:
@@ -83,20 +82,18 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
             }
             card.health = card.maxHealth = maxHealth
         })
-        setCardData([...cardData])
     }
 
     const onSetDefaultHealth = () => {
         creatures.forEach((file, index) => {
-            let card = encounter.getData(index)
+            let card = encounter.getCard(index)
             let creature = new CreatureData(file.metadata)
             card.health = card.maxHealth = creature.healthValue
         })
-        setCardData([...cardData])
     }
 
     const sortCards = (a: EncounterCardSortingData, b: EncounterCardSortingData): number => {
-        let delta = encounter.getData(b.index).initiative - encounter.getData(a.index).initiative
+        let delta = encounter.getCard(b.index).initiative - encounter.getCard(a.index).initiative
         if (delta != 0) {
             return delta
         }
@@ -106,16 +103,11 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
     }
 
     useEffect(() => {
-        creatures.forEach((file, index) => {
-            let card = encounter.getData(index)
-            let creature = new CreatureData(file.metadata)
-            card.health = card.maxHealth = creature.healthValue
-        })
-        setCardData(creatures.map((file) => {
+        cards[1](creatures.map((file) => {
             let creature = new CreatureData(file.metadata)
             var health = creature.healthValue
             return {
-                initiative: creature.initiativeValue,
+                initiative: 0,
                 maxHealth: health,
                 health: health,
                 notes: ""
@@ -153,13 +145,17 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
         <Elements.Header2 options={{ underline: 'true' }}>Creatures</Elements.Header2>
         <div className={styles.encounterCardHolder}>
             { creatures
-                .map((c, index) => ({ index: index, creature: c, num: creatureCounterMap[String(c.id)] = 1 + (creatureCounterMap[String(c.id)] ?? -1) }))
+                .map((c, index) => ({ 
+                    index: index, 
+                    creature: c, 
+                    num: creatureCounterMap[String(c.id)] = 1 + (creatureCounterMap[String(c.id)] ?? -1) 
+                }))
                 .sort(sortCards)
                 .map((file) => (
                     <EncounterCard 
                         key={file.index} 
                         file={file.creature} 
-                        data={encounter.getData(file.index)}
+                        card={encounter.getCard(file.index)}
                         num={file.num} 
                     />
                 )
@@ -172,7 +168,6 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
 
 const EncounterLinkRenderer = ({ file }: EncounterLinkRendererProps): JSX.Element => {
     const encounter = new EncounterData(file.metadata)
-    console.log("EncounterLinkRenderer", encounter)
     return <>
         <Elements.Header3>{encounter.name}</Elements.Header3>
         { encounter.description }
@@ -184,31 +179,18 @@ const EncounterRenderer: RendererObject<EncounterContent,EncounterMetadata> = {
     linkRenderer: EncounterLinkRenderer
 }
 
-const EncounterCard = ({ file, data, num }: EncounterCardProps): JSX.Element => {
+const EncounterCard = ({ file, card, num }: EncounterCardProps): JSX.Element => {
     let creature = new CreatureData(file.metadata);
-    let card = new EncounterCardData(data)
     let initiative = creature.initiativeValue
-    const [notes, setNotes] = useState(card.notes)
-    const [health, setHealth] = useState(card.health)
 
-    const onChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    const onNotesChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
         card.notes = e.currentTarget.value
-        setNotes(card.notes)
     }
 
     const onHealthChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         var value = parseInt(e.currentTarget.value)
         card.health = Math.max(0, Math.min(isNaN(value) ? card.health : value, card.maxHealth))
-        setHealth(card.health)
-    } 
-
-    useEffect(() => {
-        setNotes(card.notes)
-    }, [card.notes])
-
-    useEffect(() => {
-        setHealth(card.health)
-    }, [card.health])
+    }
 
     return (
         <div>
@@ -229,7 +211,7 @@ const EncounterCard = ({ file, data, num }: EncounterCardProps): JSX.Element => 
                     <input
                         className={styles.encounterCardInput} 
                         type="number" 
-                        value={health}
+                        value={card.health}
                         onChange={onHealthChange}
                     />
                     {` / ${card.maxHealth}`}
@@ -238,8 +220,8 @@ const EncounterCard = ({ file, data, num }: EncounterCardProps): JSX.Element => 
                     <Elements.Bold>Notes: </Elements.Bold>
                     <textarea 
                         className={styles.encounterCardTextarea}
-                        value={notes} 
-                        onChange={onChange}
+                        value={card.notes} 
+                        onChange={onNotesChange}
                         placeholder={"Input notes here ..."}
                     />
                 </div>

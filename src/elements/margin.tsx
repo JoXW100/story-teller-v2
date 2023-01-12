@@ -1,15 +1,26 @@
-import { useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface MarginOptions extends Variables {
-    fileId?: string
-    border?: string
+    margin?: string
+}
+
+class Options implements MarginOptions {
+    protected readonly options: MarginOptions;
+    [key: string]: any
+
+    constructor(options: MarginOptions) {
+        this.options =  options ?? {}
+    }
+
+    public get margin(): string {
+        return this.options.margin ?? "5px"
+    }
 }
 
 const validOptions = new Set(['margin']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: MarginOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected margin option: '${key}'`);
@@ -18,12 +29,9 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const Margin = ({ options = {}, children }: ElementParams<MarginOptions>): JSX.Element => {
-    const margin = useMemo(() => {
-        return options.margin ?? '5px'
-    }, [options])
-
+    const marginOptions = new Options(options)
     return (
-        <div className={styles.margin} style={{ margin: margin }}>
+        <div className={styles.margin} style={{ margin: marginOptions.margin }}>
             { children }
         </div>
     )

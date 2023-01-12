@@ -1,5 +1,5 @@
 import { ParseError } from "utils/parser";
-import { ElementObject, ElementParams } from 'types/elements';
+import { ElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 const RowElement = ({ children }: ElementParams<{}>): JSX.Element => {
@@ -12,7 +12,7 @@ export const element: { [s: string]: ElementObject; } = {
         defaultKey: null,
         validOptions: new Set(),
         toComponent: RowElement,
-        validate: (options) => {
+        validate: (options: Variables) => {
             if (Object.keys(options).length > 0)
                 throw new ParseError(`'row' command does not accept any options`);
             return {}

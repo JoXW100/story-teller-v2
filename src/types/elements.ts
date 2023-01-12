@@ -15,6 +15,12 @@ export enum RollMode {
     DMG = 'dmg'
 }
 
+export enum AlignDirection {
+    Center = 'c',
+    Horizontal = 'h',
+    Vertical = 'v'
+}
+
 interface Queries {
     [key: string]: QueryType
 }

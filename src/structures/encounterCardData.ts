@@ -1,10 +1,14 @@
 import { IEncounterCardData } from "types/database/files/encounter"
 
+type Dispatch = React.Dispatch<React.SetStateAction<IEncounterCardData>>
+
 class EncounterCardData implements IEncounterCardData
 {
-    public readonly data: IEncounterCardData
-    public constructor(data: IEncounterCardData = {}) {
+    public readonly data: IEncounterCardData;
+    protected readonly dispatch: Dispatch
+    public constructor(data: IEncounterCardData = {}, dispatch: Dispatch) {
         this.data = data ?? {}
+        this.dispatch = dispatch
     }
 
     public get initiative(): number {
@@ -12,7 +16,7 @@ class EncounterCardData implements IEncounterCardData
     }
 
     public set initiative(value: number) {
-        this.data.initiative = value
+        this.dispatch((card) => ({ ...card, initiative: value }))
     }
 
     public get maxHealth(): number {
@@ -20,7 +24,7 @@ class EncounterCardData implements IEncounterCardData
     }
 
     public set maxHealth(value: number) {
-        this.data.maxHealth = value
+        this.dispatch((card) => ({ ...card, maxHealth: value }))
     }
 
     public get health(): number {
@@ -28,7 +32,7 @@ class EncounterCardData implements IEncounterCardData
     }
 
     public set health(value: number) {
-        this.data.health = value
+        this.dispatch((card) => ({ ...card, health: value }))
     }
 
     public get notes(): string {
@@ -36,7 +40,7 @@ class EncounterCardData implements IEncounterCardData
     }
 
     public set notes(value: string) {
-        this.data.notes = value
+        this.dispatch((card) => ({ ...card, notes: value }))
     }
 }
 

@@ -6,7 +6,7 @@ interface TextOptions extends Variables {
 }
 
 const validOptions = new Set(['text']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: TextOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected box option: '${key}'`);

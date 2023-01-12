@@ -1,4 +1,3 @@
-import { ObjectId } from "types/database";
 import { IEncounterCardData, EncounterMetadata } from "types/database/files/encounter";
 import EncounterCardData from "./encounterCardData";
 import FileData from "./file";
@@ -7,11 +6,30 @@ import FileData from "./file";
 
 class EncounterData extends FileData<EncounterMetadata>
 {
-    public getData(index: number): EncounterCardData {
-        if (!this.data[index]) {
-            this.data[index] = {}
+    protected readonly cards: IEncounterCardData[];
+    protected readonly setCards: React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
+
+    public constructor(metadata: EncounterMetadata, state: [IEncounterCardData[], React.Dispatch<IEncounterCardData[]>] = undefined) {
+        super(metadata);
+        if (state) {
+            this.cards = state[0]
+            this.setCards = state[1]
         }
-        return new EncounterCardData(this.data[index])
+    }
+
+    public getCard(index: number): EncounterCardData {
+        if (!this.cards[index]) {
+            this.cards[index] = {}
+        }
+        return new EncounterCardData(this.cards[index], (card) => {
+            if (this.setCards) {
+                this.setCards((cards) => {
+                    let dupe = [...cards]
+                    dupe[index] = (card as CallableFunction)(dupe[index])
+                    return dupe
+                })
+            }
+        })
     }
 
     public get name(): string {
@@ -45,15 +63,6 @@ class EncounterData extends FileData<EncounterMetadata>
                 : String(this.challenge)) 
             : '0'
         return `${fraction} (${this.xp} XP)`
-    }
-
-    public get data(): IEncounterCardData[] {
-        if (window?.encounterData) {
-            return window.encounterData
-        } else if (window) {
-            window.encounterData = []
-        }
-        return []
     }
 }
 

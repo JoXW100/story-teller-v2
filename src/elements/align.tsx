@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParseError } from 'utils/parser';
-import type { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { Queries, ElementObject, ElementParams, Variables, AlignDirection } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface AlignOptions extends Variables {
@@ -8,10 +8,32 @@ interface AlignOptions extends Variables {
     weight?: string
 }
 
-const validDirections = new Set(['c', 'h', 'v']);
+class Options implements AlignOptions {
+    protected readonly options: AlignOptions;
+    [key: string]: any
+
+    constructor(options: AlignOptions) {
+        this.options =  options ?? {}
+    }
+
+    public get direction(): string {
+        return this.options.direction ?? AlignDirection.Horizontal
+    }
+
+    public get weight(): string {
+        return this.options.weight ?? '1'
+    }
+
+    public get weightValue(): number {
+        let value = parseFloat(this.weight)
+        return isNaN(value) ? 1 : value
+    }
+}
+
+const validDirections = new Set(Object.values(AlignDirection));
 const validOptions = new Set(['direction', 'weight']);
 
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: AlignOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected align option: '${key}'`);
@@ -23,7 +45,7 @@ const validateOptions = (options: Variables): Queries => {
             ...prev, [val]: false 
         }), {})
         chars.forEach((key) => {
-            if (!validDirections.has(key) || taken[key])
+            if (!validDirections.has(key as AlignDirection) || taken[key])
                 throw new ParseError(`Invalid align option value. direction: '${options.direction}'`);
             taken[key] = true
         })
@@ -39,14 +61,12 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const AlignElement = ({ options = {}, children }: ElementParams<AlignOptions>): any => {
-    const weight = parseFloat(options.weight ?? '1')
-    options.direction = options.direction ?? 'h'
-
+    const alignOptions = new Options(options)
     return (
         <div
             className={styles.align} 
-            style={{ flex: weight }}
-            data={options.direction}
+            style={{ flex: alignOptions.weightValue }}
+            data={alignOptions.direction}
         >
             { children }
         </div>

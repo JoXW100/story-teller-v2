@@ -7,8 +7,30 @@ interface BlockOptions extends Variables {
     width?: string
 }
 
+class Options implements BlockOptions {
+    protected readonly options: BlockOptions;
+    [key: string]: any
+
+    constructor(options: BlockOptions) {
+        this.options =  options ?? {}
+    }
+
+    public get weight(): string {
+        return this.options.weight ?? '1'
+    }
+
+    public get weightValue(): number {
+        let value = parseFloat(this.weight)
+        return isNaN(value) ? 1 : value
+    }
+
+    public get width(): string {
+        return this.options.width ?? '100%'
+    }
+}
+
 const validOptions = new Set(['weight', 'width']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: BlockOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected align option: '${key}'`);
@@ -24,11 +46,10 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const BlockElement = ({ options = {}, children }: ElementParams<BlockOptions>): JSX.Element => {
-    const weight = parseFloat(options.weight ?? '1')
-    const width = options.width ?? '100%';
+    const blockOption = new Options(options)
     return (
         <div 
-            style={{ flex: weight, maxWidth: width }}
+            style={{ flex: blockOption.weightValue, maxWidth: blockOption.width }}
             className={styles.block}
         > 
             {children} 

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useMemo } from 'react'
-import { Context } from 'components/contexts/fileContext';
 import Components from './components';
+import { Context } from 'components/contexts/fileContext';
+import Loading from 'components/common/loading';
 import { AllTemplateCondition, AnyTemplateCondition, EditInputType, EqualsTemplateCondition, MetadataTemplateCondition, NotEqualsTemplateCondition, RootTemplateComponent, TemplateComponent, TemplateCondition, TemplateConditionType, ValueTemplateCondition } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import styles from 'styles/storyPage/editor.module.scss'
-import Loading from 'components/common/loading';
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent
@@ -153,9 +153,9 @@ const Editor = ({ template }: EditorProps): JSX.Element => {
 
     return  (
         <div className={styles.main}>
-           { context.loading
+           { context.fetching
                 ? <Loading className={styles.loading}/>
-                :content 
+                : content 
             }
         </div>
     )

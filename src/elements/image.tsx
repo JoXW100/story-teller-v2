@@ -9,8 +9,41 @@ interface ImageOptions extends Variables {
     border?: string
 }
 
+class Options implements ImageOptions {
+    protected readonly options: ImageOptions;
+    [key: string]: any
+
+    constructor(options: ImageOptions) {
+        this.options =  options ?? {}
+    }
+
+    public get href(): string {
+        return this.options.href ?? ""
+    }
+
+    public get width(): string {
+        return this.options.width ?? '100%'
+    }
+
+    public get flex(): number {
+        return this.width == '100%' ? 1 : undefined
+    }
+
+    public get border(): string {
+        return this.options.border == "true" 
+            ? 'true'
+            : 'false'
+    }
+
+    public get borderValue(): string {
+        return this.options.border == "true" 
+            ? 'border'
+            : undefined
+    }
+}
+
 const validOptions = new Set(['href', 'width', 'border']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: ImageOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected link option: '${key}'`);
@@ -24,25 +57,22 @@ const validateOptions = (options: Variables): Queries => {
 }
 
 const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Element => {
+    const imageOptions = new Options(options)
     const href = useMemo(() => {
         try {
-            if (!options.href) 
-                return undefined;
-            if (options.href.includes('http'))
-                return new URL(options.href);
-            return undefined;
+            return imageOptions.href.includes('http') 
+                ? new URL(imageOptions.href)
+                : undefined;
         } catch (error) {
             return undefined;
         }
     }, [options]);
 
-    const width = options.width ?? "100%";
-
     return (
         <div
             className={styles.image} 
-            style={{ width: width, flex: width == '100%' ? 1 : undefined }}
-            data={options.border == "border" ? "border" : undefined }
+            style={{ width: imageOptions.width, flex: imageOptions.flex }}
+            data={imageOptions.borderValue}
         >
             <img src={href ? String(href) : '/defaultImage.jpg'}/>
         </div>

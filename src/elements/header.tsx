@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { ParseError } from 'utils/parser';
 import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
@@ -6,9 +7,25 @@ interface HeaderOptions extends Variables {
     underline?: string
 }
 
+class Options implements HeaderOptions {
+    protected readonly options: HeaderOptions;
+    [key: string]: any
+
+    constructor(options: HeaderOptions) {
+        this.options =  options ?? {}
+    }
+
+    public get underline(): string {
+        return this.options.underline ?? "false"
+    }
+
+    public get underlineValue(): boolean {
+        return this.options.underline == "true"
+    }
+}
 
 const validOptions = new Set(['underline']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: HeaderOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected header option: '${key}'`);
@@ -16,32 +33,28 @@ const validateOptions = (options: Variables): Queries => {
     return {}
 }
 
-export const Header1 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => {
+const GetHeader = (options: HeaderOptions, children: ReactNode, className: string): JSX.Element => {
+    const headerOptions = new Options(options)
     return (
         <div 
-            className={styles.header1}
-            data={options?.underline ? "underline" : undefined}
+            className={className}
+            data={headerOptions.underlineValue ? "underline" : undefined}
         > { children } </div>
     )
-}
+} 
 
-export const Header2 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => {
-    return (
-        <div 
-            className={styles.header2} 
-            data={options?.underline ? "underline" : undefined}
-        > { children } </div>
-    )
-}
+export const Header1 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => (
+    GetHeader(options, children, styles.header1)
+)
 
-export const Header3 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => {
-    return (
-        <div 
-            className={styles.header3} 
-            data={options?.underline ? "underline" : undefined}
-        > { children } </div>
-    )
-}
+export const Header2 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => (
+    GetHeader(options, children, styles.header2)
+)
+
+export const Header3 = ({ options = {}, children }: ElementParams<HeaderOptions>): JSX.Element => (
+    GetHeader(options, children, styles.header3)
+)
+
 
 export const element: { [s: string]: ElementObject; } = {
     h1: {

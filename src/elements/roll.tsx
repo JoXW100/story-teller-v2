@@ -20,9 +20,90 @@ interface RollOptions extends Variables {
     tooltips?: string
 }
 
-const validModes = new Set(['dice', 'mod', 'dmg']);
+class Options implements RollOptions {
+    protected readonly options: RollOptions;
+    [key: string]: any
+
+    constructor(options: RollOptions) {
+        this.options =  options ?? {}
+    }
+    
+    public get dice(): string {
+        return this.options.dice ?? "20"
+    }
+
+    public get diceValue(): Dice {
+        return new Dice(this.dice)
+    }
+
+    public get num(): string {
+        return this.options.num ?? "1"
+    }
+
+    public get numValue(): number {
+        let value = parseInt(this.num)
+        return isNaN(value) ? 1 : value
+    }
+
+    public get mod(): string {
+        return this.options.mod ?? "0"
+    }
+
+    public get modValue(): number {
+        let value = parseInt(this.mod)
+        return isNaN(value) ? 0 : value
+    }
+
+    public get mode(): RollMode {
+        if (validModes.has(this.options.mode)) {
+            return this.options.mode as RollMode
+        }
+        let dice = this.diceValue
+        if (dice.num == 20 || dice.num == 0) {
+            return RollMode.Mod
+        }
+        return RollMode.Dice
+    }
+
+    public get desc(): string {
+        return this.options.desc ?? "20"
+    }
+    
+    public get tooltips(): string {
+        return this.options.tooltips ?? undefined
+    }
+
+    public get show(): boolean {
+        return this.mode === RollMode.Dice 
+            || this.mode === RollMode.DMG
+    }
+
+    public get description(): string {
+        return this.options.desc ?? 'Rolled'
+    }
+
+    public get modText(): string {
+        let mod = this.modValue
+        if (this.show && mod === 0) {
+            return ''
+        }
+        if (mod < 0) {
+            return ` - ${Math.abs(mod)}`
+        }
+        return ` + ${mod}`
+    }
+
+    public get rollText(): string {
+        if (this.show) {
+            return `${this.num}${this.diceValue.text}${this.modText} `
+        }
+        return this.modText
+    }
+}
+
+const validModes = new Set(Object.values(RollMode));
 const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'desc', 'tooltips']);
-const validateOptions = (options: Variables): Queries => {
+const validateOptions = (options: RollOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected roll option: '${key}'`);
@@ -47,7 +128,7 @@ const validateOptions = (options: Variables): Queries => {
     }
 
     if (options.mode) {
-        if (!validModes.has(options.mode))
+        if (!validModes.has(options.mode as RollMode))
             throw new ParseError(`Invalid roll option value. mode: '${options.mode}', valid values: ${Array(validModes).join(', ')}`);
     }
     return {}
@@ -55,21 +136,16 @@ const validateOptions = (options: Variables): Queries => {
 
 const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
-    const dice = options.dice ? new Dice(options.dice) : new Dice(20);
-    const mode = options.mode ? options.mode : (dice.num === 20 || dice.num === 0) ? 'mod' : 'dice';
-    const num = options.num ? parseInt(options.num) : 1;
-    const mod = options.mod ? parseInt(options.mod) : 0;
-    const show = mode === 'dice' || mode === 'dmg';
-    const desc = options.desc ?? 'Rolled';
+    const rollOptions = new Options(options);
 
     const roll = (method: RollMethod) => {
-        var collection = new DiceCollection(mod, desc);
-        collection.add(dice, num);
+        var collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
+        collection.add(rollOptions.diceValue, rollOptions.numValue);
         dispatch.roll(collection, method);
     }
 
     const context = useMemo(() => {
-        return options.mode === 'dmg' 
+        return options.mode === RollMode.DMG 
         ? [
             {
                 text: Localization.toText('roll-normal'), 
@@ -112,10 +188,6 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
         roll(RollMethod.Normal);
     }
 
-    const modText = (show && mod === 0) ? '' 
-        : mod < 0 ? ` - ${Math.abs(mod)}`
-        : ` + ${mod}`;
-
     return (
         <span 
             className={styles.dice}
@@ -123,8 +195,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
             onContextMenu={handleContext}
             tooltips={options.tooltips}
         >
-            { !show ? modText
-                : `${num}${dice.text}${modText} `}
+            {rollOptions.rollText}
             { children }
         </span>
     )
