@@ -120,7 +120,17 @@ class StoriesInterface
     /** Gets all stories from the database */
     async getAll(userId: string): Promise<DBResponse<StoryGetAllResult>> {
         try {
-            let result = await this.collection.find({ _userId: userId }).toArray() as StoryGetAllResult;
+            let result = (await this.collection.aggregate([
+                { $match: { _userId: userId }},
+                { $project: { 
+                    _id: 0, 
+                    id: '$_id',
+                    name: '$name',
+                    desc: '$desc', 
+                    dateCreated: '$dateCreated',
+                    dateUpdated: '$dateUpdated'
+                }}
+            ]).toArray()) as StoryGetAllResult
             Database.log('stories.getAll', result.length);
             return success(result);
         } catch (error) {

@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Localization from 'utils/localization';
-import styles from 'styles/homePage.module.scss'
-import { PageStatus, HomePageState } from '.';
 import { StoryAddResult } from 'types/database/stories';
 import { DBResponse } from 'types/database';
+import { PageStatus } from 'types/homePage';
+import styles from 'styles/homePage.module.scss'
 
 type CreateStoryMenuProps = React.PropsWithRef<{
-    state: HomePageState,
     setStatus: (status: PageStatus) => void
 }>
 
-const CreateStoryMenu = ({ state, setStatus }: CreateStoryMenuProps): JSX.Element => {
+const CreateStoryMenu = ({ setStatus }: CreateStoryMenuProps): JSX.Element => {
     const [name, setName] = useState("")
     const [desc, setDesc] = useState("")
     const disabled = !name || !desc

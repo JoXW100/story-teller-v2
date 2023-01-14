@@ -183,11 +183,13 @@ $pageHeight: 14in; /* A4 */
 }
 
 .encounterCard {
+    @include colorText();
     user-select: none;
-    font-size: small;
+    font-size: 14px;
 
     .encounterCardHeader {
         @include colorText();
+        font-size: 15px;
         border-bottom: 2px solid map-get($palette, border);
         margin-bottom: 6px;
         width: 100%;

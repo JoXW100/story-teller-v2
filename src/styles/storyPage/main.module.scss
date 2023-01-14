@@ -14,11 +14,6 @@ $entryWidth: 250px;
     width: 100%;
     height: 100%;
 
-    & > .header {
-        padding-left: 10px;
-        height: $headerHeight;
-    }
-
     & > .divider {
         height: calc(100% - $headerHeight);
         width: 100%;
@@ -31,15 +26,22 @@ $entryWidth: 250px;
     z-index: 100;
     display: flex;
     justify-content: left;
+    height: $headerHeight;
     min-width: fit-content;
 
     & > .name {
         display: flex;
         align-items: center;
         height: 100%;
+        min-width: 160px;
+        width: 0;
+        padding: 0 10px;
         font-weight: 700;
         font-size: 20px;
         user-select: none;
+        white-space: nowrap;
+        overflow: hidden;
+        flex: 1;
 
         & > SVG {
             height: 100%;
@@ -92,7 +94,6 @@ $entryWidth: 250px;
 .dice {
     @extend .headerButton;
     padding: 3px;
-    margin-left: 1px;
 }
 
 .publish {
@@ -126,6 +127,8 @@ $entryWidth: 250px;
     font-weight: 600;
     font-size: 1.4em;
     user-select: none;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .content {

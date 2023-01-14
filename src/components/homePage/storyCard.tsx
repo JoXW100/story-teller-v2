@@ -7,8 +7,8 @@ import EditIcon from '@mui/icons-material/DriveFileRenameOutline';
 import ConfirmationPopup from 'components/common/confirmationPopup';
 import Localization from 'utils/localization';
 import EditStoryPopup from './editStoryPopup';
-import { PageStatus, StoryCardData } from '.';
 import { DBResponse } from 'types/database';
+import { PageStatus, StoryCardData } from 'types/homePage';
 import { StoryDeleteResult, StoryUpdateResult } from 'types/database/stories';
 import styles from 'styles/homePage.module.scss'
 
@@ -26,7 +26,7 @@ const StoryCard = ({ data, setStatus }: StoryCardProps): JSX.Element => {
             setStatus(PageStatus.Create)
         } else {
             // Navigate to story page
-            router.push(`story/${data._id}`)
+            router.push(`story/${data.id}`)
         }
     }
 
@@ -67,7 +67,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
                 callback={(response) => {
                     if (response === optionYes) {
                         fetch('/api/database/deleteStory', { method: 'DELETE',
-                            body: JSON.stringify({ storyId: data._id })
+                            body: JSON.stringify({ storyId: data.id })
                         })
                         .then((res) => res.json())
                         .then((res: DBResponse<StoryDeleteResult>) => {
@@ -91,7 +91,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
                 if (response) {
                     fetch('/api/database/updateStory', {
                         method: 'PUT',
-                        body: JSON.stringify({ storyId: data._id, update: response })
+                        body: JSON.stringify({ storyId: data.id, update: response })
                     })
                     .then((res) => res.json())
                     .then((res: DBResponse<StoryUpdateResult>) => {

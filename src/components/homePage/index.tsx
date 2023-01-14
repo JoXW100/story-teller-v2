@@ -2,25 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
 import Link from 'next/link';
+import Communication from 'utils/communication';
+import Navigation from 'utils/navigation';
+import Localization from 'utils/localization';
 import Loading from 'components/common/loading';
 import SelectStoryMenu from './selectStoryMenu';
 import CreateStoryMenu from './createStoryMenu';
 import ReconnectMenu from './reconnectMenu';
-import Localization from 'utils/localization';
+import { DBResponse } from 'types/database';
+import { StoryGetAllResult } from 'types/database/stories';
+import { CardType, PageStatus, StoryCardData } from 'types/homePage';
 import styles from 'styles/homePage.module.scss'
-import { DateValue, DBResponse, UserId } from 'types/database';
-import { DBStory, StoryGetAllResult } from 'types/database/stories';
-import { ObjectId } from 'mongodb';
-
-interface StoryCardData {
-    _id?: ObjectId
-    _userId?: UserId
-    type: string
-    name?: string
-    desc?: string
-    dateCreated?: DateValue
-    dateUpdated: DateValue
-}
 
 interface HomePageState {
     loading: boolean
@@ -29,31 +21,30 @@ interface HomePageState {
     status: PageStatus
 }
 
-export enum PageStatus {
-    Loading = 0,
-    Select = 1,
-    Create = 2,
-    Connecting = 3,
-    NoConnection = 4
-}
+type HomePageMenu = (props: React.PropsWithRef<{
+    cards?: StoryCardData[]
+    setStatus?: (status: PageStatus) => void
+}>) => JSX.Element 
 
-export type {
-    StoryCardData,
-    HomePageState
+const createCard: StoryCardData = {
+    id: null,
+    name: '',
+    desc: '',
+    dateCreated: 0,
+    dateUpdated: Number.MAX_VALUE,
+    type: CardType.Create,
 }
 
 const HomePage = (): JSX.Element => {
     const { user } = useUser();
-
-    const [state, setState] = useState({
+    const [state, setState] = useState<HomePageState>({
         loading: true,
         connected: false,
         status: PageStatus.Connecting,
-        cards: [{ type: 'create', dateUpdated: Number.MAX_VALUE }]
-    } as HomePageState)
+        cards: [createCard]
+    })
 
-    const handleConnect = (res: DBResponse<boolean>) => {
-        var connected = res.success && res.result as boolean;
+    const handleConnect = (connected: boolean) => {
         setState({ 
             ...state, 
             status: connected ? PageStatus.Loading : PageStatus.NoConnection, 
@@ -63,14 +54,14 @@ const HomePage = (): JSX.Element => {
 
     const handleFetch = (res: DBResponse<StoryGetAllResult>) => {
         let cards: StoryCardData[] = res.success 
-            ? (res.result as DBStory[]).map((story) => ({ ...story, type: "default"}))
-            : [];
+            ? res.result.map((story) => ({ ...story, type: CardType.Story })) 
+            : []
         setState({ 
             ...state, 
             status: PageStatus.Select,
             loading: false,
-            connected: Boolean(res.success && res.result),
-            cards: [{ type: 'create', dateUpdated: Number.MAX_VALUE }, ...cards]
+            connected: res.success,
+            cards: [createCard, ...cards]
         })
     }
 
@@ -78,25 +69,7 @@ const HomePage = (): JSX.Element => {
         setState({ ...state, status: status }) 
     }
     
-    useEffect(() => {
-        switch (state.status) {
-            case PageStatus.Loading:
-                fetch('/api/database/getAllStories', { method: 'GET' })
-                .then((res) => res.json())
-                .then((res) => handleFetch(res))
-                .catch((console.error))
-                break;
-            case PageStatus.Connecting:
-                fetch('/api/database/isConnected', { method: 'GET' })
-                .then((res) => res.json())
-                .then(handleConnect)
-                .catch((console.error))
-            default:
-                break;
-        }
-    }, [state.status])
-    
-    const Content = useMemo(() => {
+    const Content = useMemo<HomePageMenu>(() => {
         switch (state.status) {
             case PageStatus.Loading:
             case PageStatus.Connecting:
@@ -106,34 +79,45 @@ const HomePage = (): JSX.Element => {
             case PageStatus.Select:
                 return SelectStoryMenu
             case PageStatus.NoConnection:
-                return ReconnectMenu
             default:
                 return ReconnectMenu
+        }
+    }, [state.status])
+    
+    useEffect(() => {
+        switch (state.status) {
+            case PageStatus.Connecting:
+                Communication.isConnected()
+                .then(handleConnect)
+            case PageStatus.Loading:
+                Communication.getAllStories()
+                .then(handleFetch)
+                break;
+            default:
+                break;
         }
     }, [state.status])
 
     return (
         <div className={styles.main}>
             <div className={styles.mainPanel}>
-                <Link href="/api/auth/logout" passHref>
-                    <div className={styles.logoutButton}>
-                        {`Logout ${user?.name}`}
-                        <LogoutIcon/>
-                    </div>
+                <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
+                    {`${Localization.toText('home-logout')} ${user?.name}`}
+                    <LogoutIcon/>
                 </Link>
             </div>
             <div className={styles.mainContainer}>
                 <div className={styles.mainHeader}>
                     { Localization.toText('home-title') }
                 </div>
-                <Content state={state} setStatus={handleSetStatus}/>
+                <Content cards={state.cards} setStatus={handleSetStatus}/>
             </div>
         </div>
     )
 }
 
-const LoadingMenu = () => {
-    return <Loading className={styles.loading}/>
-}
+const LoadingMenu = () => (
+    <Loading className={styles.loading}/>
+)
 
 export default HomePage;

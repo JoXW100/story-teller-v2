@@ -20,6 +20,10 @@ $componentColor: document;
     &::-webkit-scrollbar-thumb {
         @include colorInteract(main);
     }
+
+    &::-webkit-scrollbar-corner {
+        @include color(main);
+    }
 }
 
 .main {
@@ -242,6 +246,7 @@ $componentColor: document;
 
     .selection {
         @include color($componentColor);
+        border: 1px solid var(--color-third);
         font: inherit;
         font-size: small;
         
@@ -279,9 +284,10 @@ $componentColor: document;
         font: inherit;
         font-size: small;
 
-        div:last-child {
-            @include color(document);
-            div {
+        & > div:last-child {
+            @include color(forth);
+            border: 1px solid var(--color-third);
+            & > div {
                 @include color($componentColor);
                 filter: brightness(95%)
             }

@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react'
+import { useContext } from 'react'
 import { Context as FileContext } from 'components/contexts/fileContext'
 import { Context as StoryContext } from 'components/contexts/storyContext'
 import useRenderer from 'components/renderer'
@@ -13,8 +13,7 @@ import Loading from './common/loading'
 const ViewPage = (): JSX.Element => {
     const [context] = useContext(FileContext)
     const [storyContext] = useContext(StoryContext)
-    const render = useRenderer(Templates[context?.file?.type]?.renderer, context?.file)
-    const ref = useRef(null)
+    const render = useRenderer(Templates[context.file?.type]?.renderer, context.file)
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -24,7 +23,7 @@ const ViewPage = (): JSX.Element => {
                 <DiceButton/>
             </div>
             <div className={styles.main}>
-                <div ref={ref} className={styles.innerPage}>
+                <div className={styles.innerPage}>
                     { context.fetching
                         ? <Loading className={styles.loading}/> 
                         : render 

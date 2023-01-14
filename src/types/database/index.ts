@@ -3,9 +3,12 @@ type UserId = string
 type DateValue = number
 type ErrorMessage = string
 
-interface DBResponse<T> {
-    success: boolean
-    result: T | string
+type DBResponse<T> = {
+    success: true
+    result: T
+} | {
+    success: false
+    result: string
 }
 
 export type {

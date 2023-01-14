@@ -4,6 +4,7 @@
         "icon": "eng",
         "content": {
             "home-title": "Story Teller 2.0",
+            "home-logout": "Logout",
             "storyCard-create-story": "Create a new story",
             "reconnect-button": "Retry connection",
             "createStory-header": "Create Story",

@@ -27,6 +27,10 @@ class Navigation
         return new URL(location.origin);
     }
 
+    static logoutAPI(): string {
+        return "/api/auth/logout"
+    }
+
     static editModeURL(editMode: boolean): URL {
         var split = location.search.split(/[\?,] */)
         split = split.filter(x => x && !/edit= *[^, ]+/.test(x))

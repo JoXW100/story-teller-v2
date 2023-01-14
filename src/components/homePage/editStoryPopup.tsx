@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { closePopup } from 'components/common/popupHolder';
 import CloseIcon from '@mui/icons-material/Close';
+import { closePopup } from 'components/common/popupHolder';
 import Localization from 'utils/localization';
 import styles from 'styles/homePage.module.scss'
 
@@ -14,7 +14,9 @@ const EditStoryPopup = ({ values, callback }: EditStoryPopupProps):JSX.Element =
         name: values.name ? values.name : "", 
         desc: values.desc ? values.desc : "" 
     })
-    const disabled = !state.name || !state.desc || (values.name === state.name && values.desc === state.desc)
+    const disabled = !state.name 
+        || !state.desc 
+        || (values.name === state.name && values.desc === state.desc)
 
     const handleBack = () => {
         callback(null)

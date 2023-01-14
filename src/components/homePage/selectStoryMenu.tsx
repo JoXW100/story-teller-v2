@@ -1,16 +1,16 @@
 import StoryCard from './storyCard';
 import styles from 'styles/homePage.module.scss'
-import { HomePageState, PageStatus } from '.';
+import { PageStatus, StoryCardData } from 'types/homePage';
 
 type SelectStoryMenuProps = React.PropsWithRef<{
-    state: HomePageState,
+    cards: StoryCardData[],
     setStatus: (status: PageStatus) => void
 }>
 
-const SelectStoryMenu = ({ state, setStatus }: SelectStoryMenuProps): JSX.Element => {
+const SelectStoryMenu = ({ cards, setStatus }: SelectStoryMenuProps): JSX.Element => {
     return (
         <div className={styles.selectMenu}>
-            { state.cards
+            { cards
                 .sort((a, b) => b.dateUpdated - a.dateUpdated)
                 .map((card, index) => (
                     <StoryCard 

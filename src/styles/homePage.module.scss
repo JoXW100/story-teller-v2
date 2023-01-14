@@ -38,25 +38,25 @@ $iconSize: 25px;
 .main {
     @include color(background);
     @include colorText();
-    position: relative;
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    align-items: flex-start;
-    justify-content: center;
+    min-width: 12cm;
 
     .mainPanel {
         @include color(main);
         @include colorShadow();
         display: flex;
         flex-direction: row-reverse;
-        position: absolute;
         height: 40px;
+        min-height: 40px;
         width: 100%;
 
         .logoutButton {
             @include colorInteract(main);
             @extend .text;
+            display: flex;
             padding: 3px 10px 0 10px;
         
             & > svg {
@@ -66,9 +66,10 @@ $iconSize: 25px;
     }
     
     .mainContainer {
-        display: block;
-        margin: 65px;
-        max-width: 30cm;
+        display: flex;
+        flex-direction: column;
+        margin: 1cm min(5cm, 10%);
+        min-width: 8cm;
         flex: 1;
     
         .mainHeader {
@@ -77,11 +78,13 @@ $iconSize: 25px;
             @extend .text;
             height: 100px;
             margin-bottom: 20px;
-            font-size: 300%;
+            font-size: xx-large;
             white-space: pre;
+            overflow: hidden;
         }
     
         .selectMenu {
+            flex: 1;
             max-height: calc(100vh - 220px)
         }
     }
@@ -156,12 +159,12 @@ $iconSize: 25px;
     @include colorShadow();
     
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     grid-auto-rows: 150px;
     overflow-y: scroll;
     overflow-x: hidden;
     margin: 5px;
-    padding: 10px 10px 10px 10px;
+    padding: 20px;
     gap: 10px;
 
     &::-webkit-scrollbar {

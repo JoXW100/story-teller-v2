@@ -1,6 +1,14 @@
 import { ObjectId, Document } from 'mongodb'
 import { UserId, DateValue } from "."
 
+interface Story {
+    id: ObjectId
+    name: string
+    desc: string
+    dateCreated: DateValue
+    dateUpdated: DateValue
+}
+
 interface DBStory extends Document {
     _id?: ObjectId
     _userId: UserId
@@ -15,22 +23,18 @@ interface DBStoryUpdate {
     desc?: string
 }
 
-interface StoryData {
-    id: ObjectId
+interface StoryData extends Story {
     root: ObjectId
-    name: string
-    desc: string
-    dateCreated: DateValue
-    dateUpdated: DateValue
 }
 
 type StoryAddResult = ObjectId
 type StoryGetResult = StoryData
-type StoryGetAllResult = DBStory[]
+type StoryGetAllResult = Story[]
 type StoryDeleteResult = boolean
 type StoryUpdateResult = boolean
 
 export type {
+    Story,
     DBStory,
     DBStoryUpdate,
     StoryData,

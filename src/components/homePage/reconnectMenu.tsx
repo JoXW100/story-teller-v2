@@ -1,10 +1,9 @@
 import Localization from 'utils/localization';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { HomePageState, PageStatus } from '.';
 import styles from 'styles/homePage.module.scss'
+import { PageStatus } from 'types/homePage';
 
 type ReconnectMenuProps = React.PropsWithRef<{
-    state: HomePageState,
     setStatus: (status: PageStatus) => void
 }>
 
