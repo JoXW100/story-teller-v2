@@ -56,25 +56,22 @@ export const Header3 = ({ options = {}, children }: ElementParams<HeaderOptions>
 )
 
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     h1: {
         type: 'header',
         defaultKey: 'underline',
-        validOptions: validOptions,
         toComponent: Header1,
         validate: validateOptions
     },
     h2: {
         type: 'header',
         defaultKey: 'underline',
-        validOptions: validOptions,
         toComponent: Header2,
         validate: validateOptions
     },
     h3: {
         type: 'header',
         defaultKey: 'underline',
-        validOptions: validOptions,
         toComponent: Header3,
         validate: validateOptions
     }

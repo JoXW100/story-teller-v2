@@ -7,8 +7,8 @@ import styles from 'styles/components/selectionMenu.module.scss';
 type SelectionMenuProps = React.PropsWithRef<{
     className: string
     selection: string[]
-    values: { [key: string]: ReactNode }
-    alternate?: { [key: string]: ReactNode }
+    values: Record<string, ReactNode>
+    alternate?: Record<string, ReactNode>
     onChange: (selection: string[]) => void
 }>
 
@@ -39,7 +39,7 @@ const SelectionMenu = ({ className, values, alternate, selection, onChange }: Se
     }
 
     // All items not selected
-    const options: { [key: string]: ReactNode } = useMemo(() => (
+    const options: Record<string, ReactNode> = useMemo(() => (
         Object.keys(values).reduce((prev, val) => 
             selection?.includes(val) 
                 ? prev

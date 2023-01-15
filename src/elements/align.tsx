@@ -73,11 +73,10 @@ const AlignElement = ({ options = {}, children }: ElementParams<AlignOptions>): 
     )
 }
 
-export const element: { [s: string]: ElementObject } = {
+export const element: Record<string, ElementObject> = {
     align: {
         type: 'align',
         defaultKey: 'direction',
-        validOptions: validOptions,
         toComponent: AlignElement,
         validate: validateOptions
     }

@@ -41,7 +41,7 @@ export {
     CubeIcon
 }
 
-export const Icons: { [key: string]: React.FunctionComponent<React.SVGAttributes<SVGElement>> } = {
+export const Icons: Record<string,React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {
     advantage: AdvantageIcon,
     disadvantage: DisadvantageIcon,
     crit: CritIcon,

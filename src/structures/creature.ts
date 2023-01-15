@@ -13,7 +13,7 @@ const OptionTypeAuto: OptionType<number> = {
     value: 0
 }
 
-class CreatureData extends FileData<CreatureMetadata>
+class CreatureData extends FileData<CreatureMetadata> implements Required<CreatureMetadata>
 {
     public getStats(): CreatureStats {
         return new CreatureStats({
@@ -215,7 +215,7 @@ class CreatureData extends FileData<CreatureMetadata>
         return this.metadata.conImmunities ?? ""
     }
 
-    public get speed(): { [key: string | MovementType]: number } {
+    public get speed(): Partial<Record<MovementType, number>> {
         return this.metadata.speed ?? {}
     }
 
@@ -247,11 +247,11 @@ class CreatureData extends FileData<CreatureMetadata>
 
     // Info
 
-    public get saves(): { [key: string | Attribute]: number } {
+    public get saves(): Partial<Record<Attribute, number>> {
         return this.metadata.saves ?? {}
     }
 
-    public get skills(): { [key: number | Skill]: number } {
+    public get skills(): Partial<Record<Skill, number>> {
         return this.metadata.skills ?? {}
     }
 

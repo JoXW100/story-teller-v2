@@ -1,5 +1,5 @@
 
-type ContextMenuData = { [key: string]: any }
+type ContextMenuData = Record<string, any>
 
 interface Point {
     x: number

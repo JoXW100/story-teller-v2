@@ -21,6 +21,14 @@ class Options implements ImageOptions {
         return this.options.href ?? ""
     }
 
+    public get hrefURL(): string {
+        try {
+            return this.href.includes('http') ? this.href : undefined;
+        } catch (error) {
+            return undefined;
+        }
+    }
+
     public get width(): string {
         return this.options.width ?? '100%'
     }
@@ -58,15 +66,6 @@ const validateOptions = (options: ImageOptions): Queries => {
 
 const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Element => {
     const imageOptions = new Options(options)
-    const href = useMemo(() => {
-        try {
-            return imageOptions.href.includes('http') 
-                ? new URL(imageOptions.href)
-                : undefined;
-        } catch (error) {
-            return undefined;
-        }
-    }, [options]);
 
     return (
         <div
@@ -74,16 +73,15 @@ const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Elemen
             style={{ width: imageOptions.width, flex: imageOptions.flex }}
             data={imageOptions.borderValue}
         >
-            <img src={href ? String(href) : '/defaultImage.jpg'}/>
+            <img src={imageOptions.hrefURL} alt='/defaultImage.jpg'/>
         </div>
     )
 }
 
-export const element: { [s: string]: ElementObject } = {
+export const element: Record<string, ElementObject> = {
     'image': {
         type: 'image',
         defaultKey: 'href',
-        validOptions: validOptions,
         toComponent: ImageElement,
         validate: validateOptions
     }

@@ -5,11 +5,10 @@ const RootElement = ({ children }: ElementParams<{}>): JSX.Element => (
     <div> { children } </div>
 )
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'root': {
         type: 'root',
         defaultKey: null,
-        validOptions: new Set(),
         toComponent: RootElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

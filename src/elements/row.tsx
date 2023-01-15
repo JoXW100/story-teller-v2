@@ -6,11 +6,10 @@ const RowElement = ({ children }: ElementParams<{}>): JSX.Element => {
     return <div className={styles.row}> { children } </div>
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'row': {
         type: 'row',
         defaultKey: null,
-        validOptions: new Set(),
         toComponent: RowElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

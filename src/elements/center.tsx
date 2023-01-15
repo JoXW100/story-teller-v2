@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import {  ElementObject, ElementParams, Variables } from 'types/elements';
+import { ElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
@@ -10,11 +10,10 @@ const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
     )
 }
 
- export const element: { [s: string]: ElementObject; } = {
+ export const element: Record<string, ElementObject> = {
     'center': {
         type: 'center',
         defaultKey: null,
-        validOptions: new Set(),
         toComponent: CenterElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

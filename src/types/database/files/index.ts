@@ -1,8 +1,8 @@
 import { ObjectId, Document } from 'mongodb'
 import { DateValue, UserId } from ".."
 
-type FileMetadata = { [key: string]: any }
-type FileContent = { [key: string]: any }
+type FileMetadata = Record<string, any>
+type FileContent = Record<string, any>
 
 interface DBFile<T extends FileMetadata> extends Document {
     _id?: ObjectId

@@ -3,7 +3,7 @@ import { AreaType, CastingTime, Duration, MagicSchool } from "types/database/dnd
 import { SpellMetadata } from "types/database/files/spell";
 import CreatureActionData from "./creatureActionData";
 
-class SpellData extends CreatureActionData<SpellMetadata> 
+class SpellData extends CreatureActionData<SpellMetadata> implements Required<SpellMetadata>
 {
     public get level(): number {
         return this.metadata.level ?? 0
@@ -18,7 +18,7 @@ class SpellData extends CreatureActionData<SpellMetadata>
     }
 
     public get time(): CastingTime {
-        return this.metadata.school ?? OptionTypes["castingTime"].default
+        return this.metadata.time ?? OptionTypes["castingTime"].default
     }
 
     public get timeName(): string {

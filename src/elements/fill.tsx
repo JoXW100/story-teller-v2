@@ -4,15 +4,16 @@ import styles from 'styles/elements.module.scss';
 
 const FillElement = ({ children }: ElementParams<{}>): JSX.Element => {
     return (
-        <div className={styles.fill}> {children} </div>
+        <div className={styles.fill}> 
+            { children } 
+        </div>
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'fill': {
         type: 'fill',
         defaultKey: null,
-        validOptions: new Set(),
         toComponent: FillElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

@@ -1,14 +1,14 @@
 import { OptionTypes } from "data/optionData";
 import FileData from "./file";
+import { OptionTypeAuto } from "./creature";
+import CreatureStats from "./creatureStats";
+import { getAttributeModifier } from "utils/calculations";
 import { Attribute, DamageType, DiceType, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionType } from "types/database/editor";
-import { OptionTypeAuto } from "./creature";
-import { getAttributeModifier } from "utils/calculations";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
-import CreatureStats from "./creatureStats";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
-abstract class CreatureActionData<T extends ICreatureActionData> extends FileData<T> implements ICreatureActionData 
+abstract class CreatureActionData<T extends ICreatureActionData> extends FileData<T> implements Required<ICreatureActionData> 
 {
     public readonly stats: CreatureStats
 

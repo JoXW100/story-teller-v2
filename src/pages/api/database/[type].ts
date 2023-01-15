@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
             }
         }
     
-        let body: { [key: string]: any };
+        let body: Record<string, any>;
         switch (req.method) {
             case 'GET':
                 switch (type) {
@@ -105,7 +105,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: { [key: string]: string }, metadata: FileMetadata = {}): DBContent<FileMetadata> => {
+const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata> => {
     switch (data.type) {
         case FileType.Document:
         case FileType.Creature:

@@ -4,7 +4,7 @@ import { DiceResult, RollMethod, RollResult, RollValue } from 'types/dice';
 
 
 class DiceCollection {
-    private collection: { [s: string]: number };
+    private collection: Record<string, number>;
     public modifier: number;
     public desc: string;
 

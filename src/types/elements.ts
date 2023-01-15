@@ -1,7 +1,7 @@
 import { FileGetMetadataResult } from "./database/files"
 
 interface Variables {
-    [key: string]: string
+    [key: string]: any
 }
 
 export enum QueryType {
@@ -55,7 +55,6 @@ type ElementParams<T extends Variables> = React.PropsWithChildren<{
 interface ElementObject {
     type: string
     defaultKey: string
-    validOptions: Set<string>
     validate: (options: Variables) => Queries
     toComponent: (params: ElementParams<any>) => JSX.Element
 }

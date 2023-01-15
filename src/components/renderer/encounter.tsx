@@ -115,7 +115,7 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
         }))
     }, [creatures])
 
-    let creatureCounterMap: { [key:string]: number } = {}
+    let creatureCounterMap: Record<string, number> = {}
 
     return <>
         <Elements.Header1 options={{ underline: 'true' }}>{encounter.name}</Elements.Header1>

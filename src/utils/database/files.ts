@@ -5,7 +5,7 @@ import { DBResponse } from "types/database";
 
 interface StructureCollection {
     root: FileStructure
-    files: { [key: string]: FileStructure }
+    files: Record<string, FileStructure>
 }
 
 class FilesInterface
@@ -174,7 +174,7 @@ class FilesInterface
                     _userId: userId, 
                     _storyId: new ObjectId(storyId),
                     _id: new ObjectId(fileId) 
-                }},
+                } as Partial<DBFile<any>>},
                 { $lookup: {
                     from: 'files',
                     pipeline: [
@@ -182,7 +182,7 @@ class FilesInterface
                             _userId: userId,
                             _storyId: new ObjectId(storyId),
                             _id: new ObjectId(targetId)
-                        }},
+                        } as Partial<DBFile<any>>},
                         { $limit: 1 }
                     ],
                     as: 'holder' 
@@ -204,19 +204,21 @@ class FilesInterface
     }
 
     /** Changes a property of a folder in the database */
-    private async setProperty(userId: string, storyId: string, fileId: string, property: string, value: any, fileType?: {}, updateDate: boolean = true): Promise<DBResponse<FileSetPropertyResult>> {
+    private async setProperty(userId: string, storyId: string, fileId: string, property: string, value: any, fileType?: Record<string, any> | FileType, updateDate: boolean = true): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            var set: { [key: string]: any } = { [`content.${property}`]: value };
+            var set: Partial<DBFile<any>> = { [`content.${property}`]: value };
             if (updateDate) 
                 set.dateUpdated = Date.now()
 
-            var query: { [key: string]: any } = { 
+            var query: Record<string, any> = { 
                 _userId: userId, 
                 _storyId: new ObjectId(storyId),
                 _id: new ObjectId(fileId) 
             }
-            if (fileType) 
+            
+            if (fileType) {
                 query.type = fileType
+            }
 
             let result = await this.collection.updateOne(query, { $set: set })
             var x = result.modifiedCount === 1;

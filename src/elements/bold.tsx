@@ -8,7 +8,6 @@ const BoldElement = ({ options, metadata, ...args }: ElementParams<{}>): JSX.Ele
 const x: ElementObject = {
     type: 'bold',
     defaultKey: null,
-    validOptions: new Set(),
     toComponent: BoldElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)
@@ -17,7 +16,7 @@ const x: ElementObject = {
     }
 }
 
-export const element: { [s: string]: ElementObject } = {
+export const element: Record<string, ElementObject> = {
     b: x,
     bold: x
 }

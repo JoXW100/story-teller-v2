@@ -201,11 +201,10 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     )
 }
 
-export const element: { [key: string]: ElementObject } = {
+export const element: Record<string, ElementObject> = {
     'roll': {
         type: 'roll',
         defaultKey: 'dice',
-        validOptions: validOptions,
         toComponent: RollElement,
         validate: validateOptions
     }

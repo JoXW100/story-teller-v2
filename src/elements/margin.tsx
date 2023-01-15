@@ -37,11 +37,10 @@ const Margin = ({ options = {}, children }: ElementParams<MarginOptions>): JSX.E
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'margin': {
         type: 'margin',
         defaultKey: 'margin',
-        validOptions: validOptions,
         toComponent: Margin,
         validate: validateOptions
     }

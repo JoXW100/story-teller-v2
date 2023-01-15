@@ -44,7 +44,7 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
                     <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
                     <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
-                    <div><Elements.Bold>Traits </Elements.Bold>{character.traits}</div>
+                    <div><Elements.Bold>Traits </Elements.Bold>{character.traitsText}</div>
                     { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>

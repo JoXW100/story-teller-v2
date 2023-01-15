@@ -20,7 +20,7 @@ import * as Text from './text';
 import * as Toggle from './toggle';
 import { ElementObject } from 'types/elements';
 
-export const ElementDictionary: { [s: string]: ElementObject; } = {
+export const ElementDictionary: Record<string, ElementObject> = {
     ...Align.element,
     ...Block.element,
     ...Bold.element,

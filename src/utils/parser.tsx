@@ -228,8 +228,7 @@ export const useParser = (text: string, metadata: Metadata): JSX.Element => {
         .catch((error) => {
             if (error instanceof ParseError) {
                 setState(<div className={styles.error}>{error.message}</div>);
-            }
-            else {
+            } else {
                 setState(null);
                 if (process.env.NODE_ENV == "development")
                     throw error;

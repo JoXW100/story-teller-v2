@@ -48,11 +48,10 @@ const BoxElement = ({ options = {}, children }: ElementParams<BoxOptions>): JSX.
     )
 }
 
-export const element: { [key: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     box: {
         type: 'box',
         defaultKey: 'color',
-        validOptions: validOptions,
         toComponent: BoxElement,
         validate: validateOptions
     }

@@ -8,11 +8,10 @@ const spaceElement = ({}: ElementParams<{}>): JSX.Element => {
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'space': {
         type: 'space',
         defaultKey: null,
-        validOptions: new Set(),
         toComponent: spaceElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

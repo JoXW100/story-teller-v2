@@ -2,7 +2,7 @@ import { IEncounterCardData } from "types/database/files/encounter"
 
 type Dispatch = React.Dispatch<React.SetStateAction<IEncounterCardData>>
 
-class EncounterCardData implements IEncounterCardData
+class EncounterCardData implements Required<IEncounterCardData>
 {
     public readonly data: IEncounterCardData;
     protected readonly dispatch: Dispatch

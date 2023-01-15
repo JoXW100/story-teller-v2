@@ -3,7 +3,7 @@ import CreatureActionData from "./creatureActionData";
 import { AbilityType, ActionType, DiceType } from "types/database/dnd";
 import { AbilityMetadata } from "types/database/files/ability";
 
-class AbilityData extends CreatureActionData<AbilityMetadata>
+class AbilityData extends CreatureActionData<AbilityMetadata> implements Required<AbilityMetadata>
 {
     public get type(): AbilityType {
         return this.metadata.type ?? OptionTypes["abilityType"].default

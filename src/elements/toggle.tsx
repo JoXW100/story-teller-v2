@@ -73,11 +73,10 @@ const ToggleElement = ({ options = {}, metadata }: ElementParams<ToggleOptions>)
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'toggle': {
         type: 'toggle',
         defaultKey: 'content',
-        validOptions: validOptions,
         toComponent: ToggleElement,
         validate: validateOptions
     }

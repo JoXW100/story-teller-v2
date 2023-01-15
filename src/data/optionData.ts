@@ -1,13 +1,13 @@
 import { AbilityType, ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from 'types/database/dnd';
 import { CalculationMode, OptionalAttribute } from 'types/database/editor';
 
-interface OptionType {
-    enum: any
-    default: any,
-    options: { [key: string]: string }
+interface OptionType<T extends string | number = any> {
+    enum: unknown
+    default: T,
+    options: Record<T, string>
 }
 
-export const OptionTypes: { [key: string]: OptionType } = {
+export const OptionTypes = {
     "creatureSize": {
         enum: SizeType,
         default: SizeType.Medium,
@@ -19,7 +19,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [SizeType.Small]: "Small",
             [SizeType.Tiny]: "Tiny"
         }
-    } as OptionType,
+    } satisfies OptionType<SizeType>,
     "creatureType": {
         enum: CreatureType,
         default: CreatureType.None,
@@ -40,7 +40,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CreatureType.Plant]: "Plant",
             [CreatureType.Undead]: "Undead"
         }
-    } as OptionType,
+    } satisfies OptionType<CreatureType>,
     "alignment": {
         enum: Alignment,
         default: Alignment.None,
@@ -57,7 +57,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Alignment.NeutralGood]: "Neutral Good",
             [Alignment.TrueNeutral]: "True Neutral"
         }
-    } as OptionType,
+    } satisfies OptionType<Alignment>,
     "attr": {
         enum: Attribute,
         default: Attribute.STR,
@@ -69,7 +69,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Attribute.WIS]: "WIS",
             [Attribute.CHA]: "CHA"
         }
-    } as OptionType,
+    } satisfies OptionType,
     "dice": {
         enum: DiceType,
         default: DiceType.None,
@@ -82,7 +82,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [DiceType.D12]: "D12",
             [DiceType.D20]: "D20"
         }
-    } as OptionType,
+    } satisfies OptionType<DiceType>,
     "movement": {
         enum: MovementType,
         default: MovementType.Walk,
@@ -94,7 +94,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [MovementType.Swim]: "Swim",
             [MovementType.Walk]: "Walk"
         }
-    } as OptionType,
+    } satisfies OptionType<MovementType>,
     "skill": {
         enum: Skill,
         default: Skill.Acrobatics,
@@ -118,7 +118,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Skill.Stealth]: "Stealth",
             [Skill.Survival]: "Survival"
         }
-    } as OptionType,
+    } satisfies OptionType<Skill>,
     "abilityType": {
         enum: AbilityType,
         default: AbilityType.Feature,
@@ -130,7 +130,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [AbilityType.RangedWeapon]: "Ranged Weapon",
             [AbilityType.ThrownWeapon]: "Thrown Weapon"
         }
-    } as OptionType,
+    } satisfies OptionType<AbilityType>,
     "effectCondition": {
         enum: EffectCondition,
         default: EffectCondition.None,
@@ -139,7 +139,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [EffectCondition.Hit]: "Hit",
             [EffectCondition.Save]: "Save"
         }
-    } as OptionType,
+    } satisfies OptionType<EffectCondition>,
     "scaling": {
         enum: ScalingType,
         default: ScalingType.None,
@@ -154,7 +154,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [ScalingType.WIS]: "WIS",
             [ScalingType.CHA]: "CHA"
         }
-    } as OptionType,
+    } satisfies OptionType<ScalingType>,
     "damageType": {
         enum: DamageType,
         default: DamageType.None,
@@ -176,7 +176,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [DamageType.Slashing]: "Slashing",
             [DamageType.Thunder]: "Thunder"
         }
-    } as OptionType,
+    } satisfies OptionType<DamageType>,
     "action": {
         enum: ActionType,
         default: ActionType.None,
@@ -187,7 +187,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [ActionType.Reaction]: "Reaction",
             [ActionType.Special]: "Special"
         }
-    } as OptionType,
+    } satisfies OptionType<ActionType>,
     "optionalAttr": {
         enum: OptionalAttribute,
         default: OptionalAttribute.None,
@@ -200,7 +200,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [OptionalAttribute.WIS]: "WIS",
             [OptionalAttribute.CHA]: "CHA"
         }
-    } as OptionType,
+    } satisfies OptionType<OptionalAttribute>,
     "gender": {
         enum: Gender,
         default: Gender.Male,
@@ -209,7 +209,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Gender.Female]: "Female",
             [Gender.Other]: "Other"
         }
-    } as OptionType,
+    } satisfies OptionType<Gender>,
     "target": {
         enum: TargetType,
         default: TargetType.None,
@@ -220,7 +220,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [TargetType.Multiple]: "Multiple",
             [TargetType.Point]: "Point"
         }
-    } as OptionType,
+    } satisfies OptionType<TargetType>,
     "magicSchool": {
         enum: MagicSchool,
         default: MagicSchool.Abjuration,
@@ -235,7 +235,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [MagicSchool.Necromancy]: "Necromancy",
             [MagicSchool.Transmutation]: "Transmutation"
         }
-    } as OptionType, 
+    } satisfies OptionType<MagicSchool>, 
     "castingTime": {
         enum: CastingTime,
         default: CastingTime.Action,
@@ -247,7 +247,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CastingTime.Hour]: "Hour",
             [CastingTime.Custom]: "Custom"
         }
-    } as OptionType,
+    } satisfies OptionType<CastingTime>,
     "duration": {
         enum: Duration,
         default: Duration.Instantaneous,
@@ -259,7 +259,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [Duration.Day]: "Day",
             [Duration.Custom]: "Custom"
         }
-    } as OptionType,
+    } satisfies OptionType<Duration>,
     "area": {
         enum: AreaType,
         default: AreaType.None,
@@ -272,7 +272,7 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [AreaType.Sphere]: "Sphere",
             [AreaType.Square]: "Square",
         }
-    } as OptionType,
+    } satisfies OptionType<AreaType>,
     "calc": {
         enum: CalculationMode,
         default: CalculationMode.Auto,
@@ -281,8 +281,8 @@ export const OptionTypes: { [key: string]: OptionType } = {
             [CalculationMode.Modify]: "Modify",
             [CalculationMode.Override]: "Override"
         }
-    } as OptionType
-}
+    } satisfies OptionType<CalculationMode>
+} satisfies Record<string, OptionType>
 
 export type {
     OptionType

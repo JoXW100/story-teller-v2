@@ -2,7 +2,7 @@ import { OptionTypes } from "data/optionData"
 import { OptionalAttribute } from "types/database/editor"
 import ICreatureStats from "types/database/files/iCreatureStats"
 
-class CreatureStats implements ICreatureStats
+class CreatureStats implements Required<ICreatureStats>
 {
     public readonly data: ICreatureStats
     public constructor(stats: ICreatureStats = {}) {

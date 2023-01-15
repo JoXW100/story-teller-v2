@@ -19,13 +19,13 @@ export {
 }
 
 const Templates = {
-    [FileType.Ability]: AbilityTemplate,
-    [FileType.Character]: CharacterTemplate,
-    [FileType.Creature]: CreatureTemplate,
-    [FileType.Document]: DocumentTemplate,
-    [FileType.Encounter]: EncounterTemplate,
-    [FileType.Spell]: SpellTemplate
-} as { [key: string]: FileTemplate }
+    [FileType.Ability]: AbilityTemplate as FileTemplate,
+    [FileType.Character]: CharacterTemplate as FileTemplate,
+    [FileType.Creature]: CreatureTemplate as FileTemplate,
+    [FileType.Document]: DocumentTemplate as FileTemplate,
+    [FileType.Encounter]: EncounterTemplate as FileTemplate,
+    [FileType.Spell]: SpellTemplate as FileTemplate,
+} satisfies Partial<Record<FileType, FileTemplate>>
 
 export const CreateFileOptions = { 
     [FileType.Ability]: "Ability",
@@ -34,6 +34,6 @@ export const CreateFileOptions = {
     [FileType.Document]: 'Document',
     [FileType.Encounter]: "Encounter",
     [FileType.Spell]: "Spell"
-}
+} satisfies Partial<Record<FileType, string>>
 
 export default Templates;

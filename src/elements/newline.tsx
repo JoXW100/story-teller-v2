@@ -8,7 +8,6 @@ const NewLineElement = ({}: ElementParams<{}>): JSX.Element => (
 const _element: ElementObject = {
     type: 'newline',
     defaultKey: null,
-    validOptions: new Set(),
     toComponent: NewLineElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)
@@ -17,7 +16,7 @@ const _element: ElementObject = {
     }
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'n': _element,
     'newline': _element
 }

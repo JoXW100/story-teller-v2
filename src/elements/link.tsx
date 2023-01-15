@@ -33,7 +33,6 @@ interface LinkTitleOptions extends Variables {
 
 class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
     protected readonly options: LinkOptions | LinkContentOptions | LinkTitleOptions;
-    [key: string]: any
 
     constructor(options: LinkOptions | LinkContentOptions | LinkTitleOptions) {
         this.options =  options ?? {}
@@ -47,16 +46,36 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
         return this.options.fileId ?? this.options.href ?? ""
     }
 
+    public get hrefURL(): URL {
+        try {
+            if (this.href.includes('http'))
+                return new URL(this.href);
+            if (/^[0-9a-f]{24}$/i.test(this.href))
+                return Navigation.fileURL(this.href)
+            return undefined;
+        } catch (error) {
+            console.warn("Invalid URL", this.href)
+            return undefined;
+        }
+    }
+
+    public get fileURL(): URL {
+        try {
+            if (/^[0-9a-f]{24}$/i.test(this.fileId))
+                return Navigation.fileURL(this.fileId)
+            return undefined;
+        } catch (error) {
+            console.warn("Invalid URL", this.fileId)
+            return undefined;
+        }
+    }
+
     public get border(): string {
-        return this.options.border?.toLowerCase() == "true" 
-            ? "true"
-            : "false"
+        return this.options.border?.toLowerCase() == "true" ? "true" : "false"
     }
 
     public get newTab(): string {
-        return this.options.newTab?.toLowerCase() == "true" 
-            ? "true"
-            : "false"
+        return this.options.newTab?.toLowerCase() == "true" ? "true" : "false"
     }
 
     public get newTabValue(): boolean {
@@ -97,21 +116,12 @@ const validateOptions3 = (options: LinkTitleOptions): Queries => {
 
 export const LinkElement = ({ options, children }: ElementParams<LinkOptions>): JSX.Element => {
     const linkOptions = new Options(options)
-    const href = useMemo(() => {
-        try {
-            if (linkOptions.href.includes('http'))
-                return new URL(linkOptions.href);
-            if (/^[0-9a-f]{24}$/i.test(linkOptions.href))
-                return Navigation.fileURL(linkOptions.href)
-            return undefined;
-        } catch (error) {
-            console.warn("Invalid URL", linkOptions.href)
-            return undefined;
-        }
-    }, [options]);
-
     return  (
-        <LinkComponent className={styles.link} href={href} newTab={linkOptions.newTabValue}>
+        <LinkComponent 
+            className={styles.link} 
+            href={linkOptions.hrefURL} 
+            newTab={linkOptions.newTabValue}
+        >
             { children }
         </LinkComponent>
     );
@@ -119,18 +129,8 @@ export const LinkElement = ({ options, children }: ElementParams<LinkOptions>): 
 
 export const LinkContentElement = ({ options = {}, metadata }: ElementParams<LinkContentOptions>): JSX.Element => {
     const linkOptions = new Options(options)
+    const href = linkOptions.fileURL
     const file = metadata.$queries[linkOptions.fileId]
-    const href: URL = useMemo(() => {
-        try {
-            if (/^[0-9a-f]{24}$/i.test(linkOptions.href))
-                return Navigation.fileURL(linkOptions.href)
-            return undefined;
-        } catch (error) {
-            console.error(error)
-            console.warn("Invalid URL", linkOptions.href)
-            return undefined;
-        }
-    }, [options.fileId]);
 
     const Content = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
         switch (file?.type) {
@@ -144,13 +144,18 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
                 return SpellRenderer
             case FileType.Encounter:
                 return EncounterRenderer
+            case FileType.Document:
             default:
                 return DocumentRenderer
         }
     }, [file])
 
     return href && file ? (
-        <LinkComponent className={styles.linkContent} href={href} newTab={linkOptions.newTabValue}>
+        <LinkComponent 
+            className={styles.linkContent} 
+            href={href} 
+            newTab={linkOptions.newTabValue}
+        >
             <div data={linkOptions.border}>
                 <Content.linkRenderer file={file}/>
             </div>
@@ -160,17 +165,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
 
 export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleOptions>): JSX.Element => {
     const linkOptions = new Options(options)
-    const href = useMemo(() => {
-        try {
-            if (/^[0-9a-f]{24}$/i.test(linkOptions.href))
-                return Navigation.fileURL(linkOptions.href)
-            return undefined;
-        } catch (error) {
-            console.warn("Invalid URL", linkOptions.href)
-            return undefined;
-        }
-    }, [options]);
-
+    const href = linkOptions.fileURL
     const title = useMemo(() => {
         var data = metadata.$queries[linkOptions.fileId]
         switch (data?.type) {
@@ -186,7 +181,11 @@ export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleO
     }, [options.fileId, metadata.$queries[linkOptions.fileId]])
 
     return href ? (
-        <LinkComponent className={styles.linkTitle} href={href} newTab={linkOptions.newTabValue}>
+        <LinkComponent 
+            className={styles.linkTitle} 
+            href={href} 
+            newTab={linkOptions.newTabValue}
+        >
             { title ?? 'Missing Title' }
         </LinkComponent>
     ) : <LinkError/>
@@ -210,25 +209,22 @@ const LinkComponent = ({ href, newTab, className, children }: LinkParams): JSX.E
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'link': {
         type: 'link',
         defaultKey: 'href',
-        validOptions: validOptions1,
         toComponent: LinkElement,
         validate: validateOptions1
     },
     'linkContent': {
         type: 'linkContent',
         defaultKey: 'fileId',
-        validOptions: validOptions2,
         toComponent: LinkContentElement,
         validate: validateOptions2
     },
     'linkTitle': {
         type: 'linkTitle',
         defaultKey: 'fileId',
-        validOptions: validOptions3,
         toComponent: LinkTitleElement,
         validate: validateOptions3
     }

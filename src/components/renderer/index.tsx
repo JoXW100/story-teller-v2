@@ -16,7 +16,7 @@ const useRenderer = (template: FileRendererTemplate, file: FileData<any, any>): 
         throw Error("File was null in useRenderer: " + String(file?.id))
 
     const Renderer = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
-        switch (template.type) {
+        switch (template?.type) {
             case FileType.Creature:
                 return CreatureRenderer
             case FileType.Ability:

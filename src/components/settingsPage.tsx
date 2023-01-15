@@ -8,13 +8,11 @@ import Localization from 'utils/localization';
 import Palettes from 'data/palettes';
 import styles from 'styles/settingsPage.module.scss'
 
-type PaletteObject = { [key: string]: JSX.Element }
-
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string
 }>
 
-const getPalettes = (): PaletteObject => {
+const getPalettes = (): Record<string, JSX.Element> => {
     var palettes = {}
     Object.keys(Palettes).forEach((key) => {
         palettes[key] = Palettes[key].name

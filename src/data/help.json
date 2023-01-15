@@ -12,7 +12,7 @@
         },
         {
             "title": "Bold",
-            "keyWords": ["bold", "\\bold", "\\b", "b", "weight", "heavy"],
+            "keyWords": ["bold", "\\bold", "b", "\\b", "weight", "heavy", "thick"],
             "text": "`\\bold` { }\n\n`\\b` { } (Short for `\\bold`)\n ### Options\n None\n ### Usage\n - `\\bold` { text } 'text' will be displayed in bold font"
         },
         {

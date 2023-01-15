@@ -15,15 +15,14 @@ const validateOptions = (options: TextOptions): Queries => {
 }
 
 
-const TextElement = ({ options, metadata, ...args }: ElementParams<TextOptions>): JSX.Element => (
-    <span {...{...args, children: options?.text ?? args.children }}/>
+const TextElement = ({ options, ...args }: ElementParams<TextOptions>): JSX.Element => (
+    <>{options?.text ?? args.children}</>
 )
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'text': {
         type: 'text',
         defaultKey: 'text',
-        validOptions: new Set(),
         toComponent: TextElement,
         validate: validateOptions
     }

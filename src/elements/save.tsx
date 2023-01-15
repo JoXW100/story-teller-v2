@@ -72,11 +72,10 @@ const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element 
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     'save': {
         type: 'save',
         defaultKey: 'dc',
-        validOptions: validOptions,
         toComponent: SaveElement,
         validate: validateOptions
     }

@@ -27,10 +27,10 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     advantages?: string
     dmgImmunities?: string
     conImmunities?: string
-    speed?: { [key: string | MovementType]: number }
+    speed?: Partial<Record<MovementType, number>>
     // Info
-    saves?: { [key: string | Attribute]: number }
-    skills?: { [key: number | Skill]: number }
+    saves?: Partial<Record<Attribute, number>>
+    skills?: Partial<Record<Skill, number>>
     senses?: string
     languages?: string
     challenge?: number

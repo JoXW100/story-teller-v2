@@ -1,7 +1,7 @@
 
 class RequestQueue {
     private waitTime = 1000;
-    private requestWorkerTimeout: { [id: string]: NodeJS.Timeout } = {};
+    private requestWorkerTimeout: Record<string, NodeJS.Timeout> = {};
 
     public get requestIsQueued() {
         return Object.values(this.requestWorkerTimeout).some(x => x !== null);

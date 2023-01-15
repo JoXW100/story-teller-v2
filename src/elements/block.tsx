@@ -57,11 +57,10 @@ const BlockElement = ({ options = {}, children }: ElementParams<BlockOptions>): 
     )
 }
 
-export const element: { [s: string]: ElementObject } = {
+export const element: Record<string, ElementObject> = {
     block: {
         type: 'block',
         defaultKey: 'width',
-        validOptions: validOptions,
         toComponent: BlockElement,
         validate: validateOptions
     }

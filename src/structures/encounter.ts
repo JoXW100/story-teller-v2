@@ -4,7 +4,7 @@ import FileData from "./file";
 
 
 
-class EncounterData extends FileData<EncounterMetadata>
+class EncounterData extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
 {
     protected readonly cards: IEncounterCardData[];
     protected readonly setCards: React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
@@ -40,7 +40,7 @@ class EncounterData extends FileData<EncounterMetadata>
         return this.metadata.description ?? ""
     }
 
-    public get publish(): boolean {
+    public get public(): boolean {
         return this.metadata.publish ?? false
     }
 

@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useMemo } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/selectionMenu';
-import { OptionTypes } from 'data/optionData';
+import { OptionType, OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/storyPage/editor.module.scss';
@@ -15,9 +15,9 @@ type SelectionItemElementProps = React.PropsWithChildren<{
 
 const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const optionType = OptionTypes[params.enum];
+    const type: OptionType = OptionTypes[params.enum];
 
-    const selection: { [s: string]: any; } = context.file?.metadata 
+    const selection: Record<string, string | number> = context.file?.metadata 
         ? context.file.metadata[params.key] ?? {}
         : {};
         
@@ -33,10 +33,10 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     }
 
     const values = useMemo<{[key: string]: ReactNode }>(() => (
-        Object.keys(optionType?.options ?? {}).reduce((prev, key) => 
+        Object.keys(type?.options ?? {}).reduce((prev, key) => 
             ({ ...prev, [key]: (
                 <SelectionItemElement 
-                    item={optionType.options[key]} 
+                    item={type.options[key]} 
                     value={selection[key]}
                     onChange={(value) => handleInput(value, key)}
                     inputType="number"
@@ -46,7 +46,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     ), [selection, context.file.metadata])
     
     // UseMemo above must not be used conditionally
-    if (!optionType){
+    if (!type){
         console.error("No option type of type: " + params.type)
         return null;
     }
@@ -58,7 +58,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
                 className={styles.selection}
                 values={values}
                 selection={Object.keys(selection)}
-                alternate={optionType.options}
+                alternate={type.options}
                 onChange={handleChange}
             />
         </div>

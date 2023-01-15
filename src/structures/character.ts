@@ -1,12 +1,13 @@
 import CreatureData from "./creature";
-import { CharacterMetadata } from "types/database/files/character";
 import { OptionTypes } from "data/optionData";
+import { CharacterMetadata } from "types/database/files/character";
+import { Gender } from "types/database/dnd";
 
-class CharacterData extends CreatureData
+class CharacterData extends CreatureData implements Required<CharacterMetadata>
 {
     public readonly metadata: CharacterMetadata;
 
-    public get gender(): string {
+    public get gender(): Gender {
         return this.metadata.gender ?? OptionTypes["gender"].default
     }
 
@@ -30,8 +31,12 @@ class CharacterData extends CreatureData
         return this.metadata.occupation ?? ""
     }
 
-    public get traits(): string {
-        return (this.metadata.traits ?? []).join(', ')
+    public get traits(): string[] {
+        return this.metadata.traits ?? []
+    }
+
+    public get traitsText(): string {
+        return this.traits.join(', ')
     }
 
     // Texts

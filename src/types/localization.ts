@@ -1,7 +1,7 @@
 interface TextData {
     language: string
     icon: string
-    content: { [key: string]: string }
+    content: Record<string, string>
 }
 
 interface LocalizationTextData { 

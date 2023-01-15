@@ -48,11 +48,10 @@ const IconElement = ({ options = {} }: ElementParams<IconOptions>): JSX.Element 
     )
 }
 
-export const element: { [s: string]: ElementObject; } = {
+export const element: Record<string, ElementObject> = {
     icon: {
         type: 'icon',
         defaultKey: 'icon',
-        validOptions: validOptions,
         toComponent: IconElement,
         validate: validateOptions
     }

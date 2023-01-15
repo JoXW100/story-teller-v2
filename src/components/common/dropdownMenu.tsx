@@ -5,7 +5,7 @@ import styles from 'styles/components/dropdownMenu.module.scss'
 
 type DropdownMenuProps = React.PropsWithRef<{
     className: string
-    values: { [key: string]: ReactNode }
+    values: Record<string, ReactNode>
     value: string, 
     showButton?: boolean,
     onChange: (value: string) => void
