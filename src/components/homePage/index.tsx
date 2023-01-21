@@ -52,15 +52,15 @@ const HomePage = (): JSX.Element => {
         })
     }
 
-    const handleFetch = (res: DBResponse<StoryGetAllResult>) => {
+    const handleGetAllStories = (res: DBResponse<StoryGetAllResult>) => {
         let cards: StoryCardData[] = res.success 
             ? res.result.map((story) => ({ ...story, type: CardType.Story })) 
             : []
         setState({ 
             ...state, 
-            status: PageStatus.Select,
             loading: false,
             connected: res.success,
+            status: PageStatus.Select,
             cards: [createCard, ...cards]
         })
     }
@@ -87,11 +87,9 @@ const HomePage = (): JSX.Element => {
     useEffect(() => {
         switch (state.status) {
             case PageStatus.Connecting:
-                Communication.isConnected()
-                .then(handleConnect)
+                Communication.isConnected().then(handleConnect)
             case PageStatus.Loading:
-                Communication.getAllStories()
-                .then(handleFetch)
+                Communication.getAllStories().then(handleGetAllStories)
                 break;
             default:
                 break;

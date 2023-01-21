@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import type { Point, ContextRowData, ContextMenuData, ContextEventDetails } from 'types/contextMenu'
-import styles from 'styles/components/contextMenu.module.scss'
+import styles from 'styles/common/contextMenu.module.scss'
 
 interface ContextMenuState {
     show: boolean
@@ -108,6 +108,7 @@ const ContextMenuItem = ({ data }: ContextMenuItemProps): JSX.Element => {
     return (
         <div
             className={styles.item}
+            id={data.id}
             onContextMenu={(e) => e.preventDefault()}
             onClick={data.action}
             data={data.content ? "content" : undefined}

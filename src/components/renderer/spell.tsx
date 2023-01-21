@@ -3,16 +3,17 @@ import React, { useEffect, useState } from 'react';
 import SpellSlotToggle from 'components/common/spellSlotToggle';
 import { useParser } from 'utils/parser';
 import { getComponents, getSpellRange } from 'utils/calculations';
+import Communication from 'utils/communication';
+import Localization from 'utils/localization';
+import SpellData from 'structures/spell';
 import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
 import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
 import { SpellContent, SpellMetadata } from 'types/database/files/spell';
 import { RendererObject } from 'types/database/editor';
 import { DBResponse } from 'types/database';
 import { RollMode } from 'types/elements';
-import styles from 'styles/renderer.module.scss';
-import Localization from 'utils/localization';
-import SpellData from 'structures/spell';
 import ICreatureStats from 'types/database/files/iCreatureStats';
+import styles from 'styles/renderer.module.scss';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
@@ -31,7 +32,7 @@ type SpellProps = React.PropsWithRef<{
 }>
 
 type SpellFileRendererProps = React.PropsWithRef<{
-    file: FileData<SpellContent,SpellMetadata>
+    file: FileData<SpellContent,SpellMetadata,undefined>
     stats?: ICreatureStats
 }>
 
@@ -173,8 +174,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
     
     useEffect(() => {
         if (spellIds && spellIds.length > 0) {
-            fetch(`/api/database/getManyMetadata?fileIds=${spellIds}`)
-            .then((res) => res.json())
+            Communication.getManyMetadata(spellIds)
             .then((res: DBResponse<FileGetManyMetadataResult>) => {
                 if (res.success) {
                     setSpells(res.result as FileGetManyMetadataResult)
@@ -183,7 +183,6 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
                     setSpells([])
                 }
             })
-            .catch(console.error)
         } else {
             setSpells([])
         }

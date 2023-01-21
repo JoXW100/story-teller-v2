@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
-import { DBResponse } from "types/database"
 import { FileGetManyMetadataResult, FileMetadata } from "types/database/files"
+import Communication from "utils/communication"
+import { arrayUnique } from "utils/helpers"
 
 type ProcessFunction<T extends FileMetadata> = (ids: string[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: string[] }>
 
-export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: ProcessFunction<T> = null): FileGetManyMetadataResult<T> => {
-    const [files, setFiles] = useState<FileGetManyMetadataResult<T>>([])
+export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
+    const [state, setState] = useState<[FileGetManyMetadataResult<T>, boolean]>([[], true])
     useEffect(() => {
         if (fileIDs && fileIDs.length > 0) {
             new Promise(async (resolve) => {
@@ -16,18 +17,16 @@ export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: Proces
                 let { resolved, ids } = rest
                     .map((x) => x.trim())
                     .reduce((prev, value) => (
-                        files.some((x) => String(x.id) == value)
-                        ? { resolved: [...prev.resolved, files.find((file) => String(file.id) === value)], ids: prev.ids }
+                        state[0].some((x) => String(x.id) == value)
+                        ? { resolved: [...prev.resolved, state[0].find((file) => String(file.id) === value)], ids: prev.ids }
                         : { ids: [...prev.ids, value], resolved: prev.resolved }
                     ), { resolved: [], ids: [] } as { resolved: FileGetManyMetadataResult, ids: string[] })
 
                 if (ids.length > 0) {
-                    let response = await fetch(`/api/database/getManyMetadata?fileIds=${ids}`)
-                    let res: DBResponse<FileGetManyMetadataResult> = await response.json()
+                    let res = await Communication.getManyMetadata(arrayUnique(ids))
                     if (res.success) {
-                        let values = ids
-                            .map((id) => (res.result as FileGetManyMetadataResult)
-                            .find((x) => String(x.id) == id))
+                        let result = res.result
+                        let values = ids.map((id) => result.find((x) => String(x.id) == id))
                         resolve([...results, ...resolved, ...values])
                     } else {
                         console.warn("Failed fetching files", res.result);
@@ -36,16 +35,16 @@ export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: Proces
                 }
                 resolve([...results, ...resolved])
             })
-            .then((res: FileGetManyMetadataResult) => {
-                setFiles(res.sort((a,b) => String(a.id).localeCompare(String(b.id))) as any)
+            .then((res: FileGetManyMetadataResult<T>) => {
+                setState([res.sort((a,b) => String(a.id).localeCompare(String(b.id))), false])
             })
             .catch(console.error)
         } else {
-            setFiles([])
+            setState([[], false])
         }
     }, [fileIDs])
 
-    return files
+    return state
 }
 
 export type {

@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { ElementDictionary } from "elements";
 import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
-import { DBResponse } from "types/database";
+import { DBResponse, ObjectId } from "types/database";
 import styles from 'styles/renderer.module.scss';
+import Communication from "./communication";
+import { arrayUnique } from "./helpers";
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -174,28 +176,21 @@ class Parser
     }
 
     private static async resolveQueries(tree: ParserObject): Promise<QueryResult> {
-        var queries: Queries = this.getQueries(tree)
-        var keys = Object.keys(queries)
-        var filtered = keys.filter((key) => !(key in this.queries))
+        let queries: Queries = this.getQueries(tree)
+        let keys = Object.keys(queries)
+        let filtered = keys.filter((key) => !(key in this.queries))
         
         if (filtered.length > 0) {
-            var response: DBResponse<FileGetManyMetadataResult>
-            try {
-                var data = await fetch(`/api/database/getManyMetadata?fileIds=${filtered}`)
-                response = await data.json()
-            } catch (error) {
-                throw new ParseError("Failed when fetching metadata: " + error)
-            }
-            
+            let response = await Communication.getManyMetadata(arrayUnique(filtered))
             if (!response.success)
                 throw new ParseError("Failed to load some file out of files with ids: " + JSON.stringify(filtered))
-            var result = response.result as FileGetManyMetadataResult
+                let result = response.result as FileGetManyMetadataResult
             result.forEach((res) => {
                 this.queries[String(res.id)] = res
             })
         }
         
-        var res: QueryResult = {}
+        let res: QueryResult = {}
         for (var key in queries) {
             res[key] = this.queries[key]
         }

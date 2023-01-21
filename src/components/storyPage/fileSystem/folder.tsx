@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
@@ -6,11 +6,9 @@ import Localization from 'utils/localization';
 import IconClosed from '@mui/icons-material/FolderSharp';
 import IconOpen from '@mui/icons-material/FolderOpenSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
-import UploadIcon from '@mui/icons-material/Upload';
 import ImportIcon from '@mui/icons-material/DownloadSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
-import FileInput from './fileInput';
 import { FileStructure } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import { InputType } from 'types/context/fileSystemContext';
@@ -34,13 +32,23 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({
         open: Boolean(file.open),
-        selected: false,
         highlight: false,
         inEditMode: false,
+        selected: context.fileId == file.id,
         text: file.name
     });
+    const ref = useRef<HTMLInputElement>()
+    const contextID = file.id + "-context-rename-item"
 
     const Icon = useMemo(() => state.open ? IconOpen : IconClosed, [state.open])
+
+    const cancelEdit = () => {
+        setState({ ...state, inEditMode: false })
+    }
+
+    const breakEdit = () => {
+        setState({ ...state, text: file.name, inEditMode: false })
+    }
 
     const changeState = () => {
         var value = { ...state, open: !state.open }
@@ -48,20 +56,18 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
         dispatch.setFileState(file, value.open);
     }
 
-    useEffect(() => {
-        if (!state.inEditMode && state.text !== file.name) {
-            dispatch.renameFile(file, state.text, (res) => {
-                if (res.success) {
-                    file.name = state.text;
-                }
-                setState((state) => ({ ...state, inEditMode: false }))
-            })
+    const handleKey = (e: KeyboardEvent) => {
+        if (e.code == 'F2' && context.fileId == file.id) {
+            setState({ ...state, inEditMode: !state.inEditMode })
         }
-    }, [state.inEditMode])
+    }
 
-    useEffect(() => {
-        setState((state) => ({ ...state, selected: hasSelectedChild(file, context.fileId)}));
-    }, [context.fileId])
+    const handleEvent = (e: MouseEvent) => {
+        let target = e.target as any
+        if (state.inEditMode && target !== ref.current && target?.id != contextID) {
+            cancelEdit()
+        }
+    }
 
     const handleContext = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault()
@@ -91,7 +97,8 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
             },
             { 
                 text: Localization.toText('create-rename'), 
-                icon: RenameIcon, 
+                icon: RenameIcon,
+                id: contextID,
                 action: () => setState((state) => ({ ...state, inEditMode: true }))
             },
             { 
@@ -142,6 +149,10 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
         window.dragData = { file: file }
     }
 
+    const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setState({ ...state, text: e.target.value })
+    }
+
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         if (window.dragData?.file) {
             e.preventDefault();
@@ -150,6 +161,39 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
             }
         }
     }
+
+    useEffect(() => {
+        if (!state.inEditMode && state.text !== file.name) {
+            dispatch.renameFile(file, state.text, (res) => {
+                if (res.success) {
+                    file.name = state.text;
+                }
+                setState((state) => ({ ...state, inEditMode: false }))
+            })
+        }
+    }, [state.inEditMode])
+
+    useEffect(() => {
+        if (state.inEditMode) {
+            ref.current?.select()
+            window.addEventListener('click', handleEvent)
+            window.addEventListener('contextmenu', handleEvent)
+            return () => {
+                window.removeEventListener('click', handleEvent)
+                window.removeEventListener('contextmenu', handleEvent)
+            }
+        }
+    }, [state.inEditMode])
+
+    useEffect(() => {
+        setState((state) => ({ ...state, selected: context.fileId == file.id || hasSelectedChild(file, context.fileId)}));
+        if (context.fileId == file.id) {
+            window.addEventListener('keydown', handleKey, true)
+            return () => {
+                window.addEventListener('keydown', handleKey, true)
+            }
+        }
+    }, [context.fileId, file.id])
 
     const className = !state.open && state.selected
         ? `${styles.folder} ${styles.selected}` 
@@ -173,10 +217,22 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
                 draggable
             >
                 <Icon/>
-                { state.inEditMode 
-                    ?  <FileInput state={state} setState={setState}/> 
-                    : <div className={styles.text}> {file.name} </div>
-                }
+                <input 
+                    ref={ref}
+                    type='text'
+                    spellCheck='false'
+                    disabled={!state.inEditMode} 
+                    onChange={handleChange} 
+                    onKeyDown={(e) => {
+                        if (e.key == 'Enter') {
+                            cancelEdit()
+                        }
+                        if (e.key == 'Escape') {
+                            breakEdit()
+                        }
+                    }}
+                    value={state.text}
+                />
             </div>
             
             { state.open && file.children && (

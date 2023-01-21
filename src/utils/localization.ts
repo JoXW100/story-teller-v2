@@ -1,9 +1,9 @@
-import { LocalizationTextData } from 'types/localization'
+import { TextData } from 'types/localization'
 
 class Localization
 {
     private static language: string;
-    private static data: LocalizationTextData;
+    private static data: Record<string, TextData>;
 
     public static initialize() {
         let localLanguage = localStorage.getItem('language-key');

@@ -1,6 +1,6 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import Database, { failure, success } from "./database";
-import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult } from "types/database/files";
+import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage } from "types/database/files";
 import { DBResponse } from "types/database";
 
 interface StructureCollection {
@@ -18,7 +18,7 @@ class FilesInterface
     }
 
     /** Adds a file to the database */
-    async add(userId: string, storyId: string, holderId: string | null, type: FileType, content: DBContent<any>): Promise<DBResponse<FileAddResult>> {
+    async add(userId: string, storyId: string, holderId: string | null, type: FileType, content: DBContent<any, any>): Promise<DBResponse<FileAddResult>> {
         if (type !== FileType.Folder)
             content.metadata = content.metadata ?? {}
         try {
@@ -52,8 +52,10 @@ class FilesInterface
                     id: '$_id',
                     name: '$content.name',
                     type: '$type',
+                    isOwner: { $eq: ['$_userId', userId] },
                     content: '$content',
-                    metadata: '$content.metadata'
+                    metadata: { $ifNull: ['$content.metadata', {}] },
+                    storage: { $ifNull: ['$content.storage', {}] }
                 }},
                 { $limit: 1 },
                 { $project: { 'content.metadata': 0 }},
@@ -241,9 +243,16 @@ class FilesInterface
 
     /** Changes the metadata of a file in the database */
     async setMetadata(userId: string, storyId: string, fileId: string, metadata: FileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
-        if (typeof metadata !== 'object')
+        if (typeof metadata !== typeof {})
             return failure('Expected type of metadata, object');
         return this.setProperty(userId, storyId, fileId, 'metadata', metadata);
+    }
+
+    /** Changes the metadata of a file in the database */
+    async setStorage(userId: string, storyId: string, fileId: string, storage: FileStorage): Promise<DBResponse<FileSetPropertyResult>> {
+        if (typeof storage !== typeof {})
+            return failure('Expected type of storage, object');
+        return this.setProperty(userId, storyId, fileId, 'storage', storage);
     }
     
     /** Gets the file structure of story in the database */

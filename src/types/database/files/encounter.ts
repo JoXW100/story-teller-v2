@@ -1,4 +1,4 @@
-import { FileContent, FileMetadata } from "."
+import { FileContent, FileMetadata, FileStorage } from "."
 
 interface EncounterContent extends FileContent {
     text: string
@@ -20,8 +20,13 @@ interface EncounterMetadata extends FileMetadata {
     xp?: number
 }
 
+interface EncounterStorage extends FileStorage {
+    cards: IEncounterCardData[]
+}
+
 export type {
     EncounterContent,
     EncounterMetadata,
+    EncounterStorage,
     IEncounterCardData
 }

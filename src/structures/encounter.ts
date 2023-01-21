@@ -3,33 +3,17 @@ import EncounterCardData from "./encounterCardData";
 import FileData from "./file";
 
 
+type Dispatch<T extends IEncounterCardData> = React.Dispatch<React.SetStateAction<T[]>>
 
-class EncounterData extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
+class EncounterData<T extends IEncounterCardData> extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
 {
-    protected readonly cards: IEncounterCardData[];
-    protected readonly setCards: React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
+    protected readonly storage: T[];
+    protected readonly dispatch: Dispatch<T>;
 
-    public constructor(metadata: EncounterMetadata, state: [IEncounterCardData[], React.Dispatch<IEncounterCardData[]>] = undefined) {
+    public constructor(metadata: EncounterMetadata, cards: T[], dispatch: Dispatch<T>) {
         super(metadata);
-        if (state) {
-            this.cards = state[0]
-            this.setCards = state[1]
-        }
-    }
-
-    public getCard(index: number): EncounterCardData {
-        if (!this.cards[index]) {
-            this.cards[index] = {}
-        }
-        return new EncounterCardData(this.cards[index], (card) => {
-            if (this.setCards) {
-                this.setCards((cards) => {
-                    let dupe = [...cards]
-                    dupe[index] = (card as CallableFunction)(dupe[index])
-                    return dupe
-                })
-            }
-        })
+        this.storage = cards ?? []
+        this.dispatch = dispatch
     }
 
     public get name(): string {
@@ -56,13 +40,25 @@ class EncounterData extends FileData<EncounterMetadata> implements Required<Enco
         return this.metadata.xp ?? 0
     }
 
-    public get challengeText():string {
+    public get challengeText(): string {
         let fraction: string = this.challenge > 0
             ? (this.challenge < 1
                 ? `1/${Math.floor(1/this.challenge)}` 
                 : String(this.challenge)) 
             : '0'
         return `${fraction} (${this.xp} XP)`
+    }
+
+    public get cards(): IEncounterCardData[] {
+        return this.storage.map((card, index) => new EncounterCardData(card, (c) => {
+            if (this.dispatch) {
+                this.dispatch((cards) => {
+                    let dupe = [...cards]
+                    dupe[index] = (c as CallableFunction)(dupe[index])
+                    return dupe
+                })
+            }
+        }))
     }
 }
 

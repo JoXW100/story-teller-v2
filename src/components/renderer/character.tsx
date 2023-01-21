@@ -13,7 +13,7 @@ import CharacterData from 'structures/character';
 import styles from 'styles/renderer.module.scss';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
-    file: FileData<CharacterContent,CharacterMetadata>
+    file: FileData<CharacterContent,CharacterMetadata,undefined>
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
@@ -34,12 +34,12 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
             <Elements.Align>
                 <Elements.Block>
                     <Elements.Header1> {character.name} </Elements.Header1>
-                    {`${character.size} ${character.type}, ${character.alignment}`}
+                    {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
                     <Elements.Line/>
                     <Elements.Image options={{href: character.portrait}}/>
                     <Elements.Line/>
                     <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
-                    <div><Elements.Bold>Gender </Elements.Bold>{character.gender}</div>
+                    <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
                     <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
                     <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>

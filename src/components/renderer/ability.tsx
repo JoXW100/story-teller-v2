@@ -22,7 +22,7 @@ type AbilityGroupsProps = React.PropsWithRef<{
 }>
 
 type AbilityFileRendererProps = React.PropsWithRef<{
-    file: FileData<AbilityContent,AbilityMetadata>
+    file: FileData<AbilityContent,AbilityMetadata,undefined>
     stats?: ICreatureStats
 }>
 
@@ -181,7 +181,7 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
 }
 
 const AbilityToggleRenderer = ({ file, stats = {} }: AbilityLinkRendererProps): JSX.Element => {
-    const canClose = file.metadata.type !== AbilityType.Feature
+    const canClose = file.metadata?.type !== AbilityType.Feature
     const [open, setOpen] = useState(!canClose);
 
     const handleClick = () => {
@@ -225,7 +225,7 @@ const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
 } 
 
 export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Element => {
-    const abilities = useFiles<AbilityMetadata>(abilityIds, processFunction)
+    const [abilities] = useFiles<AbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<AbilityCategory>({})
 
     useEffect(() => {

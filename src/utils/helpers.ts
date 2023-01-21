@@ -11,3 +11,15 @@ export const arraysAreEqual = (a: any[], b: any[]): boolean => {
 
     return true;
 }
+
+export const arrayUnique = <T extends string | number | symbol>(array: T[]): T[] => {
+    let unique = new Set<T>()
+    return array.reduce((prev, value) => {
+        if (!(value in unique)) {
+            unique.add(value)
+            return [...prev, value]
+        } else {
+            return prev
+        }
+    }, [] as T[])
+}

@@ -11,8 +11,8 @@ $componentColor: document;
     }
 
     &::-webkit-scrollbar-track {
-        @include color(forth);
-        visibility: hidden;
+        @include color(second);
+        visibility: visible;
         
         &:hover { visibility: visible; }
     }
@@ -27,7 +27,7 @@ $componentColor: document;
 }
 
 .main {
-    @include color(document);
+    @include color(forth);
     @include componentScroll();
     display: flex;
     flex-direction: column;
@@ -245,8 +245,6 @@ $componentColor: document;
     & > b { @extend .label; }
 
     .selection {
-        @include color($componentColor);
-        border: 1px solid var(--color-third);
         font: inherit;
         font-size: small;
         
@@ -257,7 +255,9 @@ $componentColor: document;
         }
 
         & > div:last-child {
+            @include componentScroll();
             @include color(forth);
+            margin-top: 2px;
         }
     }
 }
@@ -280,13 +280,13 @@ $componentColor: document;
     b { @extend .label; }
 
     .list {
-        @include color($componentColor);
         font: inherit;
         font-size: small;
-
+        
         & > div:last-child {
             @include color(forth);
-            border: 1px solid var(--color-third);
+            @include componentScroll();
+            margin-top: 2px;
             & > div {
                 @include color($componentColor);
                 filter: brightness(95%)

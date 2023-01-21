@@ -144,11 +144,14 @@
 
 .box {
     @include color(third);
-    @include borderExtension();
     padding: 5px;
 
     &[data=true] {
         @include colorBorder();
+    }
+    
+    &[data=false] {
+        @include borderExtension();
     }
 }
 

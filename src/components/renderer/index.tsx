@@ -11,7 +11,7 @@ import { FileType, FileData, FileContent, FileMetadata } from 'types/database/fi
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 
-const useRenderer = (template: FileRendererTemplate, file: FileData<any, any>): JSX.Element => {
+const useRenderer = (template: FileRendererTemplate, file: FileData<any,any,any>): JSX.Element => {
     if (!file)
         throw Error("File was null in useRenderer: " + String(file?.id))
 

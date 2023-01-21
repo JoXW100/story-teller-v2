@@ -3,11 +3,11 @@ import { Story } from 'types/database/stories';
 interface StoryCardData extends Story { type: CardType }
 
 export enum PageStatus {
-    Loading = 0,
-    Select = 1,
-    Create = 2,
-    Connecting = 3,
-    NoConnection = 4
+    Loading = "loading",
+    Select = "select",
+    Create = "create",
+    Connecting = "connecting",
+    NoConnection = "noConnection"
 }
 
 export enum CardType {

@@ -1,3 +1,4 @@
+import React from "react"
 
 type ContextMenuData = Record<string, any>
 
@@ -9,7 +10,8 @@ interface Point {
 interface ContextRowData {
     text: string
     icon: any
-    action?: () => void
+    id?: string
+    action?: React.MouseEventHandler
     content?: ContextRowData[]
 }
 

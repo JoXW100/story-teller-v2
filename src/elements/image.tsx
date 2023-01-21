@@ -73,7 +73,7 @@ const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Elemen
             style={{ width: imageOptions.width, flex: imageOptions.flex }}
             data={imageOptions.borderValue}
         >
-            <img src={imageOptions.hrefURL} alt='/defaultImage.jpg'/>
+            <img src={imageOptions.hrefURL ?? '/defaultImage.jpg'} alt='/defaultImage.jpg'/>
         </div>
     )
 }

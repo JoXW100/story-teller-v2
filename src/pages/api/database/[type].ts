@@ -80,7 +80,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     
                     case 'setFileMetadata':
                         return res.status(200).json(await Database.files.setMetadata(userId, body.storyId, body.fileId, body.metadata));
-    
+                    
+                    case 'setFileStorage':
+                        return res.status(200).json(await Database.files.setStorage(userId, body.storyId, body.fileId, body.storage));
+                    
                     default:
                         return res.status(400).json(failure("Missing"));
                 }
@@ -105,7 +108,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata> => {
+const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata, any> => {
     switch (data.type) {
         case FileType.Document:
         case FileType.Creature:

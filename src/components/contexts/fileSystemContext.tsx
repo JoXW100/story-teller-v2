@@ -6,10 +6,12 @@ import CreateFilePopup from 'components/storyPage/fileSystem/createFilePopup';
 import Folder from 'components/storyPage/fileSystem/folder'
 import ConfirmationPopup from 'components/common/confirmationPopup';
 import Localization from 'utils/localization';
+import Communication from 'utils/communication';
 import { Context as StoryContext } from "./storyContext";
 import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileAddResult, FileDeleteFromResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
+import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
+
 
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
 
@@ -28,14 +30,12 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             ? { ...prev, folders: [...prev.folders, val] }
             : { ...prev, files: [...prev.files, val] }
         ), { files: [], folders: []} as { files: FileStructure[], folders: FileStructure[]})
-        
-        var key = 0;
         return [
             ...folders.sort((a,b) => a.name.localeCompare(b.name)).map((x) => (
-                <Folder key={key++} file={x}/>
+                <Folder key={String(x.id)} file={x}/>
             )),
             ...files.sort((a,b) => a.name.localeCompare(b.name)).map((x) => (
-                <File key={key++} file={x}/>
+                <File key={String(x.id)} file={x}/>
             ))
         ]
     }
@@ -45,23 +45,13 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             <CreateFilePopup 
                 type={type} 
                 callback={(res) => {
-                    fetch(`/api/database/${res.type === InputType.Import ? 'addFileFromData' : 'addFile'}`, {
-                        method: 'PUT',
-                        body: JSON.stringify({ 
-                            storyId: context.story.id, 
-                            holderId: holder,
-                            name: res.data.name, 
-                            type: res.data.type,
-                            data: res.data.data
-                        })
-                    })
-                    .then((res) => res.json())
-                    .then((res: DBResponse<FileAddResult>) => {
-                        if (!res.success)
-                            console.warn(res.result)
-                    })
-                    .finally(() => setState({ ...state, fetching: true}))
-                    .catch(console.error);
+                    if (res.type === InputType.Import) {
+                        Communication.addFileFromData(context.story.id, holder, res.data.name, res.data.type, res.data.data)
+                        .then(() => setState({ ...state, fetching: true}))
+                    } else {
+                        Communication.addFile(context.story.id, holder, res.data.name, res.data.type)
+                        .then(() => setState({ ...state, fetching: true}))
+                    }
                 }}
             />
         );
@@ -77,23 +67,15 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {
-                        fetch('/api/database/deleteFile', {
-                            method: 'DELETE',
-                            body: JSON.stringify({ 
-                                storyId: context.story.id, 
-                                fileId: file.id 
-                            })
-                        })
-                        .then((res) => res.json())
-                        .then((res: DBResponse<FileDeleteFromResult>) => {
+                        Communication.deleteFile(context.story.id, file.id)
+                        .then((res) => {
                             if (!res.success) {
                                 console.warn(res.result);
                             } else if (selected) {
                                 router.push('../' + context.story.id)
                             }
+                            setState({ ...state, fetching: true})
                         })
-                        .finally(() => setState({ ...state, fetching: true}))
-                        .catch(console.error);
                     }
                 }}  
             />
@@ -101,78 +83,52 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     }
 
     const renameFile = (file: FileStructure, name: string, callback: Callback<FileRenameResult>) => {
-        fetch('/api/database/renameFile', {
-            method: 'PUT',
-            body: JSON.stringify({ 
-                storyId: context.story.id, 
-                fileId: file.id,
-                name: name
-            })
-        })
-        .then((res) => res.json())
-        .then((res: DBResponse<FileRenameResult>) => {
+        Communication.renameFile(context.story.id, file.id, name)
+        .then((res) => {
             if (!res.success) {
                 console.warn(res.result);
             }
             callback(res);
         })
-        .catch(console.error);
     }
 
     const moveFile = (file: FileStructure, target: FileStructure) => {
-        fetch('/api/database/moveFile', {
-            method: 'PUT',
-            body: JSON.stringify({ 
-                storyId: context.story.id, 
-                fileId: file.id,
-                targetId: target?.id ?? context.story.root
-            })
-        })
-        .then((res) => res.json())
-        .then((res: DBResponse<FileMoveResult>) => {
+        Communication.moveFile(context.story.id, file.id, target?.id ?? context.story.root)
+        .then((res) => {
             if (!res.success) {
                 console.warn(res.result);
             }
             setState({ ...state, fetching: true})
         })
-        .catch(console.error);
     }
 
     const setFileState = (file: FileStructure, state: boolean, callback: Callback<FileSetPropertyResult>) => {
-        fetch('/api/database/setFileState', {
-            method: 'PUT',
-            body: JSON.stringify({
-                storyId: context.story.id, 
-                fileId: file.id,
-                state: state
-            })
-        })
-        .then((res) => res.json())
-        .then((res: DBResponse<FileSetPropertyResult>) => {
+        Communication.setFileState(context.story.id, file.id, state)
+        .then((res) => {
             if (!res.success) {
                 console.warn(res.result);
             }
-            callback && callback(res);
+            if (callback) {
+                callback(res);
+            }
         })
-        .catch(console.error);
     }
 
     useEffect(() => {
         if (state.fetching) {
-            !state.loading && setState({ ...state, loading: true})
-            fetch(`/api/database/getFileStructure?storyId=${context.story.id}`, { method: 'GET' })
-            .then((res) => res.json())
+            if (!state.loading) {
+                setState({ ...state, loading: true })
+            }
+            Communication.getFileStructure(context.story.id)
             .then((res: DBResponse<FileGetStructureResult>) => {
-                if (!res.success)
-                    throw new Error(res.result as string);
-                setState((state) => ({ 
-                    ...state, 
-                    files: res.result as FileGetStructureResult ?? [] 
-                }));
-                
+                if (res.success) {
+                    setState((state) => ({ 
+                        ...state, 
+                        files: res.result as FileGetStructureResult ?? [] 
+                    }));
+                }
+                setState((state) => ({ ...state, loading: false, fetching: false}))
             })
-            .finally(() => setState((state) => ({ ...state, loading: false, fetching: false})))
-            .catch(console.error)
         }
     }, [state.fetching])
 

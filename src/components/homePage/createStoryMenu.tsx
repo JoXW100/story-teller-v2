@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Localization from 'utils/localization';
+import Communication from 'utils/communication';
 import { StoryAddResult } from 'types/database/stories';
 import { DBResponse } from 'types/database';
 import { PageStatus } from 'types/homePage';
@@ -20,14 +21,15 @@ const CreateStoryMenu = ({ setStatus }: CreateStoryMenuProps): JSX.Element => {
     }
 
     const handleConfirm = () => {
-        fetch('/api/database/addStory', { method: 'PUT', body: JSON.stringify({name: name, desc: desc })})
-        .then((res) => res.json())
+        Communication.addStory(name, desc)
         .then((res: DBResponse<StoryAddResult>) =>  {
-            if (!res.success)
-                throw new Error(res.result as string);
+            if (res.success) {
                 setStatus(PageStatus.Loading)
+            } else {
+                setName("")
+                setDesc("")
+            }
         })
-        .catch((console.error))
     }
 
     return (

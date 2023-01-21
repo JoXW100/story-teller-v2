@@ -7,7 +7,7 @@ import { RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 
 type DocumentFileRendererProps = React.PropsWithRef<{
-    file: FileData<DocumentContent,DocumentMetadata>
+    file: FileData<DocumentContent,DocumentMetadata,undefined>
     stats?: ICreatureStats
 }>
 

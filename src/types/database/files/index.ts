@@ -2,24 +2,26 @@ import { ObjectId, Document } from 'mongodb'
 import { DateValue, UserId } from ".."
 
 type FileMetadata = Record<string, any>
+type FileStorage = Record<string, any>
 type FileContent = Record<string, any>
 
-interface DBFile<T extends FileMetadata> extends Document {
+interface DBFile<T extends FileMetadata, K extends FileStorage = undefined> extends Document {
     _id?: ObjectId
     _userId: UserId
     _storyId: ObjectId
     _holderId?: ObjectId
     type: FileType
-    content: DBContent<T>
+    content: DBContent<T,K>
     dateCreated: DateValue
     dateUpdated: DateValue
 }
 
-interface DBContent<T extends FileMetadata> {
+interface DBContent<T extends FileMetadata, K extends FileStorage> {
     name: string
     text?: string
     open?: boolean
     metadata?: T
+    storage?: K
 }
 
 interface FileStructure {
@@ -49,16 +51,18 @@ export enum FileType {
     Encounter = "enc",
 }
 
-interface FileData<A extends FileContent, B extends FileMetadata> {
+interface FileData<A extends FileContent, B extends FileMetadata, C extends FileStorage> {
     id: ObjectId
     name: string
     type: FileType
+    isOwner: boolean
     content: A
     metadata: B
+    storage: C
 }
 
 type FileAddResult = ObjectId
-type FileGetResult = FileData<FileContent, FileMetadata>
+type FileGetResult = FileData<FileContent, FileMetadata, FileStorage>
 type FileDeleteResult = boolean
 type FileDeleteFromResult = boolean
 type FileRenameResult = boolean
@@ -75,6 +79,7 @@ export type {
     FileStructure,
     FileMetadataQueryResult,
     FileMetadata,
+    FileStorage,
     FileContent,
     FileAddResult,
     FileGetResult,

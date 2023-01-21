@@ -23,6 +23,7 @@
         position: absolute;
         width: 20px;
         height: 20px;
+        pointer-events: none;
     }
     
     & > .text {
@@ -32,6 +33,7 @@
         font-weight: 100;
         white-space: pre;
         text-overflow: clip;
+        pointer-events: none;
     }
 
     &[data=content] {

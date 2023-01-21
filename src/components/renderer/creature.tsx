@@ -13,7 +13,7 @@ import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import styles from 'styles/renderer.module.scss';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
-    file: FileData<CreatureContent,CreatureMetadata>
+    file: FileData<CreatureContent,CreatureMetadata,undefined>
 }>
 
 type CreatureLinkRendererProps = React.PropsWithRef<{
@@ -34,7 +34,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
             <Elements.Align>
                 <Elements.Block>
                     <Elements.Header1> {creature.name} </Elements.Header1>
-                    {`${creature.size} ${creature.type}, ${creature.alignment}`}
+                    {`${creature.sizeText} ${creature.typeText}, ${creature.alignmentText}`}
                     <Elements.Line/>
                     <Elements.Image options={{ href: creature.portrait }}/>
                     <Elements.Line/>

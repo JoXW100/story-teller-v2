@@ -11,6 +11,7 @@ import { DBResponse } from 'types/database';
 import { PageStatus, StoryCardData } from 'types/homePage';
 import { StoryDeleteResult, StoryUpdateResult } from 'types/database/stories';
 import styles from 'styles/homePage.module.scss'
+import Communication from 'utils/communication';
 
 type StoryCardProps = React.PropsWithRef<{
     data: StoryCardData
@@ -22,10 +23,8 @@ const StoryCard = ({ data, setStatus }: StoryCardProps): JSX.Element => {
 
     const handleClick = () => {
         if (data.type === 'create') {
-            // Navigate to create story page
             setStatus(PageStatus.Create)
         } else {
-            // Navigate to story page
             router.push(`story/${data.id}`)
         }
     }
@@ -66,16 +65,12 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {
-                        fetch('/api/database/deleteStory', { method: 'DELETE',
-                            body: JSON.stringify({ storyId: data.id })
-                        })
-                        .then((res) => res.json())
+                        Communication.deleteStory(data.id)
                         .then((res: DBResponse<StoryDeleteResult>) => {
                             if (!res.success)
-                                console.warn(res.result as string)
+                                console.warn(res.result)
+                            setStatus(PageStatus.Loading)
                         })
-                        .finally(() => setStatus(PageStatus.Loading))
-                        .catch(console.error);
                     }
                 }}  
             />
@@ -89,17 +84,12 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
             values={{ name: data.name, desc: data.desc }} 
             callback={(response) => {
                 if (response) {
-                    fetch('/api/database/updateStory', {
-                        method: 'PUT',
-                        body: JSON.stringify({ storyId: data.id, update: response })
-                    })
-                    .then((res) => res.json())
+                    Communication.updateStory(data.id, response)
                     .then((res: DBResponse<StoryUpdateResult>) => {
                         if (!res.success)
-                            console.warn(res.result as string)
+                            console.warn(res.result)
+                        setStatus(PageStatus.Loading)
                     })
-                    .finally(() => setStatus(PageStatus.Loading))
-                    .catch(console.error);
                 }
             }}
         />)

@@ -10,6 +10,9 @@ class CharacterData extends CreatureData implements Required<CharacterMetadata>
     public get gender(): Gender {
         return this.metadata.gender ?? OptionTypes["gender"].default
     }
+    public get genderText(): string {
+        return  OptionTypes["gender"].options[this.gender]
+    }
 
     public get age(): string {
         return this.metadata.age ?? ""

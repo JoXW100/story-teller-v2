@@ -67,12 +67,25 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.type ?? OptionTypes["creatureType"].default
     }
 
+    public get typeText(): string {
+        return OptionTypes["creatureType"].options[this.type]
+    }
+
+
     public get size(): SizeType {
         return this.metadata.size ?? OptionTypes["creatureSize"].default
     }
 
+    public get sizeText(): string {
+        return OptionTypes["creatureSize"].options[this.size]
+    }
+
     public get alignment(): Alignment {
         return this.metadata.alignment ?? OptionTypes["alignment"].default
+    }
+
+    public get alignmentText(): string {
+        return OptionTypes["alignment"].options[this.alignment]
     }
 
     public get portrait(): string {
