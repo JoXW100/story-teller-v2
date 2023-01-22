@@ -1,4 +1,4 @@
-import { useContext, SyntheticEvent } from 'react';
+import { useContext } from 'react';
 import Loading from 'components/common/loading';
 import { Context } from 'components/contexts/fileContext';
 import useRenderer from 'components/renderer';
@@ -19,7 +19,7 @@ const Renderer = ({ template }: RendererProps): JSX.Element => {
                 { context.fetching
                     ? <Loading className={styles.loading}/>
                     : <div className={styles.contentHolder}>
-                        {render}
+                        { render }
                     </div> 
                 }
             </div>

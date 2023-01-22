@@ -95,6 +95,9 @@ export const buildEditor = (template: TemplateComponent, metadata: FileMetadata 
         case EditInputType.Textarea:
             Component = Components.Textarea;
             break;
+        case EditInputType.LinkList:
+            Component = Components.LinkList;
+            break;
         case EditInputType.List:
             Component = Components.List;
             break;

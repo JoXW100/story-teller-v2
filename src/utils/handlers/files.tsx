@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
+import { ObjectId } from "types/database"
 import { FileGetManyMetadataResult, FileMetadata } from "types/database/files"
 import Communication from "utils/communication"
 import { arrayUnique } from "utils/helpers"
 
-type ProcessFunction<T extends FileMetadata> = (ids: string[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: string[] }>
+type ProcessFunction<T extends FileMetadata> = (ids: ObjectId[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: ObjectId[] }>
 
-export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
+export const useFiles = <T extends FileMetadata>(fileIDs: ObjectId[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
     const [state, setState] = useState<[FileGetManyMetadataResult<T>, boolean]>([[], true])
     useEffect(() => {
         if (fileIDs && fileIDs.length > 0) {
@@ -15,7 +16,7 @@ export const useFiles = <T extends FileMetadata>(fileIDs: string[], func: Proces
                     : { results: [], rest: fileIDs }
 
                 let { resolved, ids } = rest
-                    .map((x) => x.trim())
+                    .map((x) => String(x).trim())
                     .reduce((prev, value) => (
                         state[0].some((x) => String(x.id) == value)
                         ? { resolved: [...prev.resolved, state[0].find((file) => String(file.id) === value)], ids: prev.ids }

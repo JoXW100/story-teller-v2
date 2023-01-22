@@ -150,7 +150,7 @@ const File = ({ file }: FileProps): JSX.Element => {
             className={className} 
             onDragStart={handleDrag}
             onContextMenu={handleContext}
-            draggable
+            draggable={!state.inEditMode}
         >
             <Icon/>
             <input 

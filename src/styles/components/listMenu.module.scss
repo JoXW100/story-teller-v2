@@ -12,17 +12,17 @@ $height: 100px;
     cursor: pointer;
     flex: 1;
 
-    .addRow {
+    & > .addRow {
         display: flex;
         height: $size;
         background: inherit;
         align-items: stretch;
 
-        .button {
+        & > .button {
             width: $size;
         }
 
-        .input {
+        & > .input {
             display: flex;
             height: $size;
             min-width: 0;
@@ -32,17 +32,21 @@ $height: 100px;
             font: inherit;
             padding: 0 5px;
             flex: 1;
+
+            &[data=highlight] {
+                filter: brightness(120%);
+            }
         }
     }
     
-    .content {
+    & > .content {
         display: block;
         flex: 1;
         overflow-y: scroll;
         direction: rtl;
         cursor: default;
 
-        .row {
+        & > .row {
             direction: ltr;
             height: $size;
             display: flex;
@@ -55,9 +59,13 @@ $height: 100px;
                 flex: 1;
                 margin: 0 0 0 5px;
                 min-width: 0;
+
+                &[data=error] {
+                    color: map-get($palette, error) !important;
+                }
             }
         
-            .button {
+            & > .button {
                 width: $size;
                 height: auto;
             }

@@ -1,5 +1,28 @@
 @import '../colors.scss';
 
+@mixin componentScroll() {
+    cursor: auto;
+    &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        @include color(second);
+        visibility: visible;
+        
+        &:hover { visibility: visible; }
+    }
+        
+    &::-webkit-scrollbar-thumb {
+        @include colorInteract(main);
+    }
+
+    &::-webkit-scrollbar-corner {
+        @include color(main);
+    }
+}
+
 .main {
     @include color(third);
     @include colorShadow();
@@ -26,6 +49,7 @@
     }
 
     & > .body {
+        @include componentScroll();
         height: 100%;
         overflow-y: auto;
         overflow-x: hidden;

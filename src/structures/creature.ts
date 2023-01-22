@@ -138,7 +138,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
                     num: "0",
                     mod: String(value),
                     desc: "Max health"
-                };
+                } as RollOptions;
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
                 return {
@@ -146,7 +146,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
                     num: String(this.level),
                     mod: String(mod * this.level + value),
                     desc: "Max health"
-                }
+                } as RollOptions
             case CalculationMode.Auto:
             default:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
@@ -155,7 +155,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
                     num: String(this.level),
                     mod: String(mod * this.level),
                     desc: "Max health"
-                }
+                } as RollOptions
         }
     }
 

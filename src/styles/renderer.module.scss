@@ -211,7 +211,6 @@ $pageHeight: 14in; /* A4 */
     }
     
     .encounterCardInput {
-        @include colorInShadow();
         @include colorText();
         @include color(document);
         display: inline-flex;

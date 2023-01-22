@@ -1,14 +1,14 @@
 import React, { useContext, useMemo } from 'react';
 import FileContext, { Context } from 'components/contexts/fileContext';
 import { Context as StoryContext } from 'components/contexts/storyContext';
-import Divider from 'components/common/divider'
-import Editor from './editor'
+import Divider from 'components/common/divider';
+import Editor from './editor';
+import Renderer from './renderer';
 import Templates from 'data/fileTemplates';
 import Localization from 'utils/localization'
-import Renderer from './renderer';
-import styles from 'styles/storyPage/main.module.scss'
-import { TemplateComponent } from 'types/templates';
+import { EditInputType, TemplateComponent } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
+import styles from 'styles/storyPage/main.module.scss'
 
 const FileView = (): JSX.Element => {
     const [context] = useContext(StoryContext);
@@ -21,8 +21,8 @@ const FileView = (): JSX.Element => {
 
 const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
     switch (template.type) {
-        case "root":
-        case "group":
+        case EditInputType.Root:
+        case EditInputType.Group:
             template.content?.forEach((x) => setDefaults(x, metadata));
             break;
         default:

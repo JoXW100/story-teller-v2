@@ -275,15 +275,12 @@ const EncounterCard = ({ card, creature, id, num }: EncounterCardProps): JSX.Ele
                     <Elements.Bold>AC: </Elements.Bold>
                     {creature.acValue}
                 </div>
-                <div>
-                    <Elements.Bold>Notes: </Elements.Bold>
-                    <textarea 
-                        className={styles.encounterCardTextarea}
-                        value={card.notes} 
-                        onChange={onNotesChange}
-                        placeholder={"Input notes here ..."}
-                    />
-                </div>
+                <textarea 
+                    className={styles.encounterCardTextarea}
+                    value={card.notes} 
+                    onChange={onNotesChange}
+                    placeholder={"Input notes here ..."}
+                />
             </Elements.Box>
         </div>
     )

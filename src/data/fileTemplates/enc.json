@@ -19,8 +19,8 @@
                         "params": { "label": "Description", "key": "description" }
                     },
                     {
-                        "type": "list",
-                        "params": { "label": "Creatures", "key": "creatures", "type": "text", "placeholder": "Creature or Character file IDs ...", "objectID": "creature" }
+                        "type": "linkList",
+                        "params": { "label": "Creatures", "key": "creatures", "fileTypes": ["cre", "cha"], "placeholder": "Creature or Character file IDs .." }
                     },
                     { 
                         "type": "number", 

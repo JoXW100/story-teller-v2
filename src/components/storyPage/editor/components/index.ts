@@ -4,6 +4,7 @@ import Enum from './enum';
 import Group from './group';
 import Text from './text';
 import Textarea from './textarea'
+import LinkList from './linkList'
 import List from './list'
 import Number from './number'
 import Option from './option';
@@ -22,6 +23,7 @@ const Components = {
     Group,
     Text,
     Textarea,
+    LinkList,
     List,
     Number,
     Option,

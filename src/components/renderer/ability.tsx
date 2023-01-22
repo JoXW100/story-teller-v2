@@ -217,7 +217,7 @@ const parseText = async (value: string): Promise<FileGetMetadataResult> => {
 }
 
 const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
-    return (await Promise.all(ids.map((id) => parseText(id))))
+    return (await Promise.all(ids.map((id) => parseText(String(id)))))
     .reduce((prev, ability, index) => (
         ability ? { ...prev, results: [...prev.results, ability] }
                 : { ...prev, rest: [...prev.rest, ids[index] ] }
@@ -225,7 +225,7 @@ const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
 } 
 
 export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Element => {
-    const [abilities] = useFiles<AbilityMetadata>(abilityIds, processFunction)
+    const [abilities, loading] = useFiles<AbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<AbilityCategory>({})
 
     useEffect(() => {
@@ -243,7 +243,7 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
         })
         setCategories(categories)
     }, [abilities, data])
-    return (
+    return !loading && (
         <>
             { Object.keys(categories)
                 .filter((type) => categories[type].content.length > 0)

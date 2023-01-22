@@ -31,8 +31,8 @@
                         "params": { "label": "Portrait", "key": "portrait" }
                     },
                     {
-                        "type": "list",
-                        "params": { "label": "Abilities", "key": "abilities", "type": "text", "placeholder": "Ability file ID ..." }
+                        "type": "linkList",
+                        "params": { "label": "Abilities", "key": "abilities", "fileTypes": ["abi"], "allowText": true, "placeholder": "Ability file ID ..." }
                     },
                     {
                         "type": "group",
@@ -208,9 +208,9 @@
                                 "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1, "editEnabled": true }
                             },
                             {
-                                "type": "list",
+                                "type": "linkList",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spells", "key": "spells", "type": "text", "placeholder": "Spell file ID ..." }
+                                "params": { "label": "Spells", "key": "spells", "fileTypes": ["spe"], "placeholder": "Spell file ID ..." }
                             }
                         ]
                     }

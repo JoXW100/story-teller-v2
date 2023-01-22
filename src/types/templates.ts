@@ -69,7 +69,7 @@ class RootTemplateComponent implements TemplateComponent {
 // --------------
 type ParamTypes = string | number | boolean
 interface FileTemplateParams {
-    [key: string]: ParamTypes
+    [key: string]: ParamTypes | ParamTypes[]
 }
 
 interface BooleanTemplateParams extends FileTemplateParams {
@@ -95,6 +95,14 @@ interface ListTemplateParams extends FileTemplateParams {
     type: string
     default?: string | number
     editEnabled?: boolean
+    placeholder?: string
+}
+
+interface LinkListTemplateParams extends FileTemplateParams {
+    label: string
+    key: string
+    fileTypes: FileType[]
+    allowText: boolean
     placeholder?: string
 }
 
@@ -150,6 +158,7 @@ export enum EditInputType {
     Textarea = 'textarea',
     Number = 'number',
     List = 'list',
+    LinkList = 'linkList',
     Selection = 'selection',
     Option = 'option',
     Enum = 'enum',
@@ -167,6 +176,7 @@ export type {
     EnumTemplateParams,
     GroupTemplateParams,
     ListTemplateParams,
+    LinkListTemplateParams,
     NumberTemplateParams,
     OptionTemplateParams,
     SelectionTemplateParams,

@@ -1,4 +1,4 @@
-import ListTemplateMenu from "./listTemplateMenu";
+import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
 type ListMenuProps = React.PropsWithRef<{
@@ -12,34 +12,34 @@ type ListMenuProps = React.PropsWithRef<{
 }>
 
 const ListMenu = ({ className, onChange, values = [], type = "text", defaultValue = "", editEnabled = false, placeholder }: ListMenuProps): JSX.Element => {
-    const toEditComponent = (item: string, handleChange: (value: string) => void) => {
+    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
         return (
             <input 
                 className={styles.input} 
-                value={item}
+                value={value}
                 type={type}
                 placeholder={placeholder}
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={(e) => onUpdate(e.target.value)}
             />
         )
     }
 
-    const toComponent = (item: string, handleChange: (value: string) => void) => {
+    const Component = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
         return editEnabled ? (
-            toEditComponent(item, handleChange)
+            <EditComponent value={value} onUpdate={onUpdate}/>
         ) : (
             <div className={styles.rowContent}>
-                { item }
+                { value }
             </div>
         )
     }
     
     return (
-        <ListTemplateMenu
+        <ListTemplateMenu<string | number>
             className={className}
             onChange={onChange}
-            toComponent={toComponent}
-            toEditComponent={toEditComponent}
+            Component={Component}
+            EditComponent={EditComponent}
             defaultValue={defaultValue}
             values={values}
         />

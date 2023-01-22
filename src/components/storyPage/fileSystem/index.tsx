@@ -37,7 +37,7 @@ const FileMenuHeader = (): JSX.Element => {
             > 
                 <FolderIcon/> 
             </div>
-            {/**
+            {/*
             <div 
                 className={styles.upload}
                 onClick={() => dispatch.openCreateFileMenu(InputType.Upload)}
@@ -74,7 +74,7 @@ const FileMenu = (): JSX.Element => {
                 icon: FolderIcon, 
                 action: () => dispatch.openCreateFileMenu(InputType.Folder)
             },
-            /**
+            /*
             { 
                 text: Localization.toText('create-uploadTooltips'), 
                 icon: UploadIcon, 

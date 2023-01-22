@@ -1,29 +1,30 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { arraysAreEqual } from "utils/helpers";
+import React, { useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styles from 'styles/components/listMenu.module.scss';
 
-type ListItem = any
-
-type ListTemplateMenuProps = React.PropsWithoutRef<{
-    className: string
-    onChange: (items: ListItem[]) => void
-    toComponent: (value: ListItem, onChange: (value: ListItem) => void) => JSX.Element
-    toEditComponent: (value: ListItem, onChange: (value: ListItem) => void) => JSX.Element
-    defaultValue: ListItem
-    values: ListItem[]
+type ListTemplateComponent<T> = React.PropsWithoutRef<{
+    value: T
+    onUpdate: (value: T) => void
 }>
 
-const ListTemplateMenu = ({ className, onChange, toComponent, toEditComponent, 
-                            defaultValue = {}, values = [] }: ListTemplateMenuProps): JSX.Element => {
-    const [value, setValue] = useState(defaultValue);
+type ListTemplateMenuProps<T> = React.PropsWithoutRef<{
+    className: string
+    onChange: (items: T[]) => void
+    Component: (props: ListTemplateComponent<T>) => JSX.Element
+    EditComponent: (props: ListTemplateComponent<T>) => JSX.Element
+    defaultValue: T
+    values: T[]
+}>
 
-    const handleEditChange = (value: ListItem) => {
+function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, defaultValue, values = [] }: ListTemplateMenuProps<T>): JSX.Element {
+    const [value, setValue] = useState<T>(defaultValue);
+
+    const handleEditChange = (value: T) => {
         setValue(value)
     }
 
-    const handleChange = (value: ListItem, index: number) => {
+    const handleChange = (value: T, index: number) => {
         values = [...values]
         values[index] = value
         onChange(values)
@@ -38,30 +39,26 @@ const ListTemplateMenu = ({ className, onChange, toComponent, toEditComponent,
     const handleRemove = (index: number) => {
         onChange([ ...values.slice(0, index), ...values.slice(index + 1) ])
     }
-
-    const rows = useMemo(() => (
-        values?.map((value, index) => (
-            <TemplateListRow 
-                key={index} 
-                onClick={() => handleRemove(index)}
-            > 
-                { toComponent(value, (value) => handleChange(value, index)) }
-            </TemplateListRow>
-        ))
-    ), [values]);
     
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div className={styles.addRow}>
                 <div className={styles.collection}>
-                    { toEditComponent(value, handleEditChange) }
+                    <EditComponent value={value} onUpdate={(value) => handleEditChange(value)}/>
                 </div>
                 <div className={styles.button} onClick={handleAdd}>
                     <AddIcon sx={{ width: '100%' }}/>
                 </div>
             </div>
             <div className={styles.content}>
-                { rows }
+                { values?.map((value, index) => (
+                    <TemplateListRow 
+                        key={index} 
+                        onClick={() => handleRemove(index)}
+                    > 
+                        <Component value={value} onUpdate={(value) => handleChange(value, index)}/>
+                    </TemplateListRow>
+                )) }
             </div>
         </div>
     )
@@ -85,3 +82,6 @@ const TemplateListRow = ({ children, onClick }: TemplateListRowProps): JSX.Eleme
 }
 
 export default ListTemplateMenu;
+export type {
+    ListTemplateComponent
+}

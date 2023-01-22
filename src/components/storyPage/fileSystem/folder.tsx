@@ -51,9 +51,11 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const changeState = () => {
-        var value = { ...state, open: !state.open }
-        setState(value);
-        dispatch.setFileState(file, value.open);
+        if (!state.inEditMode) {
+            var value = { ...state, open: !state.open }
+            setState(value);
+            dispatch.setFileState(file, value.open);
+        }
     }
 
     const handleKey = (e: KeyboardEvent) => {
@@ -110,17 +112,15 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        var data: DragData = window.dragData
-        if (data?.file) {
+        if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            
-            var drag: FileStructure = data.file;
+            var drag: FileStructure = window.dragData.file;
             if (drag && drag.holderId !== file.id && !containsFile(file, drag)) {
                 dispatch.moveFile(drag, file)
             }
-            data.target = null;
-            data.file = null;
+            window.dragData.target = null;
+            window.dragData.file = null;
             setState((state) => ({ ...state, highlight: false }));
         }
     }
@@ -133,14 +133,22 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-        var data: { file?: FileStructure, target?: ObjectId } = window.dragData
-        if (data?.file) {
+        if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            var drag = data.file;
-            if (data.target !== file.id && drag.holderId !== file.id) {
-                data.target = file.id;
+            var drag = window.dragData.file;
+            if (window.dragData.target !== file.id && drag.holderId !== file.id) {
+                window.dragData.target = file.id;
                 setState((state) => ({ ...state, highlight: true }));
+            }
+        }
+    }
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        if (window.dragData?.file) {
+            e.preventDefault();
+            if (window.dragData.target !== file.id) {
+                setState((state) => ({ ...state, highlight: false }));
             }
         }
     }
@@ -151,15 +159,6 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         setState({ ...state, text: e.target.value })
-    }
-
-    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        if (window.dragData?.file) {
-            e.preventDefault();
-            if (window.dragData.target !== file.id) {
-                setState((state) => ({ ...state, highlight: false }));
-            }
-        }
     }
 
     useEffect(() => {
@@ -214,7 +213,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
                 onDragStart={handleDrag}
                 onContextMenu={handleContext}
                 data={state.open ? "open" : "closed"}
-                draggable
+                draggable={!state.inEditMode}
             >
                 <Icon/>
                 <input 
