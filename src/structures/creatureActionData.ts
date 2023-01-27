@@ -4,7 +4,7 @@ import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
 import { getAttributeModifier } from "utils/calculations";
 import { Attribute, DamageType, DiceType, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionType } from "types/database/editor";
+import { CalculationMode, OptionalAttribute, OptionType } from "types/database/editor";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
@@ -126,17 +126,17 @@ abstract class CreatureActionData<T extends ICreatureActionData> extends FileDat
         return this.metadata.effectDiceNum ?? 0
     }
 
-    private getScalingValue(scaling: ScalingType): number {
+    private getScalingValue(scaling: ScalingType | Attribute | OptionalAttribute): number {
         switch (scaling) {
             case ScalingType.Finesse:
                 return Math.max(this.getScalingValue(ScalingType.DEX), this.getScalingValue(ScalingType.STR));
             case ScalingType.SpellModifier:
-                return this.getScalingValue(ScalingType[this.stats.spellAttribute])
+                return this.getScalingValue(this.stats.spellAttribute)
             case ScalingType.None:
                 return 0;
             default:
-                return scaling in this.stats
-                    ? getAttributeModifier(this.stats, scaling as any) 
+                return Object.values(Attribute).includes(scaling as Attribute) 
+                    ? getAttributeModifier(this.stats, scaling as Attribute) 
                     : 0
         }
     }
