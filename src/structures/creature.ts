@@ -187,10 +187,10 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
             case CalculationMode.Override:
                 return value
             case CalculationMode.Modify:
-                return Math.floor((this.level - 1) / 4) + 2 + value;
+                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + value;
             case CalculationMode.Auto:
             default:
-                return Math.floor((this.level - 1) / 4) + 2
+                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2
         }
     }
 
