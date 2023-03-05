@@ -1,10 +1,16 @@
 import { DXIcon, D4Icon, D6Icon, D8Icon, D10Icon, D12Icon, D20Icon, D100Icon } from "assets/dice";
+import Random from "utils/random";
 
 class Dice {
     private readonly type: number;
+    private static random = new Random()
     
     constructor(type: number | string) {
-        this.type = parseInt(String(type));
+        let num = parseInt(String(type));
+        if (isNaN(num)) {
+            throw new Error("Error: NaN Dice type")
+        }
+        this.type = num
     }
 
     public get icon(): any {
@@ -38,8 +44,8 @@ class Dice {
 
     /** Returns the average value of a given number of dice */
     static average(type: number | string, num: number): number {
-        var t: number = parseInt(String(type))
-        return t <= 0 
+        let t: number = parseInt(String(type))
+        return isNaN(t) || t <= 0
             ? 0 
             : Math.floor((t + 1) / 2.0 * num)
     }
@@ -56,7 +62,7 @@ class Dice {
 
     /** Returns a number of random values in the range [1..type] */
     public rollOnce(): number {
-        return Math.ceil(Math.random() * this.type);
+        return Math.ceil(Dice.random.random() * this.type);
     }
 }
 
