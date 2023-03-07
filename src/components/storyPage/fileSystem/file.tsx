@@ -5,6 +5,7 @@ import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
+import DuplicateIcon from '@mui/icons-material/DifferenceSharp';
 import CharacterIcon from '@mui/icons-material/PersonSharp';
 import SpellIcon from '@mui/icons-material/AutoAwesomeSharp';
 import { CrossedSwords, DragonIcon, HandIcon } from 'assets/icons';
@@ -137,6 +138,11 @@ const File = ({ file }: FileProps): JSX.Element => {
                 text: Localization.toText('create-delete'), 
                 icon: RemoveIcon, 
                 action: () => dispatch.openRemoveFileMenu(file)
+            },
+            { 
+                text: Localization.toText('create-createCopy'), 
+                icon: DuplicateIcon, 
+                action: () => dispatch.createCopy(file)
             }
         ], { x: e.pageX, y: e.pageY }, true)
     }
@@ -157,7 +163,7 @@ const File = ({ file }: FileProps): JSX.Element => {
                 ref={ref}
                 type='text'
                 spellCheck='false'
-                disabled={!state.inEditMode} 
+                disabled={!state.inEditMode}
                 onChange={handleChange} 
                 onKeyDown={(e) => {
                     if (e.key == 'Enter') {

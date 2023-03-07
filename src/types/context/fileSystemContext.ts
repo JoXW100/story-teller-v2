@@ -15,6 +15,7 @@ interface FileSystemContextDispatch extends ContextDispatch {
     renameFile: (file: FileStructure, name: string, callback?: Callback<FileRenameResult>) => void
     moveFile: (file: FileStructure, target: FileStructure) => void
     setFileState: (file: FileStructure, state: boolean, callback?: Callback<FileSetPropertyResult>) => void
+    createCopy: (file: FileStructure) => void
 }
 
 type Callback<T> = (res: DBResponse<T>) => void

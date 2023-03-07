@@ -1,6 +1,6 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import Database, { failure, success } from "./database";
-import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage } from "types/database/files";
+import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult } from "types/database/files";
 import { DBResponse } from "types/database";
 
 interface StructureCollection {
@@ -34,6 +34,35 @@ class FilesInterface
             }
             let result = await this.collection.insertOne(file)
             return success(result.insertedId);
+        } catch (error) {
+            return failure(error.message);
+        }
+    }
+
+    /** Adds a copy of a file to the database */
+    async addCopy(userId: string, storyId: string, holderId: string | null, fileId: string, name: string): Promise<DBResponse<FileAddCopyResult>> {
+        try {
+            let date = Date.now();
+            let result = (await this.collection.aggregate([
+                { $match: {
+                    _userId: userId,
+                    _id: new ObjectId(fileId),
+                    _storyId: new ObjectId(storyId)
+                }},
+                { $addFields: {
+                    _holderId: new ObjectId(holderId),
+                    'content.name': name,
+                    dateCreated: date,
+                    dateUpdated: date
+                }},
+                { $project: { _id: 0 }},
+                { $merge: {
+                    into: 'files',
+                    whenMatched: 'fail',
+                    whenNotMatched: 'insert'
+                }}
+            ]).toArray())[0];
+            return success(true);
         } catch (error) {
             return failure(error.message);
         }
@@ -191,7 +220,8 @@ class FilesInterface
                 }},
                 { $addFields: {
                     _holderId: { $ifNull: [{ $first: '$holder._id' }, '$_holderId']}
-                }}, 
+                }},
+                { $project: { holder: 0 }},
                 { $merge: {
                     into: 'files',
                     whenMatched: 'replace',

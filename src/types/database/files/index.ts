@@ -62,6 +62,7 @@ interface FileData<A extends FileContent, B extends FileMetadata, C extends File
 }
 
 type FileAddResult = ObjectId
+type FileAddCopyResult = boolean
 type FileGetResult = FileData<FileContent, FileMetadata, FileStorage>
 type FileDeleteResult = boolean
 type FileDeleteFromResult = boolean
@@ -82,6 +83,7 @@ export type {
     FileStorage,
     FileContent,
     FileAddResult,
+    FileAddCopyResult,
     FileGetResult,
     FileDeleteResult,
     FileDeleteFromResult,

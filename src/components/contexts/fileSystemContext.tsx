@@ -114,6 +114,34 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         })
     }
 
+    const createCopy = (file: FileStructure) => {
+        let num = 0;
+        let name = file.name;
+        try {
+            const regex = RegExp(/(.*) \(([0-9]+)\)$/)
+            let res = regex.exec(file.name);
+            console.log("createCopy-regex", res)
+            if (res) {
+                let val = parseInt(res[2])
+                num = isNaN(val) ? 0 : val
+                name = res[1]
+            }
+        } catch (error) {
+            console.error(error)
+        }
+
+        let newName = `${name} (${num + 1})`
+        console.log("createCopy", newName)
+        Communication.addFileCopy(context.story.id, file.holderId, file.id, newName)
+        .then((res) => {
+            console.log("createCopy-res", res)
+            if (!res.success) {
+                console.warn(res.result);
+            }
+            setState({ ...state, fetching: true})
+        })
+    }
+
     useEffect(() => {
         if (state.fetching) {
             if (!state.loading) {
@@ -139,7 +167,8 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             openRemoveFileMenu: openRemoveFileMenu,
             renameFile: renameFile,
             moveFile: moveFile,
-            setFileState: setFileState
+            setFileState: setFileState,
+            createCopy: createCopy
         }]}>
             { !state.loading && children }
         </Context.Provider>

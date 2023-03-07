@@ -65,6 +65,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     
                     case 'addFileFromData':
                         return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body, body.data)));
+
+                    case 'addFileCopy':
+                        return res.status(200).json(await Database.files.addCopy(userId, body.storyId, body.holderId, body.fileId, body.name));
                         
                     case 'renameFile':
                         return res.status(200).json(await Database.files.rename(userId, body.storyId, body.fileId, body.name));

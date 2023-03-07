@@ -51,6 +51,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     }
 
     const changeState = () => {
+        console.log("changeState")
         if (!state.inEditMode) {
             var value = { ...state, open: !state.open }
             setState(value);
@@ -71,7 +72,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
         }
     }
 
-    const handleContext = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleContext = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
         openContext([
@@ -207,7 +208,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
             onDrop={handleDrop}
             data={state.highlight ? "highlight" : undefined}
         >
-            <div 
+            <button 
                 className={className} 
                 onClick={changeState}
                 onDragStart={handleDrag}
@@ -232,7 +233,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
                     }}
                     value={state.text}
                 />
-            </div>
+            </button>
             
             { state.open && file.children && (
                 <div className={styles.content}>

@@ -1,5 +1,5 @@
 import { DBResponse, ObjectId } from "types/database"
-import { FileAddResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
+import { FileAddCopyResult, FileAddResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
 import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
@@ -78,6 +78,15 @@ class Communication {
             name: name, 
             type: type,
             data: data
+        })
+    }
+
+    public static async addFileCopy(storyId: ObjectId, holderId: ObjectId, fileId: ObjectId, name: string): Promise<DBResponse<FileAddCopyResult>> {
+        return await this.databaseFetch<FileAddCopyResult>('addFileCopy', 'PUT', {
+            storyId: storyId, 
+            holderId: holderId,
+            fileId: fileId,
+            name: name
         })
     }
 

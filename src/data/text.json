@@ -37,6 +37,7 @@
             "create-rename": "Rename",
             "create-edit": "Edit",
             "create-delete": "Delete",
+            "create-createCopy": "Create copy",
             "create-copyId": "Copy ID",
             "create-openFile": "Open file",
             "create-openFileNewTab": "Open file in new tab",

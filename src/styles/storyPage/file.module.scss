@@ -10,6 +10,9 @@
     user-select: none;
     font-weight: 400;
     height: fit-content;
+    border: none;
+    font: inherit;
+    padding: 0;
 
     & > SVG {
         padding: 4px 2px 1px 0;
@@ -42,6 +45,7 @@
         &:disabled {
             background-color: inherit;
             cursor: pointer;
+            pointer-events: none;
         }
     }
 }
