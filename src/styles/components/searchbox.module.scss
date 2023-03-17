@@ -1,0 +1,24 @@
+@import '../colors.scss';
+
+$height: 30px;
+
+.main {
+    @include color(document);
+    display: flex;
+    height: $height;
+    cursor: pointer;
+    align-items: center;
+
+    & > svg {
+        padding: 5px;
+        height: $height;
+        width: $height;
+    }
+
+    & > input {
+        flex: 1;
+        height: $height;
+        min-width: 5px;
+        border: none;
+    }
+}

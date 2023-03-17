@@ -17,6 +17,10 @@ $entryWidth: 250px;
     & > .divider {
         height: calc(100% - $headerHeight);
         width: 100%;
+
+        & > :nth-child(2) {
+            z-index: 4;
+        }
     }
 }
 

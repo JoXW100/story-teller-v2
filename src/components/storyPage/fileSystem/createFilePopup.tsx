@@ -66,7 +66,6 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
 
     const Content = useMemo(() => pageMap[selected]?.content, [selected])
     
-
     return (
         <div className={styles.main}>
             <div className={styles.header}>
@@ -104,6 +103,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
         </div>
     )
 }
+
 const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState<CreateFilePopupData>({ 
         name: "", type: FileType.Document

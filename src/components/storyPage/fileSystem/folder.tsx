@@ -12,7 +12,6 @@ import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { FileStructure } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import { InputType } from 'types/context/fileSystemContext';
-import { DragData } from 'index';
 import styles from 'styles/storyPage/file.module.scss';
 
 const hasSelectedChild = (file: FileStructure, fileId: ObjectId): boolean => {
@@ -23,11 +22,11 @@ const containsFile = (file: FileStructure, holder: FileStructure): boolean => {
     return file.id == holder.id || holder.children?.some((x) => containsFile(file, x));
 }
 
-type FolderProps = React.PropsWithRef<{
+type FolderProps = React.PropsWithChildren<{
     file: FileStructure
 }>
 
-const Folder = ({ file }: FolderProps): JSX.Element => {
+const Folder = ({ file, children }: FolderProps): JSX.Element => {
     const [context] = useContext(StoryContext);
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({
@@ -39,7 +38,6 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
     });
     const ref = useRef<HTMLInputElement>()
     const contextID = file.id + "-context-rename-item"
-
     const Icon = useMemo(() => state.open ? IconOpen : IconClosed, [state.open])
 
     const cancelEdit = () => {
@@ -237,7 +235,7 @@ const Folder = ({ file }: FolderProps): JSX.Element => {
             
             { state.open && file.children && (
                 <div className={styles.content}>
-                    { dispatch.filesToComponent(file.children)}
+                    { children }
                 </div>
             )}
         </div>

@@ -52,7 +52,10 @@
 
 .folder {
     @extend .file;
+    display: flex;
     position: relative;
+    min-width: 0px;
+    width: 100%;
 
     &[data=open]::after {
         position: absolute;

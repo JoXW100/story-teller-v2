@@ -24,7 +24,7 @@ import ConeIcon from './shapes/cone.svg';
 import SphereIcon from './shapes/sphere.svg';
 import LineIcon from './shapes/line.svg';
 import CubeIcon from './shapes/cube.svg';
-
+import { FileType } from 'types/database/files';
 
 export {
     AdvantageIcon,
@@ -39,6 +39,23 @@ export {
     SphereIcon,
     LineIcon,
     CubeIcon
+}
+
+import DocumentIcon from '@mui/icons-material/InsertDriveFileSharp';
+import CharacterIcon from '@mui/icons-material/PersonSharp';
+import FolderIcon from '@mui/icons-material/FolderSharp';
+import SpellIcon from '@mui/icons-material/AutoAwesomeSharp';
+
+export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {
+    [FileType.Ability]: HandIcon,
+    [FileType.Character]: CharacterIcon,
+    [FileType.Creature]: DragonIcon,
+    [FileType.Document]: DocumentIcon,
+    [FileType.Empty]: null,
+    [FileType.Encounter]: CrossedSwords,
+    [FileType.Folder]: FolderIcon,
+    [FileType.Root]: null,
+    [FileType.Spell]: SpellIcon
 }
 
 export const Icons: Record<string,React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {

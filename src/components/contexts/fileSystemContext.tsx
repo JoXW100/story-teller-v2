@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { openPopup } from 'components/common/popupHolder'
-import File from 'components/storyPage/fileSystem/file'
 import CreateFilePopup from 'components/storyPage/fileSystem/createFilePopup';
-import Folder from 'components/storyPage/fileSystem/folder'
 import ConfirmationPopup from 'components/common/confirmationPopup';
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
@@ -11,6 +9,7 @@ import { Context as StoryContext } from "./storyContext";
 import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
 import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
+import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
 
 
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
@@ -20,25 +19,13 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     const [state, setState] = useState<FileSystemContextState>({
         loading: false,
         fetching: true,
+        searchFilter: "",
+        fileFilter: Object.values(FileType)
+            .reduce((prev, key) => ({ ...prev, [key]: true }), {} as Record<FileType, boolean>),
+        showFilterMenu: false,
         files: []
     })
     const router = useRouter();
-
-    const filesToComponent = (files: FileStructure[]): JSX.Element[] => {
-        var { files, folders } = files.reduce((prev, val) => (
-            val.type === FileType.Folder 
-            ? { ...prev, folders: [...prev.folders, val] }
-            : { ...prev, files: [...prev.files, val] }
-        ), { files: [], folders: []} as { files: FileStructure[], folders: FileStructure[]})
-        return [
-            ...folders.sort((a,b) => a.name.localeCompare(b.name)).map((x) => (
-                <Folder key={String(x.id)} file={x}/>
-            )),
-            ...files.sort((a,b) => a.name.localeCompare(b.name)).map((x) => (
-                <File key={String(x.id)} file={x}/>
-            ))
-        ]
-    }
 
     const openCreateFileMenu = (type: InputType, holder: ObjectId = context.story.root) => {
         openPopup(
@@ -142,6 +129,18 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         })
     }
 
+    const setSearchFilter = (filter: string) => {
+        setState({ ...state, searchFilter: filter })
+    }
+
+    const setFileFilter = (filter: Record<FileType, boolean>) => {
+        setState({ ...state, fileFilter: filter })
+    }
+
+    const setFileFilterMenuIsOpen = (isOpen: boolean) => {
+        setState({ ...state, showFilterMenu: isOpen})
+    }
+
     useEffect(() => {
         if (state.fetching) {
             if (!state.loading) {
@@ -152,7 +151,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                 if (res.success) {
                     setState((state) => ({ 
                         ...state, 
-                        files: res.result as FileGetStructureResult ?? [] 
+                        files: res.result ?? [] 
                     }));
                 }
                 setState((state) => ({ ...state, loading: false, fetching: false}))
@@ -161,16 +160,19 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     }, [state.fetching])
 
     return (
-        <Context.Provider value={[state, { 
-            filesToComponent: filesToComponent,
+        <Context.Provider value={[state, {
             openCreateFileMenu: openCreateFileMenu,
             openRemoveFileMenu: openRemoveFileMenu,
             renameFile: renameFile,
             moveFile: moveFile,
             setFileState: setFileState,
-            createCopy: createCopy
+            createCopy: createCopy,
+            setSearchFilter: setSearchFilter,
+            setFileFilter: setFileFilter,
+            setShowFilterMenuState: setFileFilterMenuIsOpen,
         }]}>
             { !state.loading && children }
+            { state.showFilterMenu && <FileFilterMenu/> }
         </Context.Provider>
     )
 }

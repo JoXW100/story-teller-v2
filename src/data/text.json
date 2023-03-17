@@ -34,6 +34,7 @@
             "create-folderTooltips": "New Folder",
             "create-uploadTooltips": "Upload",
             "create-importTooltips": "Import",
+            "create-filterTooltips": "Filter",
             "create-rename": "Rename",
             "create-edit": "Edit",
             "create-delete": "Delete",
@@ -81,7 +82,10 @@
             "spell-ritual": "Ritual",
             "spell-component-V": "Verbal",
             "spell-component-S": "Somatic",
-            "spell-component-M": "Material"
+            "spell-component-M": "Material",
+            "searchbox-placeholder": "Search ...",
+            "filter-menu-header": "Filter",
+            "filter-menu-closeTooltips": "Close Menu"
         }
     }
 }

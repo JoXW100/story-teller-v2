@@ -2,7 +2,7 @@ import CheckIcon from '@mui/icons-material/CheckSharp';
 import styles from 'styles/components/checkbox.module.scss';
 
 type CheckboxProps = React.PropsWithRef<{
-    className: string
+    className?: string
     value: boolean
     onChange: (value: boolean) => void
 }>
