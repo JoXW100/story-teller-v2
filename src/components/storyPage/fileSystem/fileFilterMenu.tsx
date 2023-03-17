@@ -30,7 +30,7 @@ const FileFilterMenu = (): JSX.Element => {
             { Object.keys(CreateFileOptions).map((type) => {
                 const Icon = FileIcons[type] ?? FileIcons[FileType.Document]
                 return (
-                    <div className={styles.fileFilterMenuItem}>
+                    <div className={styles.fileFilterMenuItem} key={type}>
                         <Checkbox 
                             value={state.fileFilter[type]} 
                             onChange={() => handleChange(type as FileType)}/>
