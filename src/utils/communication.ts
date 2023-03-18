@@ -4,9 +4,18 @@ import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetRe
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
+export type Open5eFetchType = "spells" | "monsters"
+
+export interface Open5eResponse<T> {
+    readonly count: number
+    readonly next: string | null
+    readonly previous: string | null
+    readonly results: T[]
+}
 
 class Communication {
     private static readonly root = "/api/database/";
+    private static readonly open5eRoot = "https://api.open5e.com/"
 
     public static async isConnected(): Promise<boolean> {
         let res = await this.databaseFetch<boolean>('isConnected', 'GET')
@@ -168,6 +177,39 @@ class Communication {
         } catch (error) {
             console.error("Error in Communication." + type, params, error)
             return { success: false, result: String(error) }
+        }
+    }
+
+    public static async open5eFetchAll<T>(type: Open5eFetchType, query?: Record<string, string | number>, fields: string[] = []): Promise<Open5eResponse<T>> {
+        try {
+            let limit = 5000;
+            let filterQuery = query && Object.keys(query).length > 0 
+                ? Object.keys(query).map((key) => `${key}=${query[key]}`).join('&') + `&limit=${limit}`
+                : `limit=${limit}`;
+            let fieldQuery = fields.length > 0 
+                ? `/?fields=${fields.join(',')}&${filterQuery}`
+                : `/?${filterQuery}`
+            let data = await fetch(this.open5eRoot + type + fieldQuery)
+            return await data.json() as Open5eResponse<T>
+        } catch (error) {
+            console.error("Error in Communication.open5eFetchAll/" + type, query, fields, error)
+            return {
+                count: 0,
+                next: null,
+                previous: null,
+                results: []
+            } satisfies Open5eResponse<T>
+        }
+    }
+
+    public static async open5eFetchOne<T>(type: Open5eFetchType, id: string): Promise<T | null> {
+        try {
+            let data = await fetch(`${this.open5eRoot}${type}/${id}`)
+            let result = await data.json() as T
+            return result;
+        } catch (error) {
+            console.error("Error in Communication.open5eFetchOne/" + type, id, error)
+            return null
         }
     }
 }

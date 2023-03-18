@@ -31,6 +31,7 @@ export enum InputType {
     File = "file",
     Upload = "upload",
     Folder = "folder",
+    ImportOld = "importOld",
     Import = "import"
 }
 

@@ -8,12 +8,12 @@
     height: 100px;
     animation-name: appearing;
     animation-duration: 1s;
-    transition: 1000ms ease;
+    transition: 500ms ease;
 
     & > svg {
         width: fit-content;
         animation-name: rotating;
-        animation-duration: 5s;
+        animation-duration: 4s;
         animation-timing-function: linear;
         animation-iteration-count: infinite;
     }

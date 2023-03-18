@@ -1,4 +1,5 @@
 import type { ObjectId } from "types/database";
+import { Open5eFetchType } from "./communication";
 
 class Navigation 
 {
@@ -44,6 +45,10 @@ class Navigation
 
     static settingsReturnURL(returnURL: string): URL {
         return new URL(location.origin + returnURL)
+    }
+
+    static open5eURL(type: Open5eFetchType, itemId: string): URL {
+        return new URL(`https://open5e.com/${type}/${itemId}`)
     }
 }
 

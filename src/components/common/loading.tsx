@@ -2,7 +2,7 @@ import LoopIcon from '@mui/icons-material/Loop';
 import styles from 'styles/components/loading.module.scss'
 
 type LoadingProps = React.PropsWithoutRef<{
-    className: string
+    className?: string
 }>
 
 const Loading = ({ className }: LoadingProps): JSX.Element => {

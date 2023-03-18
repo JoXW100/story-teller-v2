@@ -10,9 +10,12 @@ const saveMatchExpr = /([A-z-]+) *saving throw/
 const durationMatchExpr = /([0-9]+)? *([A-z]+)/g
 const challengeMatchExpr = /([0-9]+)(?:\/([0-9]+))?/
 const speedMatchExpr = /(?:([A-z]+) *)?([0-9]+)/g
+const castTimeExpr = /([0-9]+)? *([A-z-]+)/
+const damageMatchExpr = /([0-9]+)d([0-9]+)[ -]+([A-z]+) *damage/
+const damageExcMatchExpr = /([0-9]+)d([0-9]+)/
 
 const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, timeValue: number } => {
-    var res = /([0-9]+)? *([A-z-]+)/.exec(time) ?? []
+    var res = castTimeExpr.exec(time) ?? []
     var type = Object.values(CastingTime).includes(res[2] as CastingTime) 
         ? res[2] as CastingTime 
         : CastingTime.Custom 
@@ -190,14 +193,14 @@ const getDamage = (results: {[key: string]: string}): { damageType?: DamageType,
     let effectDice: DiceType = DiceType.None
     let damageType: DamageType = DamageType.None
     if (results['damage']) {
-        let res = /([0-9]+)d([0-9]+)/.exec(results['damage']) ?? [] // Todo expand
-        effectDiceNum =  Number(res[1]) ? Number(res[1]) : effectDiceNum
-        effectDice = Number(res[2]) ? Number(res[2]) as DiceType : effectDice
+        let res = damageExcMatchExpr.exec(results['damage']) ?? [] // Todo expand
+        effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
+        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2]) as DiceType
         damageType = results['damage type'] as DamageType
     } else {
-        let res = /([0-9]+)d([0-9]+) *([A-z]+) *damage/.exec(results['content']?.toLocaleLowerCase() ?? '') ?? []
-        effectDiceNum =  Number(res[1]) ? Number(res[1]) : effectDiceNum
-        effectDice = Number(res[2]) ? Number(res[2]) as DiceType : effectDice
+        let res = damageMatchExpr.exec(results['content']?.toLocaleLowerCase() ?? '') ?? []
+        effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
+        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2]) as DiceType
         damageType = res[3] as DamageType
     }
     
@@ -253,10 +256,10 @@ const getAlignment = (alignment: string) => {
 const splitHP = (hp: string) => {
     var res = hpSplitExpr.exec(hp ?? "") ?? []
     return {
-        hp: Number(res[1]) ? Number(res[1]) : 0,
-        num: Number(res[2]) ? Number(res[2]) : 0,
-        dice: Number(res[3]) ? Number(res[3]) : 0,
-        mod: Number(res[4]) ? Number(res[4]) : 0
+        hp: isNaN(Number(res[1])) ? 0 : Number(res[1]),
+        num: isNaN(Number(res[2])) ? 0 : Number(res[2]),
+        dice: isNaN(Number(res[3])) ? 0 : Number(res[3]),
+        mod: isNaN(Number(res[4])) ? 0 : Number(res[4])
     }
 }
 
@@ -354,10 +357,10 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
         level: num ? num : 1,
         hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
         health: hp 
-            ? { type: CalculationMode.Override, value: hp } 
+            ? { type: CalculationMode.Auto, value: hp } 
             : { type: CalculationMode.Auto } as OptionType<number>,
         ac: ac 
-            ? { type: CalculationMode.Override, value: ac } 
+            ? { type: CalculationMode.Auto, value: ac } 
             : { type: CalculationMode.Auto } as OptionType<number>,
         resistances: results['resistances'] ?? "",
         advantages: results['advantages'] ?? "", // @todo confirm 

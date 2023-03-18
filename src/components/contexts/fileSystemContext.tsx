@@ -107,7 +107,6 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         try {
             const regex = RegExp(/(.*) \(([0-9]+)\)$/)
             let res = regex.exec(file.name);
-            console.log("createCopy-regex", res)
             if (res) {
                 let val = parseInt(res[2])
                 num = isNaN(val) ? 0 : val
@@ -118,10 +117,8 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         }
 
         let newName = `${name} (${num + 1})`
-        console.log("createCopy", newName)
         Communication.addFileCopy(context.story.id, file.holderId, file.id, newName)
         .then((res) => {
-            console.log("createCopy-res", res)
             if (!res.success) {
                 console.warn(res.result);
             }

@@ -49,7 +49,6 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
     }
 
     const changeState = () => {
-        console.log("changeState")
         if (!state.inEditMode) {
             var value = { ...state, open: !state.open }
             setState(value);

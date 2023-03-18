@@ -11,8 +11,9 @@ interface DragData {
 declare module 'react' {
     export interface HTMLAttributes<T> {
         tooltips?: string
-        disabled?: Boolean
+        disabled?: boolean
         data?: string
+        value?: string
     }
 }
 

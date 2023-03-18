@@ -3,13 +3,40 @@
 $headerHeight: 35px;
 $navbarWidth: 35px;
 
+@mixin componentScroll() {
+    cursor: auto;
+    &::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        @include color(second);
+        visibility: visible;
+        
+        &:hover { visibility: visible; }
+    }
+        
+    &::-webkit-scrollbar-thumb {
+        @include colorInteract(main);
+    }
+
+    &::-webkit-scrollbar-corner {
+        @include color(main);
+    }
+}
+
 .main {
     @include color(background);
     @include colorText();
     @include colorShadow();
+    display: grid;
+    grid-template-rows: $headerHeight minmax(0, 1fr);
     position: absolute;
     top: 80px;
-    width: min(60%, 600px);
+    width: min(70%, var(--popup-width));
+    max-height: calc(100% - 160px);
+    min-height: $headerHeight * 5;
 
     & > .header {
         @include color(main);
@@ -20,7 +47,6 @@ $navbarWidth: 35px;
         justify-content: left;
         font-weight: 700;
         font-size: 18px;
-        height: $headerHeight;
         user-select: none;
         z-index: 100;
 
@@ -44,14 +70,13 @@ $navbarWidth: 35px;
     }
 
     & > .body {
-        display: block;
-        position: relative;
+        display: grid;
+        grid-template-columns: $navbarWidth 1fr;
+        grid-template-rows: 100%;
         
         & > .navigation {
             @include color(third);
-            display: block;
-            width: $navbarWidth;
-
+            z-index: 10;
             & > .icon {
                 width: $navbarWidth;
                 height: $navbarWidth;
@@ -63,11 +88,7 @@ $navbarWidth: 35px;
         }
 
         & > .content {
-            position: absolute;
-            height: 100%;
-            left: $navbarWidth;
-            top: 0;
-            width: calc(100% - $navbarWidth);
+            display: block;
         }
     }
 }
@@ -193,4 +214,143 @@ $navbarWidth: 35px;
     align-items: center;
     padding: 2.5px;
     font-weight: 200;
+}
+
+.inputHeader {
+    @extend .input;
+    @include color(main);
+    @include colorText();
+    flex: 1;
+    z-index: 9;
+    font-weight: bold;
+    padding-left: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    & > .compendiumSpellFilterGroup {
+        margin-left: auto;
+        align-self: flex-end;
+    }
+
+    & > .inputSearchbox {
+        margin-left: auto;
+        align-self: flex-end;
+    }
+}
+
+.inputCompendium {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+}
+
+.inputCompendiumArea {
+    display: grid;
+    grid-template-rows: $headerHeight minmax(0, 1fr);
+    height: calc(100% - 2 * $headerHeight);
+}
+
+.inputCompendiumMenu {
+    @include componentScroll();
+    overflow-y: auto;
+    border-right: 1px solid map-get($palette, "border")
+}
+
+.inputCompendiumValueList {
+    @include componentScroll();
+    @include color("document");
+    position: relative;
+    overflow-y: auto;
+}
+
+.inputCompendiumItem {
+    @extend .input;
+    @include colorInteract("document");
+    display: grid;
+    grid-template-columns: 1fr 11ch 0.8fr 0.8fr 0.8fr 30px;
+    border-bottom: 1px solid map-get($palette, border);
+
+    & > * {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        text-transform: capitalize;
+        padding: 1px;
+    }
+
+    &[data=selected] {
+        @include colorInteract("third");
+    }
+}
+
+.inputCompendiumMenuItem {
+    @extend .input;
+    padding: 5px;
+
+    &[value="0"] {
+        @include colorInteract("third");
+    }
+
+    &[value="1"] {
+        @include colorInteract("forth");
+        padding-left: 15px;
+    }
+
+    &[data=selected] {
+        @include colorInteract("second");
+    }
+}
+
+.inputCompendiumListHeader {
+    @extend .inputCompendiumItem;
+    @include color("second");
+    position: sticky;
+    border: none;
+    padding: 5px;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.compendiumSpellFilterGroup {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    height: 100%;
+    gap: 3px;
+    align-items: center;
+    
+}
+
+.compendiumSpellFilterGroupItem {
+    @include colorInteract(third);
+    font-weight: normal;
+    font-size: small;
+    padding: 5px;
+    display: flex;
+    height: 0.6 * $headerHeight;
+    border-radius: 0.3 * $headerHeight;
+    justify-content: center;
+    align-items: center;
+
+    &[data=selected] {
+        @include colorInteract(forth);
+    }
+}
+
+.inputCompendiumItemButton {
+    @include colorInteract(forth);
+    display: flex;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    height: $headerHeight * 0.6;
+    width: $headerHeight * 0.6;
+    margin-left: auto;
+    justify-self: flex-end;
+    border: none;
+
+    & > svg {
+        height: $headerHeight * 0.45;
+        width: $headerHeight * 0.45;
+    }
 }

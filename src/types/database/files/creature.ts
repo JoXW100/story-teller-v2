@@ -24,6 +24,7 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     proficiency?: OptionType<number>
     initiative?: OptionType<number>
     resistances?: string
+    vulnerabilities?: string // TODO: Implement
     advantages?: string
     dmgImmunities?: string
     conImmunities?: string

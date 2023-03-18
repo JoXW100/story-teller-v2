@@ -1,0 +1,65 @@
+[
+    {
+        "title": "Monsters",
+        "type": "monsters",
+        "fields": ["name", "challenge_rating", "hit_dice", "type", "size"],
+        "headers": ["Name", "CR", "Health", "Type", "Size"]
+    },
+    {
+        "title": "Spells",
+        "type": "spells",
+        "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+        "headers": ["Name", "Level", "Casting Time", "School", "Classes"],
+        "subItems": [
+            {
+                "title": "Bard",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "bard" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Cleric",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "cleric" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Druid",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "druid" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Paladin",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "paladin" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Sorcerer",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "sorcerer" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Warlock",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "warlock" },
+                "fields": ["name", "level", "casting_time", "school", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            },
+            {
+                "title": "Wizard",
+                "type": "spells",
+                "query": { "dnd_class__icontains": "wizard" },
+                "fields": ["name", "level", "school", "dnd_class", "dnd_class"],
+                "headers": ["Name", "Level", "Casting Time", "School", "Classes"]
+            }
+        ]
+    }
+]
