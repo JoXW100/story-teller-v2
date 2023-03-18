@@ -89,6 +89,10 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                         <div><Elements.Bold>Advantages </Elements.Bold>
                             {creature.advantages}
                         </div> 
+                    }{ creature.vulnerabilities.length > 0 && 
+                        <div><Elements.Bold>Vulnerabilities </Elements.Bold>
+                            {creature.vulnerabilities}
+                        </div>
                     }{ creature.dmgImmunities.length > 0 && 
                         <div><Elements.Bold>DMG Immunities </Elements.Bold>
                             {creature.dmgImmunities}

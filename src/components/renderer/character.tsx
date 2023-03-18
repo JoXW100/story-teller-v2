@@ -116,10 +116,14 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                         <div><Elements.Bold>Advantages </Elements.Bold>
                             {character.advantages}
                         </div> 
+                    }{ character.vulnerabilities.length > 0 && 
+                        <div><Elements.Bold>Vulnerabilities </Elements.Bold>
+                            {character.vulnerabilities}
+                        </div>
                     }{ character.dmgImmunities.length > 0 && 
                         <div><Elements.Bold>DMG Immunities </Elements.Bold>
                             {character.dmgImmunities}
-                        </div> 
+                        </div>
                     }{ character.conImmunities.length > 0 && 
                         <div><Elements.Bold>COND Immunities </Elements.Bold>
                             {character.conImmunities}

@@ -122,6 +122,10 @@
                             },
                             { 
                                 "type": "text", 
+                                "params": { "label": "Vulnerabilities", "key": "vulnerabilities", "type": "string" }
+                            },
+                            { 
+                                "type": "text", 
                                 "params": { "label": "DMG Immunities", "key": "dmgImmunities", "type": "string" }
                             },
                             { 

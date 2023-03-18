@@ -220,6 +220,10 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.advantages ?? ""
     }
 
+    public get vulnerabilities(): string {
+        return this.metadata.vulnerabilities ?? ""
+    }
+
     public get dmgImmunities(): string {
         return this.metadata.dmgImmunities ?? ""
     }
