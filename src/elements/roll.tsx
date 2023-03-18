@@ -33,7 +33,8 @@ class Options implements RollOptions {
     }
 
     public get diceValue(): Dice {
-        return new Dice(this.dice)
+        let val = parseInt(this.dice)
+        return new Dice(isNaN(val) ? 0 : val)
     }
 
     public get num(): string {
