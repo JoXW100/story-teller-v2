@@ -54,11 +54,14 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     useEffect(() => {
         setState({ ...state, loading: true, values: [] })
         Communication.open5eFetchAll<Open5eItemInfo>(state.menu.type, state.menu.query, ["slug", "level_int", ...state.menu.fields])
-        .then((res) => setState({ 
-            ...state, 
-            loading: false, 
-            values: res.results
-        }))
+        .then((res) => {
+            setPage(0)
+            setState({ 
+                ...state, 
+                loading: false, 
+                values: res.results
+            })
+        })
     }, [state.menu])
 
     const handleImportClick = () => {
@@ -153,7 +156,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const numPages = Math.ceil(items.length / itemsPerPage)
 
     const handlePaginator = (delta: number) => {
-        setPage(Math.max(0, Math.min(delta, numPages - 1)))
+        setPage(Math.max(0, Math.min(page + delta, numPages - 1)))
     }
 
     return (
