@@ -5,7 +5,7 @@ import Communication from 'utils/communication';
 import { StoryAddResult } from 'types/database/stories';
 import { DBResponse } from 'types/database';
 import { PageStatus } from 'types/homePage';
-import styles from 'styles/homePage.module.scss'
+import styles from 'styles/pages/homePage/menu.module.scss';
 
 type CreateStoryMenuProps = React.PropsWithRef<{
     setStatus: (status: PageStatus) => void
@@ -36,32 +36,26 @@ const CreateStoryMenu = ({ setStatus }: CreateStoryMenuProps): JSX.Element => {
         <div className={styles.createMenu}>
             <div className={styles.menuHeader}>
                 { Localization.toText('createStory-header') }
-                <div className={styles.backButton} onClick={handleBack}>
-                    <CloseIcon sx={{width: "100%", height: "100%" }}/>
-                </div>
-                <div
-                    className={styles.confirmButton}
-                    onClick={handleConfirm}
-                    disabled={disabled}
-                >
+                <button onClick={handleConfirm} disabled={disabled}>
                     { Localization.toText('createStory-confirmation') }
-                </div>
+                </button>
+                <button onClick={handleBack}>
+                    <CloseIcon/>
+                </button>
             </div>
             <div className={styles.inputRow}>
                 { Localization.toText('createStory-namePrompt') + ':' }
                 <input 
                     placeholder={Localization.toText('createStory-namePlaceholder')} 
                     value={name} 
-                    onChange={(e) => setName(e.target.value)}
-                />
+                    onChange={(e) => setName(e.target.value)}/>
             </div>
             <div className={styles.inputRow}>
                 { Localization.toText('createStory-descPrompt') + ':' }
                 <input 
                     placeholder={Localization.toText('createStory-descPlaceholder')} 
                     value={desc} 
-                    onChange={(e) => setDesc(e.target.value)}
-                />
+                    onChange={(e) => setDesc(e.target.value)}/>
             </div>
         </div>
     )

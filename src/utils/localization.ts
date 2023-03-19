@@ -12,9 +12,14 @@ class Localization
     }
 
     /** Returns a text corresponding to the given key  */
-    public static toText(key: string): string {
+    public static toText(key: string, ...args: string[]): string {
         try {
-            return this.data[this.language]?.content[key] ?? ""
+            let text = this.data[this.language]?.content[key] ?? ""
+            // Replace @{x} values in text
+            for (let index = 0; index < args.length; index++) {
+                text = text.replace(`@${index}`, args[index])
+            }
+            return text
         } catch (error) {
             console.warn("No localization text for: " + key)
             return ""

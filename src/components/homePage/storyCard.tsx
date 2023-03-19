@@ -5,13 +5,13 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RemoveIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutline';
 import ConfirmationPopup from 'components/common/confirmationPopup';
+import Communication from 'utils/communication';
 import Localization from 'utils/localization';
 import EditStoryPopup from './editStoryPopup';
 import { DBResponse } from 'types/database';
 import { PageStatus, StoryCardData } from 'types/homePage';
 import { StoryDeleteResult, StoryUpdateResult } from 'types/database/stories';
-import styles from 'styles/homePage.module.scss'
-import Communication from 'utils/communication';
+import styles from 'styles/pages/homePage/storyCard.module.scss'
 
 type StoryCardProps = React.PropsWithRef<{
     data: StoryCardData
@@ -54,7 +54,7 @@ const CreateCardBody = (): JSX.Element => {
 }
 
 const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
-    const handleDelete = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
         const optionYes = Localization.toText('create-confirmationYes');
@@ -77,7 +77,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
         )
     }
 
-    const handleEdit = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleEdit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
         openPopup(<EditStoryPopup 
@@ -98,22 +98,24 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
     return <>
         <div className={styles.label}>{data.name}</div>
         <div className={styles.desc}>{data.desc}</div>
+        <button 
+            className={styles.delete} 
+            onClick={handleDelete}
+            tooltips={Localization.toText("create-delete")}> 
+            <RemoveIcon/>
+        </button>
+        <button
+            className={styles.edit} 
+            onClick={handleEdit}
+            tooltips={Localization.toText("create-edit")}>
+            <EditIcon/> 
+        </button>
         <div className={styles.date}> 
             { new Date(data.dateUpdated).toLocaleDateString("se-SW", { 
                 hour: "numeric", 
                 minute: "numeric" 
             })} 
         </div>
-        <div 
-            className={styles.delete} 
-            onClick={handleDelete}
-            tooltips={Localization.toText("create-delete")}
-        > <RemoveIcon/> </div>      
-        <div 
-            className={styles.edit} 
-            onClick={handleEdit}
-            tooltips={Localization.toText("create-edit")}
-        > <EditIcon/> </div>
     </>
 }
  

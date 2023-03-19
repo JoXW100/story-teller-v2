@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { closePopup } from 'components/common/popupHolder';
 import Localization from 'utils/localization';
-import styles from 'styles/homePage.module.scss'
+import styles from 'styles/pages/homePage/menu.module.scss';
 
 type EditStoryPopupProps = React.PropsWithRef<{
     values: { name: string, desc: string },
@@ -32,16 +32,12 @@ const EditStoryPopup = ({ values, callback }: EditStoryPopupProps):JSX.Element =
         <div className={styles.editMenu}>
             <div className={styles.menuHeader}>
                 { Localization.toText('editStoryPopup-header') }
-                <div className={styles.backButton} onClick={handleBack}>
-                    <CloseIcon sx={{width: "100%", height: "100%" }}/>
-                </div>
-                <div 
-                    className={styles.confirmButton}
-                    onClick={handleConfirm}
-                    disabled={disabled}
-                >
+                <button onClick={handleConfirm} disabled={disabled}>
                     { Localization.toText('editStoryPopup-confirmation') }
-                </div>
+                </button>
+                <button onClick={handleBack}>
+                    <CloseIcon sx={{width: "100%", height: "100%" }}/>
+                </button>
             </div>
             <div className={styles.inputRow}>
                 { Localization.toText('createStory-namePrompt') + ':' }

@@ -1,0 +1,108 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+
+.createMenu {
+    @include colorText();
+    @include color(third);
+    @include colorShadow();
+    display: grid;
+    grid-template-rows: $menuHeaderHeight $menuItemHeight $menuItemHeight;
+    gap: 5px;
+    height: fit-content;
+}
+
+.editMenu {
+    @extend .createMenu;
+    width: min(60%, 800px);
+}
+
+.selectMenu {
+    @include color(third);
+    @include colorShadow();
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax($smallMenuWidth, 1fr));
+    grid-auto-rows: 150px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 20px 20px 20px 20px + $scrollBarWidth;
+    gap: 12px;
+
+    &::-webkit-scrollbar {
+        width: $scrollBarWidth;
+    }
+    
+    &::-webkit-scrollbar-corner {
+        @include color(second);
+    }
+
+    &::-webkit-scrollbar-track {
+        @include color(second);
+        @include colorShadow();
+        width: $scrollBarWidth;
+    }
+
+    &::-webkit-scrollbar-thumb  {
+        @include color(main);
+        @include colorShadow();
+    }
+}
+
+.reconnectMenu {
+    @include colorInteract(interactive);
+    @include colorShadow();
+    @include fontNormal();
+    display: grid;
+    grid-template-columns: 1fr $iconNormalSize;
+    align-items: center;
+    justify-items: center;
+    height: fit-content;
+    justify-self: center;
+    gap: 20px;
+    padding: 10px 10px 10px 30px + $iconNormalSize;
+
+    svg {
+        width: $iconNormalSize;
+        height: $iconNormalSize;
+    }
+}
+
+.menuHeader {
+    @include color(main);
+    @include colorShadow();
+    @include fontHeader2();
+    display: grid;
+    grid-template-columns: 1fr 2 * $smallButtonWidth $smallButtonWidth;
+    grid-template-rows: 1fr;
+    gap: 2px;
+    padding-left: 2ch;
+    align-items: center;
+    user-select: none;
+
+    & > button {
+        @include fontNormal();
+        height: auto;
+        align-self: stretch;
+
+        & > svg {
+            position: relative;
+            width: $iconNormalSize;
+            width: $iconNormalSize;
+        }
+    }
+}
+
+.inputRow {
+    @include color(forth);
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    padding-left: 2ch;
+
+    & > input {
+        align-self: stretch;
+        width: 100%;
+        padding-left: 2ch;
+    }
+}

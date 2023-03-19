@@ -7,6 +7,7 @@ html {
 }
 
 body {
+    @include colorText();
     @include color(background);
     margin: 0;
     height: 100vh;
@@ -18,15 +19,31 @@ body {
 
 div, p, span, textarea {
     tab-size: 4;
- }
+}
+
+button {
+    @include colorInteract(interactive);
+    @include colorText();
+    border: none;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+
+    &:focus-visible {
+        outline: none;
+        border: 1px solid map-get($palette, border)
+    }
+}
+
+input {
+    @include color(document);
+    @include colorText();
+    border: none;
+}
 
 #__next {
     height: 100vh;
-}
-
-code {
-    font-family: $font;
-    outline: none;
+    overflow: hidden;
 }
 
 a {
@@ -43,7 +60,7 @@ input:focus {
 }
 
 SVG {
-   color: map-get($palette, icons); 
+   color: map-get($palette, icons);
 }
 
 [tooltips] {

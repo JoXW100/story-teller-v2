@@ -1,6 +1,6 @@
 import StoryCard from './storyCard';
-import styles from 'styles/homePage.module.scss'
 import { PageStatus, StoryCardData } from 'types/homePage';
+import styles from 'styles/pages/homePage/menu.module.scss';
 
 type SelectStoryMenuProps = React.PropsWithRef<{
     cards: StoryCardData[],
@@ -16,8 +16,7 @@ const SelectStoryMenu = ({ cards, setStatus }: SelectStoryMenuProps): JSX.Elemen
                     <StoryCard 
                         key={index} 
                         data={card} 
-                        setStatus={setStatus}
-                    />
+                        setStatus={setStatus}/>
                 )) 
             }
         </div>

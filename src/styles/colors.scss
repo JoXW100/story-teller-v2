@@ -10,7 +10,8 @@ $palette: (
     border: var(--color-border),
     text: var(--color-text),
     error: var(--color-error),
-    icons: var(--color-icons)
+    icons: var(--color-icons),
+    interactive: var(--color-interactive)
 );
 
 @mixin color($colorName) {

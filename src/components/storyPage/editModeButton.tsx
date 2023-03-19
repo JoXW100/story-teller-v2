@@ -28,8 +28,8 @@ const EditModeButton = ({ editEnabled }: EditModeButtonProps): JSX.Element => {
     
     return (
         <Link href={Navigation.editModeURL(!editEnabled)} passHref>
-            <button className={styles.editMode} tooltips={data.tooltips}>
-                <data.icon sx={{ height: "100%" }}/>
+            <button className={styles.headerButton} tooltips={data.tooltips}>
+                <data.icon/>
             </button>
         </Link>
     )

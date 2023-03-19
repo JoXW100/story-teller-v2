@@ -1,0 +1,41 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+
+.main {
+    display: grid;
+    grid-template-columns: $smallMenuWidth;
+    grid-template-rows: $menuHeaderHeight $largeButtonHeight;
+    gap: 20px;
+    height: max(60%, $menuHeaderHeight + $largeButtonHeight + 60px);
+    justify-content: center;
+    align-content: center;
+    padding: 20px;
+}
+
+.header {
+    @include color(main);
+    @include colorShadow();
+    @include fontHeader1();
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    padding: 10px 5px;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.loginButton {
+    @include colorInteract(interactive);
+    @include colorShadow();
+    @include fontNormal();
+    display: grid;
+    grid-template-columns: 1fr $iconNormalSize;
+    align-items: center;
+    justify-items: center;
+    user-select: none;
+    height: 100%;
+    padding: 3px 10px 3px 10px + $iconNormalSize;
+    margin: 0 5px;
+    border-radius: 5px;
+}

@@ -181,25 +181,27 @@ class Communication {
     }
 
     public static async open5eFetchAll<T>(type: Open5eFetchType, query?: Record<string, string | number>, fields: string[] = []): Promise<Open5eResponse<T>> {
-        try {
-            let limit = 5000;
-            let filterQuery = query && Object.keys(query).length > 0 
-                ? Object.keys(query).map((key) => `${key}=${query[key]}`).join('&') + `&limit=${limit}`
-                : `limit=${limit}`;
-            let fieldQuery = fields.length > 0 
-                ? `/?fields=${fields.join(',')}&${filterQuery}`
-                : `/?${filterQuery}`
-            let data = await fetch(this.open5eRoot + type + fieldQuery)
-            return await data.json() as Open5eResponse<T>
-        } catch (error) {
-            console.error("Error in Communication.open5eFetchAll/" + type, query, fields, error)
-            return {
-                count: 0,
-                next: null,
-                previous: null,
-                results: []
-            } satisfies Open5eResponse<T>
-        }
+        return new Promise(async (resolve) => {
+            try {
+                let limit = 5000;
+                let filterQuery = query && Object.keys(query).length > 0 
+                    ? Object.keys(query).map((key) => `${key}=${query[key]}`).join('&') + `&limit=${limit}`
+                    : `limit=${limit}`;
+                let fieldQuery = fields.length > 0 
+                    ? `/?fields=${fields.join(',')}&${filterQuery}`
+                    : `/?${filterQuery}`
+                let data = await fetch(this.open5eRoot + type + fieldQuery)
+                resolve(await data.json() as Open5eResponse<T>)
+            } catch (error) {
+                console.error("Error in Communication.open5eFetchAll/" + type, query, fields, error)
+                resolve ({
+                    count: 0,
+                    next: null,
+                    previous: null,
+                    results: []
+                } satisfies Open5eResponse<T>)
+            }
+        })
     }
 
     public static async open5eFetchOne<T>(type: Open5eFetchType, id: string): Promise<T | null> {

@@ -12,7 +12,7 @@ import ReconnectMenu from './reconnectMenu';
 import { DBResponse } from 'types/database';
 import { StoryGetAllResult } from 'types/database/stories';
 import { CardType, PageStatus, StoryCardData } from 'types/homePage';
-import styles from 'styles/homePage.module.scss'
+import styles from 'styles/pages/homePage/main.module.scss'
 
 interface HomePageState {
     loading: boolean
@@ -21,10 +21,12 @@ interface HomePageState {
     status: PageStatus
 }
 
-type HomePageMenu = (props: React.PropsWithRef<{
+type HomePageMenuProps = React.PropsWithRef<{
     cards?: StoryCardData[]
     setStatus?: (status: PageStatus) => void
-}>) => JSX.Element 
+}>
+
+type HomePageMenu = (props: HomePageMenuProps) => JSX.Element 
 
 const createCard: StoryCardData = {
     id: null,
@@ -98,9 +100,9 @@ const HomePage = (): JSX.Element => {
 
     return (
         <div className={styles.main}>
-            <div className={styles.mainPanel}>
+            <div className={styles.pageHeader}>
                 <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
-                    {`${Localization.toText('home-logout')} ${user?.name}`}
+                    { Localization.toText('home-logout', user?.name ?? "") }
                     <LogoutIcon/>
                 </Link>
             </div>

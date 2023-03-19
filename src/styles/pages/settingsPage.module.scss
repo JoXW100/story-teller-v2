@@ -1,0 +1,81 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+
+$rowSize: 30px;
+
+.main {
+    display: grid;
+    grid-template-rows: $menuHeaderHeight 1fr;
+    gap: 20px;
+    width: 100%;
+    height: max(100%, $menuHeaderHeight + 200px);
+    padding: 50px;
+    justify-content: center;
+    align-content: center;
+}
+
+.header {
+    @include color(main);
+    @include colorShadow();
+    @include fontHeader1();
+    position: relative;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: $smallMenuWidth $menuHeaderHeight;
+    justify-items: center;
+    align-items: center;
+    padding-left: $menuHeaderHeight + 10px;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+}
+
+.body {
+    @include color(third);
+    @include colorShadow();
+    padding: 5px;
+}
+
+.closeButton {
+    @include colorInteract(interactive);
+    display: grid;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-items: center;
+    & > SVG {
+        height: $iconLargeSize;
+        width: $iconLargeSize;
+    }
+}
+
+.row {
+    @include color(forth);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    height: $rowSize;
+    align-items: center;
+    text-indent: 1ch;
+}
+
+.dropdown {
+    @include color(document);
+    & > *:first-child {
+        & > * {
+            & > * {
+                height: $rowSize;
+                &:hover {
+                    color: map-get($palette, interactive);
+                }
+                &:not(:last-child) {
+                    padding-top: 1px;
+                    border-bottom: 1px solid map-get($palette, text);
+                }
+            }
+        }
+    }
+    & > *:last-child {
+        @include colorInteract(main);
+    }
+}

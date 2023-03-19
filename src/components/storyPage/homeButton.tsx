@@ -8,10 +8,10 @@ const HomeButton = (): JSX.Element => {
     return (
         <Link href={Navigation.originURL()} passHref>
             <button 
-                className={styles.home}
+                className={styles.headerButton}
                 tooltips={Localization.toText('storyPage-home')}
             >
-                <HomeIcon sx={{ height: "100%" }}/>
+                <HomeIcon/>
             </button>
         </Link>
     )

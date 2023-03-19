@@ -28,10 +28,9 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
     return (
         <div
             data={isOpen ? "open" : "closed"}
-            className={styles.holder}
-        >
+            className={styles.holder}>
             <button 
-                className={styles.rollHistory}
+                className={styles.headerButton}
                 onClick={HandleClick}
                 disabled={disabled ? true : undefined}
                 tooltips={toggled 
@@ -44,8 +43,7 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
             <RollHistoryPanel 
                 open={handleOpen} 
                 close={handleClose} 
-                isOpen={toggled}
-            />
+                isOpen={toggled}/>
         </div>
     )
 }

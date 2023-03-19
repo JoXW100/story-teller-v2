@@ -10,7 +10,7 @@ const DiceButton = (): JSX.Element => {
     return (
         <div className={styles.holder}>
             <button 
-                className={styles.dice}
+                className={styles.headerButton}
                 onClick={() => setOpen(!open)}
                 tooltips={open 
                     ? Localization.toText('storyPage-closeDiceMenu')

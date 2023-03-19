@@ -12,6 +12,7 @@
         "shadow": "#57688d",
         "border": "#111830",
         "error": "#ff0000",
-        "icons": "#06296b"
+        "icons": "#06296b",
+        "interactive": "#5f88ff"
     }
 }

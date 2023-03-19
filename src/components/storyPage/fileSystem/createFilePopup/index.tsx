@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/CloseSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import ImportIcon from '@mui/icons-material/DownloadSharp';
+import ErrorIcon from '@mui/icons-material/ErrorSharp';
 import { closePopup } from "components/common/popupHolder";
 import CreateFileContent from "./createFileContent";
 import CreateFolderContent from "./createFolderContent";
@@ -74,7 +75,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             content: CreateImportContent
         },
         [InputType.ImportOld]: {
-            icon: ImportIcon,
+            icon: ErrorIcon,
             tooltips: 'create-importOldTooltips',
             width: 600,
             content: CreateImportOldContent

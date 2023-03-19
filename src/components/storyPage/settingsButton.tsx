@@ -8,10 +8,10 @@ const SettingsButton = (): JSX.Element => {
     return (
         <Link href={Navigation.settingsURL()} passHref>
             <button 
-                className={styles.settings}
+                className={styles.headerButton}
                 tooltips={Localization.toText('storyPage-openSettingsMenu')}
             >
-                <SettingsIcon sx={{ height: "100%" }}/>
+                <SettingsIcon/>
             </button>
         </Link>
     )

@@ -354,3 +354,19 @@ $navbarWidth: 35px;
         width: $headerHeight * 0.45;
     }
 }
+
+.compendiumPaginator {
+    @include color(forth);
+    position: sticky;
+    display: grid;
+    grid-template-columns: 65px 10ch 65px;
+    text-align: center;
+    justify-content: center;
+    outline: 1px solid map-get($palette, "border");
+    bottom: 0;
+
+    & > button {
+        width: 100%;
+        @include colorInteract(interactive);
+    }
+}

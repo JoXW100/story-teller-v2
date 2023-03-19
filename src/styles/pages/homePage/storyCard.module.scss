@@ -1,0 +1,79 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+
+$iconPadding: 3px;
+
+.storyCard {
+    @include colorInteract(forth);
+    @include colorShadow();
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.label {
+    @include color(main);
+    @include colorShadow();
+    @include fontNoLineBreak();
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    height: $menuItemHeaderHeight;
+}
+
+.create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+
+    svg {
+        height: $iconLargeSize;
+        width: $iconLargeSize;
+    }
+}
+
+.desc {
+    height: calc(100% - 66px);
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 5px 8px;
+}
+
+.date {
+    position: absolute;
+    user-select: none;
+    overflow: hidden;
+    height: 20px;
+    bottom: $iconPadding;
+    right: $iconPadding;
+}
+
+.icon {
+    @include colorInteract(interactive);
+    position: absolute;
+    width: $iconNormalSize;
+    height: $iconNormalSize;
+    user-select: none;
+    bottom: $iconPadding;
+    border-radius: 50%;
+
+    & > svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.delete {
+    @extend .icon;
+    left: $iconPadding;
+}
+
+.edit {
+    @extend .icon;
+    left: $iconNormalSize + 2 * $iconPadding;
+}

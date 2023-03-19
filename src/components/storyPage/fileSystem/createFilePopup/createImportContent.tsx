@@ -17,10 +17,7 @@ interface ImportContentState {
     menu: CompendiumMenuItem
     values: Open5eItemInfo[]
     selected: Open5eItemInfo | null
-    loading: boolean,
-    count: number
-    next: string | null
-    prev: string | null
+    loading: boolean
 }
 
 interface Open5eItemInfo {
@@ -40,31 +37,27 @@ interface CompendiumMenuItem {
 
 const menuItems = require('data/open5eCompendiumMenu.json') as CompendiumMenuItem[]
 const spellFilterItems = ["Cantrip", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+const itemsPerPage = 100
 
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [name, setName] = useState("")
     const [searchText, setSearchText] = useState("")
     const [spellFilter, setSpellFilter] = useState(Array.from({length: 10}, () => true))
+    const [page, setPage] = useState<number>(0)
     const [state, setState] = useState<ImportContentState>({
         menu: menuItems[0],
         values: [],
-        count: 0,
-        next: null,
-        prev: null,
         selected: null,
         loading: true
     })
     
     useEffect(() => {
-        setState({ ...state, loading: true, values: [], count: 0, next: null, prev: null })
+        setState({ ...state, loading: true, values: [] })
         Communication.open5eFetchAll<Open5eItemInfo>(state.menu.type, state.menu.query, ["slug", "level_int", ...state.menu.fields])
         .then((res) => setState({ 
             ...state, 
             loading: false, 
-            values: res.results, 
-            count: res.count, 
-            next: res.next, 
-            prev: res.previous 
+            values: res.results
         }))
     }, [state.menu])
 
@@ -106,6 +99,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         let filter = [...spellFilter]
         filter[index] = !filter[index]
         setSpellFilter(filter)
+        setPage(0)
     }
 
     const handleNavigateClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: Open5eItemInfo) => {
@@ -113,12 +107,21 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         window.open(Navigation.open5eURL(state.menu.type, item.slug))
     }
 
-    const filterItems = (items: Open5eItemInfo[]) => {
+    const handleSearchChange = (newValue: string) => {
+        setPage(0)
+        setSearchText(newValue)
+    }
+
+    const filterItems = (items: Open5eItemInfo[]): Open5eItemInfo[] => {
         let res = items.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()))
         if (state.menu.type == "spells") {
             res = res.filter((item) => spellFilter[item.level_int])
         }
         return res
+    }
+
+    const getPageItems = (items: Open5eItemInfo[]): Open5eItemInfo[] => {
+        return items.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
     }
 
     const buildMenuItems = (items: CompendiumMenuItem[], level: number = 0): JSX.Element[] => {
@@ -133,7 +136,6 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     { item.title }
                 </div>
             )
-
             return (
                 item.subItems?.length > 0 ? (
                     <div 
@@ -145,6 +147,13 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 ) : res
             )
         })
+    }
+
+    const items = state.loading ? [] : filterItems(state.values)
+    const numPages = Math.ceil(items.length / itemsPerPage)
+
+    const handlePaginator = (delta: number) => {
+        setPage(Math.max(0, Math.min(delta, numPages - 1)))
     }
 
     return (
@@ -165,7 +174,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                             ))}
                         </div>
                     }
-                    <Searchbox className={styles.inputSearchbox} value={searchText} onChange={setSearchText}/>
+                    <Searchbox className={styles.inputSearchbox} value={searchText} onChange={handleSearchChange}/>
                 </div>
                 <div className={styles.inputCompendium}>
                     <div className={styles.inputCompendiumMenu}>
@@ -177,23 +186,35 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                                 <div key={index}> { header } </div>
                             ))}
                         </div>
-                        { !state.loading && filterItems(state.values).map((item) => (
-                            <div 
-                                key={item.slug} 
-                                className={styles.inputCompendiumItem} 
-                                onClick={(e) => handleItemCLick(item)}
-                                data={state.selected?.slug == item.slug ? "selected" : undefined }>
-                                { state.menu.fields.map((field) => (
-                                    <div key={field}> { item[field] } </div>
-                                ))}
-                                <button 
-                                    className={styles.inputCompendiumItemButton}
-                                    onClick={(e) => handleNavigateClick(e, item)}>
-                                    <OpenExternalIcon/>
+                        { !state.loading && getPageItems(items).map((item) => (
+                                <div 
+                                    key={item.slug} 
+                                    className={styles.inputCompendiumItem} 
+                                    onClick={() => handleItemCLick(item)}
+                                    data={state.selected?.slug == item.slug ? "selected" : undefined }>
+                                    { state.menu.fields.map((field) => (
+                                        <div key={field}>{item[field]}</div>
+                                    ))}
+                                    <button 
+                                        className={styles.inputCompendiumItemButton}
+                                        onClick={(e) => handleNavigateClick(e, item)}>
+                                        <OpenExternalIcon/>
+                                    </button>
+                                </div>
+                            ))
+                        }{ !state.loading && items.length > itemsPerPage && (
+                            <div className={styles.compendiumPaginator}>
+                                <button disabled={page == 0} onClick={() => handlePaginator(-1)}>
+                                    {Localization.toText('createFilePopup-compendiumPaginatorPrev')}
+                                </button>
+                                    { `${page + 1} / ${numPages}` }
+                                <button
+                                    disabled={items.length <= (page + 1) * itemsPerPage} 
+                                    onClick={() => handlePaginator(1)}>
+                                    {Localization.toText('createFilePopup-compendiumPaginatorNext')}
                                 </button>
                             </div>
-                        ))}
-                        { state.loading && <Loading/>}
+                        )}{ state.loading && <Loading/>}
                     </div>
                 </div>
             </div>
@@ -212,7 +233,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     disabled={!name || state.selected == null}
                 > 
                     { state.selected !== null 
-                        ? Localization.toText('createFilePopup-button-import-value').replace("@1", state.selected.name)
+                        ? Localization.toText('createFilePopup-button-import-value', state.selected.name)
                         : Localization.toText('createFilePopup-button-import-value-empty')}
                 </div>
             </div>

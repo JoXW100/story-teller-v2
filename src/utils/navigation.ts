@@ -28,6 +28,10 @@ class Navigation
         return new URL(location.origin);
     }
 
+    static loginAPI(): string {
+        return "/api/auth/login"
+    }
+
     static logoutAPI(): string {
         return "/api/auth/logout"
     }
