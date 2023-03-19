@@ -4,7 +4,11 @@ import Localization from 'utils/localization';
 import styles from 'styles/pages/loginPage.module.scss';
 import Navigation from 'utils/navigation';
 
-const LoginPage = (): JSX.Element => {
+type LoginPageProps = React.PropsWithRef<{
+    returnURL?: string
+}>
+
+const LoginPage = ({ returnURL }: LoginPageProps): JSX.Element => {
     return (
         <div className={styles.main}>
             <div className={styles.header}> Login Required </div>
