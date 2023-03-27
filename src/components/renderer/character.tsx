@@ -137,14 +137,10 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                             {character.languages}
                         </div> 
                     }
-                    <div><Elements.Bold>Senses </Elements.Bold>{character.senses}</div>
-                    <div><Elements.Bold>Languages </Elements.Bold>{character.languages}</div>
-                    <div>
-                        <Elements.Bold>Challenge </Elements.Bold>
+                    <div><Elements.Bold>Challenge </Elements.Bold>
                         {character.challengeText}
                     </div>
-                    <div>
-                        <Elements.Bold>Proficiency Bonus </Elements.Bold>
+                    <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ 
                             mod: String(character.proficiencyValue), 
                             desc: "Proficient Check" 
