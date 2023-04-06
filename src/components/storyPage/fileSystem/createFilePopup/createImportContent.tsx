@@ -197,6 +197,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     sorting.direction = "ascending"
                     break;
                 case "none":
+                    sorting.direction = "descending"
                 default:
                     break;
             }
