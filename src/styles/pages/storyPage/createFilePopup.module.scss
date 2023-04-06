@@ -239,17 +239,17 @@ $navbarWidth: 35px;
     @extend .input;
     @include colorInteract("document");
     display: grid;
-    grid-template-columns: 1fr minmax(0, 11ch) 0.8fr 0.8fr 0.8fr 30px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 11ch) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.8fr) 30px;
     border-bottom: 1px solid map-get($palette, border);
+    gap: 3px;
 
     & > * {
         @include fontNoLineBreak();
         text-transform: capitalize;
-        padding: 1px;
     }
 
     &[data=selected] {
-        @include colorInteract("third");
+        @include colorInteract("forth");
     }
 }
 
@@ -279,11 +279,42 @@ $navbarWidth: 35px;
     position: sticky;
     top: 0;
     border: none;
-    padding: 2px;
     font-weight: 500;
-    pointer-events: none;
     outline: 1px solid map-get($palette, "border");
     z-index: 100;
+
+    &:hover { filter: none; }
+    &:hover { filter: none; }
+
+    & > div {
+        @include colorInteract("second");
+        position: relative;
+        pointer-events: all;
+        user-select: none;
+        cursor: pointer;
+
+        &[data=ascending]::after {
+            position: absolute;
+            white-space: normal;
+            right: 3px;
+            top: calc(50% - 5px);
+            border-color: transparent transparent map-get($palette, icons) transparent;
+            border-width: 5px;
+            border-style: solid;
+            content: " ";
+        }
+        
+        &[data=descending]::after {
+            position: absolute;
+            white-space: normal;
+            right: 3px;
+            top: calc(50% - 5px);
+            border-color: map-get($palette, icons) transparent transparent transparent;
+            border-width: 5px;
+            border-style: solid;
+            content: " ";
+        }
+    }
 }
 
 .compendiumSpellFilterGroup {
@@ -307,7 +338,7 @@ $navbarWidth: 35px;
     align-items: center;
 
     &[data=selected] {
-        @include colorInteract(forth);
+        @include color(forth);
     }
 }
 
@@ -339,6 +370,7 @@ $navbarWidth: 35px;
     bottom: 0;
     padding: 2px;
     outline: 1px solid map-get($palette, "border");
+    user-select: none;
 
     & > button {
         width: 100%;

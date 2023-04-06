@@ -8,15 +8,16 @@ import Loading from "components/common/loading";
 import { CreateContentProps } from ".";
 import { open5eCreatureImporter, open5eSpellImporter } from "importers/open5eImporter";
 import Localization from "utils/localization";
+import Navigation from "utils/navigation";
 import Communication, { Open5eFetchType } from "utils/communication";
 import { FileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
-import Navigation from "utils/navigation";
 
 interface ImportContentState {
     menu: CompendiumMenuItem
     values: Open5eItemInfo[]
+    sorting: SortingMethod
     selected: Open5eItemInfo | null
     loading: boolean
 }
@@ -25,15 +26,22 @@ interface Open5eItemInfo {
     slug: string
     name: string
     level_int?: number
+    [key: string]: any
 }
 
 interface CompendiumMenuItem {
     title: string
     type: Open5eFetchType
     fields: string[]
+    sortFields: string[]
     headers: string[]
     query?: Record<string, string | number>
     subItems?: CompendiumMenuItem[]
+}
+
+interface SortingMethod {
+    field: string | null
+    direction: "ascending" | "descending" | "none"
 }
 
 const menuItems = require('data/open5eCompendiumMenu.json') as CompendiumMenuItem[]
@@ -41,7 +49,6 @@ const spellFilterItems = ["Cantrip", "1", "2", "3", "4", "5", "6", "7", "8", "9"
 const itemsPerPage = 100
 
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
-    const controller = new AbortController()
     const [name, setName] = useState("")
     const [searchText, setSearchText] = useState("")
     const [spellFilter, setSpellFilter] = useState(Array.from({length: 10}, () => true))
@@ -49,6 +56,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState<ImportContentState>({
         menu: menuItems[0],
         values: [],
+        sorting: { field: null, direction: "none" },
         selected: null,
         loading: false
     })
@@ -60,12 +68,12 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 state.menu.query, 
                 ["slug", "level_int", ...state.menu.fields])
             .then((res) => {
-                setPage(0)
-                setState({ 
+                if (page != 0) { setPage(0) }
+                setState((state) => state.loading ? { 
                     ...state, 
                     loading: false, 
                     values: res.results
-                })
+                } : state)
             })
         }
     }, [state.menu])
@@ -108,7 +116,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         let filter = [...spellFilter]
         filter[index] = !filter[index]
         setSpellFilter(filter)
-        setPage(0)
+        if (page != 0) { setPage(0) }
     }
 
     const handleNavigateClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: Open5eItemInfo) => {
@@ -117,7 +125,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     }
 
     const handleSearchChange = (newValue: string) => {
-        setPage(0)
+        if (page != 0) { setPage(0) }
         setSearchText(newValue)
     }
 
@@ -129,19 +137,30 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         return res
     }
 
+    const sortItems = (a: Open5eItemInfo, b: Open5eItemInfo): number => {
+        let val = 0;
+        if (typeof a[state.sorting.field] == typeof "") {
+            val = (a[state.sorting.field] as string).localeCompare(b[state.sorting.field])
+        } else {
+            val = (a[state.sorting.field] as number) - b[state.sorting.field]
+        }
+        return state.sorting.direction == "descending" ? val : -val;
+    }
+
     const getPageItems = (items: Open5eItemInfo[]): Open5eItemInfo[] => {
         return items.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
     }
 
     const buildMenuItems = (items: CompendiumMenuItem[], level: number = 0): JSX.Element[] => {
         return items.map((item, index) => {
+            let selected = state.menu?.title == item.title
             let res = (
                 <button 
                     key={`${level}-${index}`} 
                     className={styles.inputCompendiumMenuItem} 
                     value={level.toString()}
-                    data={state.menu?.title == item.title ? "selected" : undefined }
-                    disabled={state.loading}
+                    data={selected ? "selected" : undefined }
+                    disabled={state.loading || selected}
                     onClick={() => handleMenuItemCLick(item) }>
                     { item.title }
                 </button>
@@ -159,7 +178,38 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         })
     }
 
-    const items = state.loading ? [] : filterItems(state.values)
+    const handleHeaderFieldClick = (index: number) => {
+        if (!state.menu.sortFields || !state.menu.sortFields[index]) {
+            return;
+        }
+
+        let sorting = {
+            field: state.menu.sortFields[index],
+            direction: "descending"
+        } as SortingMethod;
+
+        if (state.sorting.field == state.menu.sortFields[index]) {
+            switch (state.sorting.direction) {
+                case "ascending":
+                    sorting.direction = "none"
+                    break;
+                case "descending":
+                    sorting.direction = "ascending"
+                    break;
+                case "none":
+                default:
+                    break;
+            }
+        }
+        
+        if (page != 0) { setPage(0) }
+        setState({ ...state, sorting: sorting })
+    }
+
+    const filteredItems = state.loading ? [] : filterItems(state.values)
+    const items = state.sorting.direction != "none" 
+        ? filteredItems.sort(sortItems)
+        : filteredItems
     const numPages = Math.ceil(items.length / itemsPerPage)
 
     const handlePaginator = (delta: number) => {
@@ -184,7 +234,10 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                             ))}
                         </div>
                     }
-                    <Searchbox className={styles.inputSearchbox} value={searchText} onChange={handleSearchChange}/>
+                    <Searchbox 
+                        className={styles.inputSearchbox} 
+                        value={searchText} 
+                        onChange={handleSearchChange}/>
                 </div>
                 <div className={styles.inputCompendium}>
                     <div className={styles.inputCompendiumMenu}>
@@ -193,7 +246,14 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     <div className={styles.inputCompendiumValueList}>
                         <div className={styles.inputCompendiumListHeader}>
                             { state.menu.headers?.map((header, index) => (
-                                <div key={index}> { header } </div>
+                                <div 
+                                    key={index} 
+                                    onClick={() => handleHeaderFieldClick(index)}
+                                    data={state.menu.sortFields && state.sorting.field == state.menu.sortFields[index] 
+                                        ? state.sorting.direction 
+                                        : undefined}> 
+                                    { header } 
+                                </div>
                             ))}
                         </div>
                         { !state.loading && getPageItems(items).map((item) => (
