@@ -4,7 +4,7 @@ import Localization from 'utils/localization';
 import Navigation from 'utils/navigation';
 import EnableEditIcon from '@mui/icons-material/EditSharp';
 import DisableEditIcon from '@mui/icons-material/EditOffSharp';
-import styles from 'styles/storyPage/main.module.scss'
+import styles from 'styles/pages/storyPage/main.module.scss'
 
 type EditModeButtonProps = React.PropsWithRef<{
     editEnabled: boolean

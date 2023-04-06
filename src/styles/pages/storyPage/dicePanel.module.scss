@@ -1,5 +1,6 @@
-@import '../colors.scss';
-@import '../animations.scss';
+@import 'styles/colors.scss';
+@import 'styles/prefabs.scss';
+@import 'styles/animations.scss';
 
 $width: 40px;
 $diceWidth: 35px;
@@ -9,7 +10,6 @@ $numWidth: 15px;
     @include colorText();
     position: absolute;
     z-index: 100;
-    left: 1px;
     right: 0;
 
     &[data=true] {
@@ -24,26 +24,24 @@ $numWidth: 15px;
 }
 
 .main {
+    @include centerGrid();
     @include color(third);
     @include colorShadow();
     
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    gap: 2.5px;
     top: 3px;
+    padding: 2.5px 0;
     right: 0;
-    padding-top: 2.5px;
     border-radius: $width / 2.0;
     width: $width;
 }
 
 .dice {
+    @include colorInteract(interactive);
     @include colorShadow();
-    @extend .interactive;
-
+    @include centerFlex();
     border-radius: $width / 2.0;
-    margin-bottom: 2.5px;
     padding: 4px;
     width: $diceWidth;
     height: $diceWidth;
@@ -81,16 +79,10 @@ $numWidth: 15px;
 }
 
 .roll {
-    @extend .interactive;
+    @include colorInteract(interactive);
     @include colorShadow();
+    @include centerFlex();
     z-index: 1000;
     border-radius: $width / 2.0;
     width: 75px;
-}
-
-.interactive {
-    @include colorInteract(main);
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }

@@ -15,7 +15,7 @@ import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { FileStructure } from "types/database/files";
-import styles from 'styles/storyPage/file.module.scss';
+import styles from 'styles/pages/storyPage/file.module.scss';
 
 type FileProps = React.PropsWithRef<{
     file: FileStructure

@@ -1,92 +1,18 @@
-@import '../colors.scss';
+@import 'styles/colors.scss';
+@import 'styles/prefabs';
 
 .holder {
     display: block;
     position: relative;
     height: 100%;
     flex: 1;
-    //overflow: scroll;
-    counter-set: gutter_line_count 0;
-}
-
-.input {
-    @include colorText();
-    @extend .block;
-    z-index: 11;
-    caret-color: black;
-    color: transparent;
-    background: transparent;
-    outline: none;
-
-    & > div {
-        @extend .line;
-    }
-}
-
-.dummy {
-    @extend .block;
-    color: black;
-    padding: 0 5px;
-}
-
-.highlight {
-    color: red;
-}
-
-.block {
-    position: absolute;
-    height: 100%;
-    margin-left: 5ch;
-    width: calc(100% - 5ch);
-}
-
-.line {
-    display: inline-block;
-    position: relative;
-    height: 21px;
-    width: 100%;
-    padding: 0 5px;
-    border-bottom: 1px solid rgba(200, 200, 200, 0.199);
-    counter-increment: gutter_line_count;
-    &::before {
-        position: absolute;
-        text-align: right;
-        content: counter(gutter_line_count);
-        user-select: none;
-        color: rgb(150, 150, 150);
-        width: 3ch;
-        left: -4ch;
-        padding-right: 1ch;
-        border-right: 1px solid rgb(200, 200, 200);
-    }
-}
-
-.text {
-    display: block;
-    user-select: none;
-    font: inherit !important;
-}
-
-.leaf {
-    color: black;
-    white-space: pre;
-
-    &.command {
-        color: blue;
-    }
-
-    &.params {
-        color: rgb(207, 143, 83);
-    }
-
-    &.content {
-        color: rgb(102, 107, 122);
-    }
 }
 
 .area {
     @include color(document);
     @include colorText();
+    @include scroll();
+    overflow-x: auto;
     display: flex;
     white-space: pre;
     outline: none;
@@ -96,4 +22,5 @@
     resize: none;
     overflow-y: scroll;
     border: none;
+    padding-bottom: 50px !important;
 }

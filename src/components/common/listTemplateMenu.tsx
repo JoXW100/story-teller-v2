@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styles from 'styles/components/listMenu.module.scss';
@@ -39,6 +39,10 @@ function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, de
     const handleRemove = (index: number) => {
         onChange([ ...values.slice(0, index), ...values.slice(index + 1) ])
     }
+
+    useEffect(() => {
+        setValue(defaultValue)
+    }, [defaultValue])
     
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
@@ -46,16 +50,13 @@ function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, de
                 <div className={styles.collection}>
                     <EditComponent value={value} onUpdate={(value) => handleEditChange(value)}/>
                 </div>
-                <div className={styles.button} onClick={handleAdd}>
+                <button className={styles.button} onClick={handleAdd}>
                     <AddIcon sx={{ width: '100%' }}/>
-                </div>
+                </button>
             </div>
             <div className={styles.content}>
                 { values?.map((value, index) => (
-                    <TemplateListRow 
-                        key={index} 
-                        onClick={() => handleRemove(index)}
-                    > 
+                    <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
                         <Component value={value} onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 )) }
@@ -74,9 +75,9 @@ const TemplateListRow = ({ children, onClick }: TemplateListRowProps): JSX.Eleme
             <div className={styles.collection}>
                 { children }
             </div>
-            <div className={styles.button} onClick={onClick}>
+            <button className={styles.button} onClick={onClick}>
                 <RemoveIcon sx={{ width: '100%' }}/>
-            </div>
+            </button>
         </div>
     )
 }

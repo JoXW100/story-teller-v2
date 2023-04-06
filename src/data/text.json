@@ -61,8 +61,6 @@
             "createFilePopup-button-import-value-empty": "Import",
             "createFilePopup-closeTooltips": "Close",
             "createFilePopup-importHeader": "DnD Compendium",
-            "createFilePopup-compendiumPaginatorPrev": "Prev",
-            "createFilePopup-compendiumPaginatorNext": "Next",
             "loginPage-prompt": "Go to login page",
             "roll-normal": "Flat",
             "roll-advantage": "Advantage",

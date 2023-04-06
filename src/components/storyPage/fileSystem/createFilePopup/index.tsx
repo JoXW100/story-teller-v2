@@ -13,7 +13,7 @@ import CreateImportOldContent from "./createImportOldContent";
 import Localization from "utils/localization";
 import { FileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 type FileProps = React.PropsWithRef<{
     type: InputType

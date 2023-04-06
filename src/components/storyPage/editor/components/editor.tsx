@@ -13,7 +13,7 @@ import LinkIcon from '@mui/icons-material/InsertLinkSharp';
 import Localization from 'utils/localization';
 import { TemplateComponentProps } from '.';
 import { FileTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -91,12 +91,10 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
     }
 
     return (
-        <TextEditor 
-            className={styles.editEditor}
+        <TextEditor
             text={context.file?.content.text} 
             handleInput={handleInput}
-            handleContext={handleContext}
-        />
+            handleContext={handleContext}/>
     )
 }
 

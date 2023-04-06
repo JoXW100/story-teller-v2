@@ -4,7 +4,7 @@ import Localization from "utils/localization";
 import { FileType } from "types/database/files";
 import { CreateContentProps } from ".";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 const CreateFolderContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [value, setValue] = useState("")
@@ -17,7 +17,7 @@ const CreateFolderContent = ({ callback }: CreateContentProps): JSX.Element => {
     return (
         <>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-folderNamePrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-folderNamePrompt')}:</span>
                 <input 
                     value={value} 
                     onChange={(e) => setValue(e.target.value)}
@@ -27,13 +27,11 @@ const CreateFolderContent = ({ callback }: CreateContentProps): JSX.Element => {
             <div className={styles.inputRow}/>
             <div className={styles.inputRow}/>
             <div className={styles.inputRow}>
-                <div 
-                    className={styles.button}
+                <button 
                     onClick={handleClick}
-                    disabled={!value}
-                > 
+                    disabled={!value}> 
                     {Localization.toText('createFilePopup-button')}
-                </div>
+                </button>
             </div>
         </>
     )

@@ -10,7 +10,7 @@ export const Context: React.Context<AppContextProvider> = React.createContext([n
 const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     /** Sets the global palette color variables */
     const setPalette = (palette: string) => {
-        if (palette && typeof window !== "undefined") {
+        if (palette && typeof window !== "undefined" && Palettes[palette]) {
             Object.keys(Palettes[palette].colors).forEach((color) => {
                 document.documentElement.style.setProperty(`--color-${color}`, 
                     Palettes[palette]?.colors[color] ?? "#ffffff")
@@ -45,8 +45,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     return (
         <Context.Provider value={[ state, {
             setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }) 
-        }]}
-        >
+        }]}>
             { !state.loading && children }
         </Context.Provider>
     )

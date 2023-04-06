@@ -11,7 +11,7 @@ import File from "./file";
 import Localization from "utils/localization";
 import { InputType } from "types/context/fileSystemContext";
 import { FileStructure, FileType } from "types/database/files";
-import styles from 'styles/storyPage/fileSystem.module.scss';
+import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileMenu = (): JSX.Element => {
     const [storyContext] = useContext(StoryContext);

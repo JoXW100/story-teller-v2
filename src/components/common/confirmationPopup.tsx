@@ -21,14 +21,13 @@ const ConfirmationPopup = ({ header, options = [], callback }: ConfirmationPopup
                     <div 
                         key={index}
                         className={styles.button} 
-                        onClick={() => handleClick(option)}
-                    > 
+                        onClick={() => handleClick(option)}> 
                         {option} 
                     </div>
                 ))}
             </div>
         </div>
     )
-}
+}   
 
 export default ConfirmationPopup;

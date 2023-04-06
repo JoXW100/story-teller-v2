@@ -1,11 +1,12 @@
-import { ReactNode, useEffect, useMemo, useState } from "react";
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { ReactNode, useMemo } from "react";
 import DropdownMenu from "./dropdownMenu";
+import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/selectionMenu.module.scss';
 
 type SelectionMenuProps = React.PropsWithRef<{
-    className: string
+    className?: string
+    dropdownClassName?: string
+    dropdownItemClassName?: string
     selection: string[]
     values: Record<string, ReactNode>
     alternate?: Record<string, ReactNode>
@@ -16,30 +17,16 @@ type SelectionRowProps = React.PropsWithChildren<{
     onClick: () => void
 }>
 
-const getFirstNotInCollection = (values: any[], collection: any[]) => (
+const getFirstNotInCollection = (values: string[], collection: string[]): string => (
     values.find((key) => !collection.includes(key))
 )
 
-/** A menu for selecting multiple items */
-const SelectionMenu = ({ className, values, alternate, selection, onChange }: SelectionMenuProps) => {
-    const [value, setValue] = useState(
-        getFirstNotInCollection(Object.keys(values), selection)
-    );
+const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, values, alternate, selection, onChange }: SelectionMenuProps) => {
+    const style = className ? `${styles.list} ${className}` : styles.list
+    const list = Object.keys(values);
+    const defaultValue = getFirstNotInCollection(list, selection)
 
-    const handleChange = (value: string) => {
-        setValue(value)
-    }
-
-    const handleAdd = () => {
-        onChange([...selection, value])
-    } 
-
-    const handleRemove = (key: string) => {
-        onChange(selection.filter((v) => v != key))
-    }
-
-    // All items not selected
-    const options: Record<string, ReactNode> = useMemo(() => (
+    const options: Record<string, JSX.Element> = useMemo(() => (
         Object.keys(values).reduce((prev, val) => 
             selection?.includes(val) 
                 ? prev
@@ -49,58 +36,32 @@ const SelectionMenu = ({ className, values, alternate, selection, onChange }: Se
                         : values[val] 
                 }, {}) 
     ), [selection, alternate, values])
-    
-    // The selected item rows
-    const rows = useMemo(() => (
-        selection?.map((key) => key in values ? (
-            <SelectionRow
-                key={key}
-                onClick={() => handleRemove(key)}
-            > { values[key] } 
-            </SelectionRow>
-        ) : null )
-    ), [selection, values]);
 
-    useEffect(() => {
-        setValue(getFirstNotInCollection(Object.keys(values), selection))
-    }, [values, selection])
-    
-    return (
-        <div className={className ? `${styles.main} ${className}` : styles.main}>
-            <div 
-                className={styles.addRow}
-                disabled={Object.values(options).length === 0}
-            >
-                <DropdownMenu 
-                    className={styles.dropdown}
-                    values={options}
-                    value={value}
-                    onChange={handleChange} 
-                />
-                <div className={styles.button} onClick={handleAdd}>
-                    <AddIcon sx={{ width: '100%' }}/>
-                </div>
-            </div>
-            <div className={styles.content}>
-                { rows }
-            </div>
-        </div>
+    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>) => {
+        const style = dropdownClassName ? `${styles.dropdown} ${dropdownClassName}` : styles.dropdown;
+        const itemStyle = dropdownItemClassName ? `${styles.dropdownItem} ${dropdownItemClassName}` : styles.dropdownItem
+        return (
+            <DropdownMenu 
+                className={style}
+                itemClassName={itemStyle}
+                values={options}
+                value={value}
+                onChange={onUpdate}/>
+        )
+    }
+
+    const Component = ({ value }: ListTemplateComponent<string>): JSX.Element => (
+        values[value] as JSX.Element
     )
-}
 
-const SelectionRow = ({ onClick, children }: SelectionRowProps): JSX.Element => {
     return (
-        <div className={styles.row}>
-            <div className={styles.rowContent}>
-                { children }
-            </div>
-            <div 
-                className={styles.button}
-                onClick={onClick}
-            >
-                <RemoveIcon sx={{ width: '100%' }}/>
-            </div>
-        </div>
+        <ListTemplateMenu<string>
+            className={style}
+            defaultValue={defaultValue}
+            values={selection}
+            onChange={onChange}
+            Component={Component}
+            EditComponent={EditComponent}/>
     )
 }
 

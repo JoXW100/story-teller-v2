@@ -1,12 +1,13 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
 @import 'styles/fonts.scss';
+@import 'styles/prefabs.scss';
 
 $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
 
 .main {
     display: grid;
-    grid-template-rows: $pageHeaderHeight 1fr;
+    grid-template-rows: $pageHeaderHeight minmax(0, 1fr);
     width: 100%;
     height: 100%;
 }
@@ -21,8 +22,8 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
 
 .logoutButton {
     @include colorInteract(interactive);
-    @include fontNoLineBreak();
     @include fontNormal();
+    @include fontNoLineBreak();
     display: grid;
     grid-template-columns: 250px $iconNormalSize;
     padding: 5px 5px 5px 20px;
@@ -33,9 +34,22 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
     & > svg { justify-self: center; }
 }
 
+.settingsButton {
+    aspect-ratio: 1;
+    margin: 3px;
+    & > button {
+        height: 100%;
+        width: 100%;
+        border-radius: 50%;
+        user-select: none;
+    }
+}
+
 .mainContainer {
+    @include scroll();
     display: grid;
-    grid-template-rows: $menuHeaderHeight 1fr;
+    grid-template-rows: $menuHeaderHeight minmax($smallMenuHeight, 1fr);
+    overflow: auto;
     gap: 20px;
     padding: 1cm min(5cm, 10%);
     min-width: 8cm;
@@ -46,9 +60,7 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
     @include color(main);
     @include colorShadow();
     @include fontHeader1();
-    display: grid;
-    align-items: center;
-    justify-items: center;
+    @include centerGrid();
     height: 100%;
 }
 

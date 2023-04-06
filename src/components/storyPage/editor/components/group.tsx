@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TemplateComponentProps } from '.';
 import { GroupTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const GroupComponent = ({ children, params }: TemplateComponentProps<GroupTemplateParams>): JSX.Element => {
     const [open, setOpen] = useState(params.open);
@@ -9,13 +9,11 @@ const GroupComponent = ({ children, params }: TemplateComponentProps<GroupTempla
     return (
         <div 
             className={styles.editGroup}
-            data={params.fill && open ? "fill" : "default"}
-        >
+            data={params.fill && open ? "fill" : "default"}>
             <div 
                 className={styles.editGroupHeader}
                 onClick={() => setOpen(!open)}
-                data={params.fill && open ? "fill" : "default"}
-            >
+                data={open ? "open" : "closed"}>
                 {params.label ?? "Missing Label"}
             </div>
             { open && children }

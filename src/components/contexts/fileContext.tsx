@@ -35,8 +35,6 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
                     }
                 Communication.getFile(storyId, fileId).then((res) => {
                     dispatch({ type: 'initSet', data: res })
-                    if (!res.success)
-                        throw new Error(res.result as string)
                 })
                 return { 
                     ...state, 

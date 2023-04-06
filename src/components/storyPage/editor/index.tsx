@@ -4,7 +4,7 @@ import { Context } from 'components/contexts/fileContext';
 import Loading from 'components/common/loading';
 import { AllTemplateCondition, AnyTemplateCondition, EditInputType, EqualsTemplateCondition, MetadataTemplateCondition, NotEqualsTemplateCondition, RootTemplateComponent, TemplateComponent, TemplateCondition, TemplateConditionType, ValueTemplateCondition } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent

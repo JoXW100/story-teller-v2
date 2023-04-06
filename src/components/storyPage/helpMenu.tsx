@@ -5,7 +5,7 @@ import Localization from 'utils/localization';
 import { Context } from 'components/contexts/storyContext';
 import CloseIcon from '@mui/icons-material/Close';
 import { HelpData, HelpDataEntry } from 'types/help';
-import styles from 'styles/storyPage/helpMenu.module.scss';
+import styles from 'styles/pages/storyPage/helpMenu.module.scss';
 
 const HelpData = require('data/help.json') as HelpData;
 

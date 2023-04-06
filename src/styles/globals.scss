@@ -28,10 +28,11 @@ button {
     display: grid;
     justify-items: center;
     align-items: center;
+    padding: 0;
 
     &:focus-visible {
-        outline: none;
-        border: 1px solid map-get($palette, border)
+        outline: 1px solid map-get($palette, border);
+        outline-offset: -1px
     }
 }
 

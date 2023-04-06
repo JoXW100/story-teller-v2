@@ -1,6 +1,7 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
 @import 'styles/fonts.scss';
+@import 'styles/prefabs.scss';
 
 $rowSize: 30px;
 
@@ -20,6 +21,7 @@ $rowSize: 30px;
     @include colorShadow();
     @include fontHeader1();
     position: relative;
+    overflow: visible;
     display: grid;
     gap: 10px;
     grid-template-columns: $smallMenuWidth $menuHeaderHeight;
@@ -38,15 +40,21 @@ $rowSize: 30px;
 }
 
 .closeButton {
-    @include colorInteract(interactive);
-    display: grid;
     height: 100%;
     width: 100%;
-    align-items: center;
-    justify-items: center;
-    & > SVG {
-        height: $iconLargeSize;
-        width: $iconLargeSize;
+    padding: 10px;
+
+    & > button {
+        @include centerGrid();
+        height: 100%;
+        width: 100%;
+        border-radius: 50%;
+        padding: 5px;
+        
+        & > SVG {
+            height: $iconNormalSize;
+            width: $iconNormalSize;
+        }
     }
 }
 
@@ -59,23 +67,6 @@ $rowSize: 30px;
     text-indent: 1ch;
 }
 
-.dropdown {
-    @include color(document);
-    & > *:first-child {
-        & > * {
-            & > * {
-                height: $rowSize;
-                &:hover {
-                    color: map-get($palette, interactive);
-                }
-                &:not(:last-child) {
-                    padding-top: 1px;
-                    border-bottom: 1px solid map-get($palette, text);
-                }
-            }
-        }
-    }
-    & > *:last-child {
-        @include colorInteract(main);
-    }
+.dropdownItem {
+    height: $rowSize;
 }

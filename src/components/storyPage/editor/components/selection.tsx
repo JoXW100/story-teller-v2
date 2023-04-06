@@ -4,7 +4,7 @@ import SelectionMenu from 'components/common/selectionMenu';
 import { OptionType, OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 type SelectionItemElementProps = React.PropsWithChildren<{
     item: ReactNode
@@ -39,8 +39,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
                     item={type.options[key]} 
                     value={selection[key]}
                     onChange={(value) => handleInput(value, key)}
-                    inputType="number"
-                />
+                    inputType="number"/>
             )})
         , {})
     ), [selection, context.file.metadata])
@@ -52,7 +51,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     }
     
     return (
-        <div className={styles.editSelection}>
+        <div className={styles.editList}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <SelectionMenu
                 className={styles.selection}
@@ -67,13 +66,12 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
 
 const SelectionItemElement = ({ item, value, onChange, inputType }: SelectionItemElementProps): JSX.Element => {
     return (
-        <div className={styles.editSelectionItem}>
+        <div className={styles.editGroupItem}>
             <b>{item}</b>
             <input 
                 type={inputType} 
                 value={value ?? ""} 
-                onChange={(e) => onChange(e.target.value)}
-            />
+                onChange={(e) => onChange(e.target.value)}/>
         </div>
     )
 }

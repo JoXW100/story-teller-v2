@@ -4,7 +4,7 @@ import DropdownMenu from 'components/common/dropdownMenu';
 import { OptionType, OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -22,14 +22,14 @@ const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): 
     }
 
     return (
-        <div className={styles.editEnum}>
+        <div className={styles.editGroupItem}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <DropdownMenu 
-                className={styles.dropdown} 
+                className={styles.dropdown}
+                itemClassName={styles.dropdownItem}
                 values={type.options} 
                 value={value}
-                onChange={handleInput}
-            />
+                onChange={handleInput}/>
         </div>
     )
 }

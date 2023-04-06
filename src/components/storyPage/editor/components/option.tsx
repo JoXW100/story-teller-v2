@@ -5,7 +5,7 @@ import { CalculationMode } from 'types/database/editor';
 import { OptionTypes } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 import NumberInput from 'components/common/numericInput';
 import { FileMetadata } from 'types/database/files';
 
@@ -55,28 +55,24 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
     return (
         <div className={styles.editOption}>
             <b> {`${ params.label ?? "label"}:`} </b>
-            <div>
-                <DropdownMenu
-                    className={styles.dropdown} 
-                    values={OptionTypes['calc'].options} 
-                    value={data.type as string}
-                    onChange={handleChange}
-                />
-                { params.type == "number" 
-                    ? <NumberInput
-                        setValue={handleNumericInput}
-                        value={data?.value ?? 0}
-                        disabled={data.type as CalculationMode == CalculationMode.Auto}
-                    />
-                    : <input
-                        type={params.type}
-                        onChange={handleInput}
-                        value={data?.value ?? ''}
-                        disabled={data.type as CalculationMode == CalculationMode.Auto}
-                    />
+            <DropdownMenu
+                className={styles.dropdown}
+                itemClassName={styles.dropdownItem}
+                values={OptionTypes['calc'].options} 
+                value={data.type as string}
+                onChange={handleChange}/>
 
-                }
-            </div>
+            { params.type == "number" 
+                ? <NumberInput
+                    setValue={handleNumericInput}
+                    value={data?.value ?? 0}
+                    disabled={data.type as CalculationMode == CalculationMode.Auto}/>
+                : <input
+                    type={params.type}
+                    onChange={handleInput}
+                    value={data?.value ?? ''}
+                    disabled={data.type as CalculationMode == CalculationMode.Auto}/>
+            }
         </div>
     )
 }

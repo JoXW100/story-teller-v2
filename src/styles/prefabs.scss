@@ -1,0 +1,37 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+
+@mixin centerGrid() {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+}
+
+@mixin centerFlex() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin scroll() {
+    cursor: auto;
+    overflow: scroll;
+
+    &::-webkit-scrollbar {
+        width: $scrollBarWidth;
+        height: $scrollBarWidth;
+    }
+    
+    &::-webkit-scrollbar-corner {
+        @include color(second);
+    }
+
+    &::-webkit-scrollbar-track {
+        @include colorInteract(second);
+    }
+
+    &::-webkit-scrollbar-thumb  {
+        @include color(interactive);
+    }
+}

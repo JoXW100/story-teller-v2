@@ -1,0 +1,186 @@
+@import 'styles/colors.scss';
+@import 'styles/prefabs.scss';
+@import 'styles/constants.scss';
+
+$size: 20px;
+$sizeLarge: ($size + 1px) * 5 - 1px;
+$componentColor: document;
+
+.main {
+    @include color(forth);
+    @include scroll();
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    & > .editGroup[data=default]:last-child  {
+        margin-bottom: 120px;
+    }
+}
+
+.editGroup {
+    @include color(forth);
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+    white-space: nowrap;
+
+    &[data=fill] {
+        flex: 1;
+        height: 100%;
+        min-height: 200px;
+    }
+}
+
+.editGroupHeader {
+    @include colorInteract(main);
+    @include colorText();
+    user-select: none;
+    position: relative;
+    cursor: pointer;
+    font-size: large;
+    font-weight: bold;
+    padding: 1px 5px;
+    overflow: hidden;
+
+    &[data=open]::after {
+        position: absolute;
+        right: 5px;
+        top: 0.5ch;
+        border-color: transparent map-get($palette, text) transparent transparent;
+        border-width: 6px;
+        border-style: solid;
+        content: " ";
+    }
+
+    &[data=closed]::after {
+        position: absolute;
+        right: -1px;
+        top: 0.5ch;
+        border-color: transparent transparent transparent map-get($palette, text);
+        border-width: 6px;
+        border-style: solid;
+        content: " ";
+    }
+}
+
+.editGroupItem {
+    display: grid;
+    grid-template-columns: $labelWidth 1fr;
+    gap: 5px;
+    height: $size;
+    flex-shrink: 0;
+    margin: 2px 0 2px 5px;
+    font-size: 12px;
+
+    & > b {
+        @include colorText();
+        height: $size;
+        flex-shrink: 0;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    & > input {
+        @extend .editInput;
+    }
+}
+
+.editInput {
+    @include color($componentColor);
+    @include colorText();
+    min-width: 0;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: small;
+    padding: 0 5px;
+    flex: 1;
+
+    &[error=true] {
+        @include color(error);
+    }
+
+    &:disabled {
+        filter: brightness(90%);
+        pointer-events: none;
+    }
+
+    &::-webkit-inner-spin-button{
+        appearance: none;
+    }
+
+    &::placeholder {
+        @include colorText();
+        opacity: 60%;
+    }
+}
+
+.editTextArea {
+    @extend .editGroupItem;
+    height: $sizeLarge;
+
+    &[data=fill] {
+        height: 100%;
+        flex: 1;
+    }
+}
+
+.dropdown {
+    font: inherit;
+    font-size: small;
+}
+
+.dropdownItem {
+    height: $size !important;
+}
+
+.editList {
+    @extend .editGroupItem;
+    height: $sizeLarge;
+    flex-shrink: 0;
+    font: inherit;
+    font-size: small;
+}
+
+.editListItem {
+    @include color($componentColor);
+    height: $size !important;
+    display: flex;
+    justify-content: center;
+}
+
+.editOption {
+    @extend .editGroupItem;
+    grid-template-columns: $labelWidth $labelWidth 1fr;
+}
+
+.editBoolean {
+    @extend .editGroupItem;
+    grid-template-columns: $labelWidth auto 1fr;
+
+    & > a {
+        color: map-get($palette, accents);
+        display: flex;
+        align-items: center;
+        font-size: small;
+        flex: 1;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.loading {
+    width: 100%;
+    margin-top: 100px + 0.75cm !important;
+    & svg {
+        height: 0.85in;
+    }
+}

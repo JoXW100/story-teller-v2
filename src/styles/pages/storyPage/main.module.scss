@@ -1,0 +1,91 @@
+@import 'styles/colors.scss';
+@import 'styles/animations.scss';
+@import 'styles/constants.scss';
+@import 'styles/prefabs.scss';
+@import 'styles/fonts.scss';
+
+.main {
+    display: grid;
+    grid-template-rows: $pageHeaderHeight 1fr;
+    grid-template-columns: minmax(max-content, 1fr);
+    position: relative;
+    overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    height: 100%;
+
+    & > .divider > :nth-child(2) {
+        z-index: 4;
+    }
+}
+
+.header {
+    @include color(main);
+    @include colorShadow();
+    z-index: 1000;
+    display: flex;
+    gap: 1px;
+    justify-content: left;
+    min-width: fit-content;
+    position: relative;
+}
+
+.headerLabel {
+    @include fontNoLineBreak();
+    display: flex;
+    align-items: center;
+    height: 100%;
+    min-width: 160px;
+    padding: 0 10px;
+    font-weight: 700;
+    font-size: 20px;
+    user-select: none;
+    flex: 1;
+
+    & > SVG {
+        height: 100%;
+        margin: 0 5px 0 0;
+    }
+}
+
+.headerButton {
+    aspect-ratio: 1;
+    height: 100%;
+    padding: 5px;
+
+    & > svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.holder {
+    position: relative;
+
+    &[data=open] {
+        @include colorShadow();
+        & > :first-child {
+            width: $smallMenuWidth;
+        }
+    }
+}
+
+.invalidFile {
+    @include color(background);
+    @include colorText();
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-weight: 600;
+    font-size: 1.4em;
+    user-select: none;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    padding: 5px 5px 0px;
+}

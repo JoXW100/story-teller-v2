@@ -3,7 +3,7 @@ import { Context } from 'components/contexts/storyContext';
 import HistoryIcon from '@mui/icons-material/HistorySharp';
 import RollHistoryPanel from './rollHistoryPanel';
 import Localization from 'utils/localization';
-import styles from 'styles/storyPage/main.module.scss'
+import styles from 'styles/pages/storyPage/main.module.scss'
 
 type RollHistoryButtonProps = React.PropsWithRef<{
     disabled: boolean

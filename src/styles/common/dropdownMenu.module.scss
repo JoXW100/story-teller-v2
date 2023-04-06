@@ -1,0 +1,86 @@
+@import 'styles/colors.scss';
+@import 'styles/prefabs.scss';
+
+.dropdown {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-auto-rows: 100%;
+    height: inherit;
+    width: 100%;
+
+    &[data=nobutton] > button {
+        display: none;
+    }
+    
+    &[disabled] {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.button {
+    @include colorInteract(interactive);
+    display: flex;
+    height: 100%;
+    aspect-ratio: 1;
+
+    & > svg {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+.menu {
+    @include scroll();
+    @include colorText();
+    display: grid;
+    grid-template-columns: 100%;
+    background: inherit;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 500%;
+    min-height: 100%;
+    width: 100%;
+    z-index: 1000;
+
+    &[data=close] {
+        max-height: 100%;
+        & > :not(:first-child) {
+            display: none;
+        }
+    }
+
+    &[data=open] {
+        @include colorShadow();
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        & > :not(:last-child) {
+            border-bottom: 1px solid map-get($palette, text);
+            padding-top: 1px;
+        }
+
+        & > :hover {
+            color: map-get($palette, interactive);
+        }
+    }
+}
+
+.dropdownItem {
+    @include color(document);
+    justify-content: start;
+    font: inherit;
+    padding: 0 5px;
+    height: 100%;
+    min-height: 100%;
+}

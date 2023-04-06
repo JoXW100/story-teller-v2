@@ -9,7 +9,7 @@ import { Context } from "components/contexts/fileSystemContext";
 import Searchbox from "components/common/searchbox";
 import Localization from "utils/localization";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/fileSystem.module.scss';
+import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileMenuHeader = (): JSX.Element => {
     const [state, dispatch] = useContext(Context)

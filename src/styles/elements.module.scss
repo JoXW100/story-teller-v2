@@ -129,7 +129,8 @@
     flex: 1;
     cursor: pointer;
 
-    & > span, & > svg {
+    & > span {
+        display: inline-flex;
         margin-left: 5px;
     }
 }

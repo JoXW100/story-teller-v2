@@ -8,7 +8,7 @@ import Templates from 'data/fileTemplates';
 import Localization from 'utils/localization'
 import { EditInputType, TemplateComponent } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
-import styles from 'styles/storyPage/main.module.scss'
+import styles from 'styles/pages/storyPage/main.module.scss'
 
 const FileView = (): JSX.Element => {
     const [context] = useContext(StoryContext);

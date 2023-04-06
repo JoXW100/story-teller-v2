@@ -1,6 +1,7 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
 @import 'styles/fonts.scss';
+@import 'styles/prefabs.scss';
 
 $iconPadding: 3px;
 
@@ -16,17 +17,13 @@ $iconPadding: 3px;
     @include color(main);
     @include colorShadow();
     @include fontNoLineBreak();
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @include centerFlex();
     font-weight: 600;
     height: $menuItemHeaderHeight;
 }
 
 .create {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include centerFlex();
     width: 100%;
     flex: 1;
 
@@ -58,9 +55,10 @@ $iconPadding: 3px;
     position: absolute;
     width: $iconNormalSize;
     height: $iconNormalSize;
-    user-select: none;
+    padding: $iconPadding;
     bottom: $iconPadding;
     border-radius: 50%;
+    user-select: none;
 
     & > svg {
         width: 100%;

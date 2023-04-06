@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
 import { TextTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const TextComponent = ({ params }: TemplateComponentProps<TextTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -15,7 +15,7 @@ const TextComponent = ({ params }: TemplateComponentProps<TextTemplateParams>): 
     }
 
     return (
-        <div className={styles.editText}>
+        <div className={styles.editGroupItem}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <input value={value} onChange={handleInput}/>
         </div>

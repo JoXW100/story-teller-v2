@@ -1,24 +1,27 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import DropDownIcon from '@mui/icons-material/ArrowDropDownSharp';
 import DropUpIcon from '@mui/icons-material/ArrowDropUpSharp';
-import styles from 'styles/components/dropdownMenu.module.scss'
+import styles from 'styles/common/dropdownMenu.module.scss'
 
 type DropdownMenuProps = React.PropsWithRef<{
-    className: string
+    className?: string
+    itemClassName?: string,
     values: Record<string, ReactNode>
     value: string, 
     showButton?: boolean,
     onChange: (value: string) => void
 }>
 
-const DropdownMenu = ({ className, values, value, showButton = true, onChange }: DropdownMenuProps): JSX.Element => {
+const DropdownMenu = ({ className, itemClassName, values, value, showButton = true, onChange }: DropdownMenuProps): JSX.Element => {
     const [open, setOpen] = useState(false);
     const disabled = !values || Object.values(values).length <= 1
+    const style = className ? `${styles.dropdown} ${className}` : styles.dropdown;
+    const itemStyle = itemClassName ? `${styles.dropdownItem} ${itemClassName}` : styles.dropdownItem;
+    const { [value]: _, ...rest } = values
+    const keys = Object.keys(rest)
 
     const clickHandler = () => {
-        if (open) {
-            setOpen(false)
-        }
+        if (open) { setOpen(false) }
     }
 
     const openHandler = () => {
@@ -39,52 +42,24 @@ const DropdownMenu = ({ className, values, value, showButton = true, onChange }:
         setOpen(false)
     }, [value, values])
 
-    const rows = useMemo(() => {
-        if (open) {
-            var { [value]: _, ...rest } = values
-            return [value, ...Object.keys(rest)].map((value, index) => (
-                <DropdownRow key={index} onClick={() => handleClick(value)}>
-                    { values[value] }
-                </DropdownRow>
-            ))
-        } else {
-            return (
-                <DropdownRow>
-                    { values[value] }
-                </DropdownRow>
-            )
-        }
-    }, [values, value, open])
-
     return (
         <div 
-            className={className ? `${styles.main} ${className}` : styles.main}
-            onClick={openHandler}
+            className={style}
             disabled={disabled}
-        >
+            onClick={openHandler}
+            data={showButton ? "button" : "nobutton"}>
             <div className={styles.content} onMouseLeave={clickHandler}> 
-                <div 
-                    className={styles.menu}
-                    data={open ? "true" : "false"}
-                > { rows } </div>
-            </div>
-            { showButton &&
-                <div className={styles.button}>
-                    { open ? <DropUpIcon/> : <DropDownIcon/> }
+                <div className={styles.menu} data={open ? "open" : "close"} >
+                    { [value, ...keys].map((key) => (
+                        <button key={key} className={itemStyle} onClick={() => handleClick(key)}>  
+                            { values[key] }
+                        </button>   
+                    ))}
                 </div>
-            }
-        </div>
-    )
-}
-
-type DropdownRowProps = React.PropsWithChildren<{
-    onClick?: () => void
-}>
-
-const DropdownRow = ({ children, onClick }: DropdownRowProps): JSX.Element => {
-    return (
-        <div className={styles.menuRow} onClick={onClick}> 
-            { children }
+            </div>
+            <button className={styles.button} onClick={openHandler}>
+                { open ? <DropUpIcon/> : <DropDownIcon/> }
+            </button>
         </div>
     )
 }

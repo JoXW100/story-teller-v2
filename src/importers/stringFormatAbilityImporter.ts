@@ -11,6 +11,7 @@ const getAbilityType = (ability: string): AbilityType => {
         case "melee attack": // unknown
             return AbilityType.MeleeAttack
         case "ranged attack": // unknown
+        case "melee or ranged weapon attack":
             return AbilityType.RangedAttack
         default:
             return AbilityType.Feature
@@ -69,7 +70,7 @@ const getAction = (action: string, type: AbilityType): ActionType => {
     }
 }
 
-const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,[A-z ]+([0-9]+(?:\/[0-9]+)?) [^.]+\., *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/m
+const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\., *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
 const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])

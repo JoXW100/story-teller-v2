@@ -3,7 +3,7 @@ import { Context } from 'components/contexts/fileContext';
 import ListMenu from 'components/common/listMenu';
 import { TemplateComponentProps } from '.';
 import { ListTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -17,14 +17,13 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
         <div className={styles.editList}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <ListMenu
-                className={styles.list}
+                itemClassName={styles.editListItem}
                 values={typeof values === 'object' ? values : []}
                 type={params.type}
                 defaultValue={params.default}
                 onChange={handleChange}
                 placeholder={params.placeholder}
-                editEnabled={Boolean(params.editEnabled)}
-            />
+                editEnabled={Boolean(params.editEnabled)}/>
         </div>
     )
 }

@@ -135,7 +135,7 @@ const validateOptions = (options: RollOptions): Queries => {
     return {}
 }
 
-const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Element => {
+const RollElement = ({ children, options, ...props }: ElementParams<RollOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
     const rollOptions = new Options(options);
 
@@ -194,10 +194,9 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
             className={styles.dice}
             onClick={handleClick}
             onContextMenu={handleContext}
-            tooltips={options.tooltips}
-        >
+            tooltips={options.tooltips}>
             {rollOptions.rollText}
-            { children }
+            {children && <span>{children}</span> }
         </span>
     )
 }

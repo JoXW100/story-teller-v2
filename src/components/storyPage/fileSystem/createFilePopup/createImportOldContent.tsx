@@ -4,7 +4,7 @@ import roll20Importer from "importers/roll20Importer";
 import Localization from "utils/localization";
 import { CreateContentProps } from ".";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [name, setName] = useState("")
@@ -27,7 +27,7 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
     return (
         <>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-fileNamePrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-fileNamePrompt')}:</span>
                 <input 
                     value={name} 
                     onChange={(e) => setName(e.target.value)}
@@ -35,7 +35,7 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
                 />
             </div>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-importURLPrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-importURLPrompt')}:</span>
                 <input 
                     value={value} 
                     onChange={(e) => setValue(e.target.value)}
@@ -44,13 +44,11 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
             </div>
             <div className={styles.inputRow}/>
             <div className={styles.inputRow}>
-                <div 
-                    className={styles.button}
+                <button 
                     onClick={handleClick}
-                    disabled={!value || !name}
-                > 
+                    disabled={!value || !name}> 
                     {Localization.toText('createFilePopup-button-import')}
-                </div>
+                </button>
             </div>
         </>
     )

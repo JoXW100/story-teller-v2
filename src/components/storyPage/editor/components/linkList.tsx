@@ -4,7 +4,7 @@ import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
 import { FileType } from 'types/database/files';
 import { LinkListTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -18,13 +18,12 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
         <div className={styles.editList}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <LinkListMenu
-                className={styles.list}
+                itemClassName={styles.editListItem}
                 values={typeof values === 'object' ? values : []}
                 onChange={handleChange}
                 placeholder={params.placeholder} 
                 fileTypes={params.fileTypes?.map((fileType) => fileType as FileType ) ?? []}
-                allowText={params.allowText}       
-            />
+                allowText={params.allowText}/>
         </div>
     )
 }

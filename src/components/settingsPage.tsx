@@ -15,7 +15,9 @@ type SettingsPageProps = React.PropsWithRef<{
 const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const [state, setState] = useState({ 
-        palette: context.palette ?? Object.keys(Palettes)[0] 
+        palette: Object.keys(Palettes).includes(context.palette) 
+            ? context.palette 
+            : Object.keys(Palettes)[0] 
     })
 
     const palettes = Object.keys(Palettes).reduce((prev, val) => (
@@ -34,17 +36,17 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                 { Localization.toText("settingsPage-header")}
                 <Link 
                     className={styles.closeButton}
-                    tooltips={Localization.toText("settingsPage-close")}
-                    href={Navigation.settingsReturnURL(returnURL)} 
-                    passHref>
-                    <CloseIcon/>
+                    href={Navigation.settingsReturnURL(returnURL)}>
+                    <button tooltips={Localization.toText("settingsPage-close")}>
+                        <CloseIcon/>
+                    </button>
                 </Link>
             </div>
             <div className={styles.body}>
                 <div className={styles.row}>
                     {Localization.toText("settingsPage-palette")} 
                     <DropdownMenu 
-                        className={styles.dropdown}
+                        itemClassName={styles.dropdownItem}
                         value={state.palette}
                         values={palettes}
                         onChange={(value) => setState({ ...state, palette: value }) }

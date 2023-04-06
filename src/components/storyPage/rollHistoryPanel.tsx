@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/storyContext';
 import { RollEvent, RollMethod } from 'types/dice';
-import styles from 'styles/storyPage/rollHistory.module.scss'
+import styles from 'styles/pages/storyPage/rollHistory.module.scss'
 
 type RollHistoryPanelProps = React.PropsWithRef<{
     open: () => void

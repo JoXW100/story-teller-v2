@@ -1,4 +1,5 @@
-@import '../colors.scss';
+@import 'styles/colors.scss';
+@import 'styles/prefabs.scss';
 
 @mixin componentScroll() {
     cursor: auto;
@@ -26,9 +27,11 @@
 .main {
     @include color(third);
     @include colorShadow();
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     position: relative;
-    flex-direction: column;
+    gap: 1px;
     height: 100%;
     z-index: 100;
 
@@ -39,8 +42,7 @@
     }
 
     & > .body {
-        @include componentScroll();
-        height: 100%;
+        @include scroll();
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -67,6 +69,7 @@
 }
 
 .headerFilterButton {
+    @include colorInteract(interactive);
     justify-self: flex-end;
     margin-left: auto;
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import UploadIcon from '@mui/icons-material/Upload';
 import { closePopup } from "components/common/popupHolder";
 import { CreateContentProps } from ".";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState({ file: null })

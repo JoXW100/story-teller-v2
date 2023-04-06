@@ -6,7 +6,7 @@ import { FileType } from "types/database/files";
 import { CreateFileOptions } from "data/fileTemplates";
 import { CreateContentProps, CreateFilePopupData } from ".";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [state, setState] = useState<CreateFilePopupData>({ 
@@ -21,31 +21,28 @@ const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
     return (
         <>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-fileNamePrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-fileNamePrompt')}:</span>
                 <input 
                     value={state.name} 
                     onChange={(e) => setState({ ...state, name: e.target.value})}
-                    placeholder={Localization.toText('createFilePopup-fileNamePlaceholder')}
-                />
+                    placeholder={Localization.toText('createFilePopup-fileNamePlaceholder')}/>
             </div>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-typePrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-typePrompt')}:</span>
                 <DropdownMenu 
                     className={styles.dropdown}
+                    itemClassName={styles.dropdownItem}
                     value={state.type} 
                     values={CreateFileOptions}
-                    onChange={(value) => setState({ ...state, type: value as FileType })}
-                />
+                    onChange={(value) => setState({ ...state, type: value as FileType })}/>
             </div>
             <div className={styles.inputRow}/>
             <div className={styles.inputRow}>
-                <div 
-                    className={styles.button}
+                <button 
                     onClick={handleClick}
-                    disabled={!state.name || !state.type}
-                > 
+                    disabled={!state.name || !state.type}> 
                     {Localization.toText('createFilePopup-button')}
-                </div>
+                </button>
             </div>
         </>
     )

@@ -1,8 +1,8 @@
+import Communication from "utils/communication"
 import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionType } from "types/database/editor";
+import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
-import Communication from "utils/communication"
 
 const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/
 const castTimeExpr = /([0-9]+)? *([A-z-]+)/
@@ -441,6 +441,19 @@ const getTarget = (area: AreaType): TargetType => {
     }
 }
 
+const estimateSpellAttribute = (monster: Open5eMonster): OptionalAttribute => {
+    if (monster.spell_list.length <= 0) {
+        return OptionalAttribute.None
+    }
+    return [ 
+        { val: monster.intelligence, attr: OptionalAttribute.INT },
+        { val: monster.wisdom, attr: OptionalAttribute.WIS },
+        { val: monster.charisma, attr: OptionalAttribute.CHA }
+    ].reduce((prev, val) => (
+        val.val > prev.val ? val : prev
+    ), { val: -1, attr: OptionalAttribute.INT }).attr
+}
+
 export const open5eCreatureImporter = async (id: string): Promise<CreatureMetadata> => {
     let res = await Communication.open5eFetchOne<Open5eMonster>("monsters", id);
     if (!res) { return null; }
@@ -457,6 +470,13 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
         health: { type: CalculationMode.Auto, value: res.hit_points } as OptionType<number>,
         ac: { type: CalculationMode.Override, value: res.armor_class } as OptionType<number>,
+        str: res.strength,
+        dex: res.dexterity,
+        con: res.constitution,
+        int: res.intelligence,
+        wis: res.wisdom,
+        cha: res.charisma,
+        spellAttribute: estimateSpellAttribute(res),
         proficiency: { type: CalculationMode.Auto } as OptionType<number>,
         initiative: { type: CalculationMode.Auto } as OptionType<number>,
         resistances: res.damage_resistances,
@@ -472,7 +492,7 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         challenge: res.cr,
         // xp: 
         // spellSlots: 
-        // spells: 
+        spells: res.spell_list ? res.spell_list : []
     } as CreatureMetadata
     
     if (process.env.NODE_ENV == "development") {

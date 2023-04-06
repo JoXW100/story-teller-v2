@@ -3,7 +3,7 @@ import { Context } from 'components/contexts/fileContext';
 import TextEditor from 'components/common/textEditor';
 import { TemplateComponentProps } from '.';
 import { TextAreaTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const TextareaComponent = ({ params }: TemplateComponentProps<TextAreaTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -18,8 +18,7 @@ const TextareaComponent = ({ params }: TemplateComponentProps<TextAreaTemplatePa
     return (
         <div 
             className={styles.editTextArea}
-            data={params.fill ? 'fill' : undefined}
-        >
+            data={params.fill ? 'fill' : undefined}>
             <b> {`${params.label ?? "label"}:`} </b>
             <TextEditor text={value} handleInput={handleInput}/>
         </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
-import Link from "next/link";
 import OpenExternalIcon from '@mui/icons-material/OpenInNewSharp';
+import NextIcon from '@mui/icons-material/NavigateNextSharp';
+import PrevIcon from '@mui/icons-material/NavigateBeforeSharp';
 import { closePopup } from "components/common/popupHolder";
 import Searchbox from "components/common/searchbox";
 import Loading from "components/common/loading";
@@ -10,7 +11,7 @@ import Localization from "utils/localization";
 import Communication, { Open5eFetchType } from "utils/communication";
 import { FileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
-import styles from 'styles/storyPage/createFilePopup.module.scss';
+import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 import Navigation from "utils/navigation";
 
 interface ImportContentState {
@@ -40,6 +41,7 @@ const spellFilterItems = ["Cantrip", "1", "2", "3", "4", "5", "6", "7", "8", "9"
 const itemsPerPage = 100
 
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
+    const controller = new AbortController()
     const [name, setName] = useState("")
     const [searchText, setSearchText] = useState("")
     const [spellFilter, setSpellFilter] = useState(Array.from({length: 10}, () => true))
@@ -48,25 +50,29 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         menu: menuItems[0],
         values: [],
         selected: null,
-        loading: true
+        loading: false
     })
     
     useEffect(() => {
-        setState({ ...state, loading: true, values: [] })
-        Communication.open5eFetchAll<Open5eItemInfo>(state.menu.type, state.menu.query, ["slug", "level_int", ...state.menu.fields])
-        .then((res) => {
-            setPage(0)
-            setState({ 
-                ...state, 
-                loading: false, 
-                values: res.results
+        if (!state.loading) {
+            setState({ ...state, loading: true, values: [] })
+            Communication.open5eFetchAll<Open5eItemInfo>(state.menu.type,
+                state.menu.query, 
+                ["slug", "level_int", ...state.menu.fields])
+            .then((res) => {
+                setPage(0)
+                setState({ 
+                    ...state, 
+                    loading: false, 
+                    values: res.results
+                })
             })
-        })
+        }
     }, [state.menu])
 
     const handleImportClick = () => {
         if (state.selected != null) {
-            var importer: Promise<FileMetadata>
+            var importer: Promise<FileMetadata>;
             if (state.menu.type == "monsters") {
                 importer = open5eCreatureImporter(state.selected.slug)
             } else {
@@ -130,14 +136,15 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const buildMenuItems = (items: CompendiumMenuItem[], level: number = 0): JSX.Element[] => {
         return items.map((item, index) => {
             let res = (
-                <div 
+                <button 
                     key={`${level}-${index}`} 
                     className={styles.inputCompendiumMenuItem} 
                     value={level.toString()}
                     data={state.menu?.title == item.title ? "selected" : undefined }
+                    disabled={state.loading}
                     onClick={() => handleMenuItemCLick(item) }>
                     { item.title }
-                </div>
+                </button>
             )
             return (
                 item.subItems?.length > 0 ? (
@@ -207,14 +214,16 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                             ))
                         }{ !state.loading && items.length > itemsPerPage && (
                             <div className={styles.compendiumPaginator}>
-                                <button disabled={page == 0} onClick={() => handlePaginator(-1)}>
-                                    {Localization.toText('createFilePopup-compendiumPaginatorPrev')}
+                                <button 
+                                    disabled={page == 0} 
+                                    onClick={() => handlePaginator(-1)}>
+                                    <PrevIcon/>
                                 </button>
                                     { `${page + 1} / ${numPages}` }
                                 <button
                                     disabled={items.length <= (page + 1) * itemsPerPage} 
                                     onClick={() => handlePaginator(1)}>
-                                    {Localization.toText('createFilePopup-compendiumPaginatorNext')}
+                                    <NextIcon/>
                                 </button>
                             </div>
                         )}{ state.loading && <Loading/>}
@@ -222,7 +231,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 </div>
             </div>
             <div className={styles.inputRow}>
-                <div>{Localization.toText('createFilePopup-fileNamePrompt')}:</div>
+                <span>{Localization.toText('createFilePopup-fileNamePrompt')}:</span>
                 <input 
                     value={name} 
                     onChange={(e) => setName(e.target.value)}
@@ -230,15 +239,13 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 />
             </div>
             <div className={styles.inputRow}>
-                <div 
-                    className={styles.button}
+                <button 
                     onClick={handleImportClick}
-                    disabled={!name || state.selected == null}
-                > 
+                    disabled={!name || state.selected == null}> 
                     { state.selected !== null 
                         ? Localization.toText('createFilePopup-button-import-value', state.selected.name)
                         : Localization.toText('createFilePopup-button-import-value-empty')}
-                </div>
+                </button>
             </div>
         </>
     )

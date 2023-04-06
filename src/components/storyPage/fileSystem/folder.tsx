@@ -12,7 +12,7 @@ import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { FileStructure } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import { InputType } from 'types/context/fileSystemContext';
-import styles from 'styles/storyPage/file.module.scss';
+import styles from 'styles/pages/storyPage/file.module.scss';
 
 const hasSelectedChild = (file: FileStructure, fileId: ObjectId): boolean => {
     return file.id === fileId || file.children?.some((x) => hasSelectedChild(x, fileId)) 

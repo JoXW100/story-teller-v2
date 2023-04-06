@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
+import SettingsIcon from '@mui/icons-material/SettingsSharp';
 import Link from 'next/link';
 import Communication from 'utils/communication';
 import Navigation from 'utils/navigation';
@@ -104,6 +105,11 @@ const HomePage = (): JSX.Element => {
                 <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
                     { Localization.toText('home-logout', user?.name ?? "") }
                     <LogoutIcon/>
+                </Link>
+                <Link className={styles.settingsButton} href={Navigation.settingsURL()} passHref>
+                    <button tooltips={Localization.toText('storyPage-openSettingsMenu')}>
+                        <SettingsIcon/>
+                    </button>
                 </Link>
             </div>
             <div className={styles.mainContainer}>

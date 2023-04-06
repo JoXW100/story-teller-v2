@@ -6,14 +6,15 @@ import Dice from 'utils/data/dice';
 import { useFiles } from 'utils/handlers/files';
 import CreatureData from 'structures/creature';
 import EncounterData from 'structures/encounter';
+import EncounterCard from './encounterCard';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CalculationMode, RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { IEncounterCardData, EncounterContent, EncounterMetadata, EncounterStorage } from 'types/database/files/encounter';
 import { CreatureMetadata } from 'types/database/files/creature';
 import { Attribute } from 'types/database/dnd';
-import styles from 'styles/renderer.module.scss';
 import { ObjectId } from 'types/database';
+import styles from 'styles/renderer.module.scss';
 
 type EncounterFileRendererProps = React.PropsWithRef<{
     file: FileData<EncounterContent,EncounterMetadata,EncounterStorage>
@@ -25,17 +26,10 @@ type EncounterLinkRendererProps = React.PropsWithRef<{
     stats?: ICreatureStats
 }>
 
-type EncounterCardProps = React.PropsWithRef<{
-    card?: IEncounterCardData,
-    creature?: CreatureMetadata,
-    id: ObjectId,
-    num: number
-}>
-
 type CardDispatch = React.Dispatch<React.SetStateAction<EncounterCard[]>>
 type CardSortData = {
     card: IEncounterCardData
-    creature: CreatureMetadata
+    index: number
 }
 
 interface EncounterCard extends IEncounterCardData {
@@ -86,7 +80,7 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
             }))
         } else {
             setState(creatures.map((cre, index) => {
-                let card: IEncounterCardData = cards[index]
+                let card = cards[index]
                 let creature = new CreatureData(cre.metadata)
                 let health = card?.health ?? creature.healthValue
                 let maxHealth = card?.maxHealth ?? health
@@ -171,7 +165,7 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
         let delta = b.card.initiative - a.card.initiative
         return delta != 0 
             ? delta 
-            : b.creature.initiativeValue - a.creature.initiativeValue
+            : cards[b.index].creature.initiativeValue - cards[a.index].creature.initiativeValue
     }
 
     return <>
@@ -194,23 +188,25 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
             </button>
         </Elements.Align>
         <Elements.Line/>
-        <Elements.Header2>Description</Elements.Header2>
-        <div>{encounter.description}</div>
-        <Elements.Header2>Details</Elements.Header2>
+        { encounter.description && encounter.description.length > 0 && <> 
+            <Elements.Header2>Description</Elements.Header2>
+            <div>{encounter.description}</div>
+        </>}
+        <Elements.Space/>
         <div><Elements.Bold>Challenge: </Elements.Bold>{encounter.challengeText}</div>
         <Elements.Space/>
         <Elements.Header2 options={{ underline: 'true' }}>Creatures</Elements.Header2>
         <div className={styles.encounterCardHolder}>
             { encounter.cards
-                .map((card, index) => ({ card: card, creature: cards[index].creature } as CardSortData))
+                .map((card, index) => ({ card: card, index: index } as CardSortData))
                 .sort(sortCards)
                 .map((data, index) => (
                     <EncounterCard 
                         key={index} 
                         card={data.card}
-                        creature={data.creature}
-                        id={cards[index].id}
-                        num={cards[index].num}
+                        creature={cards[data.index].creature}
+                        id={cards[data.index].id}
+                        num={cards[data.index].num}
                     />
                 ))
             }
@@ -231,59 +227,6 @@ const EncounterLinkRenderer = ({ file }: EncounterLinkRendererProps): JSX.Elemen
 const EncounterRenderer: RendererObject<EncounterContent,EncounterMetadata> = {
     fileRenderer: EncounterFileRenderer,
     linkRenderer: EncounterLinkRenderer
-}
-
-const EncounterCard = ({ card, creature, id, num }: EncounterCardProps): JSX.Element => {
-    let initiative = creature.initiativeValue
-
-    const onNotesChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-        card.notes = e.currentTarget.value
-    }
-
-    const onHealthChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        var value = parseInt(e.currentTarget.value)
-        card.health = Math.max(0, isNaN(value) ? card.health : value)
-    }
-
-    return (
-        <div className={styles.encounterCard}>
-            <Elements.Box>
-                <Elements.Link options={{ href: String(id), newTab: "true" }}>
-                    <div className={styles.encounterCardHeader}>
-                        { num > 0 ? `${creature.name} (${num})` : creature.name}
-                    </div>
-                    <div className={styles.encounterImage}>
-                        <Elements.Image options={{ href: creature.portrait }}/>
-                    </div>
-                </Elements.Link>
-                <Elements.Line/>
-                <div>
-                    <Elements.Bold>Initiative: </Elements.Bold>
-                    { `${card.initiative} (${initiative >= 0 ? `+${initiative}` : initiative})` }
-                </div>
-                <div className={styles.encounterInputRow}>
-                    <Elements.Bold>HP: </Elements.Bold>
-                    <input
-                        className={styles.encounterCardInput} 
-                        type="number" 
-                        value={card.health}
-                        onChange={onHealthChange}
-                    />
-                    {` / ${card.maxHealth}`}
-                </div>
-                <div>
-                    <Elements.Bold>AC: </Elements.Bold>
-                    {creature.acValue}
-                </div>
-                <textarea 
-                    className={styles.encounterCardTextarea}
-                    value={card.notes} 
-                    onChange={onNotesChange}
-                    placeholder={"Input notes here ..."}
-                />
-            </Elements.Box>
-        </div>
-    )
 }
 
 export default EncounterRenderer

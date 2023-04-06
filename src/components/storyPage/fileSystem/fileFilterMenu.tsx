@@ -6,7 +6,7 @@ import { FileIcons } from "assets/icons";
 import { CreateFileOptions } from "data/fileTemplates";
 import Localization from "utils/localization";
 import { FileType } from "types/database/files";
-import styles from 'styles/storyPage/fileSystem.module.scss';
+import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileFilterMenu = (): JSX.Element => {
     const [state, dispatch] = useContext(Context)

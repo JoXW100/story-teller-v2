@@ -2,7 +2,7 @@ import React from "react";
 import FileSystemContext from "components/contexts/fileSystemContext";
 import FileMenuHeader from "./fileMenuHeader";
 import FileMenu from "./fileMenu";
-import styles from 'styles/storyPage/fileSystem.module.scss';
+import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileSystem = (): JSX.Element => {
     return (

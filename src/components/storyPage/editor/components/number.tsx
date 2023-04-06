@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
 import { NumberTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -34,7 +34,7 @@ const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams
     }
 
     return (
-        <div className={styles.editNumber}>
+        <div className={styles.editGroupItem}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <input 
                 type="number" 

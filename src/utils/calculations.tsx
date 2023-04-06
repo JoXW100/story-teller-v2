@@ -185,13 +185,13 @@ export const getSpeed = (creature: CreatureData): string => {
 export const getSaves = (creature: CreatureData): JSX.Element => {
     return creature.saves && Object.keys(creature.saves).length > 0
         ? <>{ Object.keys(creature.saves).map((key, index) => (
-                <Elements.Roll 
-                    key={index} 
-                    options={{ 
-                        mod: creature.saves[key] ?? 0 as any, 
-                        desc: `${key.toUpperCase()} Save` 
-                    }}
-                >{` ${key.toUpperCase()}`}</Elements.Roll >
+                <Elements.Roll
+                    key={index}
+                    options={{
+                        mod: creature.saves[key] ?? "0" as string, 
+                        desc: `${key.toUpperCase()} Save` }}>
+                    {key.toUpperCase()}
+                </Elements.Roll>
             ))}</>
         : null
 }
@@ -201,20 +201,19 @@ export const getSkills = (creature: CreatureData): JSX.Element => {
         ? <>{ Object.keys(creature.skills).map((key, index) => {
             var skill = getKeyName("skill", key)
             return skill ? (
-                <Elements.Roll 
+                <Elements.Roll
                     key={index} 
-                    options={{ 
-                        mod: creature.skills[key], 
-                        desc: `${skill} Check` 
-                    }}
-                > {` ${skill}`} </Elements.Roll>
+                    options={{ mod: creature.skills[key], desc: `${skill} Check` }}> 
+                    {skill} 
+                </Elements.Roll>
             ) : null
         })}</>
         : null
 }
 
 export const getKeyName = (collection: string, value: string | number): string => {
-    return OptionTypes[collection].options[value] ?? OptionTypes[collection].options[OptionTypes[collection].default]
+    return OptionTypes[collection].options[value] 
+        ?? OptionTypes[collection].options[OptionTypes[collection].default]
 }
 
 export const getComponents = (spell: SpellData): string[] => {

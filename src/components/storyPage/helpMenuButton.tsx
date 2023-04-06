@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Context } from 'components/contexts/storyContext';
 import HelpIcon from '@mui/icons-material/QuestionMarkSharp';
 import Localization from 'utils/localization';
-import styles from 'styles/storyPage/main.module.scss';
+import styles from 'styles/pages/storyPage/main.module.scss';
 
 const HelpMenuButton = (): JSX.Element => {
     const [_, dispatch] = useContext(Context);

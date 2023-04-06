@@ -5,7 +5,7 @@ import { Context } from 'components/contexts/fileContext';
 import Checkbox from 'components/common/checkbox';
 import { TemplateComponentProps } from '.';
 import { BooleanTemplateParams } from 'types/templates';
-import styles from 'styles/storyPage/editor.module.scss'
+import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const BooleanComponent = ({ params }: TemplateComponentProps<BooleanTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -20,9 +20,9 @@ const BooleanComponent = ({ params }: TemplateComponentProps<BooleanTemplatePara
     }
 
     return (
-        <div className={styles.editText}>
-            <b> {`${ params.label ?? "label"}:`} </b>
-            <Checkbox className={styles.checkbox} value={value} onChange={handleChange} />
+        <div className={styles.editBoolean}>
+            <b> {`${params.label ?? "label"}:`} </b>
+            <Checkbox value={value} onChange={handleChange} />
             { href && value ? <Link href={href}>{String(href)}</Link> : null  }
         </div>
     )

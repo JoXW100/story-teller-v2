@@ -4,16 +4,16 @@ import styles from 'styles/components/checkbox.module.scss';
 type CheckboxProps = React.PropsWithRef<{
     className?: string
     value: boolean
-    onChange: (value: boolean) => void
+    onChange: (newValue: boolean) => void
 }>
 
 const Checkbox = ({ className, value, onChange }: CheckboxProps): JSX.Element => {
     const onClick = () => onChange(!value)
     const name = className ? `${styles.main} ${className}` : styles.main
     return (
-        <span className={name} onClick={onClick}>
-            { value ? <CheckIcon/> : <div/> }
-        </span>
+        <button className={name} data={value ? "true" : "false"} onClick={onClick}>
+            <CheckIcon/>
+        </button>
     )
 }
 

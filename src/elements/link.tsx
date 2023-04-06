@@ -120,8 +120,7 @@ export const LinkElement = ({ options, children }: ElementParams<LinkOptions>): 
         <LinkComponent 
             className={styles.link} 
             href={linkOptions.hrefURL} 
-            newTab={linkOptions.newTabValue}
-        >
+            newTab={linkOptions.newTabValue}>
             { children }
         </LinkComponent>
     );
@@ -154,8 +153,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
         <LinkComponent 
             className={styles.linkContent} 
             href={href} 
-            newTab={linkOptions.newTabValue}
-        >
+            newTab={linkOptions.newTabValue}>
             <div data={linkOptions.border}>
                 <Content.linkRenderer file={file}/>
             </div>
@@ -184,8 +182,7 @@ export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleO
         <LinkComponent 
             className={styles.linkTitle} 
             href={href} 
-            newTab={linkOptions.newTabValue}
-        >
+            newTab={linkOptions.newTabValue}>
             { title ?? 'Missing Title' }
         </LinkComponent>
     ) : <LinkError/>

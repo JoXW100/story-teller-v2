@@ -1,4 +1,4 @@
-import React, { KeyboardEventHandler } from 'react';
+import React from 'react';
 import styles from 'styles/components/textEditor.module.scss';
 
 type TextEditorProps = React.PropsWithRef<{
@@ -9,7 +9,7 @@ type TextEditorProps = React.PropsWithRef<{
 }>
 
 const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorProps): JSX.Element => {
-    
+    const name = className ? `${className} ${styles.holder}` : styles.holder
     const handleKey = (e : React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.code === 'Tab') {
             e.preventDefault();
@@ -22,9 +22,9 @@ const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorP
     }
 
     return (
-        <div className={styles.holder}>
+        <div className={name}>
             <textarea 
-                className={className ? `${className} ${styles.area}` : styles.area}
+                className={styles.area}
                 value={text}
                 onChange={(e) => handleInput(e.target.value)}
                 onContextMenu={handleContext}

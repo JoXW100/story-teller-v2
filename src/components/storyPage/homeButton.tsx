@@ -2,7 +2,7 @@ import Link from 'next/link';
 import HomeIcon from '@mui/icons-material/HomeSharp';
 import Localization from 'utils/localization';
 import Navigation from 'utils/navigation';
-import styles from 'styles/storyPage/main.module.scss'
+import styles from 'styles/pages/storyPage/main.module.scss'
 
 const HomeButton = (): JSX.Element => {
     return (

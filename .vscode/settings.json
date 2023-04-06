@@ -6,6 +6,7 @@
         "DXSVG",
         "icontains",
         "iexact",
+        "nobutton",
         "pagecontent",
         "searchbox",
         "svgr",
