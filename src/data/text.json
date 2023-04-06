@@ -89,7 +89,9 @@
             "spell-component-M": "Material",
             "searchbox-placeholder": "Search ...",
             "filter-menu-header": "Filter",
-            "filter-menu-closeTooltips": "Close Menu"
+            "filter-menu-closeTooltips": "Close Menu",
+            "renderer-zoomIn": "Zoom In",
+            "renderer-zoomOut": "Zoom Out"
         }
     }
 }

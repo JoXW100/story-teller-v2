@@ -65,6 +65,7 @@ export enum Attribute {
 export enum Alignment {
     None,
     Unaligned,
+    Any,
     LawfulGood,
     LawfulNeutral,
     LawfulEvil,
@@ -158,7 +159,7 @@ export enum ActionType {
     BonusAction = "bonusAction",
     Reaction = "reaction",
     Special = "special",
-    //Legendary = "legendary",
+    Legendary = "legendary",
 }
 
 export enum EffectCondition {

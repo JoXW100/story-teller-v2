@@ -215,7 +215,10 @@ const getAlignment = (alignment: string) => {
     switch (true) {
         case /unaligned/.test(alignment):
             return Alignment.Unaligned
-            
+        
+        case /any/.test(alignment):
+            return Alignment.Any
+
         case /chaotic evil/.test(alignment):
             return Alignment.ChaoticEvil
 

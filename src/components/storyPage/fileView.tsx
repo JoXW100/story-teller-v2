@@ -50,8 +50,7 @@ const FileContent = (): JSX.Element => {
                     minLeft={70}
                     minRight={50}
                     left={<Editor template={template.editor}/>}
-                    right={<Renderer template={template.renderer}/>}
-                />
+                    right={<Renderer template={template.renderer}/>}/>
                 : <Renderer template={template.renderer}/>
         }
         console.error("No template for file type found, type:", context?.file?.type);

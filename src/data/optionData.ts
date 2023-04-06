@@ -47,6 +47,7 @@ export const OptionTypes = {
         options: {
             [Alignment.None]: "None",
             [Alignment.Unaligned]: "Unaligned",
+            [Alignment.Any]: "Any",
             [Alignment.ChaoticEvil]: "Chaotic Evil",
             [Alignment.ChaoticGood]: "Chaotic Good",
             [Alignment.ChaoticNeutral]: "Chaotic Neutral",
@@ -185,7 +186,8 @@ export const OptionTypes = {
             [ActionType.Action]: "Action",
             [ActionType.BonusAction]: "Bonus Action",
             [ActionType.Reaction]: "Reaction",
-            [ActionType.Special]: "Special"
+            [ActionType.Special]: "Special",
+            [ActionType.Legendary]: "Legendary"
         }
     } satisfies OptionType<ActionType>,
     "optionalAttr": {

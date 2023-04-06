@@ -1,5 +1,5 @@
 import Communication from "utils/communication"
-import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
+import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
@@ -57,10 +57,10 @@ interface Open5eMonster {
     damage_vulnerabilities: string
     // Actions
     actions: Open5eMonsterAction[]
-    legendary_actions: string
+    legendary_actions: Open5eMonsterAction[] | string
     legendary_desc: string
-    reactions: string
-    special_abilities: Open5eMonsterAction[]
+    reactions: Open5eMonsterAction[] | string
+    special_abilities: Open5eMonsterAction[] | string
     // Skills
     perception: number
     skills: Record<string, number>
@@ -111,6 +111,9 @@ const getAlignment = (alignment: string): Alignment => {
     switch (true) {
         case /unaligned/.test(alignment):
             return Alignment.Unaligned
+
+        case /any/.test(alignment):
+            return Alignment.Any
             
         case /chaotic evil/.test(alignment):
             return Alignment.ChaoticEvil
@@ -457,6 +460,9 @@ const estimateSpellAttribute = (monster: Open5eMonster): OptionalAttribute => {
 export const open5eCreatureImporter = async (id: string): Promise<CreatureMetadata> => {
     let res = await Communication.open5eFetchOne<Open5eMonster>("monsters", id);
     if (!res) { return null; }
+    res.special_abilities = typeof res.special_abilities == typeof [] ? res.special_abilities : []
+    res.legendary_actions = typeof res.legendary_actions == typeof [] ? res.legendary_actions : []
+    res.reactions = typeof res.reactions == typeof [] ? res.reactions : []
     let { num, dice } = splitHP(res.hit_dice)
     let metadata = {
         name: res.name,
@@ -465,7 +471,12 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         alignment: getAlignment(res.alignment.toLowerCase()),
         portrait: res.img_main ?? null,
         // description:
-        abilities: [...res.actions, ...res.special_abilities].map((x) => `${x.name}. ${x.desc}`),
+        abilities: [
+            ...res.actions, 
+            ...(res.special_abilities as Open5eMonsterAction[]),
+            ...(res.legendary_actions as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Legendary}: ${val.name}` })),
+            ...(res.reactions  as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
+        ].map((x) => `${x.name}. ${x.desc}`),
         level: num,
         hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
         health: { type: CalculationMode.Auto, value: res.hit_points } as OptionType<number>,

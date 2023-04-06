@@ -70,7 +70,7 @@ const getAction = (action: string, type: AbilityType): ActionType => {
     }
 }
 
-const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\., *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
+const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,?.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
 const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])
