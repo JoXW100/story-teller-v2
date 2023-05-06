@@ -66,8 +66,7 @@ const AlignElement = ({ options = {}, children }: ElementParams<AlignOptions>): 
         <div
             className={styles.align} 
             style={{ flex: alignOptions.weightValue }}
-            data={alignOptions.direction}
-        >
+            data={alignOptions.direction}>
             { children }
         </div>
     )
@@ -77,6 +76,9 @@ export const element: Record<string, ElementObject> = {
     align: {
         type: 'align',
         defaultKey: 'direction',
+        inline: false,
+        lineBreak: true,
+        container: true,
         toComponent: AlignElement,
         validate: validateOptions
     }

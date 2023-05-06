@@ -28,7 +28,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         } as ICreatureStats)
     }
 
-    public getAttributeModifier(attribute: Attribute): number {
+    public getAttributeModifier(attribute: Attribute | OptionalAttribute): number {
         let value: number = 10
         switch (attribute) {
             case Attribute.STR:
@@ -49,6 +49,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
             case Attribute.CHA:
                 value = this.cha
                 break;
+            case OptionalAttribute.None:
             default:
                 return 0
         }

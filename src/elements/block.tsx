@@ -50,8 +50,7 @@ const BlockElement = ({ options = {}, children }: ElementParams<BlockOptions>): 
     return (
         <div 
             style={{ flex: blockOption.weightValue, maxWidth: blockOption.width }}
-            className={styles.block}
-        > 
+            className={styles.block}> 
             {children} 
         </div>
     )
@@ -61,6 +60,9 @@ export const element: Record<string, ElementObject> = {
     block: {
         type: 'block',
         defaultKey: 'width',
+        inline: false,
+        lineBreak: true,
+        container: true,
         toComponent: BlockElement,
         validate: validateOptions
     }

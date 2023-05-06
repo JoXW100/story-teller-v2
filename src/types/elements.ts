@@ -55,6 +55,9 @@ type ElementParams<T extends Variables> = React.PropsWithChildren<{
 interface ElementObject {
     type: string
     defaultKey: string
+    inline: boolean
+    lineBreak: boolean
+    container: boolean
     validate: (options: Variables) => Queries
     toComponent: (params: ElementParams<any>) => JSX.Element
 }

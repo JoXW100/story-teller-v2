@@ -131,7 +131,8 @@ export enum TargetType {
     Self = "self",
     Single = "single",
     Multiple = "multiple",
-    Point = "point"
+    Point = "point",
+    Touch = "touch"
 }
 
 export enum AreaType {

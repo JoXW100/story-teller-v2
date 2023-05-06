@@ -14,6 +14,9 @@ export const element: Record<string, ElementObject> = {
     'fill': {
         type: 'fill',
         defaultKey: null,
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: FillElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

@@ -41,6 +41,9 @@ export const element: Record<string, ElementObject> = {
     'margin': {
         type: 'margin',
         defaultKey: 'margin',
+        inline: false,
+        lineBreak: true,
+        container: true,
         toComponent: Margin,
         validate: validateOptions
     }

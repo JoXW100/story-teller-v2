@@ -8,12 +8,13 @@ interface SearchItem {
 }
 
 type SearchListProps = React.PropsWithoutRef<{
-    className: string
+    className?: string
     items: SearchItem[]
     prompt: string
+    placeholder?: string
 }>
 
-const SearchList = ({ className, items, prompt }: SearchListProps): JSX.Element => {
+const SearchList = ({ className, items, prompt, placeholder }: SearchListProps): JSX.Element => {
     const [search, setSearch] = useState("")
     const name = className ? `${styles.main} ${className}` : styles.main
 
@@ -25,7 +26,7 @@ const SearchList = ({ className, items, prompt }: SearchListProps): JSX.Element 
         <div className={name}>
             <div className={styles.search}>
                 <div className={styles.text}> { prompt } </div>
-                <input value={search} onChange={handleChange}/>
+                <input value={search} placeholder={placeholder} onChange={handleChange}/>
             </div>
             <div className={styles.content}>
                 { items?.filter((item) => (

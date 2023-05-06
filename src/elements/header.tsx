@@ -60,18 +60,27 @@ export const element: Record<string, ElementObject> = {
     h1: {
         type: 'header',
         defaultKey: 'underline',
+        inline: false,
+        lineBreak: true,
+        container: false,
         toComponent: Header1,
         validate: validateOptions
     },
     h2: {
         type: 'header',
         defaultKey: 'underline',
+        inline: false,
+        lineBreak: true,
+        container: false,
         toComponent: Header2,
         validate: validateOptions
     },
     h3: {
         type: 'header',
         defaultKey: 'underline',
+        inline: false,
+        lineBreak: true,
+        container: false,
         toComponent: Header3,
         validate: validateOptions
     }

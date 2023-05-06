@@ -27,7 +27,6 @@ const HelpMenu = (): JSX.Element => {
             <div className={styles.main}>
                 <div className={styles.header}>
                     {Localization.toText('helpMenu-title')}
-
                     <div 
                         className={styles.closeBtn}
                         onClick={handleClick}
@@ -37,9 +36,9 @@ const HelpMenu = (): JSX.Element => {
                     </div>
                 </div>
                 <SearchList 
-                    className={styles.list} 
                     items={content}
                     prompt={Localization.toText('helpMenu-prompt')}
+                    placeholder={Localization.toText('helpMenu-placeholder')}
                 />
             </div>
         </div>

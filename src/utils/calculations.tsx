@@ -64,6 +64,8 @@ export const getSpellRange = (spell: SpellData): string => {
             return area ? `Self/${area}` : "Self"
         case TargetType.Point:
             return area ? `${spell.range}ft/${area}` : `${spell.range}ft`
+        case TargetType.Touch:
+            return 'Touch'
         default:
         case TargetType.Single:
         case TargetType.Multiple:

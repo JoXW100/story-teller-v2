@@ -1,54 +1,48 @@
 @import 'styles/colors.scss';
-
-$headerSize: 50px;
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+@import 'styles/prefabs.scss';
 
 .background {
     position: absolute;
     background-color: #00000075;
-    z-index: 100;
+    z-index: 1000;
     top: 0;
     right: 0;
     left: 0;
     bottom: 0;
+    padding-top: 10px;
 }
 
 .main {
     @include color(document);
     @include colorShadow();
     @include colorText();
-    display: block;
-    overflow-y: hidden;
-    margin: 10px 15% 0 15%;
-    height: calc(100% - 10px);
+    display: grid;
+    grid-template-rows: $pageHeaderHeight minmax(0, 1fr);
+    row-gap: 1px;
+    margin: 0 15%;
+    height: 100%;
 }
 
 .header {
     @include color(main);
     @include colorShadow();
-    @include colorText();
-    margin-bottom: 1px;
+    @include centerFlex();
+    @include fontHeader2();
     position: relative;
-    height: $headerSize;
+    font-weight: bold;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-    font-weight: 700;
-    font-size: 26px;
     user-select: none;
 }
 
 .closeBtn {
-    @include colorInteract(second);
+    @include colorInteract(interactive);
+    @include centerFlex();
     position: absolute;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    width: $headerSize;
-    height: $headerSize;
     user-select: none;
+    height: 100%;
+    right: 0;
 
     & > SVG {
         width: 100%;
@@ -59,26 +53,18 @@ $headerSize: 50px;
 .item {
     @include color(forth);
     @include colorText();
-    display: block;
-    width: calc(100% - 5px);
     height: fit-content;
     min-height: 30px;
-    margin: 2.5px 0;
+    margin: 5px;
 
-    p {
-        margin: 5px 0;
-    }
+    p { margin: 5px 0; }
 
-    ul {
-        margin: 5px 0;
-    }
+    ul { margin: 5px 0; }
 
-    h3 {
-        margin: 10px 0;
-    }
+    h3 { margin: 10px 0; }
 
     code {
-        @include color(third);
+        @include color(forth);
         @include colorShadow();
         padding: 0 2px;
     }
@@ -92,7 +78,7 @@ $headerSize: 50px;
 }
 
 .itemTitle {
-    @include color(third);
+    @include color(second);
     @include colorShadow();
     display: flex;
     align-items: center;
@@ -103,8 +89,4 @@ $headerSize: 50px;
     z-index: 10;
     margin-bottom: 3px;
     padding: 2px 0;
-}
-
-.list {
-    height: calc(100% - $headerSize - 1px);
 }

@@ -52,6 +52,9 @@ export const element: Record<string, ElementObject> = {
     icon: {
         type: 'icon',
         defaultKey: 'icon',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: IconElement,
         validate: validateOptions
     }

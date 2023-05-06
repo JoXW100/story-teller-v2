@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Elements from 'elements';
 import AbilityData from 'structures/ability';
-import { useParser } from 'utils/parser';
 import { toAbility } from 'importers/stringFormatAbilityImporter';
+import { useParser } from 'utils/parser';
+import { ProcessFunction, useFiles } from 'utils/handlers/files';
 import { FileData, FileGetMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';
 import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
 import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
@@ -10,7 +11,6 @@ import { RendererObject } from 'types/database/editor';
 import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
-import { ProcessFunction, useFiles } from 'utils/handlers/files';
 
 interface AbilityCategory {
     [key: string | ActionType]: { header: string, content: JSX.Element[] }
@@ -30,6 +30,13 @@ type AbilityLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<AbilityMetadata>
     stats?: ICreatureStats
 }>
+
+type AbilityToggleRendererProps = React.PropsWithRef<{
+    metadata: AbilityMetadata
+    stats: ICreatureStats
+    isOpen?: boolean
+}>
+
 
 type AbilityProps = React.PropsWithRef<{ 
     metadata: AbilityMetadata, 
@@ -165,32 +172,23 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
     }
 }
 
-const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JSX.Element => {
-    const canClose = file.metadata.type !== AbilityType.Feature
-    const [open, setOpen] = useState(!canClose);
+const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JSX.Element => (
+    <AbilityToggleRenderer metadata={file.metadata} stats={stats} isOpen={true}/>
+)
 
+const AbilityToggleRenderer = ({ metadata = {}, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
+    const canClose = metadata?.type !== AbilityType.Feature
+    const [open, setOpen] = useState(isOpen);
+    const data = canClose && metadata.description
+        ? open ? "open" : "closed"
+        : "none"
     const handleClick = () => {
-        setOpen(canClose && !open)
+        setOpen(!open)
     }
 
     return (
-        <div className={styles.ability} onClick={handleClick}>
-            <Ability metadata={file.metadata} stats={stats} open={open}/>
-        </div>
-    )
-}
-
-const AbilityToggleRenderer = ({ file, stats = {} }: AbilityLinkRendererProps): JSX.Element => {
-    const canClose = file.metadata?.type !== AbilityType.Feature
-    const [open, setOpen] = useState(!canClose);
-
-    const handleClick = () => {
-        setOpen(canClose && !open)
-    }
-
-    return (
-        <div className={styles.ability} onClick={handleClick}>
-            <Ability metadata={file.metadata} stats={stats} open={open}/>
+        <div className={styles.ability} data={data} onClick={canClose ? handleClick : undefined}>
+            <Ability metadata={metadata} stats={stats} open={open}/>
         </div>
     )
 }
@@ -238,7 +236,7 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
         } as AbilityCategory
         abilities.forEach((file: FileMetadataQueryResult<AbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.None].content.push(
-                <AbilityToggleRenderer key={index} file={file} stats={data}/>
+                <AbilityToggleRenderer key={index} metadata={file.metadata} stats={data}/>
             )
         })
         setCategories(categories)

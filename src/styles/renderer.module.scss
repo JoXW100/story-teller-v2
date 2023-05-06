@@ -86,7 +86,14 @@
     @include fontNormal();
     padding: 5px;
     margin-bottom: 10px;
-    cursor: pointer;
+
+    &[data=open] {
+        cursor: pointer;
+    }
+    &[data=closed] {
+        cursor: pointer;
+        border-bottom: 2px solid map-get($palette, border);
+    }
 }
 
 .spell {

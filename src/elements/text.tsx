@@ -23,6 +23,9 @@ export const element: Record<string, ElementObject> = {
     'text': {
         type: 'text',
         defaultKey: 'text',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: TextElement,
         validate: validateOptions
     }

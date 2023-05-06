@@ -81,6 +81,9 @@ export const element: Record<string, ElementObject> = {
     'image': {
         type: 'image',
         defaultKey: 'href',
+        inline: false,
+        lineBreak: true,
+        container: false,
         toComponent: ImageElement,
         validate: validateOptions
     }

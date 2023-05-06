@@ -36,7 +36,9 @@ class Options implements SaveOptions {
     }
 
     public get typeText(): string {
-        return this.type.toLocaleUpperCase()
+        return this.type == OptionalAttribute.None 
+            ? ""
+            : this.type.toLocaleUpperCase()
     }
 
     public get tooltips(): string {
@@ -65,8 +67,7 @@ const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element 
     return (
         <span 
             className={styles.save}
-            tooltips={saveOptions.tooltips}
-        > 
+            tooltips={saveOptions.tooltips}> 
             {`DC:${saveOptions.dc} ${saveOptions.typeText}`} 
         </span>
     )
@@ -76,6 +77,9 @@ export const element: Record<string, ElementObject> = {
     'save': {
         type: 'save',
         defaultKey: 'dc',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: SaveElement,
         validate: validateOptions
     }

@@ -43,7 +43,8 @@ type SpellLinkRendererProps = React.PropsWithRef<{
 
 type SpellToggleRendererProps = React.PropsWithRef<{
     metadata: SpellMetadata, 
-    stats: ICreatureStats
+    stats: ICreatureStats,
+    isOpen?: boolean
 }>
 
 const Spell = ({ metadata, stats, open }: SpellProps) => {
@@ -56,102 +57,141 @@ const Spell = ({ metadata, stats, open }: SpellProps) => {
             tooltips={Localization.toText(`spell-component-${x}`)}
         >{x}</span>
     ))
-    return (
-        <>
-            <Elements.Align>
-                <Elements.Align options={{ direction: "v", weight: "1.5" }}>
+    if (!open) {
+        return <Elements.Align>
+            <Elements.Block options={{ weight: "1.5" }}>
+                <div className={styles.iconRow}>
                     <Elements.Bold>{spell.name}</Elements.Bold>
-                    {`Level ${spell.level}, ${spell.schoolName}`}
-                </Elements.Align>
-                <Elements.Align options={{ direction: "v" }}>
-                    <div><Elements.Bold>Casting</Elements.Bold>{components}</div>
-                    <div className={styles.iconRow}>
-                        {spell.timeText} 
-                        {spell.ritual && 
-                            <Elements.Icon options={{
-                                icon: 'ritual',
-                                tooltips: Localization.toText('spell-ritual')  
-                            }}/>
-                        }
-                    </div>
-                    <Elements.Bold> Duration </Elements.Bold>
-                    <div className={styles.iconRow}>
-                        {spell.durationText} 
-                        {spell.concentration &&
-                            <Elements.Icon options={{
-                                icon: 'concentration',
-                                tooltips: Localization.toText('spell-concentration')  
-                            }}/>
-                        }
-                    </div>
-                </Elements.Align>
-                <Elements.Align options={{ direction: "v" }}>
-                    <div className={styles.iconRow}>
-                        <Elements.Bold>Range/Area</Elements.Bold>
-                        {spell.target != TargetType.None &&
-                            <Elements.Icon options={{ 
-                                icon: spell.area, tooltips: spell.areaName 
-                            }}/>
-                        }
-                    </div>
+                    {spell.concentration &&
+                        <Elements.Icon options={{
+                            icon: 'concentration',
+                            tooltips: Localization.toText('spell-concentration')  
+                        }}/>
+                    }
+                    {spell.ritual && 
+                        <Elements.Icon options={{
+                            icon: 'ritual',
+                            tooltips: Localization.toText('spell-ritual')  
+                        }}/>
+                    }
+                </div>
+            </Elements.Block>
+            <Elements.Block options={{ weight: "0.8" }}>
+                {spell.timeText}
+            </Elements.Block>
+            <Elements.Block options={{ weight: "0.8" }}>
+                {spell.durationText}
+            </Elements.Block>
+            <Elements.Block options={{ weight: "0.8" }}>
+                <div className={styles.iconRow}>
                     {spell.target != TargetType.None ? range : '-'}
-                    <Elements.Bold> Notes </Elements.Bold>
-                    <div className={styles.iconRow}>
-                        {spell.notes.length > 0 ? spell.notes : '-'}
-                    </div>
-                </Elements.Align>
-                <Elements.Align options={{ direction: "v" }}>
-                    { spell.damageType == DamageType.None && <>
-                        <Elements.Bold>Effect </Elements.Bold>
-                        { spell.effectText }
-                    </>}{ spell.damageType != DamageType.None && <>
-                        <Elements.Bold>Damage </Elements.Bold>
-                        <Elements.Roll 
-                            options={{ 
-                                dice: spell.effectDice as any, 
-                                num: spell.effectDiceNum as any, 
-                                mod: spell.effectModifierValue as any, 
-                                mode: RollMode.DMG,
-                                desc: `${spell.name} Damage`
-                            }}
-                        ><Elements.Icon options={{ icon: spell.damageType, tooltips: spell.damageTypeName}}/>
-                        </Elements.Roll>
-                    </>}
-                    <Elements.Bold>HIT/DC </Elements.Bold>
-                    {spell.condition == EffectCondition.Hit && 
-                        <Elements.Roll 
-                            options={{ 
-                                mod: spell.conditionModifierValue as any, 
-                                desc: `${spell.name} Attack` 
-                            }}
-                        />
-                    }{spell.condition == EffectCondition.Save &&
-                        <Elements.Save
-                            options={{
-                                attr: spell.saveAttr ?? Attribute.STR,
-                                dc: String(8 + spell.conditionModifierValue)
-                            }}
-                        />
-                    }{spell.condition == EffectCondition.None && '-'}
-                </Elements.Align>
+                    {spell.target != TargetType.None &&
+                        <Elements.Icon options={{ 
+                            icon: spell.area, tooltips: spell.areaName 
+                        }}/>
+                    }
+                </div>
+            </Elements.Block>
+            <Elements.Block options={{ weight: "0.6" }}>
+                {components}
+            </Elements.Block>
+        </Elements.Align>
+    }
+
+    return <>
+        <Elements.Align>
+            <Elements.Align options={{ direction: "v", weight: "1.5" }}>
+                <Elements.Bold>{spell.name}</Elements.Bold>
+                {Localization.toText('spell-level-school', spell.level, spell.schoolName)}
             </Elements.Align>
-            { open && (description || components) && <>
-                <Elements.Line/>
-                { components && spell.componentMaterial && <> 
-                    <b>Materials: </b> {spell.materials}<br/><Elements.Line/>
+            <Elements.Align options={{ direction: "v" }}>
+                <div><Elements.Bold>Casting</Elements.Bold>{components}</div>
+                <div className={styles.iconRow}>
+                    {spell.timeText} 
+                    {spell.ritual && 
+                        <Elements.Icon options={{
+                            icon: 'ritual',
+                            tooltips: Localization.toText('spell-ritual')  
+                        }}/>
+                    }
+                </div>
+                <Elements.Bold> Duration </Elements.Bold>
+                <div className={styles.iconRow}>
+                    {spell.durationText} 
+                    {spell.concentration &&
+                        <Elements.Icon options={{
+                            icon: 'concentration',
+                            tooltips: Localization.toText('spell-concentration')  
+                        }}/>
+                    }
+                </div>
+            </Elements.Align>
+            <Elements.Align options={{ direction: "v" }}>
+                <div className={styles.iconRow}>
+                    <Elements.Bold>Range/Area</Elements.Bold>
+                    {spell.target != TargetType.None &&
+                        <Elements.Icon options={{ 
+                            icon: spell.area, tooltips: spell.areaName 
+                        }}/>
+                    }
+                </div>
+                {spell.target != TargetType.None ? range : '-'}
+                <Elements.Bold> Notes </Elements.Bold>
+                <div className={styles.iconRow}>
+                    {spell.notes.length > 0 ? spell.notes : '-'}
+                </div>
+            </Elements.Align>
+            <Elements.Align options={{ direction: "v" }}>
+                { spell.damageType == DamageType.None && <>
+                    <Elements.Bold>Effect </Elements.Bold>
+                    { spell.effectText }
+                </>}{ spell.damageType != DamageType.None && <>
+                    <Elements.Bold>Damage </Elements.Bold>
+                    <Elements.Roll 
+                        options={{ 
+                            dice: spell.effectDice as any, 
+                            num: spell.effectDiceNum as any, 
+                            mod: spell.effectModifierValue as any, 
+                            mode: RollMode.DMG,
+                            desc: `${spell.name} Damage`
+                        }}
+                    ><Elements.Icon options={{ icon: spell.damageType, tooltips: spell.damageTypeName}}/>
+                    </Elements.Roll>
                 </>}
-                { description }
+                <Elements.Bold>HIT/DC </Elements.Bold>
+                {spell.condition == EffectCondition.Hit && 
+                    <Elements.Roll 
+                        options={{ 
+                            mod: spell.conditionModifierValue as any, 
+                            desc: `${spell.name} Attack` 
+                        }}
+                    />
+                }{spell.condition == EffectCondition.Save &&
+                    <Elements.Save
+                        options={{
+                            attr: spell.saveAttr ?? Attribute.STR,
+                            dc: String(8 + spell.conditionModifierValue)
+                        }}
+                    />
+                }{spell.condition == EffectCondition.None && '-'}
+            </Elements.Align>
+        </Elements.Align>
+        { (description || components) && <>
+            <Elements.Line/>
+            { components && spell.componentMaterial && <> 
+                <b>Materials: </b> {spell.materials}<br/><Elements.Line/>
             </>}
-        </>
-    )
+            { description }
+        </>}
+    </>
 }
 
 const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.Element => (
-    <SpellToggleRenderer metadata={file.metadata} stats={stats}/>
+    <SpellToggleRenderer metadata={file.metadata} stats={stats} isOpen={true}/>
 )
 
-const SpellToggleRenderer = ({ metadata, stats }: SpellToggleRendererProps): JSX.Element => {
-    const [open, setOpen] = useState(false);
+const SpellToggleRenderer = ({ metadata, stats, isOpen = false }: SpellToggleRendererProps): JSX.Element => {
+    const [open, setOpen] = useState(isOpen);
 
     const handleClick = () => {
         setOpen(!open);
@@ -204,21 +244,19 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
     
     return (
         <>
-            { Object.keys(categories)
-                .filter((type) => Number(type) === 0 || spellSlots[Number(type) - 1])
-                .map((type) => (
-                    <React.Fragment key={type}>
-                        <Elements.Row>
-                            <Elements.Bold> 
-                                {Number(type) === 0 ? 'Cantrips:' : `Level ${type}:`} 
-                            </Elements.Bold>
-                            { Number(type) > 0 && Array.from({length: spellSlots[Number(type) - 1] }, (_,i) => (
-                                <SpellSlotToggle key={i}/>
-                            ))}
-                        </Elements.Row>
-                        { categories[type] }
-                    </React.Fragment>
-                ))}
+            { Array.from({ length: spellSlots.length + 1}, (_, level) => (
+                <React.Fragment key={level}>
+                    <Elements.Row>
+                        <Elements.Bold> 
+                            {level === 0 ? 'Cantrips:' : `Level ${level}:`} 
+                        </Elements.Bold>
+                        { level > 0 && Array.from({length: spellSlots[level - 1] }, (_,i) => (
+                            <SpellSlotToggle key={i}/>
+                        ))}
+                    </Elements.Row>
+                    { categories[level] ?? <Elements.Space/> }
+                </React.Fragment>
+            ))}
         </>
     )
 }

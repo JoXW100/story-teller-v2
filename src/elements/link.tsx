@@ -210,18 +210,27 @@ export const element: Record<string, ElementObject> = {
     'link': {
         type: 'link',
         defaultKey: 'href',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: LinkElement,
         validate: validateOptions1
     },
     'linkContent': {
         type: 'linkContent',
         defaultKey: 'fileId',
+        inline: false,
+        lineBreak: true,
+        container: false,
         toComponent: LinkContentElement,
         validate: validateOptions2
     },
     'linkTitle': {
         type: 'linkTitle',
         defaultKey: 'fileId',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: LinkTitleElement,
         validate: validateOptions3
     }

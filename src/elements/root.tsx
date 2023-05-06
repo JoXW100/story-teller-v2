@@ -9,6 +9,9 @@ export const element: Record<string, ElementObject> = {
     'root': {
         type: 'root',
         defaultKey: null,
+        inline: false,
+        lineBreak: false,
+        container: false,
         toComponent: RootElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

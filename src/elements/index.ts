@@ -15,6 +15,7 @@ import * as Roll from './roll';
 import * as Root from './root';
 import * as Row from './row';
 import * as Save from './save';
+import * as Set from './set';
 import * as Space from './space';
 import * as Text from './text';
 import * as Toggle from './toggle';
@@ -38,6 +39,7 @@ export const ElementDictionary: Record<string, ElementObject> = {
     ...Root.element,
     ...Row.element,
     ...Save.element,
+    ...Set.element,
     ...Space.element,
     ...Text.element,
     ...Toggle.element

@@ -152,8 +152,41 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
             </Elements.Align>
             { character.spellAttribute !== OptionalAttribute.None && character.spells.length > 0 &&
                 <>
+                    <Elements.Line options={{ width: '3px'}}/>
+                    <Elements.Align>
+                            <Elements.Align options={{ weight: '3.6' }}>
+                                <Elements.Header2> Spells: </Elements.Header2>
+                            </Elements.Align>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Modifier</Elements.Bold>
+                                    <Elements.Roll options={{ 
+                                        mod: character.getAttributeModifier(stats.spellAttribute) as any, 
+                                        desc: 'Spell Modifier'
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                            <Elements.Space/>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Attack</Elements.Bold>
+                                    <Elements.Roll options={{ 
+                                        mod: character.getAttributeModifier(stats.spellAttribute) + character.proficiencyValue as any, 
+                                        desc: 'Spell Attack'
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                            <Elements.Space/>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Save</Elements.Bold>
+                                    <Elements.Save options={{
+                                        dc: character.getAttributeModifier(stats.spellAttribute) + character.proficiencyValue + 8 as any
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                    </Elements.Align>
                     <Elements.Line/>
-                    <Elements.Header2> Spells: </Elements.Header2>
                     <SpellGroups 
                         spellIds={character.spells} 
                         spellSlots={character.spellSlots} 

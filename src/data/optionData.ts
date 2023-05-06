@@ -220,7 +220,8 @@ export const OptionTypes = {
             [TargetType.Self]: "Self",
             [TargetType.Single]: "Single",
             [TargetType.Multiple]: "Multiple",
-            [TargetType.Point]: "Point"
+            [TargetType.Point]: "Point",
+            [TargetType.Touch]: "Touch"
         }
     } satisfies OptionType<TargetType>,
     "magicSchool": {

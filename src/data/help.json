@@ -42,8 +42,8 @@
         },
         {
             "title": "Line",
-            "keyWords": ["line", "\\line", "border", "vertical", "horizontal", "separator"],
-            "text": "`\\line`\n ### Options\n None\n ### Usage\n - `\\line` Draws a line separator, the direction depends on the current element alignment"
+            "keyWords": ["line", "\\line", "border", "width", "vertical", "horizontal", "separator"],
+            "text": "`\\line` [`width`]\n ### Options\n - `width` = \n   - CSS units (`px`, `%`, `cm` etc), `2px` (default)\n ### Usage\n - `\\line`[`1px`] Draws a `1px` wide line separator, the direction depends on the current element alignment"
         },
         {
             "title": "Space",
@@ -68,7 +68,7 @@
         {
             "title": "Newline",
             "keyWords": ["newline", "\\newline", "n", "\\n", "line break", "break", "space"],
-            "text": "`\\newline`\n\n `\\n` (Short for newline)\n ### Options\n None\n ### Usage\n - `\\n` insets a line break"
+            "text": "`\\newline`\n\n `\\n` (Short for `\\newline`)\n ### Options\n None\n ### Usage\n - `\\n` insets a line break"
         },
         {
             "title": "Roll",

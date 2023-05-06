@@ -8,6 +8,9 @@ const BoldElement = ({ options, metadata, ...args }: ElementParams<{}>): JSX.Ele
 const x: ElementObject = {
     type: 'bold',
     defaultKey: null,
+    inline: true,
+    lineBreak: false,
+    container: false,
     toComponent: BoldElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)

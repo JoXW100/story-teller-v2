@@ -77,6 +77,9 @@ export const element: Record<string, ElementObject> = {
     'toggle': {
         type: 'toggle',
         defaultKey: 'content',
+        inline: true,
+        lineBreak: true,
+        container: false,
         toComponent: ToggleElement,
         validate: validateOptions
     }

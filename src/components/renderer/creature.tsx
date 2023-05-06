@@ -126,6 +126,40 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
             </Elements.Align>
             { creature.spellAttribute != OptionalAttribute.None && creature.spells.length > 0 &&
                 <>
+                    <Elements.Line options={{ width: '3px'}}/>
+                    <Elements.Align>
+                            <Elements.Align options={{ weight: '3.6' }}>
+                                <Elements.Header2> Spells: </Elements.Header2>
+                            </Elements.Align>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Modifier</Elements.Bold>
+                                    <Elements.Roll options={{ 
+                                        mod: creature.getAttributeModifier(stats.spellAttribute) as any, 
+                                        desc: 'Spell Modifier'
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                            <Elements.Space/>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Attack</Elements.Bold>
+                                    <Elements.Roll options={{ 
+                                        mod: creature.getAttributeModifier(stats.spellAttribute) + creature.proficiencyValue as any, 
+                                        desc: 'Spell Attack'
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                            <Elements.Space/>
+                            <Elements.Box options={{ weight: '1' }}>
+                                <Elements.Align options={{ direction: 'vc' }}>
+                                    <Elements.Bold>Spell Save</Elements.Bold>
+                                    <Elements.Save options={{
+                                        dc: creature.getAttributeModifier(stats.spellAttribute) + creature.proficiencyValue + 8 as any
+                                    }}/>
+                                </Elements.Align>
+                            </Elements.Box>
+                    </Elements.Align>
                     <Elements.Line/>
                     <Elements.Header2>Spells:</Elements.Header2>
                     <SpellGroups 

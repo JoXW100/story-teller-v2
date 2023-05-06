@@ -10,6 +10,9 @@ export const element: Record<string, ElementObject> = {
     'row': {
         type: 'row',
         defaultKey: null,
+        inline: false,
+        lineBreak: true,
+        container: true,
         toComponent: RowElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

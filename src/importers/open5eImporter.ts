@@ -429,7 +429,7 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
     return { area: area, areaSize: size, areaHeight: height }
 }
 
-const getTarget = (area: AreaType): TargetType => {
+const getTarget = (area: AreaType, range: string): TargetType => {
     switch (area) {
         case AreaType.Cone:
         case AreaType.Cube:
@@ -439,6 +439,9 @@ const getTarget = (area: AreaType): TargetType => {
         case AreaType.Square:
             return TargetType.Point
         case AreaType.None:
+            if (range.toLowerCase() == "touch") {
+                return TargetType.Touch
+            }
         default:
             return TargetType.Single
     }
@@ -541,7 +544,7 @@ export const open5eSpellImporter = async (id: string): Promise<SpellMetadata> =>
         condition: condition,
         saveAttr: saveAttr,
         damageType: damageType,
-        target: getTarget(area), // TODO: Find in description
+        target: getTarget(area, res.range), // TODO: Find in description
         range: getRange(res.range),
         area: area,
         areaSize: areaSize,

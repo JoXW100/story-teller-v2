@@ -205,6 +205,9 @@ export const element: Record<string, ElementObject> = {
     'roll': {
         type: 'roll',
         defaultKey: 'dice',
+        inline: true,
+        lineBreak: false,
+        container: false,
         toComponent: RollElement,
         validate: validateOptions
     }

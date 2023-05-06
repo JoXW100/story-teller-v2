@@ -8,6 +8,9 @@ const NewLineElement = ({}: ElementParams<{}>): JSX.Element => (
 const _element: ElementObject = {
     type: 'newline',
     defaultKey: null,
+    inline: true,
+    lineBreak: true,
+    container: false,
     toComponent: NewLineElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)
