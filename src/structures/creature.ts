@@ -311,6 +311,14 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
     public get spells(): string[] {
         return this.metadata.spells ?? []
     }
+
+    public get spellAttackModifier(): number {
+        return this.getAttributeModifier(this.spellAttribute) + this.proficiencyValue
+    }
+
+    public get spellSaveModifier(): number {
+        return this.getAttributeModifier(this.spellAttribute) + this.proficiencyValue + 8
+    }
 }
 
 export default CreatureData

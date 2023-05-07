@@ -11,6 +11,7 @@ import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { Attribute } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import styles from 'styles/renderer.module.scss';
+import Localization from 'utils/localization';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata,undefined>
@@ -135,22 +136,22 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                                 <Elements.Bold>Spell Modifier</Elements.Bold>
                                 <Elements.Roll options={{ 
                                     mod: creature.getAttributeModifier(stats.spellAttribute) as any, 
-                                    desc: 'Spell Modifier'
+                                    desc: Localization.toText('spell-spellModifier')
                                 }}/>
                             </Elements.Align>
                             <Elements.Space/>
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Attack</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: creature.getAttributeModifier(stats.spellAttribute) + creature.proficiencyValue as any, 
-                                    desc: 'Spell Attack'
+                                    mod: creature.spellAttackModifier as any, 
+                                    desc: Localization.toText('spell-spellAttack')
                                 }}/>
                             </Elements.Align>
                             <Elements.Space/>
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Save</Elements.Bold>
                                 <Elements.Save options={{
-                                    dc: creature.getAttributeModifier(stats.spellAttribute) + creature.proficiencyValue + 8 as any
+                                    dc: creature.spellSaveModifier as any
                                 }}/>
                             </Elements.Align>
                     </Elements.Align>

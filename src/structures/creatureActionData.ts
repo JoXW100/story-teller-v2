@@ -84,6 +84,10 @@ abstract class CreatureActionData<T extends ICreatureActionData> extends FileDat
         }
     }
 
+    public get conditionSaveValue(): number {
+        return this.conditionModifierValue + 8
+    }
+
     // Hit effect roll scaling
 
     public get effectText(): string {

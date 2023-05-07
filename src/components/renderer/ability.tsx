@@ -100,7 +100,7 @@ const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
                                 <Elements.Save
                                     options={{
                                         attr: ability.saveAttr ?? Attribute.STR,
-                                        value: String(8 + ability.conditionModifierValue)
+                                        value: ability.conditionSaveValue as any
                                     }}
                                 />
                             </div>

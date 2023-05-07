@@ -103,6 +103,8 @@
             "spell-component-S": "Somatic",
             "spell-component-M": "Material",
             "spell-level-school": "Level @0, @1",
+            "spell-spellModifier": "Spell Modifier",
+            "spell-spellAttack": "Spell Attack",
             "searchbox-placeholder": "Search ...",
             "filter-menu-header": "Filter",
             "filter-menu-closeTooltips": "Close Menu",

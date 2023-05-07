@@ -11,6 +11,7 @@ import { CharacterContent, CharacterMetadata } from 'types/database/files/charac
 import { Attribute } from 'types/database/dnd';
 import CharacterData from 'structures/character';
 import styles from 'styles/renderer.module.scss';
+import Localization from 'utils/localization';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata,undefined>
@@ -143,7 +144,7 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                     <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
                         <RollElement options={{ 
                             mod: String(character.proficiencyValue), 
-                            desc: "Proficient Check" 
+                            desc: "Proficiency Check" 
                         }}/>
                     </div>
                     <Elements.Line/>
@@ -161,30 +162,29 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                                 <Elements.Bold>Spell Modifier</Elements.Bold>
                                 <Elements.Roll options={{ 
                                     mod: character.getAttributeModifier(stats.spellAttribute) as any, 
-                                    desc: 'Spell Modifier'
+                                    desc: Localization.toText('spell-spellModifier')
                                 }}/>
                             </Elements.Align>
                             <Elements.Space/>
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Attack</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: character.getAttributeModifier(stats.spellAttribute) + character.proficiencyValue as any, 
-                                    desc: 'Spell Attack'
+                                    mod: character.spellAttackModifier as any, 
+                                    desc: Localization.toText('spell-spellAttack')
                                 }}/>
                             </Elements.Align>
                             <Elements.Space/>
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Save</Elements.Bold>
                                 <Elements.Save options={{
-                                    dc: character.getAttributeModifier(stats.spellAttribute) + character.proficiencyValue + 8 as any
+                                    dc: character.spellSaveModifier as any
                                 }}/>
                             </Elements.Align>
                     </Elements.Align>
                     <SpellGroups 
                         spellIds={character.spells} 
                         spellSlots={character.spellSlots} 
-                        data={stats}
-                    />
+                        data={stats}/>
                 </>
             }  
             {Content && <Elements.Line/>}
