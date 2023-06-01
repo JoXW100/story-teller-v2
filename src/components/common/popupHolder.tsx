@@ -65,7 +65,7 @@ const PopupHolder = (): JSX.Element => {
     }, []);
 
     return (
-        <dialog className={styles.dialog} ref={dialog} children={state.content}/>
+        <dialog className={styles.dialog} ref={dialog}>{state.content}</dialog>
     )
 }
 

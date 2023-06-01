@@ -175,7 +175,7 @@ const RollElement = ({ children, options, ...props }: ElementParams<RollOptions>
                 action: () => roll(RollMethod.Disadvantage)
             }
         ]
-    }, [options.mode])
+    }, [roll, options.mode])
 
     function handleContext(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
         e.preventDefault();

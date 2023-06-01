@@ -162,7 +162,6 @@ export const OptionTypes = {
         options: {
             [DamageType.None]: "None",
             [DamageType.Special]: "Special",
-            [DamageType.Special]: "Special",
             [DamageType.Acid]: "Acid",
             [DamageType.Bludgeoning]: "Bludgeoning",
             [DamageType.Cold]: "Cold",
