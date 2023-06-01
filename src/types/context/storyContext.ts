@@ -17,8 +17,6 @@ interface StoryContextState extends ContextState {
 interface StoryContextDispatch extends ContextDispatch {
     roll: (collection: DiceCollection, method?: RollMethod) => void
     clearRolls: () => void
-    openHelpMenu: () => void
-    closeHelpMenu: () => void
 }
 
 type StoryContextProvider = ContextProvider<StoryContextState, StoryContextDispatch>

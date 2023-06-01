@@ -1,13 +1,12 @@
-import { useContext } from 'react';
-import { Context } from 'components/contexts/storyContext';
 import HelpIcon from '@mui/icons-material/QuestionMarkSharp';
 import Localization from 'utils/localization';
 import styles from 'styles/pages/storyPage/main.module.scss';
+import { openPopup } from 'components/common/popupHolder';
+import HelpMenu from './helpMenu';
 
 const HelpMenuButton = (): JSX.Element => {
-    const [_, dispatch] = useContext(Context);
     const handleClick = () => {
-        dispatch.openHelpMenu()
+        openPopup(<HelpMenu/>)
     }
 
     return (

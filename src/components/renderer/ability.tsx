@@ -12,8 +12,9 @@ import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
 
-interface AbilityCategory {
-    [key: string | ActionType]: { header: string, content: JSX.Element[] }
+interface AbilityCategory { 
+    header: string, 
+    content: JSX.Element[] 
 }
 
 type AbilityGroupsProps = React.PropsWithRef<{
@@ -224,7 +225,7 @@ const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
 
 export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Element => {
     const [abilities, loading] = useFiles<AbilityMetadata>(abilityIds, processFunction)
-    const [categories, setCategories] = useState<AbilityCategory>({})
+    const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
 
     useEffect(() => {
         var categories = {
@@ -233,7 +234,8 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
             [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
             [ActionType.Reaction]: { header: "Reactions", content: [] },
             [ActionType.Special]: { header: "Special", content: [] },
-        } as AbilityCategory
+            [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
+        } satisfies Record<ActionType, AbilityCategory>
         abilities.forEach((file: FileMetadataQueryResult<AbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.None].content.push(
                 <AbilityToggleRenderer key={index} metadata={file.metadata} stats={data}/>

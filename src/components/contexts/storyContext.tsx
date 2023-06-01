@@ -62,10 +62,6 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                     return { ...event, time: 0 }
                 })
                 return { ...state }
-            case 'setHelpOpen':
-                return state.helpMenuOpen == action.data 
-                    ? state
-                    : { ...state, helpMenuOpen: action.data }
             default:
                 return state
         }
@@ -97,8 +93,6 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                 state.rollHistory.add(event)
                 dispatch({ type: 'roll', data: null });
             },
-            openHelpMenu: () => dispatch({ type: 'setHelpOpen', data: true }),
-            closeHelpMenu: () => dispatch({ type: 'setHelpOpen', data: false }),
             clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
         }]}>
             { !state.loading && state.story && children }

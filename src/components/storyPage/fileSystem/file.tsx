@@ -150,8 +150,7 @@ const File = ({ file }: FileProps): JSX.Element => {
                 onKeyDown={(e) => {
                     if (e.key == 'Enter') {
                         cancelEdit()
-                    }
-                    if (e.key == 'Escape') {
+                    } else if (e.key == 'Escape') {
                         breakEdit()
                     }
                 }}

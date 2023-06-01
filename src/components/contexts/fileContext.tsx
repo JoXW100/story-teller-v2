@@ -6,6 +6,7 @@ import { ObjectId } from 'types/database'
 import { DispatchAction } from 'types/context'
 import { FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/files'
+import { FileMetadata } from 'types/database/files'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])
 
@@ -73,7 +74,9 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
                     let data = { 
                         ...state.file.metadata, 
                         [action.data.key]: action.data.value 
-                    }
+                    } as FileMetadata
+                    delete data.$vars;
+                    delete data.$queries;
                     state.queue.addRequest(() => {
                         Communication.setFileMetadata(storyId, state.file.id, data)
                     }, "metadata");

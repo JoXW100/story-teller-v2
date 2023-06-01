@@ -1,17 +1,15 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import SearchList from 'components/common/searchList';
 import Localization from 'utils/localization';
-import { Context } from 'components/contexts/storyContext';
 import CloseIcon from '@mui/icons-material/Close';
 import { HelpData, HelpDataEntry } from 'types/help';
 import styles from 'styles/pages/storyPage/helpMenu.module.scss';
+import { closePopup } from 'components/common/popupHolder';
 
 const HelpData = require('data/help.json') as HelpData;
 
 const HelpMenu = (): JSX.Element => {
-    const [_, dispatch] = useContext(Context)
-
     const content =  useMemo(() => HelpData?.content?.map((item, index) => ({
         keyWords: item.keyWords,
         value: index,
@@ -19,28 +17,26 @@ const HelpMenu = (): JSX.Element => {
     })), [HelpData])
 
     const handleClick = () => {
-        dispatch.closeHelpMenu();
+        closePopup()
     }
 
     return (
-        <div className={styles.background}>
-            <div className={styles.main}>
-                <div className={styles.header}>
-                    {Localization.toText('helpMenu-title')}
-                    <div 
-                        className={styles.closeBtn}
-                        onClick={handleClick}
-                        tooltips={Localization.toText('helpMenu-close')}
-                    >
-                        <CloseIcon/>
-                    </div>
-                </div>
-                <SearchList 
-                    items={content}
-                    prompt={Localization.toText('helpMenu-prompt')}
-                    placeholder={Localization.toText('helpMenu-placeholder')}
-                />
+        <div className={styles.main}>
+            <div className={styles.header}>
+                <h2>{Localization.toText('helpMenu-title')}</h2>
+                <button 
+                    className={styles.closeBtn}
+                    onClick={handleClick}
+                    tooltips={Localization.toText('helpMenu-close')}
+                >
+                    <CloseIcon/>
+                </button>
             </div>
+            <SearchList 
+                items={content}
+                prompt={Localization.toText('helpMenu-prompt')}
+                placeholder={Localization.toText('helpMenu-placeholder')}
+            />
         </div>
     )
 }

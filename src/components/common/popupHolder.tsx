@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import styles from 'styles/components/popupHolder.module.scss'
 
@@ -34,25 +34,21 @@ export const closePopup = () => {
 }
 
 const PopupHolder = (): JSX.Element => {
+    const dialog = useRef<HTMLDialogElement>()
     const router = useRouter()
     const [state, setState] = useState({
-        show: false,
         closeable: true,
         content: null
     })
-    
-    const clickHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (state.show && state.closeable && e.currentTarget === e.target) {
-            setState({ ...state, show: false })
-        }
-    }
 
     const popupHandler = (e: PopupEvent) => {
-        if (!state.show || e.detail.interrupt) {
+        if (!dialog.current.open || e.detail.interrupt) {
+            if (e.detail.show) {
+                dialog.current?.showModal()
+            } else {
+                dialog.current?.close()
+            }
             setState({
-                show: e.detail.show,
                 closeable: e.detail.closable,
                 content: e.detail.content
             })
@@ -60,7 +56,7 @@ const PopupHolder = (): JSX.Element => {
     }
 
     useEffect(() => {
-        setState({ ...state, show: false })
+        dialog.current?.close()
     }, [router.route])
 
     useEffect(() => {
@@ -68,12 +64,8 @@ const PopupHolder = (): JSX.Element => {
         return () => { document.removeEventListener("popup", popupHandler) }
     }, []);
 
-    return state.show && (
-        <div 
-            id={"popupHolder"}
-            className={styles.main}  
-            onClick={clickHandler}
-        > { state.content } </div>
+    return (
+        <dialog className={styles.dialog} ref={dialog} children={state.content}/>
     )
 }
 
