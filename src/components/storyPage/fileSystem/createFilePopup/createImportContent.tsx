@@ -46,6 +46,7 @@ interface SortingMethod {
 
 const menuItems = require('data/open5eCompendiumMenu.json') as CompendiumMenuItem[]
 const spellFilterItems = ["Cantrip", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/;
 const itemsPerPage = 100
 
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
@@ -137,10 +138,29 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         return res
     }
 
+    const splitHP = (hp: string) => {
+        var res = hpSplitExpr.exec(hp ?? "") ?? []
+        return {
+            num: isNaN(Number(res[1])) ? 0 : Number(res[1]),
+            dice: isNaN(Number(res[2])) ? 0 : Number(res[2]),
+            mod: isNaN(Number(res[3])) ? 0 : Number(res[3])
+        }
+    }
+
     const sortItems = (a: Open5eItemInfo, b: Open5eItemInfo): number => {
         let val = 0;
         if (typeof a[state.sorting.field] == typeof "") {
-            val = (a[state.sorting.field] as string).localeCompare(b[state.sorting.field])
+            let numA = parseInt(a[state.sorting.field])
+            if (hpSplitExpr.test(a[state.sorting.field])) {
+                let hpA = splitHP(a[state.sorting.field])
+                let hpB = splitHP(b[state.sorting.field])
+                val = (hpA.num * hpA.dice + hpA.mod) - (hpB.num * hpB.dice + hpB.mod)
+            } else if (!isNaN(numA)) {
+                let numB = parseInt(b[state.sorting.field])
+                val = numA - numB;
+            } else {
+                val = (a[state.sorting.field] as string).localeCompare(b[state.sorting.field])
+            }
         } else {
             val = (a[state.sorting.field] as number) - b[state.sorting.field]
         }

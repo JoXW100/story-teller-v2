@@ -7,7 +7,7 @@
     grid-template-columns: $smallMenuWidth;
     grid-template-rows: $menuHeaderHeight $largeButtonHeight;
     gap: 20px;
-    height: max(60%, $menuHeaderHeight + $largeButtonHeight + 60px);
+    height: 100%;
     justify-content: center;
     align-content: center;
     padding: 20px;

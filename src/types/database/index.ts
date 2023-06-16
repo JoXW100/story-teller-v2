@@ -8,7 +8,7 @@ type DBResponse<T> = {
     result: T
 } | {
     success: false
-    result: string
+    result: ErrorMessage
 }
 
 export type {

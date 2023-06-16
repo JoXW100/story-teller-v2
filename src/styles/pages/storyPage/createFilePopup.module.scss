@@ -284,7 +284,6 @@ $navbarWidth: 35px;
     z-index: 100;
 
     &:hover { filter: none; }
-    &:hover { filter: none; }
 
     & > div {
         @include colorInteract("second");

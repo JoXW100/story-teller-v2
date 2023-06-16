@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import FilesInterface from "./files";
 import StoriesInterface from "./stories";
 import { DBResponse } from "types/database";
+import { globalVars } from "types/globalVars";
 
 class Database 
 {
@@ -19,12 +20,11 @@ class Database
         {
             try {
                 let client: Promise<MongoClient>;
-                if (global._mongoClientPromise) {
-                    client = global._mongoClientPromise
-                }
-                else {
+                if (globalVars._mongoClientPromise) {
+                    client = globalVars._mongoClientPromise
+                } else {
                     client = MongoClient.connect(process.env.MONGODB_URI)
-                    global._mongoClientPromise = client;
+                    globalVars._mongoClientPromise = client;
                 }
 
                 this.connection = await client;
@@ -37,6 +37,7 @@ class Database
                 this.connection = null;
                 this._isConnected = false;
                 this._stories = null;
+                this._files = null;
                 return failure(error.message)
             }
         }
