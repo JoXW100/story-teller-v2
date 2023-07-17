@@ -191,7 +191,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
 
     return (
         <span 
-            className={styles.dice}
+            className={styles.roll}
             onClick={handleClick}
             onContextMenu={handleContext}
             tooltips={options.tooltips}>

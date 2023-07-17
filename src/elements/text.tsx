@@ -23,6 +23,7 @@ export const element: Record<string, ElementObject> = {
     'text': {
         type: 'text',
         defaultKey: 'text',
+        buildChildren: true,
         inline: true,
         lineBreak: false,
         container: false,
