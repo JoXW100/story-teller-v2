@@ -60,6 +60,7 @@ export const element: Record<string, ElementObject> = {
     h1: {
         type: 'header',
         defaultKey: 'underline',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: false,
@@ -69,6 +70,7 @@ export const element: Record<string, ElementObject> = {
     h2: {
         type: 'header',
         defaultKey: 'underline',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: false,
@@ -78,6 +80,7 @@ export const element: Record<string, ElementObject> = {
     h3: {
         type: 'header',
         defaultKey: 'underline',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: false,

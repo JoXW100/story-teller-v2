@@ -1,9 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import { ElementDictionary } from "elements";
+import { ElementDictionary, TableElementTypes } from "elements";
 import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
-import { DBResponse, ObjectId } from "types/database";
 import styles from 'styles/renderer.module.scss';
 import Communication from "./communication";
 import { arrayUnique } from "./helpers";
@@ -171,7 +170,7 @@ class Parser
                 prev[q] = Math.max(prev[q] ?? 0, Q[q])
             }
             return prev
-        }, element.validate(tree.variables))
+        }, element.validate(tree.variables, tree.content))
         return queries
     }
 
@@ -198,19 +197,26 @@ class Parser
         return res
     }
 
-    private static buildComponent(tree: ParserObject, key: number = 0, metadata: Metadata): JSX.Element {
+    public static buildComponent(tree: ParserObject, key: number = 0, metadata: Metadata, parent?: ParserObject): JSX.Element {
         if (tree.type === 'set')
             return null
         if (tree.type === 'text' && tree.variables.text?.trim() == '')
             return null;
-        let element = ElementDictionary[tree.type] as ElementObject;
-        const Element = element.toComponent;
-        const Content = tree.content.map((node, key) => this.buildComponent(node, key, metadata))
-        
+        if (parent != null && parent.type !== 'table' && TableElementTypes.has(tree.type))
+            throw new ParseError(`Element of type '\\${tree.type}' can only appear inside '\\table' elements.`)
+             
+        let element = ElementDictionary[tree.type];
+        let children = element.buildChildren    
+            ? tree.content.map((child, key) => this.buildComponent(child, key, metadata, tree))
+            : null;
         return (
-            <Element options={tree.variables} metadata={metadata} key={key}>
-                { Content }
-            </Element>
+            <element.toComponent 
+                options={tree.variables} 
+                content={tree.content} 
+                metadata={metadata} 
+                key={key}>
+                { children }
+            </element.toComponent>
         )
     }
 }

@@ -15,11 +15,16 @@ import * as Roll from './roll';
 import * as Root from './root';
 import * as Row from './row';
 import * as Save from './save';
-import * as Set from './set';
+import * as SetElement from './set';
 import * as Space from './space';
+import * as Table from './table';
+import * as TableCell from './tableCell';
+import * as TableHeader from './tableHeader';
 import * as Text from './text';
 import * as Toggle from './toggle';
 import { ElementObject } from 'types/elements';
+
+export const TableElementTypes = new Set([...Object.keys(TableCell.element), ...Object.keys(TableHeader.element) ]);
 
 export const ElementDictionary: Record<string, ElementObject> = {
     ...Align.element,
@@ -39,8 +44,11 @@ export const ElementDictionary: Record<string, ElementObject> = {
     ...Root.element,
     ...Row.element,
     ...Save.element,
-    ...Set.element,
+    ...SetElement.element,
     ...Space.element,
+    ...Table.element,
+    ...TableCell.element,
+    ...TableHeader.element,
     ...Text.element,
     ...Toggle.element
 }
@@ -67,6 +75,9 @@ export const Elements = {
     Row: Row.default,
     Save: Save.default,
     Space: Space.default,
+    Table: Table.default,
+    TableCell: TableCell.default,
+    TableHeader: TableHeader.default,
     Text: Text.default,
     Toggle: Toggle.default
 }

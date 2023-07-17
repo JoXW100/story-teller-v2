@@ -10,6 +10,7 @@ export const element: Record<string, ElementObject> = {
     'space': {
         type: 'space',
         defaultKey: null,
+        buildChildren: false,
         inline: false,
         lineBreak: true,
         container: false,

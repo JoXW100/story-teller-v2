@@ -18,7 +18,7 @@
         {
             "title": "Box",
             "keyWords": ["box", "\\box", "frame", "block", "border", "color"],
-            "text": "`\\box` [`color`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n ### Usage\n - `\\box` [`white`] { content } creates a white box that contains 'content'"
+            "text": "`\\box` [`color`, `border`, `width`, `weight`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n - `border` =\n   - false (Default)\n   - true\n - `weight` = \n   - Numeric values, determines how large the element is when aligned with other elements, etc: `1` (Default)\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n### Usage\n - `\\box` [`white`] { content } creates a white box that contains 'content'"
         },
         {
             "title": "Center",
@@ -82,13 +82,28 @@
         },
         {
             "title": "Set",
-            "keyWords": ["set, \\set, variable, assign, value"],
-            "text": "`\\set` [`identifier`] { value }\n ### Options\n - `identifier` =\n   - The name of the variable to assign a value to\n ### Usage\n - `\\set` [`var`] { test } Sets the variable `$var` to 'test'"
+            "keyWords": ["set", "\\set", "variable", "assign", "value"],
+            "text": "`\\set` [`identifier`] { value }\n### Options\n - `identifier` =\n   - The name of the variable to assign a value to\n ### Usage\n - `\\set` [`var`] { test } Sets the variable `$var` to 'test'"
+        },
+        {
+            "title": "Table",
+            "keyWords": ["table", "\\table", "grid", "chart", "sheet", "border"],
+            "text": "`\\table` [`color`, `border`, `width`, `weight`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n - `border` =\n   - true (Default)\n   - false\n - `weight` =\n   - Numeric values, determines how large the element is when aligned with other elements, etc: `1` (Default)\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc), `100%` (default)\n### Notes\n - Can only directly contain table cell (`\\tc`) and table header (`\\th`) elements.\n### Usage\n - `\\table` { `\\th` { Header } `\\tc` { Cell } }"
+        },
+        {
+            "title": "Table Header",
+            "keyWords": ["tableHeader", "th", "table", "header", "\\tableCell", "\\th", "grid", "chart", "sheet"],
+            "text": "`\\tableHeader` [`color`, `width`] { }\n\n`\\th` [`color`, `width`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n - `width` =\n   - CSS units (`px`, `%`, `cm` etc)\n### Notes\n - Can only exist directly inside table element (`\\table`)\n### Usage\n - `\\table` { `\\th` { Header } `\\tc` { Cell } }"
+        },
+        {
+            "title": "Table Cell",
+            "keyWords": ["tableCell", "tc", "table", "cell", "\\tableCell", "\\tc", "grid", "chart", "sheet"],
+            "text": "`\\tableCell` [`color`] { }\n\n`\\tc` [`color`] { }\n ### Options\n - `color` =\n   - Color determined by theme (Default)\n   - Hex color values in the format `#ffffff`\n   - RGB values in the format `rgb(255,255,255)`\n    - Color by name etc: `purple` or `white`\n### Notes\n - Can only exist directly inside table element (`\\table`)\n### Usage\n - `\\table` { `\\th` { Header } `\\tc` { Cell } }"
         },
         {
             "title": "Toggle",
-            "keyWords": ["toggle, \\toggle, variable, switch"],
-            "text": "`\\toggle` [`content`, `alt`, `state`]\n ### Options\n - `content` =\n   - The name of the variable to display if `state` = `false`\n - `alt` =\n   - The name of the variable to display if `state` = `true`\n - `state` =\n   - `false` (Default)\n   - `true`\n ### Usage\n - `\\toggle` [`a`, `alt`: `b`] Displays the content of variable `$a` and when clicked swaps to display the content of variable `$b`"
+            "keyWords": ["toggle", "\\toggle", "variable", "switch"],
+            "text": "`\\toggle` [`content`, `alt`, `state`]\n### Options\n - `content` =\n   - The name of the variable to display if `state` = `false`\n - `alt` =\n   - The name of the variable to display if `state` = `true`\n - `state` =\n   - `false` (Default)\n   - `true`\n ### Usage\n - `\\toggle` [`a`, `alt`: `b`] Displays the content of variable `$a` and when clicked swaps to display the content of variable `$b`"
         },
         {
             "title": "Importing",

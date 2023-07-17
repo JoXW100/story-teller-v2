@@ -81,6 +81,7 @@ export const element: Record<string, ElementObject> = {
     'image': {
         type: 'image',
         defaultKey: 'href',
+        buildChildren: false,
         inline: false,
         lineBreak: true,
         container: false,

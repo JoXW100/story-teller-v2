@@ -14,6 +14,7 @@ const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
     'center': {
         type: 'center',
         defaultKey: null,
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: true,

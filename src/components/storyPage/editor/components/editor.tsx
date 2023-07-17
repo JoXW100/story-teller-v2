@@ -6,6 +6,7 @@ import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import PasteIcon from '@mui/icons-material/ContentPasteSharp';
 import BlockIcon from '@mui/icons-material/GridViewSharp';
 import BoldIcon from '@mui/icons-material/FormatBoldSharp';
+import TableIcon from '@mui/icons-material/TableChartSharp';
 import LinkIcon from '@mui/icons-material/InsertLinkSharp';
 import LayoutIcon from '@mui/icons-material/DashboardSharp';
 import InteractiveIcon from '@mui/icons-material/TouchAppSharp';
@@ -39,6 +40,7 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
         e.select()
         e.selectionStart = end
         e.selectionEnd = end
+        handleInput(e.value);
     }
 
     const formatText = (e: HTMLTextAreaElement) => {
@@ -115,6 +117,11 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
                                 text: Localization.toText('editor-insert-block'), 
                                 icon: BlockIcon, 
                                 action: () => insertText(target, `\\block {${selection}}`),
+                            },
+                            {
+                                text: Localization.toText('editor-insert-table'), 
+                                icon: TableIcon, 
+                                action: () => insertText(target, `\\table {\n\t\\th{ Header }\n\t\\tc{${selection}}\n}`),
                             },
                             {
                                 text: Localization.toText('editor-insert-box'), 

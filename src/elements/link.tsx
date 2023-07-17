@@ -210,6 +210,7 @@ export const element: Record<string, ElementObject> = {
     'link': {
         type: 'link',
         defaultKey: 'href',
+        buildChildren: true,
         inline: true,
         lineBreak: false,
         container: false,
@@ -219,6 +220,7 @@ export const element: Record<string, ElementObject> = {
     'linkContent': {
         type: 'linkContent',
         defaultKey: 'fileId',
+        buildChildren: false,
         inline: false,
         lineBreak: true,
         container: false,
@@ -228,6 +230,7 @@ export const element: Record<string, ElementObject> = {
     'linkTitle': {
         type: 'linkTitle',
         defaultKey: 'fileId',
+        buildChildren: false,
         inline: true,
         lineBreak: false,
         container: false,

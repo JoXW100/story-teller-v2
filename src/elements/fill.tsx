@@ -14,6 +14,7 @@ export const element: Record<string, ElementObject> = {
     'fill': {
         type: 'fill',
         defaultKey: null,
+        buildChildren: true,
         inline: true,
         lineBreak: false,
         container: false,

@@ -49,16 +49,18 @@ interface ParserObject {
 
 type ElementParams<T extends Variables> = React.PropsWithChildren<{
     options?: T,
+    content?: ParserObject[],
     metadata?: Metadata
 }>;
 
 interface ElementObject {
     type: string
     defaultKey: string
+    buildChildren: boolean
     inline: boolean
     lineBreak: boolean
     container: boolean
-    validate: (options: Variables) => Queries
+    validate: (options: Variables, content: ParserObject[]) => Queries
     toComponent: (params: ElementParams<any>) => JSX.Element
 }
 

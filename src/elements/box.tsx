@@ -52,7 +52,7 @@ const validateOptions = (options: BoxOptions): Queries => {
     if (options.weight) {
         var weight = parseFloat(options.weight)
         if (isNaN(weight))
-            throw new ParseError(`Invalid box option value. weight: '${options.mod}', must be a number`);
+            throw new ParseError(`Invalid box option value. weight: '${options.weight}', must be a number`);
     }
 
     return {}
@@ -77,6 +77,7 @@ export const element: Record<string, ElementObject> = {
     box: {
         type: 'box',
         defaultKey: 'color',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: true,

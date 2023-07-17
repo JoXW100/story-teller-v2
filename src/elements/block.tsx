@@ -39,7 +39,7 @@ const validateOptions = (options: BlockOptions): Queries => {
     if (options.weight) {
         var weight = parseFloat(options.weight)
         if (isNaN(weight))
-            throw new ParseError(`Invalid align option value. weight: '${options.mod}', must be a number`);
+            throw new ParseError(`Invalid align option value. weight: '${options.weight}', must be a number`);
     }
 
     return {}
@@ -51,7 +51,7 @@ const BlockElement = ({ options = {}, children }: ElementParams<BlockOptions>): 
         <div 
             style={{ flex: blockOption.weightValue, maxWidth: blockOption.width }}
             className={styles.block}> 
-            {children} 
+            { children } 
         </div>
     )
 }
@@ -60,6 +60,7 @@ export const element: Record<string, ElementObject> = {
     block: {
         type: 'block',
         defaultKey: 'width',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: true,

@@ -54,7 +54,7 @@ const validateOptions = (options: AlignOptions): Queries => {
     if (options.weight) {
         var weight = parseFloat(options.weight)
         if (isNaN(weight))
-            throw new ParseError(`Invalid align option value. weight: '${options.mod}', must be a number`);
+            throw new ParseError(`Invalid align option value. weight: '${options.weight}', must be a number`);
     }
 
     return {}
@@ -76,6 +76,7 @@ export const element: Record<string, ElementObject> = {
     align: {
         type: 'align',
         defaultKey: 'direction',
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: true,

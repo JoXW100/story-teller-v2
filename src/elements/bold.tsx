@@ -1,13 +1,14 @@
 import { ParseError } from 'utils/parser';
 import { ElementObject, ElementParams, Variables } from 'types/elements';
 
-const BoldElement = ({ options, metadata, ...args }: ElementParams<{}>): JSX.Element => {
+const BoldElement = ({ options, metadata, content, ...args }: ElementParams<{}>): JSX.Element => {
     return <b {...args}/>
 }
 
 const x: ElementObject = {
     type: 'bold',
     defaultKey: null,
+    buildChildren: true,
     inline: true,
     lineBreak: false,
     container: false,

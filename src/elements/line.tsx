@@ -41,6 +41,7 @@ export const element: Record<string, ElementObject> = {
     'line': {
         type: 'line',
         defaultKey: 'width',
+        buildChildren: false,
         inline: false,
         lineBreak: true,
         container: false,

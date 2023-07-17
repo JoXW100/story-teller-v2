@@ -9,6 +9,7 @@ export const element: Record<string, ElementObject> = {
     'root': {
         type: 'root',
         defaultKey: null,
+        buildChildren: true,
         inline: false,
         lineBreak: false,
         container: false,

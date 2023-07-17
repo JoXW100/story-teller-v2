@@ -57,7 +57,7 @@ const validateOptions = (options: SaveOptions): Queries => {
     if (options.dc ?? options.value) {
         var num = parseInt(options.dc ?? options.value)
         if (isNaN(num) || num < 0)
-            throw new ParseError(`Invalid save dc: '${options.dc}', must be a number >= 0`);
+            throw new ParseError(`Invalid save dc: '${options.dc ?? options.value}', must be a number >= 0`);
     }
     return {}
 }
@@ -77,6 +77,7 @@ export const element: Record<string, ElementObject> = {
     'save': {
         type: 'save',
         defaultKey: 'dc',
+        buildChildren: false,
         inline: true,
         lineBreak: false,
         container: false,

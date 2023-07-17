@@ -8,6 +8,7 @@ const NewLineElement = ({}: ElementParams<{}>): JSX.Element => (
 const _element: ElementObject = {
     type: 'newline',
     defaultKey: null,
+    buildChildren: false,
     inline: true,
     lineBreak: true,
     container: false,

@@ -52,6 +52,7 @@ export const element: Record<string, ElementObject> = {
     icon: {
         type: 'icon',
         defaultKey: 'icon',
+        buildChildren: false,
         inline: true,
         lineBreak: false,
         container: false,

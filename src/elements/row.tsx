@@ -10,6 +10,7 @@ export const element: Record<string, ElementObject> = {
     'row': {
         type: 'row',
         defaultKey: null,
+        buildChildren: true,
         inline: false,
         lineBreak: true,
         container: true,

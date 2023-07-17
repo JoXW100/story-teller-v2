@@ -83,6 +83,7 @@
             "editor-insert-interactive": "Interactive",
             "editor-insert-block": "Block",
             "editor-insert-box": "Box",
+            "editor-insert-table": "Table",
             "editor-insert-center": "Center",
             "editor-insert-line": "Line",
             "editor-insert-space": "Space",

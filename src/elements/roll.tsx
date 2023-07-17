@@ -135,7 +135,7 @@ const validateOptions = (options: RollOptions): Queries => {
     return {}
 }
 
-const RollElement = ({ children, options, ...props }: ElementParams<RollOptions>): JSX.Element => {
+const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
     const rollOptions = new Options(options);
 
@@ -205,6 +205,7 @@ export const element: Record<string, ElementObject> = {
     'roll': {
         type: 'roll',
         defaultKey: 'dice',
+        buildChildren: true,
         inline: true,
         lineBreak: false,
         container: false,
