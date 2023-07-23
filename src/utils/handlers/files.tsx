@@ -6,7 +6,7 @@ import { arrayUnique } from "utils/helpers"
 
 type ProcessFunction<T extends FileMetadata> = (ids: ObjectId[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: ObjectId[] }>
 
-export const useFiles = <T extends FileMetadata>(fileIDs: ObjectId[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
+export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
     const [state, setState] = useState<[FileGetManyMetadataResult<T>, boolean]>([[], true])
     useEffect(() => {
         if (fileIDs && fileIDs.length > 0) {
