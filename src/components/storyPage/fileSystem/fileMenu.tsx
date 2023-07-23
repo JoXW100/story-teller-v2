@@ -96,7 +96,10 @@ const FileMenu = (): JSX.Element => {
         let { files, folders } = structure.reduce((prev, val) => {
             if (val.type === FileType.Folder) {
                 // Don't modify the structure children directly
-                let folder = { ...val, children: filterFileStructure(val.children ?? []) }
+                let folder = { ...val, children: filterFileStructure(val.children ?? []) } satisfies FileStructure
+                if (!context.fileFilter.showEmptyFolders && folder.children.length == 0) {
+                    return prev
+                }
                 if (matchSearch(folder) || folder.children.length > 0) {
                     return { ...prev, folders: [...prev.folders, folder] }
                 }

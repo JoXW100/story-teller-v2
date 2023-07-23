@@ -1,21 +1,23 @@
 @import 'styles/colors.scss';
+@import 'styles/prefabs.scss';
 @import 'styles/animations.scss';
-
-$width: 40px;
-$entryWidth: 250px;
 
 .main {
     @include color(background);
+    @include scroll();
     z-index: 1000;
     position: absolute;
-    display: flex;
-    flex-direction: column-reverse;
-    top: 40px;
     width: 100%;
+    overflow-x: hidden;
+    overflow: auto;
+
+    @include mobile-landscape {
+        max-height: $mobile-landscapeHeight - $pageHeaderHeight - 20px;
+    }
 
     &[data=true] {
         @include contentSlideIn(400ms);
-        display: flex;
+        display: block;
     }
     &[data=false] {
         @include contentSlideOut(400ms);

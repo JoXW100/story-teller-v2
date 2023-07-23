@@ -35,7 +35,9 @@ const CreateStoryMenu = ({ setStatus }: CreateStoryMenuProps): JSX.Element => {
     return (
         <div className={styles.createMenu}>
             <div className={styles.menuHeader}>
-                { Localization.toText('createStory-header') }
+                <label>
+                    { Localization.toText('createStory-header') }
+                </label>
                 <button onClick={handleConfirm} disabled={disabled}>
                     { Localization.toText('createStory-confirmation') }
                 </button>
@@ -44,7 +46,9 @@ const CreateStoryMenu = ({ setStatus }: CreateStoryMenuProps): JSX.Element => {
                 </button>
             </div>
             <div className={styles.inputRow}>
-                { Localization.toText('createStory-namePrompt') + ':' }
+                <label>
+                    { Localization.toText('createStory-namePrompt') + ':' }
+                </label>
                 <input 
                     placeholder={Localization.toText('createStory-namePlaceholder')} 
                     value={name} 

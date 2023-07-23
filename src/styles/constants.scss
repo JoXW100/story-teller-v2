@@ -10,5 +10,16 @@ $iconNormalSize: 32px;
 $iconLargeSize: 64px;
 $scrollBarWidth: 14px;
 $labelWidth: 120px;
+$labelLargeWidth: 160px;
 $pageWidth: 8.5in; /* A4 */
 $pageHeight: 14in; /* A4 */
+
+// Platform
+$mobile-width: 360px;
+$desktop-smallWidth: 512px;
+$mobile-landscapeHeight: $mobile-width;
+$desktop-width: 1080px;
+
+// mobile
+$phone_smallMenuWidth: 240px;
+$phone_labelWidth: 100px;

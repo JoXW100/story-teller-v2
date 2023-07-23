@@ -10,9 +10,12 @@
     display: grid;
     grid-template-rows: $pageHeaderHeight minmax(0, 1fr);
     row-gap: 1px;
-    margin: 0 15%;
     height: 100%;
     flex: 1;
+
+    @include desktop {
+        margin: 0 15%;
+    }
 }
 
 .header {
@@ -41,7 +44,7 @@
     height: fit-content;
     min-height: 30px;
     margin: 5px;
-
+    
     p { margin: 5px 0; }
 
     ul { margin: 5px 0; }

@@ -7,35 +7,58 @@ $rowSize: 30px;
 
 .main {
     display: grid;
-    grid-template-rows: $menuHeaderHeight 1fr;
+    align-content: center;
+    grid-template-rows: $menuHeaderHeight minmax(0, 1fr);
     gap: 20px;
     width: 100%;
-    height: max(100%, $menuHeaderHeight + 200px);
-    padding: 50px;
-    justify-content: center;
-    align-content: center;
+
+    @include desktop {
+        height: max(100%, $menuHeaderHeight + 200px);
+        justify-content: center;
+        padding: 50px;
+    }
+
+    @include mobile {
+        height: 100%;
+    }
+
+    @include mobile-landscape {
+        height: 100%;
+    }
 }
 
 .header {
     @include color(main);
     @include colorShadow();
-    @include fontHeader1();
-    position: relative;
+    @include centerGrid();
     overflow: visible;
-    display: grid;
     gap: 10px;
-    grid-template-columns: $smallMenuWidth $menuHeaderHeight;
-    justify-items: center;
-    align-items: center;
-    padding-left: $menuHeaderHeight + 10px;
-    height: 100%;
-    width: 100%;
     z-index: 100;
+
+    @include desktop {
+        grid-template-columns: $smallMenuWidth $menuHeaderHeight;
+    }
+
+    @include mobile {
+        grid-template-columns: minmax(0, 1fr) $menuHeaderHeight;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: minmax(0, 1fr) $menuHeaderHeight;
+    }
+
+    & > label {
+        @include fontHeader1();
+        text-indent: $menuHeaderHeight + 10px;
+    }
 }
 
 .body {
     @include color(third);
     @include colorShadow();
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: $menuItemHeaderHeight;
     padding: 5px;
 }
 

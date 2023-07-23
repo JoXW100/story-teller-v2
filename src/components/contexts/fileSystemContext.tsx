@@ -7,7 +7,7 @@ import Localization from 'utils/localization';
 import Communication from 'utils/communication';
 import { Context as StoryContext } from "./storyContext";
 import { DBResponse, ObjectId } from 'types/database'
-import { Callback, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
+import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
 import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
 import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
 
@@ -21,7 +21,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         fetching: true,
         searchFilter: "",
         fileFilter: Object.values(FileType)
-            .reduce((prev, key) => ({ ...prev, [key]: true }), {} as Record<FileType, boolean>),
+            .reduce((prev, key) => ({ ...prev, [key]: true }), { showEmptyFolders: true } as FileFilter),
         showFilterMenu: false,
         files: []
     })
@@ -130,7 +130,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         setState({ ...state, searchFilter: filter })
     }
 
-    const setFileFilter = (filter: Record<FileType, boolean>) => {
+    const setFileFilter = (filter: FileFilter) => {
         setState({ ...state, fileFilter: filter })
     }
 
@@ -166,7 +166,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             createCopy: createCopy,
             setSearchFilter: setSearchFilter,
             setFileFilter: setFileFilter,
-            setShowFilterMenuState: setFileFilterMenuIsOpen,
+            setShowFilterMenuState: setFileFilterMenuIsOpen
         }]}>
             { !state.loading && children }
             { state.showFilterMenu && <FileFilterMenu/> }

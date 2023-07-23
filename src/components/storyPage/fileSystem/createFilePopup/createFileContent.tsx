@@ -36,8 +36,7 @@ const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
                     values={CreateFileOptions}
                     onChange={(value) => setState({ ...state, type: value as FileType })}/>
             </div>
-            <div className={styles.inputRow}/>
-            <div className={styles.inputRow}>
+            <div className={styles.inputRowLast}>
                 <button 
                     onClick={handleClick}
                     disabled={!state.name || !state.type}> 

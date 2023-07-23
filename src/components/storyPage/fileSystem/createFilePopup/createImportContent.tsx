@@ -241,7 +241,9 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         <>
             <div className={styles.inputCompendiumArea}>
                 <div className={styles.inputHeader}> 
-                    {Localization.toText('createFilePopup-importHeader')}
+                    <label>
+                        {Localization.toText('createFilePopup-importHeader')}
+                    </label>
                     { state.menu.type == "spells" &&
                         <div className={styles.compendiumSpellFilterGroup}> 
                             { spellFilterItems.map((item, index) => (

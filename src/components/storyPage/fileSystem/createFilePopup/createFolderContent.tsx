@@ -24,9 +24,7 @@ const CreateFolderContent = ({ callback }: CreateContentProps): JSX.Element => {
                     placeholder={Localization.toText('createFilePopup-folderNamePlaceholder')}
                 />
             </div>
-            <div className={styles.inputRow}/>
-            <div className={styles.inputRow}/>
-            <div className={styles.inputRow}>
+            <div className={styles.inputRowLast}>
                 <button 
                     onClick={handleClick}
                     disabled={!value}> 

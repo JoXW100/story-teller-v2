@@ -1,16 +1,28 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
+@import 'styles/prefabs.scss';
 @import 'styles/fonts.scss';
 
 .main {
     display: grid;
-    grid-template-columns: $smallMenuWidth;
     grid-template-rows: $menuHeaderHeight $largeButtonHeight;
     gap: 20px;
     height: 100%;
     justify-content: center;
     align-content: center;
     padding: 20px;
+
+    @include desktop {
+        grid-template-columns: $smallMenuWidth;
+    }
+    
+    @include mobile {
+        grid-template-columns: $phone_smallMenuWidth;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: $smallMenuWidth;
+    }
 }
 
 .header {

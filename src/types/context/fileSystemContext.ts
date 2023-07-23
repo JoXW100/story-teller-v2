@@ -2,11 +2,15 @@ import type { DBResponse, ObjectId } from "types/database";
 import type { FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from "types/database/files";
 import type { ContextDispatch, ContextState, ContextProvider } from ".";
 
+type FileFilter = Record<FileType, boolean> & {
+    showEmptyFolders: boolean
+}
+
 interface FileSystemContextState extends ContextState {
     loading: boolean
     fetching: boolean
     searchFilter: string
-    fileFilter: Record<FileType, boolean>
+    fileFilter: FileFilter
     showFilterMenu: boolean
     files: FileStructure[]
 }
@@ -19,8 +23,8 @@ interface FileSystemContextDispatch extends ContextDispatch {
     setFileState: (file: FileStructure, state: boolean, callback?: Callback<FileSetPropertyResult>) => void
     createCopy: (file: FileStructure) => void,
     setSearchFilter: (filter: string) => void,
-    setFileFilter: (filter: Record<FileType, boolean>) => void,
-    setShowFilterMenuState: (isOpen: boolean) => void
+    setFileFilter: (filter: FileFilter) => void,
+    setShowFilterMenuState: (isOpen: boolean) => void,
 }
 
 type Callback<T> = (res: DBResponse<T>) => void
@@ -36,6 +40,7 @@ export enum InputType {
 }
 
 export type {
+    FileFilter,
     Callback,
     FileSystemContextProvider,
     FileSystemContextDispatch,

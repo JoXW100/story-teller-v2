@@ -10,9 +10,9 @@ class Storage {
     }
 
     /** Gets the value of the item at the given key */
-    static get(key: string): any {
+    static get<T>(key: string): T {
         if (typeof window !== "undefined") {
-            return window.localStorage.getItem(key)
+            return window.localStorage.getItem(key) as T
         }
         return undefined
     }

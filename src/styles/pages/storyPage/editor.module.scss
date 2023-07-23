@@ -1,5 +1,6 @@
 @import 'styles/colors.scss';
 @import 'styles/prefabs.scss';
+@import 'styles/fonts.scss';
 @import 'styles/constants.scss';
 
 $size: 20px;
@@ -68,22 +69,46 @@ $componentColor: document;
 
 .editGroupItem {
     display: grid;
-    grid-template-columns: $labelWidth 1fr;
     gap: 5px;
     height: $size;
     flex-shrink: 0;
     margin: 2px 0 2px 5px;
     font-size: 12px;
+    
+    @include desktop {
+        grid-template-columns: $labelWidth 1fr;
+    }
+
+    @include mobile {
+        grid-template-columns: $phone_labelWidth 1fr;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: $phone_labelWidth 1fr;
+    }
 
     & > b {
         @include colorText();
+        @include fontNormalBold();
+        @include fontNoLineBreak();
         height: $size;
         flex-shrink: 0;
-        font-size: 12px;
         display: flex;
         align-items: center;
         white-space: nowrap;
         user-select: none;
+
+        @include desktop {
+            font-size: 12px;
+        }
+
+        @include mobile {
+            font-size: 11px;
+        }
+
+        @include mobile-landscape {
+            font-size: 11px;
+        }
     }
 
     & > input {
@@ -129,6 +154,13 @@ $componentColor: document;
         height: 100%;
         flex: 1;
     }
+
+    @include mobile {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        text-indent: 5px;
+        margin: 0;
+    }
 }
 
 .dropdown {
@@ -157,12 +189,33 @@ $componentColor: document;
 
 .editOption {
     @extend .editGroupItem;
-    grid-template-columns: $labelWidth $labelWidth 1fr;
+    @include desktop {
+        grid-template-columns: $labelWidth $labelWidth 1fr;
+    }
+
+    @include mobile {
+        grid-template-columns: $phone_labelWidth $phone_labelWidth 1fr;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: $phone_labelWidth $phone_labelWidth 1fr;
+    }
 }
 
 .editBoolean {
     @extend .editGroupItem;
-    grid-template-columns: $labelWidth auto 1fr;
+
+    @include desktop {
+        grid-template-columns: $labelWidth auto 1fr;
+    }
+
+    @include mobile {
+        grid-template-columns: $phone_labelWidth auto 1fr;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: $phone_labelWidth auto 1fr;
+    }
 
     & > a {
         color: map-get($palette, accents);

@@ -28,7 +28,7 @@ const EditModeButton = ({ editEnabled }: EditModeButtonProps): JSX.Element => {
     
     return (
         <Link href={Navigation.editModeURL(!editEnabled)} passHref>
-            <button className={styles.headerButton} tooltips={data.tooltips}>
+            <button className={styles.mobileVisibleHeaderButton} tooltips={data.tooltips}>
                 <data.icon/>
             </button>
         </Link>

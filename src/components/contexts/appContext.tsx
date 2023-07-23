@@ -3,7 +3,7 @@ import Localization from 'utils/localization'
 import Storage from 'utils/storage'
 import Palettes from 'data/palettes'
 import { DispatchAction } from 'types/context'
-import { AppContextProvider, AppContextState } from 'types/context/appContext'
+import { AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
@@ -24,11 +24,18 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
             case 'init':
                 Localization.initialize();
                 return state.loading 
-                    ? { ...state, loading: false, palette: Storage.get("palette") ?? "cobalt" }
-                    : state
+                    ? { 
+                        ...state, 
+                        loading: false, 
+                        palette: Storage.get("palette") ?? "cobalt",
+                        viewMode: Storage.get("viewMode") ?? ViewMode.SplitView 
+                    } : state
             case 'setPalette':
                 Storage.set("palette", action.data)
                 return { ...state, palette: action.data }
+            case 'setViewMode':
+                Storage.set("viewMode", action.data)
+                return { ...state, viewMode: action.data }
             default:
                 return state
         }
@@ -36,7 +43,8 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
 
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
-        palette: "cobalt"
+        palette: "cobalt",
+        viewMode: ViewMode.SplitView
     })
 
     useEffect(() => { state.loading && dispatch({ type: 'init', data: null }) }, [])
@@ -44,7 +52,8 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
 
     return (
         <Context.Provider value={[ state, {
-            setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }) 
+            setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }),
+            setViewMode: (mode: ViewMode) => dispatch({ type: 'setViewMode', data: mode })
         }]}>
             { !state.loading && children }
         </Context.Provider>

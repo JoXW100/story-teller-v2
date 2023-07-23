@@ -26,13 +26,13 @@ type EncounterLinkRendererProps = React.PropsWithRef<{
     stats?: ICreatureStats
 }>
 
-type CardDispatch = React.Dispatch<React.SetStateAction<EncounterCard[]>>
+type CardDispatch = React.Dispatch<React.SetStateAction<IEncounterCard[]>>
 type CardSortData = {
     card: IEncounterCardData
     index: number
 }
 
-interface EncounterCard extends IEncounterCardData {
+interface IEncounterCard extends IEncounterCardData {
     id: ObjectId
     num: number
     creature: CreatureMetadata
@@ -55,10 +55,10 @@ const cardsAreEqual = (a: IEncounterCardData[], b: IEncounterCardData[]): boolea
     return true
 }
 
-const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,EncounterStorage>): [EncounterCard[], CardDispatch] => {
+const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,EncounterStorage>): [IEncounterCard[], CardDispatch] => {
     const [_, dispatch] = useContext(Context)
-    const [creatures, loading] = useFiles<CreatureMetadata>(file?.metadata?.creatures ?? [])
-    const [state, setState] = useState<EncounterCard[]>([])
+    const [creatures, loading] = useFiles<CreatureMetadata>(file?.metadata?.creatures)
+    const [state, setState] = useState<IEncounterCard[]>([])
     const cards = file?.storage?.cards ?? []
 
     useEffect(() => {
@@ -76,7 +76,7 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
                     maxHealth: health,
                     health: health,
                     notes: ""
-                } as EncounterCard
+                } as IEncounterCard
             }))
         } else {
             setState(creatures.map((cre, index) => {
@@ -115,7 +115,7 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
 
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
     const [cards, setCards] = useEncounterCards(file)
-    const encounter = new EncounterData<EncounterCard>(file.metadata, cards, setCards)
+    const encounter = new EncounterData<IEncounterCard>(file.metadata, cards, setCards)
     const content = useParser(file.content.text, file.metadata)
 
     const onRollInitiative = () => {

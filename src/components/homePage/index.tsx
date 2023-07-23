@@ -103,7 +103,9 @@ const HomePage = (): JSX.Element => {
         <div className={styles.main}>
             <div className={styles.pageHeader}>
                 <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
-                    { Localization.toText('home-logout', user?.name ?? "") }
+                    <label>
+                        { Localization.toText('home-logout', user?.name ?? "") }
+                    </label>
                     <LogoutIcon/>
                 </Link>
                 <Link className={styles.settingsButton} href={Navigation.settingsURL()} passHref>

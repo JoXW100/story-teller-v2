@@ -1,6 +1,23 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
-@import 'styles/fonts.scss';
+
+@mixin mobile {
+    @media (max-width: #{$desktop-smallWidth - 1px}) {
+        @content;
+    }
+}
+
+@mixin mobile-landscape {
+    @media (min-width: #{$desktop-smallWidth}) and (max-width: #{$desktop-width - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: #{$desktop-width}) {
+        @content;
+    }
+}
 
 @mixin centerGrid() {
     display: grid;

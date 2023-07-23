@@ -32,7 +32,7 @@ const RollHistoryButton = ({ disabled }: RollHistoryButtonProps): JSX.Element =>
             <button 
                 className={styles.headerButton}
                 onClick={HandleClick}
-                disabled={disabled ? true : undefined}
+                disabled={!!disabled}
                 tooltips={toggled 
                     ? Localization.toText('storyPage-closeRollHistoryMenu')
                     : Localization.toText('storyPage-openRollHistoryMenu')}

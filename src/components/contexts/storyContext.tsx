@@ -4,7 +4,7 @@ import { RollEvent, RollMethod } from 'types/dice';
 import Queue from 'utils/data/queue';
 import Communication from 'utils/communication';
 import HelpMenu from 'components/storyPage/helpMenu';
-import { StoryData, StoryContextProvider, StoryContextState } from 'types/context/storyContext';
+import { StoryData, StoryContextProvider, StoryContextState, StoryContextDispatchAction } from 'types/context/storyContext';
 import { DBResponse, ObjectId } from 'types/database';
 import { DispatchAction } from 'types/context';
 
@@ -20,7 +20,7 @@ type StoryContextProps = React.PropsWithChildren<{
 const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryContextProps) => {
     const router = useRouter()
     
-    const reducer = (state: StoryContextState, action: DispatchAction<any>) => {
+    const reducer = (state: StoryContextState, action: StoryContextDispatchAction): StoryContextState => {
         switch (action.type) {
             case 'init':
                 if (viewMode)
@@ -62,6 +62,8 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                     return { ...event, time: 0 }
                 })
                 return { ...state }
+            case 'setSidePanelExpanded':
+                return { ...state, sidePanelExpanded: action.data }
             default:
                 return state
         }
@@ -70,6 +72,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         editEnabled: true,
+        sidePanelExpanded: true,
         story: null,
         fileId: null,
         rollHistory: new Queue<RollEvent>(10),
@@ -94,6 +97,8 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                 dispatch({ type: 'roll', data: null });
             },
             clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
+            collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),
+            expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true })
         }]}>
             { !state.loading && state.story && children }
             { state.helpMenuOpen && <HelpMenu/>}

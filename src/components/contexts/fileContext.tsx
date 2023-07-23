@@ -3,8 +3,7 @@ import Head from 'next/head'
 import RequestQueue from 'utils/data/requestQueue'
 import Communication from 'utils/communication'
 import { ObjectId } from 'types/database'
-import { DispatchAction } from 'types/context'
-import { FileContextProvider, FileContextState } from 'types/context/fileContext'
+import { FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/files'
 import { FileMetadata } from 'types/database/files'
 
@@ -21,7 +20,7 @@ type FileHeaderProps = React.PropsWithoutRef<{
 }>
 
 const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContextProps): JSX.Element => {
-    const reducer = (state: FileContextState, action: DispatchAction<any>): FileContextState => {
+    const reducer = (state: FileContextState, action: FileContextDispatchAction): FileContextState => {
         switch (action.type) {
             case 'init':
                 if (state.fetching)
@@ -68,6 +67,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
                         }
                     };
                 }
+                return state;
             
             case 'setMetadata':
                 if (state.file && action.data?.key) {

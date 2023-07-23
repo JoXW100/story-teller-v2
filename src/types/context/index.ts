@@ -1,6 +1,6 @@
-interface DispatchAction<T> {
-    type: string
-    data: T
+interface DispatchAction<D, T extends string = string> {
+    type: T
+    data: D
 }
 
 interface ContextState {

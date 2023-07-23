@@ -1,6 +1,7 @@
-import type { FileContent, FileData, FileMetadata, FileStorage } from "types/database/files";
+import type { FileContent, FileData, FileGetResult, FileMetadata, FileStorage } from "types/database/files";
 import type RequestQueue from "utils/data/requestQueue";
-import type { ContextDispatch, ContextState, ContextProvider } from ".";
+import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
+import type { DBResponse, ObjectId } from "types/database";
 
 interface FileContextState extends ContextState {
     loading: boolean
@@ -10,6 +11,14 @@ interface FileContextState extends ContextState {
     file: FileData<FileContent, FileMetadata, FileStorage>
     queue: RequestQueue
 }
+
+interface KeyValuePair { key: string, value: any }
+
+type FileContextDispatchAction = DispatchAction<ObjectId, "init"> 
+    | DispatchAction<DBResponse<FileGetResult>, "initSet">
+    | DispatchAction<string, "setText">
+    | DispatchAction<KeyValuePair, "setMetadata">
+    | DispatchAction<KeyValuePair, "setStorage">
 
 interface FileContextDispatch extends ContextDispatch {
     setText: (text: string) => void
@@ -22,6 +31,8 @@ type FileContextProvider = ContextProvider<FileContextState, FileContextDispatch
 
 export type {
     FileContextProvider,
+    FileContextDispatchAction,
     FileContextState,
-    FileContextDispatch
+    FileContextDispatch,
+    KeyValuePair
 }

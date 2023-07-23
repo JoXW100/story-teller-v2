@@ -11,7 +11,7 @@ const HelpMenuButton = (): JSX.Element => {
 
     return (
         <button 
-            className={styles.headerButton} 
+            className={styles.mobileVisibleHeaderButton} 
             onClick={handleClick}
             tooltips={Localization.toText('storyPage-helpMenu')}
         >

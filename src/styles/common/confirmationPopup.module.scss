@@ -1,29 +1,38 @@
 @import 'styles/colors.scss';
-
-$headerHeight: 45px;
+@import 'styles/constants.scss';
+@import 'styles/fonts.scss';
+@import 'styles/prefabs.scss';
 
 .main {
     @include color(background);
     @include colorText();
     @include colorShadow();
-    position: absolute;
-    top: 80px;
-    width: min(60%, 600px);
+    align-self: center;
+    height: fit-content;
+
+    @include desktop {
+        width: min(60%, 600px);
+    }
+
+    @include mobile {
+        width: 100%;
+    }
+
+    @include mobile-landscape {
+        width: 100%;
+    }
 
     & > .header {
         @include color(main);
         @include colorShadow();
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: large;
-        height: $headerHeight;
+        @include centerFlex();
+        @include fontLargeBold();
+        height: $menuItemHeight;
         user-select: none;
 
         & > SVG {
-            height: $headerHeight;
-            width: $headerHeight;
+            height: $menuItemHeight;
+            width: $menuItemHeight;
             padding: 3px;
             margin-right: 6px;
         }

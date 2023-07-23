@@ -5,12 +5,14 @@ type DividerProps = React.PropsWithRef<{
     className?: string
     left: JSX.Element
     right: JSX.Element
+    collapsed?: boolean
     defaultSlider?: number
     minLeft?: number
     minRight?: number
+    collapsedLeft?: JSX.Element
 }>
 
-const Divider = ({ className, left, right, defaultSlider = 0.5, minLeft = 0, minRight = 0 }: DividerProps): JSX.Element => {
+const Divider = ({ className, left, right, collapsed = false, defaultSlider = 0.5, minLeft = 0, minRight = 0, collapsedLeft = null }: DividerProps): JSX.Element => {
     const ref: MutableRefObject<HTMLDivElement> = useRef()
     const leftRef: MutableRefObject<HTMLDivElement> = useRef()
     const rightRef: MutableRefObject<HTMLDivElement> = useRef()
@@ -57,20 +59,26 @@ const Divider = ({ className, left, right, defaultSlider = 0.5, minLeft = 0, min
     }
     
     useEffect(() => {
-        setSlider(defaultSlider)
-    }, [])
+        if (!collapsed) {
+            setSlider(defaultSlider)
+            ref.current.style.display = "initial";
+        } else {
+            ref.current.style.display = "none";
+            leftRef.current.style.width = "auto"
+            rightRef.current.style.left = leftRef.current.offsetWidth + "px";
+        }
+    }, [collapsed])
     
     const name = className ? styles.main + ' ' + className : styles.main
 
     return (
-        <div className={name}>
+        <div className={name} data={collapsed ? "collapsed" : "expanded"}>
             <div
                 ref={ref}
                 className={styles.divider}
                 onMouseDown={dragStart}
-                onTouchStart={touchStart}
-            />
-            <div ref={leftRef} style={{ left: 0 }}>{ left }</div>
+                onTouchStart={touchStart}/>
+            <div ref={leftRef} style={{ left: 0 }}>{ collapsed ? collapsedLeft : left }</div>
             <div ref={rightRef} style={{ right: 0 }}>{ right}</div>
         </div>
     )

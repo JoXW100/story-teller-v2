@@ -8,9 +8,8 @@ const HomeButton = (): JSX.Element => {
     return (
         <Link href={Navigation.originURL()} passHref>
             <button 
-                className={styles.headerButton}
-                tooltips={Localization.toText('storyPage-home')}
-            >
+                className={styles.mobileVisibleHeaderButton}
+                tooltips={Localization.toText('storyPage-home')}>
                 <HomeIcon/>
             </button>
         </Link>

@@ -1,28 +1,6 @@
 @import 'styles/colors.scss';
+@import 'styles/fonts.scss';
 @import 'styles/prefabs.scss';
-
-@mixin componentScroll() {
-    cursor: auto;
-    &::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
-    }
-
-    &::-webkit-scrollbar-track {
-        @include color(second);
-        visibility: visible;
-        
-        &:hover { visibility: visible; }
-    }
-        
-    &::-webkit-scrollbar-thumb {
-        @include colorInteract(main);
-    }
-
-    &::-webkit-scrollbar-corner {
-        @include color(main);
-    }
-}
 
 .main {
     @include color(third);
@@ -60,22 +38,32 @@
     border: none;
 }
 
-.headerContent {
+.headerButtonsRow {
+    @include color(second);
     display: flex;
     flex: 1;
-    & > button {
-        @extend .headerButton;
-    }
+}
+.headerFilterRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) $iconNormalSize;
+    flex: 1;
 }
 
-.headerFilterButton {
+.headerEndButton {
+    @extend .headerButton;
     @include colorInteract(interactive);
     justify-self: flex-end;
     margin-left: auto;
 }
 
+.collapsedButton {
+    @extend .headerButton;
+    @include colorInteract(interactive);
+    height: 100%;
+}
+
 .headerSearch {
-    margin: 0px 3px 3px 3px;
+    margin-left: 3px;
 }
 
 .fileFilterMenu {
@@ -101,16 +89,10 @@
         margin-bottom: 5px;
         padding-left: 10px;
         align-items: center;
-
-        
-        & > button {
-            @extend .headerButton;
-            justify-self: flex-end;
-            margin-left: auto;
-        }
     }
 
     & > .fileFilterMenuItem {
+        @include fontNoLineBreak();
         height: 22px;
         margin-bottom: 3px;
         margin-right: 10px;
@@ -122,4 +104,8 @@
             margin-left: 5px;
         }
     }
+}
+
+.collapsedMenu {
+    height: 100%;
 }

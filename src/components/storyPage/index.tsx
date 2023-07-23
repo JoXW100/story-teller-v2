@@ -5,7 +5,7 @@ import Logo from '@mui/icons-material/MenuBookSharp';
 import HomeButton from './homeButton';
 import SettingsButton from './settingsButton';
 import FileView from './fileView';
-import FileSystem from "./fileSystem";
+import FileSystem, { FileSystemCollapsedBody } from "./fileSystem";
 import DiceButton from './diceButton';
 import RollHistoryButton from './rollHistoryButton';
 import HelpMenuButton from './helpMenuButton';
@@ -17,10 +17,10 @@ const StoryPage = (): JSX.Element => {
     return (
         <div className={styles.main}>
             <div className={styles.header}>
-                <div className={styles.headerLabel}>
+                <label className={styles.headerLabel}>
                     <Logo/>
                     { String(context.story.name) }
-                </div>
+                </label>
                 <HelpMenuButton/>
                 <SettingsButton/>
                 <EditModeButton editEnabled={context.editEnabled}/>
@@ -31,9 +31,11 @@ const StoryPage = (): JSX.Element => {
             <Divider 
                 className={styles.divider}
                 minLeft={150}
-                defaultSlider={0}
                 minRight={100}
+                defaultSlider={0}
+                collapsed={!context.sidePanelExpanded}
                 left={<FileSystem/>}
+                collapsedLeft={<FileSystemCollapsedBody/>}
                 right={<FileView/>}/>
         </div>
     )

@@ -18,6 +18,12 @@
     font-weight: bold;
 }
 
+@mixin fontLargeBold() {
+    @include colorText();
+    font-size: larger;
+    font-weight: bold;
+}
+
 @mixin fontSmall() {
     @include colorText();
     font-size: small;
