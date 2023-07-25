@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { closePopup } from "components/common/popupHolder";
 import roll20Importer from "importers/roll20Importer";
 import Localization from "utils/localization";
@@ -7,6 +7,7 @@ import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element => {
+    const ref = useRef<HTMLButtonElement>(null);
     const [name, setName] = useState("")
     const [value, setValue] = useState("")
     // callback = null
@@ -24,13 +25,30 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
         closePopup()
     }
 
+    const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value)
+    }
+
+    const handleChangePrompt = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value)
+    }
+
+    const handleInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && !ref.current.disabled){
+            ref.current.click();
+            closePopup()
+            closePopup()
+        }
+    }
+
     return (
         <>
             <div className={styles.inputRow}>
                 <span>{Localization.toText('createFilePopup-fileNamePrompt')}:</span>
                 <input 
                     value={name} 
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleChangeName}
+                    onKeyDown={handleInput}
                     placeholder={Localization.toText('createFilePopup-fileNamePlaceholder')}
                 />
             </div>
@@ -38,13 +56,15 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
                 <span>{Localization.toText('createFilePopup-importURLPrompt')}:</span>
                 <input 
                     value={value} 
-                    onChange={(e) => setValue(e.target.value)}
+                    onChange={handleChangePrompt}
+                    onKeyDown={handleInput}
                     placeholder={Localization.toText('createFilePopup-importURLPlaceholder')}
                 />
             </div>
             <div className={styles.inputRow}/>
             <div className={styles.inputRow}>
                 <button 
+                    ref={ref}
                     onClick={handleClick}
                     disabled={!value || !name}> 
                     {Localization.toText('createFilePopup-button-import')}

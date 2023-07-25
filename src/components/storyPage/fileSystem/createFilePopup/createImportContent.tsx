@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import OpenExternalIcon from '@mui/icons-material/OpenInNewSharp';
 import NextIcon from '@mui/icons-material/NavigateNextSharp';
 import PrevIcon from '@mui/icons-material/NavigateBeforeSharp';
@@ -50,6 +50,7 @@ const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/;
 const itemsPerPage = 100
 
 const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
+    const ref = useRef<HTMLButtonElement>(null);
     const [name, setName] = useState("")
     const [searchText, setSearchText] = useState("")
     const [spellFilter, setSpellFilter] = useState(Array.from({length: 10}, () => true))
@@ -227,6 +228,18 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         setState({ ...state, sorting: sorting })
     }
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value)
+    }
+
+    const handleInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && !ref.current.disabled){
+            ref.current.click();
+            closePopup()
+            closePopup()
+        }
+    }
+
     const filteredItems = state.loading ? [] : filterItems(state.values)
     const items = state.sorting.direction != "none" 
         ? filteredItems.sort(sortItems)
@@ -317,12 +330,14 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 <span>{Localization.toText('createFilePopup-fileNamePrompt')}:</span>
                 <input 
                     value={name} 
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleChange}
+                    onKeyDown={handleInput}
                     placeholder={Localization.toText('createFilePopup-fileNamePlaceholder')}
                 />
             </div>
             <div className={styles.inputRow}>
                 <button 
+                    ref={ref}
                     onClick={handleImportClick}
                     disabled={!name || state.selected == null}> 
                     { state.selected !== null 

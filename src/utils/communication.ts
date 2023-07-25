@@ -159,12 +159,12 @@ class Communication {
             let data: Response = null;
             switch (method) {
                 case 'PUT':
-                case 'DELETE':
                     data = await fetch(this.root + type, { 
                         method: method, 
                         body: JSON.stringify(params) 
                     })
                     break
+                case 'DELETE':
                 case 'GET':
                 default:
                     let url: string = Object.keys(params ?? []).reduce((prev, key, index) => (

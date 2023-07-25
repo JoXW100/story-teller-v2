@@ -30,8 +30,7 @@ const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorP
                 onContextMenu={handleContext}
                 onKeyDown={handleKey}
                 placeholder={"Enter text here"}
-                spellCheck
-            />
+                spellCheck/>
         </div>
     )
 }

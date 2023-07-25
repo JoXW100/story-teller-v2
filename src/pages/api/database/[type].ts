@@ -20,7 +20,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
             }
         }
     
-        let body: Record<string, any>;
         switch (req.method) {
             case 'GET':
                 switch (type) {
@@ -49,7 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(400).json(failure("Missing"));
                 }
             case 'PUT':
-                body = JSON.parse(req.body)
+                var body: Record<string, any> = JSON.parse(req.body)
                 switch (type) {
                     case 'connect':
                         return res.status(200).json(await success(Database.isConnected));
@@ -91,13 +90,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(400).json(failure("Missing"));
                 }
             case 'DELETE':
-                body = JSON.parse(req.body)
                 switch (type) {
                     case 'deleteStory':
-                        return res.status(200).json(await Database.stories.delete(userId, body.storyId));
+                        return res.status(200).json(await Database.stories.delete(userId, params.storyId as string));
     
                     case 'deleteFile':
-                        return res.status(200).json(await Database.files.delete(userId, body.storyId, body.fileId));
+                        return res.status(200).json(await Database.files.delete(userId, params.storyId as string, params.fileId as string));
     
                     default:
                         return res.status(400).json(failure("Missing"));
