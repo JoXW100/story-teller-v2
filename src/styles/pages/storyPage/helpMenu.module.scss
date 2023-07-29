@@ -51,6 +51,7 @@
         @include colorDecoration(second);
         @include colorShadow(second);
         padding: 0 2px;
+        font: inherit;
     }
 }
 

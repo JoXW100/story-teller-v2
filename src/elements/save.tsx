@@ -73,17 +73,20 @@ const SaveElement = ({ options = {} }: ElementParams<SaveOptions>): JSX.Element 
     )
 }
 
+const _element: ElementObject = {
+    type: 'save',
+    defaultKey: 'dc',
+    buildChildren: false,
+    inline: true,
+    lineBreak: false,
+    container: false,
+    toComponent: SaveElement,
+    validate: validateOptions
+}
+
 export const element: Record<string, ElementObject> = {
-    'save': {
-        type: 'save',
-        defaultKey: 'dc',
-        buildChildren: false,
-        inline: true,
-        lineBreak: false,
-        container: false,
-        toComponent: SaveElement,
-        validate: validateOptions
-    }
+    'save': _element,
+    'check': _element
 }
 
 export default SaveElement;

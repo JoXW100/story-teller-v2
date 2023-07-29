@@ -76,9 +76,9 @@
             "text": "`\\roll` [`dice`, `num`, `mod`, `mode`]\n ### Options\n - `dice` =\n   - The size of the dice to use, must be an integer value greater than 0, `20` (Default)\n - `num` = \n   - The number of dice to roll, must be an integer value greater than 0, `1` (Default)\n - `mod` =\n   - The fixed modifier applied, must be an integer value, `0` (Default)\n - `mode` =\n   - `dice` (Default if `dice` ≠ 20)\n   - `mod` (Default if `dice` = 20)\n   - `dmg`\n ### Usage\n - `\\roll` [`10`, `num`: `2`, `mod`: `-1`] Draws a dice roll element with the text `2d10 - 1` displayed, and has the following context menu choices: 'Flat', 'Advantage', and 'Disadvantage'\n - `\\roll` [`12`, `num`: `3`, `mod`: `1`, `mode`: `dmg`] Draws a dice roll figure with the text `3d12 + 1` displayed, and has the following context choices: 'Flat', and 'Crit'\n - `\\roll` [`mod`: 1] Draws a dice roll figure with the text `+1` displayed, and has the following context choices: 'Flat', 'Advantage', and 'Disadvantage'"
         },
         {
-            "title": "Save",
-            "keyWords": ["save", "\\save", "dc", "attribute", "attr", "tooltips"],
-            "text": "`\\save` [`dc`, `attr`, `type`, `tooltips`]\n ### Options\n - `dc` =\n   - Integer values ≥ 0 \n - `attr` or `type` =\n   - What kind of save, etc: str \n - `tooltips` =\n   - Text displayed on hover over the element \n ### Usage\n - `\\save` [10, attr:str] displays an element containing `DC:10 STR`"
+            "title": "Save / Check",
+            "keyWords": ["save", "\\save", "check", "\\check", "dc", "attribute", "attr", "tooltips"],
+            "text": "`\\save` [`dc`, `value`, `attr`, `type`, `tooltips`]\n\n`\\check` [`dc`, `value`, `attr`, `type`, `tooltips`]\n### Options\n - `dc` or `value` =\n   - Integer values ≥ 0 \n - `attr` or `type` =\n   - What kind of save/check, etc: str \n - `tooltips` =\n   - Text displayed on hover over the element \n ### Usage\n - `\\save` [10, attr:str] displays an element containing `DC:10 STR`"
         },
         {
             "title": "Set",
