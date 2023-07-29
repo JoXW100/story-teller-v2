@@ -10,6 +10,7 @@ type TextEditorProps = React.PropsWithRef<{
 
 const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorProps): JSX.Element => {
     const name = className ? `${className} ${styles.holder}` : styles.holder
+
     const handleKey = (e : React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.code === 'Tab') {
             e.preventDefault();
@@ -23,13 +24,13 @@ const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorP
 
     return (
         <div className={name}>
-            <textarea 
+            <textarea
                 className={styles.area}
                 value={text}
                 onChange={(e) => handleInput(e.target.value)}
                 onContextMenu={handleContext}
                 onKeyDown={handleKey}
-                placeholder={"Enter text here"}
+                placeholder="Enter text here"
                 spellCheck/>
         </div>
     )

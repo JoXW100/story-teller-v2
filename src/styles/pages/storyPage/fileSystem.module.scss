@@ -1,10 +1,11 @@
 @import 'styles/colors.scss';
 @import 'styles/fonts.scss';
 @import 'styles/prefabs.scss';
+@import './file.module.scss';
 
 .main {
-    @include color(third);
-    @include colorShadow();
+    @include colorDecoration(second);
+    @include colorShadow(second);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -14,8 +15,7 @@
     z-index: 100;
 
     & > .header {
-        @include color(second);
-        @include colorShadow();
+        @include colorWithShadow(main);
         z-index: 100;
     }
 
@@ -23,26 +23,21 @@
         @include scroll();
         overflow-y: auto;
         overflow-x: hidden;
+        padding-bottom: 1cm;
     }
 }
 
 .headerButton {
-    @include colorInteract(second);
-    @include colorText();
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
+    height: $iconNormalSize;
+    width: $iconNormalSize;
     user-select: none;
-    border: none;
 }
 
 .headerButtonsRow {
-    @include color(second);
     display: flex;
     flex: 1;
 }
+
 .headerFilterRow {
     display: grid;
     grid-template-columns: minmax(0, 1fr) $iconNormalSize;
@@ -51,24 +46,18 @@
 
 .headerEndButton {
     @extend .headerButton;
-    @include colorInteract(interactive);
     justify-self: flex-end;
     margin-left: auto;
 }
 
 .collapsedButton {
     @extend .headerButton;
-    @include colorInteract(interactive);
+    width: $iconSmallSize;
     height: 100%;
 }
 
-.headerSearch {
-    margin-left: 3px;
-}
-
 .fileFilterMenu {
-    @include color(forth);
-    @include colorShadow();
+    @include colorWithShadow(second);
     position: absolute;
     width: fit-content;
     height: fit-content;
@@ -81,8 +70,7 @@
     }
 
     & > .fileFilterMenuHeader {
-        @include color(second);
-        @include colorShadow();
+        @include colorWithShadow(main);
         display: flex;
         height: 30px;
         z-index: 100s;
@@ -92,7 +80,8 @@
     }
 
     & > .fileFilterMenuItem {
-        @include fontNoLineBreak();
+        @include colorFileByType;
+        @include fontNoLineBreak;
         height: 22px;
         margin-bottom: 3px;
         margin-right: 10px;

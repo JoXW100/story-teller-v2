@@ -3,22 +3,20 @@
 @import 'styles/prefabs.scss';
 @import 'styles/fonts.scss';
 
-$headerHeight: 35px;
 $navbarWidth: 35px;
 
 .main {
-    @include color(background);
-    @include colorText();
-    @include colorShadow();
+    @include colorWithShadow(input);
+    @include colorText(input);
     display: grid;
-    grid-template-rows: $headerHeight minmax(0, 1fr);
+    grid-template-rows: $menuItemHeaderHeight minmax(0, 1fr);
     position: absolute;
 
     @include desktop {
         top: 80px;
         width: min(70%, var(--popup-width));
         max-height: calc(100% - 160px);
-        min-height: $headerHeight * 5;
+        min-height: $menuItemHeaderHeight * 5;
     }
 
     @include mobile {
@@ -35,8 +33,8 @@ $navbarWidth: 35px;
     }
 
     & > .header {
-        @include color(main);
-        @include colorShadow();
+        @include colorWithShadow(main);
+        @include colorText(main);
         position: relative;
         display: flex;
         align-items: center;
@@ -47,17 +45,17 @@ $navbarWidth: 35px;
         z-index: 100;
 
         & > SVG {
-            height: $headerHeight;
-            width: $headerHeight;
+            height: $menuItemHeaderHeight;
+            width: $menuItemHeaderHeight;
             padding: 3px;
             margin-right: 6px;
         }
 
-        & > .button {
+        & > button {
             position: absolute;
             right: 0;
-            height: $headerHeight;
-            width: $headerHeight;
+            height: $menuItemHeaderHeight;
+            width: $menuItemHeaderHeight;
 
             & > SVG {
                 height: 100%;
@@ -71,7 +69,7 @@ $navbarWidth: 35px;
         grid-template-rows: 100%;
         
         & > .navigation {
-            @include color(third);
+            @include colorBackground(second);
             z-index: 10;
             & > .icon {
                 width: $navbarWidth;
@@ -83,23 +81,18 @@ $navbarWidth: 35px;
             }
         }
 
-        & > .content {    
-            @include color(second);
+        & > .content {
+            @include colorDecoration(second);
             display: flex;
             flex-direction: column;
         }
     }
 }
 
-.button {
-    @include colorInteract(second);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .icon {
-    @include colorInteract(third);
+    @include colorBackground(second);
+    @include colorInteractiveControl();
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -107,12 +100,11 @@ $navbarWidth: 35px;
     user-select: none;
 
     &[data=open] {
-        @include colorInteract(second);
+        @include colorDecoration(second);
     }
 }
 
 .input {
-    @include colorText();
     display: flex;
     align-items: center;
     padding: 2.5px;
@@ -131,8 +123,7 @@ $navbarWidth: 35px;
     }
 
     & > input {
-        @include color(document);
-        @include colorText();
+        @include colorBackground(input);
         font: inherit;
         font-size: small;
         border: none;
@@ -168,11 +159,11 @@ $navbarWidth: 35px;
 }
 
 .inputArea {
-    @include colorText();
     @extend .input;
     height: 100%;
 
     .upload {
+        @include colorBorder(input);
         display: flex;
         position: relative;
         justify-content: center;
@@ -181,7 +172,7 @@ $navbarWidth: 35px;
         height: calc(100% - 10px);
         margin: 5px;
         padding: 10px;
-        border: 2px dotted map-get($palette, border);
+        border: 2px dotted;
 
         & > input {
             position: absolute;
@@ -196,7 +187,6 @@ $navbarWidth: 35px;
         }
     
         & > SVG {
-            color: rgba(map-get($palette, text), 0.7);
             height: calc(100% - 30px);
             width: 100%;
         }
@@ -213,23 +203,22 @@ $navbarWidth: 35px;
 
 .inputHeader {
     @extend .input;
-    @include color(main);
-    @include colorText();
+    @include colorWithShadow(main);
     display: grid;
     z-index: 9;
     overflow: hidden;
 
     @include desktop {
-        grid-template-columns: $labelLargeWidth auto minmax(0, 1fr);
+        grid-template-columns: minmax($labelLargeWidth, 1fr) auto $controlWidth;
         gap: 5px;
     }
 
     @include mobile {
-        grid-template-columns: $labelLargeWidth auto minmax(0, 1fr);
+        grid-template-columns: minmax($labelLargeWidth, 1fr) auto $controlWidth;
     }
 
     @include mobile-landscape {
-        grid-template-columns: $labelLargeWidth auto;
+        grid-template-columns: minmax($labelLargeWidth, 1fr) $controlWidth 0;
         gap: 5px;
     }
 
@@ -239,59 +228,57 @@ $navbarWidth: 35px;
         text-indent: 5px;
     }
 
-    & > .compendiumSpellFilterGroup {
-        margin-left: auto;
-        align-self: flex-end;
-
-        @include mobile {
-            display: none;
-        }
-    }
-
     & > .inputSearchbox {
         margin-left: auto;
-        align-self: flex-end;
         width: 100%;
         border-radius: 5px;
         padding: 0 5px;
-
-        @include mobile-landscape {
-            grid-column: 2;
-        }
     }
 }
 
 .inputCompendium {
+    @include colorBorder(second);
     display: grid;
-    grid-template-columns: 130px 1fr;
+    grid-template-columns: $labelWidth 1fr;
+    z-index: 1;
+    border-bottom: 1px solid;
 }
 
 .inputCompendiumArea {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    height: calc(100% - 2 * $headerHeight);
-    z-index: 1000;
+    height: calc(100% - 2 * $menuItemHeaderHeight);
+    z-index: 2;
 }
 
 .inputCompendiumMenu {
-    @include scroll();
+    @include colorBackground(second);
+    @include colorBorder(main);
+    @include scroll;
+    display:  grid;
+    grid-template-rows: auto 1fr;
+    border-right: 1px solid;
     overflow: auto;
-    border-right: 1px solid map-get($palette, "border")
+    & > div {
+        @include colorDecoration(second);
+    }
 }
 
 .inputCompendiumValueList {
-    @include scroll();
-    @include color("document");
+    @include colorBackground(input);
+    @include scroll;
     position: relative;
     overflow: auto;
 }
 
 .inputCompendiumItem {
     @extend .input;
-    @include colorInteract("document");
+    @include colorBackground(input);
+    @include colorBorder(input);
+    @include colorInteractiveControl;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 11ch) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.8fr) 30px;
-    border-bottom: 1px solid map-get($palette, border);
+    border-bottom: 1px solid;
     gap: 3px;
 
     @include mobile {
@@ -304,44 +291,42 @@ $navbarWidth: 35px;
     }
 
     &[data=selected] {
-        @include colorInteract("forth");
+        @include colorDecoration(document);
     }
 }
 
 .inputCompendiumMenuItem {
     @extend .input;
+    @include colorText(second);
     padding: 5px;
     width: 100%;
     font: inherit;
 
     &[value="0"] {
-        @include colorInteract("third");
+        @include colorBackground(second);
     }
 
     &[value="1"] {
-        @include colorInteract("forth");
+        @include colorDecoration(second);
         padding-left: 15px;
-    }
-
-    &[data=selected] {
-        @include colorInteract("second");
     }
 }
 
 .inputCompendiumListHeader {
     @extend .inputCompendiumItem;
-    @include color("second");
+    @include colorOutline(main, 1px);
+    @include colorDecoration(main);
     position: sticky;
     top: 0;
     border: none;
     font-weight: 500;
-    outline: 1px solid map-get($palette, "border");
     z-index: 100;
 
     &:hover { filter: none; }
 
     & > div {
-        @include colorInteract("second");
+        @include colorInteractiveControl;
+        @include colorDecoration(main);
         position: relative;
         pointer-events: all;
         user-select: none;
@@ -352,7 +337,7 @@ $navbarWidth: 35px;
             white-space: normal;
             right: 3px;
             top: calc(50% - 5px);
-            border-color: transparent transparent map-get($palette, icons) transparent;
+            border-color: transparent transparent colorInGroup(main, icons) transparent;
             border-width: 5px;
             border-style: solid;
             content: " ";
@@ -363,7 +348,7 @@ $navbarWidth: 35px;
             white-space: normal;
             right: 3px;
             top: calc(50% - 5px);
-            border-color: map-get($palette, icons) transparent transparent transparent;
+            border-color: colorInGroup(main, icons) transparent transparent transparent;
             border-width: 5px;
             border-style: solid;
             content: " ";
@@ -373,61 +358,79 @@ $navbarWidth: 35px;
 
 .compendiumSpellFilterGroup {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    height: 100%;
-    gap: 3px;
+    grid-template-columns: repeat(10, $iconNormalSize);
     align-items: center;
+    height: 100%;
+    gap: 5px;
+
+    @include mobile {
+        display: none;
+    }
+
+    @include mobile-landscape {
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+        grid-column: 1;
+        &:empty {
+            display:  none;
+        }
+    }
     
 }
 
 .compendiumSpellFilterGroupItem {
-    @include colorInteract(third);
-    font-weight: normal;
+    @include fontNoLineBreak;
+    @include centerFlex;
+    font: inherit;
+    user-select: none;
     font-size: small;
     padding: 5px;
-    display: flex;
-    height: 0.6 * $headerHeight;
-    border-radius: 0.3 * $headerHeight;
-    justify-content: center;
-    align-items: center;
+    height: 0.6 * $menuItemHeaderHeight;
+    border-radius: 0.3 * $menuItemHeaderHeight;
 
-    &[data=selected] {
-        @include color(forth);
+    &:not([data=selected]) {
+        @include colorDecoration(interactive);
     }
 }
 
 .inputCompendiumItemButton {
-    display: flex;
+    @include centerFlex;
     border-radius: 50%;
-    justify-content: center;
-    align-items: center;
     cursor: pointer;
-    height: $headerHeight * 0.6;
-    width: $headerHeight * 0.6;
+    height: $menuItemHeaderHeight * 0.6;
+    width: $menuItemHeaderHeight * 0.6;
     margin-left: auto;
     justify-self: flex-end;
     border: none;
 
     & > svg {
-        height: $headerHeight * 0.45;
-        width: $headerHeight * 0.45;
+        padding: 4px;
+        height: 100%;
+        width: 100%;
     }
 }
 
 .compendiumPaginator {
-    @include color(forth);
+    @include colorBackground(second);
+    @include colorBorder(second);
+    @include centerGrid;
     position: sticky;
     display: grid;
     grid-template-columns: auto 10ch auto;
-    text-align: center;
     justify-content: center;
     bottom: 0;
-    padding: 2px;
-    outline: 1px solid map-get($palette, "border");
+    outline: 1px solid;
+    height: $iconSmallSize + 5px;
     user-select: none;
 
     & > button {
-        width: 100%;
+        @include centerGrid;
+        width: $iconSmallSize;
+        height: $iconSmallSize;
         border-radius: 50%;
+        
+        & > svg {
+            width: 100%;
+            height: 100%;
+        }
     }
 }

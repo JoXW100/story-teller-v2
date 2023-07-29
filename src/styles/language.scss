@@ -1,0 +1,68 @@
+@import './colors.scss';
+
+@mixin line_nr {
+    @include colorText(input);
+    content: counter(line);
+    counter-increment: line;
+    display: inline-block;
+    width: calc(6ch - 20px);
+    padding-right: 3px;
+    margin-right: 2px;
+    text-align: right;
+    user-select: none;
+    pointer-events: none;
+    border-right: 1px solid color(syntax-tab);
+}
+
+code {
+    .token.function {
+        display: contents;
+        .token.name {
+            color: color(syntax-function-name);
+        }
+        .token.option {
+            color: color(syntax-function-option);
+        }
+        .token.separator {
+            color: color(syntax-function-separator);
+        }
+    }
+    
+    .token.bracket {
+        color: color(syntax-bracket);
+    }
+
+    .token.variable {
+        color: color(syntax-variable);
+    }
+
+    .token.tab:not(.token.line + .token):not(.token:has(.token.line) + .token):not(.token:not(.tab) + .token.tab) {
+        position: relative;
+        &:before {
+            position: absolute;
+            content: " ";
+            left: calc(-1ch - 1px);
+            border-right: 1px dotted color(syntax-tab);
+            user-select: none;
+            pointer-events: none;
+        }
+    }
+    
+    &[data=show] {
+        & > .token:first-child,
+        .token:has(.token.line) + .token,
+        .token.line + .token {
+            &::before {
+                @include line_nr;
+            }
+        }
+
+        & > .token:last-child > .token.line:last-child,
+        & > .token.line:last-child {
+            &::after {
+                @include line_nr;
+            }
+        }
+    }
+}
+

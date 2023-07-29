@@ -10,12 +10,12 @@ const GroupComponent = ({ children, params }: TemplateComponentProps<GroupTempla
         <div 
             className={styles.editGroup}
             data={params.fill && open ? "fill" : "default"}>
-            <div 
+            <button 
                 className={styles.editGroupHeader}
                 onClick={() => setOpen(!open)}
                 data={open ? "open" : "closed"}>
-                {params.label ?? "Missing Label"}
-            </div>
+                <label> {params.label ?? "Missing Label"}</label>
+            </button>
             { open && children }
         </div>
     )

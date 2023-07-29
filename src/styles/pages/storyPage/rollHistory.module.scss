@@ -3,8 +3,8 @@
 @import 'styles/animations.scss';
 
 .main {
-    @include color(background);
-    @include scroll();
+    @include colorWithShadow(second);
+    @include scroll;
     z-index: 1000;
     position: absolute;
     width: 100%;
@@ -26,8 +26,7 @@
 }
 
 .entry {
-    @include color(forth);
-    @include colorText();
+    @include colorDecoration(second);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -43,9 +42,10 @@
         margin-left: auto;
         margin-right: 10px;
 
-        &[data=adv] { color: green; }
-        &[data=dis] { color: red; }
-        &[data=crit] { color: yellow; }
+        &[data=adv] { color: color(good); }
+        &[data=dis] { color: color(bad); }
+        &[data=fail] { color: color(bad); }
+        &[data=crit] { color: color(neutral); }
     }
 }
 
@@ -54,8 +54,8 @@
     overflow: hidden;
 
     & > * {
+        @include colorBackground(second);
         padding: 1px 3px;
-        @include color(third);
 
         &:not(:last-child) {
             margin-bottom: 3px;
@@ -70,7 +70,7 @@
 .entryTotal {
     display: inline-flex;
 
-    & > * {
+    & > *:first-child {
         margin-right: 6px;
     }
 }

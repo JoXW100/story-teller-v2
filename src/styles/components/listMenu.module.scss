@@ -3,6 +3,7 @@
 $size: 20px;
 
 .main {
+    @include colorBackground(input);
     display: flex;
     flex-direction: column;
     background-color: inherit;
@@ -22,7 +23,8 @@ $size: 20px;
     }
     
     & > .content {
-        @include scroll();
+        @include colorDefaultBackground;
+        @include scroll;
         display: block;
         flex: 1;
         overflow-x: auto;
@@ -33,6 +35,7 @@ $size: 20px;
 }
 
 .input {
+    @include colorBackground(input);
     display: flex;
     height: $size;
     min-width: 0;
@@ -67,7 +70,7 @@ $size: 20px;
     flex-direction: column;
 
     &[data=error] {
-        color: map-get($palette, error) !important;
+        color: color(error) !important;
     }
 }
 

@@ -45,7 +45,7 @@ interface SortingMethod {
 }
 
 const menuItems = require('data/open5eCompendiumMenu.json') as CompendiumMenuItem[]
-const spellFilterItems = ["Cantrip", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+const spellFilterItems = ["C", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/;
 const itemsPerPage = 100
 
@@ -257,19 +257,17 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     <label>
                         {Localization.toText('createFilePopup-importHeader')}
                     </label>
-                    { state.menu.type == "spells" &&
-                        <div className={styles.compendiumSpellFilterGroup}> 
-                            { spellFilterItems.map((item, index) => (
-                                <div 
-                                    key={index} 
-                                    className={styles.compendiumSpellFilterGroupItem}
-                                    onClick={() => handleSpellFilterItemCLick(index)}
-                                    data={spellFilter[index] ? "selected" : undefined}>
-                                    { item }
-                                </div>
-                            ))}
-                        </div>
-                    }
+                    <div className={styles.compendiumSpellFilterGroup}> 
+                        { state.menu.type == "spells" && spellFilterItems.map((item, index) => (
+                            <button 
+                                key={index} 
+                                className={styles.compendiumSpellFilterGroupItem}
+                                onClick={() => handleSpellFilterItemCLick(index)}
+                                data={spellFilter[index] ? "selected" : undefined}>
+                                { item }
+                            </button>
+                        ))}
+                    </div>
                     <Searchbox 
                         className={styles.inputSearchbox} 
                         value={searchText} 

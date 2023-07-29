@@ -8,6 +8,7 @@
         "iexact",
         "nobutton",
         "pagecontent",
+        "prismjs",
         "searchbox",
         "svgr",
         "upserted"

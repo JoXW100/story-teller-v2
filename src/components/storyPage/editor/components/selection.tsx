@@ -54,7 +54,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
         <div className={styles.editList}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <SelectionMenu
-                className={styles.selection}
+                className={styles.editSelectionMenu}
                 values={values}
                 selection={Object.keys(selection)}
                 alternate={type.options}

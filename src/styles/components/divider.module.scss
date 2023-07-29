@@ -22,12 +22,8 @@ $width: 8px;
         user-select: none;
         cursor: ew-resize;
 
-        &:hover {
-            @include color(accents);
-        }
-
-        &:active {
-            @include color(accents);
+        &:active, &:hover {
+            background: color(accents);
         }
     }
 

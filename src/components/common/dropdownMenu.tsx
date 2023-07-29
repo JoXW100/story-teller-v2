@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react'
 import DropDownIcon from '@mui/icons-material/ArrowDropDownSharp';
 import DropUpIcon from '@mui/icons-material/ArrowDropUpSharp';
-import styles from 'styles/common/dropdownMenu.module.scss'
+import styles from 'styles/components/dropdownMenu.module.scss'
 
 type DropdownMenuProps = React.PropsWithRef<{
     className?: string

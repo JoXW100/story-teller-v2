@@ -15,11 +15,11 @@ export class ParseError extends Error {
 
 class Parser
 {
-    private static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
-    private static readonly matchBodyExpr = /([\{\}])/
-    private static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
-    private static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi
-    private static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]]*)\])?/i
+    public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
+    public static readonly matchBodyExpr = /([\{\}])/
+    public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
+    public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi
+    public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]]*)\])?/i
     private static queries: QueryResult = {}
 
     static async parse(text: string, metadata: Metadata): Promise<JSX.Element> {
@@ -30,7 +30,10 @@ class Parser
         // find variable content from text
         metadata.$vars = this.parseVariables(splits, variables);
         // replace variables in text with its respective content
-        var withVars = text.replace(this.matchVarsExpr, (...x) => variables[x[1]] ?? '');
+        var withVars = text.replace(this.matchVarsExpr, (...x) => {
+            if (variables[x[1]]) return variables[x[1]]
+            else throw new ParseError(`Unset variable '${x[1]}'`)
+        });
         var splits = withVars.split(this.matchBodyExpr);
         // build tree structure
         var tree = this.buildTree(splits);

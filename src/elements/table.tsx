@@ -63,7 +63,9 @@ const validate = (options: TableOptions, content: ParserObject[]): Queries => {
 
     var errorElement = content.find((element) => !validContent.has(element?.type));
     if (errorElement) {
-        console.log(errorElement);
+        if (process.env.NODE_ENV == "development") {
+            console.log(errorElement);
+        }
         throw new ParseError(`Table cannot contain elements of type: '${errorElement.type}'`);
     }
 
@@ -107,7 +109,6 @@ const TableElement = ({ options = {}, content, metadata }: ElementParams<TableOp
 
     if (options.weight) { style.flex = optionsTable.weightValue }
     if (options.color) { style.background = optionsTable.color }
-    console.log("table", headers, rows)
     return (
         <table 
             className={styles.table}

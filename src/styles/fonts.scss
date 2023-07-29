@@ -1,45 +1,43 @@
-@import 'colors.scss';
-
-@mixin fontNoLineBreak() {
+@mixin fontNoLineBreak {
     white-space: pre;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
-@mixin fontNormal() {
-    @include colorText();
+@mixin fontNormal {
     font-size: medium;
     font-weight: normal;
 }
 
-@mixin fontNormalBold() {
-    @include colorText();
+@mixin fontNormalBold {
     font-size: medium;
     font-weight: bold;
 }
 
-@mixin fontLargeBold() {
-    @include colorText();
+@mixin fontLargeBold {
     font-size: larger;
     font-weight: bold;
 }
 
-@mixin fontSmall() {
-    @include colorText();
+@mixin fontSmall {
     font-size: small;
     font-weight: 100;
 }
 
-@mixin fontHeader1() {
-    @include colorText();
-    @include fontNoLineBreak();
+@mixin fontHeader1 {
+    @include fontNoLineBreak;
     font-size: xx-large;
     font-weight: 300;
 }
 
-@mixin fontHeader2() {
-    @include colorText();
-    @include fontNoLineBreak();
+@mixin fontHeader2 {
+    @include fontNoLineBreak;
     font-size: x-large;
     font-weight: 300;
+}
+
+@mixin fontHeaderStory {
+    @include fontNoLineBreak;
+    font-weight: 700;
+    font-size: 20px;
 }

@@ -20,8 +20,7 @@
 }
 
 .header {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     z-index: 1000;
     display: flex;
     gap: 1px;
@@ -31,14 +30,12 @@
 }
 
 .headerLabel {
-    @include fontNoLineBreak();
+    @include fontHeaderStory;
     display: flex;
     align-items: center;
     height: 100%;
     min-width: 160px;
     padding: 0 10px;
-    font-weight: 700;
-    font-size: 20px;
     user-select: none;
     flex: 1;
 
@@ -78,7 +75,7 @@
     }
 
     &[data=open] {
-        @include colorShadow();
+        @include colorShadow(second);
         & > * {
             @include desktop {
                 width: $smallMenuWidth;
@@ -94,12 +91,11 @@
 }
 
 .invalidFile {
-    @include color(background);
-    @include fontNormalBold();
-    @include centerFlex();
+    @include colorDefaultBackground;
+    @include fontNormalBold;
+    @include centerFlex;
     user-select: none;
     height: 100%;
-    text-align: center;
 }
 
 .content {
@@ -108,22 +104,18 @@
     padding: 5px 5px 0px;
 }
 
-@mixin fileDividerExpandLeft {
-    & > div:nth-child(1) {
-        display: none !important;
-    }
-    & > div:nth-child(2) {
-        width: 100% !important;
-    }
-    & > div:nth-child(3) {
-        display: none !important;
-    }
-}
-
 .fileDivider {
     @include mobile {
         &[data=expanded] {
-            @include fileDividerExpandLeft;
+            & > div:nth-child(1) {
+                display: none !important;
+            }
+            & > div:nth-child(2) {
+                width: 100% !important;
+            }
+            & > div:nth-child(3) {
+                display: none !important;
+            }
         }
     }
 }

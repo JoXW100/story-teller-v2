@@ -6,16 +6,16 @@
 $iconPadding: 3px;
 
 .storyCard {
-    @include colorInteract(forth);
-    @include colorShadow();
+    @include colorInteractiveControl;
+    @include colorShadow(second);
+    @include colorDecoration(second);
     display: flex;
     flex-direction: column;
     position: relative;
 }
 
 .label {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     @include fontNoLineBreak();
     @include centerFlex();
     font-weight: 600;
@@ -51,7 +51,6 @@ $iconPadding: 3px;
 }
 
 .icon {
-    @include colorInteract(interactive);
     position: absolute;
     width: $iconNormalSize;
     height: $iconNormalSize;

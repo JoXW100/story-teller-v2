@@ -4,12 +4,13 @@
 @import 'styles/constants.scss';
 
 $size: 20px;
+$bottomMargin: 30ch;
 $sizeLarge: ($size + 1px) * 5 - 1px;
 $componentColor: document;
 
 .main {
-    @include color(forth);
-    @include scroll();
+    @include colorBackground(document);
+    @include scroll;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -17,12 +18,12 @@ $componentColor: document;
     overflow-x: hidden;
 
     & > .editGroup[data=default]:last-child  {
-        margin-bottom: 120px;
+        margin-bottom: $bottomMargin;
     }
 }
 
 .editGroup {
-    @include color(forth);
+    @include colorDecoration(second);
     display: flex;
     flex-direction: column;
     padding: 2px;
@@ -36,21 +37,25 @@ $componentColor: document;
 }
 
 .editGroupHeader {
-    @include colorInteract(main);
-    @include colorText();
-    user-select: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 10px;
     position: relative;
-    cursor: pointer;
     font-size: large;
     font-weight: bold;
     padding: 1px 5px;
     overflow: hidden;
 
+    & > label {
+        @include fontNoLineBreak;
+        width: 100%;
+        text-align: left;
+    }
+
     &[data=open]::after {
         position: absolute;
         right: 5px;
         top: 0.5ch;
-        border-color: transparent map-get($palette, text) transparent transparent;
+        border-color: transparent colorInGroup(interactive, text) transparent transparent;
         border-width: 6px;
         border-style: solid;
         content: " ";
@@ -60,7 +65,7 @@ $componentColor: document;
         position: absolute;
         right: -1px;
         top: 0.5ch;
-        border-color: transparent transparent transparent map-get($palette, text);
+        border-color: transparent transparent transparent colorInGroup(interactive, text);
         border-width: 6px;
         border-style: solid;
         content: " ";
@@ -88,9 +93,8 @@ $componentColor: document;
     }
 
     & > b {
-        @include colorText();
-        @include fontNormalBold();
-        @include fontNoLineBreak();
+        @include fontNormalBold;
+        @include fontNoLineBreak;
         height: $size;
         flex-shrink: 0;
         display: flex;
@@ -117,8 +121,7 @@ $componentColor: document;
 }
 
 .editInput {
-    @include color($componentColor);
-    @include colorText();
+    @include colorBackground(input);
     min-width: 0;
     border: none;
     outline: none;
@@ -128,7 +131,7 @@ $componentColor: document;
     flex: 1;
 
     &[error=true] {
-        @include color(error);
+        color: color(error)
     }
 
     &:disabled {
@@ -141,7 +144,6 @@ $componentColor: document;
     }
 
     &::placeholder {
-        @include colorText();
         opacity: 60%;
     }
 }
@@ -181,10 +183,16 @@ $componentColor: document;
 }
 
 .editListItem {
-    @include color($componentColor);
+    @include colorBackground(input);
     height: $size !important;
     display: flex;
     justify-content: center;
+}
+
+.editSelectionMenu {
+    & > *:last-child {
+        @include colorDecoration(second);
+    }
 }
 
 .editOption {
@@ -218,7 +226,7 @@ $componentColor: document;
     }
 
     & > a {
-        color: map-get($palette, accents);
+        color: color(accents);
         display: flex;
         align-items: center;
         font-size: small;

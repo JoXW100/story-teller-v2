@@ -13,57 +13,59 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
 }
 
 .pageHeader {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     display: flex;
     flex-direction: row-reverse;
     height: 100%;
 }
 
 .logoutButton {
-    @include colorInteract(interactive);
-    @include fontNormal();
-    @include fontNoLineBreak();
     display: grid;
-    padding: 5px 5px 5px 20px;
     margin: 3px 0 3px 0;
-    border-radius: $logoutButtonRadius 0 0 $logoutButtonRadius;
-    align-items: center;
+    & > button {
+        @include fontNormal;
+        @include fontNoLineBreak;
+        display: grid;
+        padding: 5px 5px 5px 20px;
+        border-radius: $logoutButtonRadius 0 0 $logoutButtonRadius;
+        align-items: center;
 
-    @include desktop {
-        grid-template-columns: $labelWidth*2 $iconNormalSize;
-    }
-
-    @include mobile {
-        grid-template-columns: $phone_labelWidth*2 $iconNormalSize;
-    }
-
-    @include mobile-landscape {
-        grid-template-columns: $labelWidth*2 $iconNormalSize;
-    }
-
-    & > label {
-        @include fontNoLineBreak();
-    }
-
-    & > svg { 
-        justify-self: center; 
+        @include desktop {
+            grid-template-columns: $labelWidth*2 $iconNormalSize;
+        }
+    
+        @include mobile {
+            grid-template-columns: $phone_labelWidth*2 $iconNormalSize;
+        }
+    
+        @include mobile-landscape {
+            grid-template-columns: $labelWidth*2 $iconNormalSize;
+        }
+    
+        & > label {
+            @include fontNoLineBreak;
+            margin: auto;
+        }
+    
+        & > svg { 
+            justify-self: center; 
+        }
     }
 }
 
 .settingsButton {
-    aspect-ratio: 1;
+    display: grid;
     margin: 3px;
+    aspect-ratio: 1;
     & > button {
-        height: 100%;
-        width: 100%;
+        display: grid;
         border-radius: 50%;
         user-select: none;
     }
 }
 
 .mainContainer {
-    @include scroll();
+    @include scroll;
     display: grid;
     grid-template-rows: $menuHeaderHeight minmax($smallMenuHeight, 1fr);
     overflow: auto;
@@ -88,11 +90,9 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
 }
 
 .mainHeader {
-    @include color(second);
-    @include colorShadow();
-    @include fontHeader1();
-    @include centerGrid();
-    height: 100%;
+    @include colorWithShadow(main);
+    @include fontHeader1;
+    @include centerGrid;
 }
 
 .loading {

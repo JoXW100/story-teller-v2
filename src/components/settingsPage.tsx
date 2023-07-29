@@ -1,53 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import Link from 'next/link';
 import CloseIcon from '@mui/icons-material/Close';
 import { Context } from 'components/contexts/appContext';
 import DropdownMenu from 'components/common/dropdownMenu';
+import Checkbox from './common/checkbox';
+import Palettes from 'data/palettes';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
-import Palettes from 'data/palettes';
-import styles from 'styles/pages/settingsPage.module.scss'
 import { ViewMode } from 'types/context/appContext';
+import styles from 'styles/pages/settingsPage.module.scss';
 
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string
 }>
 
+const viewModes = {
+    [ViewMode.SplitView]: "Split View",
+    [ViewMode.Exclusive]: "Exclusive" 
+} as Record<ViewMode, string>
+
+const palettes = Object.keys(Palettes).reduce((prev, val) => (
+    { ...prev, [val]: Palettes[val].name }
+), {} as Record<string, string>) 
+
 const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const [state, setState] = useState({ 
-        palette: Object.keys(Palettes).includes(context.palette) 
-            ? context.palette 
-            : Object.keys(Palettes)[0],
-        viewMode: [ViewMode.Exclusive, ViewMode.SplitView].includes(context.viewMode) 
-            ? context.viewMode
-            : ViewMode.SplitView
-    })
-
-    const palettes = Object.keys(Palettes).reduce((prev, val) => (
-        { ...prev, [val]: Palettes[val].name }
-    ), {} as Record<string, string>) 
-
-    const viewModes = {
-        [ViewMode.SplitView]: "Split View",
-        [ViewMode.Exclusive]: "Exclusive" 
-    } as Record<ViewMode, string>
-
-    useEffect(() => {
-        if (state.palette && state.palette != context.palette) {
-            dispatch.setPalette(state.palette);
-        }
-        if (state.viewMode && state.viewMode != context.viewMode) {
-            dispatch.setViewMode(state.viewMode);
-        }
-    }, [state.palette, state.viewMode])
-    
     return (
         <div className={styles.main}>
             <div className={styles.header}>
-                <label>
-                    { Localization.toText("settingsPage-header")}
-                </label>
+                <label> { Localization.toText("settingsPage-header")} </label>
                 <Link 
                     className={styles.closeButton}
                     href={Navigation.settingsReturnURL(returnURL)}>
@@ -58,22 +39,43 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
             </div>
             <div className={styles.body}>
                 <div className={styles.row}>
-                    {Localization.toText("settingsPage-palette")} 
+                    <label>{Localization.toText("settingsPage-palette")} </label>
                     <DropdownMenu 
                         itemClassName={styles.dropdownItem}
-                        value={state.palette}
+                        value={context.palette}
                         values={palettes}
-                        onChange={(value) => setState({ ...state, palette: value }) }
+                        onChange={(value) => dispatch.setPalette(value) }
                     />
                 </div>
                 <div className={styles.row}>
-                    {Localization.toText("settingsPage-viewMode")} 
+                    <label>{Localization.toText("settingsPage-viewMode")}</label>
                     <DropdownMenu 
                         itemClassName={styles.dropdownItem}
-                        value={state.viewMode}
+                        value={context.viewMode}
                         values={viewModes}
-                        onChange={(value) => setState({ ...state, viewMode: value as ViewMode }) }
+                        onChange={(value) => dispatch.setViewMode(value as ViewMode) }
                     />
+                </div>
+                <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-syntaxHighlighting")}</label> 
+                    <Checkbox
+                        className={styles.checkbox}
+                        value={context.enableSyntaxHighlighting}
+                        onChange={(value) => dispatch.setEnableSyntaxHighlighting(value)}/>
+                </div>
+                <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-rowNumbers")}</label> 
+                    <Checkbox
+                        className={styles.checkbox}
+                        value={context.enableRowNumbers}
+                        onChange={(value) => dispatch.setEnableRowNumbers(value)}/>
+                </div>
+                <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-colorFileByType")}</label> 
+                    <Checkbox
+                        className={styles.checkbox}
+                        value={context.enableColorFileByType}
+                        onChange={(value) => dispatch.setEnableColorFileByType(value)}/>
                 </div>
             </div>
         </div>

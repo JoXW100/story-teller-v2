@@ -13,8 +13,10 @@ const LoginPage = ({ returnURL }: LoginPageProps): JSX.Element => {
         <div className={styles.main}>
             <div className={styles.header}> Login Required </div>
             <Link className={styles.loginButton} href={Navigation.loginAPI()} passHref>
-                { Localization.toText('loginPage-prompt') }
-                <LoginIcon/>
+                <button>
+                    <label>{ Localization.toText('loginPage-prompt') }</label>
+                    <LoginIcon/>
+                </button>
             </Link>
         </div>
     )

@@ -68,8 +68,7 @@ const FileMenuHeader = (): JSX.Element => {
                 </button>
             </div>
             <div className={styles.headerFilterRow}>
-                <Searchbox 
-                    className={styles.headerSearch} 
+                <Searchbox
                     value={state.searchFilter} 
                     onChange={handleSearchChange}/>
                 <button

@@ -19,7 +19,6 @@
 }
 
 .button {
-    @include colorInteract(interactive);
     display: flex;
     height: 100%;
     aspect-ratio: 1;
@@ -39,7 +38,6 @@
 
 .menu {
     @include scroll();
-    @include colorText();
     display: grid;
     grid-template-columns: 100%;
     background: inherit;
@@ -60,24 +58,25 @@
     }
 
     &[data=open] {
-        @include colorShadow();
+        @include colorShadow(input);
+        @include colorBorder(input);
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         & > :not(:last-child) {
-            border-bottom: 1px solid map-get($palette, text);
+            border-bottom: 1px solid;
             padding-top: 1px;
         }
 
         & > :hover {
-            color: map-get($palette, interactive);
+            @include colorBackground(interactive);
         }
     }
 }
 
 .dropdownItem {
-    @include color(document);
+    @include colorBackground(input);
     justify-content: start;
     font: inherit;
     padding: 0 5px;

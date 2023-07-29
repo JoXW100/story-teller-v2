@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { D20Icon } from 'assets/dice';
-import DicePanel from './dicePanel';
+import DicePanel from '.';
 import Localization from 'utils/localization';
 import styles from 'styles/pages/storyPage/main.module.scss'
 

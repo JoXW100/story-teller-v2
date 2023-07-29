@@ -90,13 +90,11 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             <div className={styles.header}>
                 <AddIcon/>
                 { Localization.toText('createFilePopup-header')}
-                <div 
-                    className={styles.button} 
+                <button 
                     onClick={() => closePopup()}
-                    tooltips={Localization.toText("createFilePopup-closeTooltips")}
-                > 
+                    tooltips={Localization.toText("createFilePopup-closeTooltips")}> 
                     <CloseIcon/>
-                </div>
+                </button>
             </div>
             <div className={styles.body}>
                 <div className={styles.navigation}>

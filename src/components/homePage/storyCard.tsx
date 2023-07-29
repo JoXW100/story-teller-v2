@@ -16,9 +16,15 @@ import styles from 'styles/pages/homePage/storyCard.module.scss'
 type StoryCardProps = React.PropsWithRef<{
     data: StoryCardData
     setStatus: (status: PageStatus) => void
+    zIndex: number
 }>
 
-const StoryCard = ({ data, setStatus }: StoryCardProps): JSX.Element => {
+type StoryCardBodyProps = React.PropsWithRef<{
+    data: StoryCardData
+    setStatus: (status: PageStatus) => void
+}>
+
+const StoryCard = ({ data, setStatus, zIndex }: StoryCardProps): JSX.Element => {
     const router = useRouter()
 
     const handleClick = () => {
@@ -36,7 +42,7 @@ const StoryCard = ({ data, setStatus }: StoryCardProps): JSX.Element => {
     }, [data.type]) 
 
     return (
-        <div className={styles.storyCard} onClick={handleClick}>
+        <div className={styles.storyCard} onClick={handleClick} style={{ zIndex: zIndex }}>
             <Body data={data} setStatus={setStatus}/>
         </div>
     )
@@ -53,7 +59,7 @@ const CreateCardBody = (): JSX.Element => {
     </>
 }
 
-const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
+const StoryCardBody = ({ data, setStatus }: StoryCardBodyProps): JSX.Element => {
     const handleDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
@@ -62,6 +68,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardProps): JSX.Element => {
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
+                description={Localization.toText('create-confirmationDescription', data.name)}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {

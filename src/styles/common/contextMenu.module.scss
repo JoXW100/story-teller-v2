@@ -1,9 +1,7 @@
 @import 'styles/colors.scss';
 
 .main {
-    @include color(document);
-    @include colorText();
-    @include colorShadow();
+    @include colorWithShadow(input);
     display: block;
     position: absolute;
     z-index: 1000;
@@ -12,7 +10,7 @@
 }
 
 .item {
-    @include colorInteract(document);
+    @include colorBackground(input);
     position: relative;
     padding: 2.5px 10px 2.5px 2px;
     height: 26px;
@@ -36,24 +34,25 @@
         pointer-events: none;
     }
 
+    &:hover {
+        @include colorDecoration(input);
+    }
+
     &[data=content] {
         &:after {
             position: absolute;
             right: -3px;
             top: calc(50% - 5px);
-            border-color: transparent transparent transparent map-get($palette, icons);
+            border-color: transparent transparent transparent colorInGroup(input, border);
             border-width: 5px;
             border-style: solid;
             content: " ";
         }
 
-        &:hover {
-            @include colorInteract(forth);
-            & > div { visibility: visible; }
-        }
+        &:hover > div { visibility: visible; }
         
         & > .content {
-            @include colorShadow();
+            @include colorShadow(input);
             visibility: hidden;
             display: block;
             width: 100%;

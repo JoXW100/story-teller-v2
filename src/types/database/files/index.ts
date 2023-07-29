@@ -42,14 +42,17 @@ interface FileMetadataQueryResult<T extends FileMetadata> {
 export enum FileType {
     Root = "root",
     Empty = "empty",
-    Document = "doc",
     Folder = "folder",
-    Creature =  "cre",
     Ability = "abi",
     Character = "cha",
-    Spell = "spe",
+    Creature =  "cre",
+    Document = "doc",
     Encounter = "enc",
+    Spell = "spe",
 }
+
+export type UsedFileTypes = Exclude<FileType, FileType.Root|FileType.Empty>
+export type RenderedFileTypes = Exclude<FileType, FileType.Root|FileType.Empty|FileType.Folder>
 
 interface FileData<A extends FileContent, B extends FileMetadata, C extends FileStorage> {
     id: ObjectId

@@ -1,18 +1,56 @@
 {
     "name": "Cobalt",
     "colors": {
-        "document": "#ffffff",
         "background": "#c8daff",
         "accents": "#3366ff",
-        "main": "#77aaff",
-        "second": "#99c2ff",
-        "third": "#aeceff",
-        "forth": "#e4efff",
-        "text": "#0b1e42",
-        "shadow": "#57688d",
-        "border": "#111830",
+
+        "good": "#01ae01",
+        "bad": "#ff0000",
+        "neutral": "#f8a525",
+        "warning": "#f8a525",
         "error": "#ff0000",
-        "icons": "#06296b",
-        "interactive": "#5f88ff"
+
+        "folder": "#06296b",
+        "abi": "#3b68bb",
+        "cha": "#006bff",
+        "cre": "#0033ff",
+        "doc": "#3366ff",
+        "enc": "#0033ff",
+        "spe": "#875dff",
+
+        "syntax-function-name": "#3366ff",
+        "syntax-function-option": "#3e98ff",
+        "syntax-function-separator": "#0b1e42",
+        "syntax-bracket": "#002cff",
+        "syntax-variable": "#c72eeb",
+        "syntax-tab": "#0b1e42",
+
+        "document-background": "#ffffff",
+        "document-text": "#0b1e42",
+        "document-border": "#0b1e42",
+
+        "input-background": "#ffffff",
+        "input-text": "#0b1e42",
+        "input-border": "#111830",
+        "input-icons": "#06296b",
+
+        "interactive-background": "#5f88ff",
+        "interactive-text": "#ffffff",
+        "interactive-border": "#111830",
+        "interactive-icons": "#ffffff",
+
+        "main-background": "#77aaff",
+        "main-decoration": "#99c2ff",
+        "main-text": "#0b1e42",
+        "main-border": "#111830",
+        "main-shadow": "#57688d",
+        "main-icons": "#06296b",
+
+        "second-background": "#aeceff",
+        "second-decoration": "#e4efff",
+        "second-text": "#0b1e42",
+        "second-border": "#111830",
+        "second-shadow": "#57688d",
+        "second-icons": "#06296b"
     }
 }

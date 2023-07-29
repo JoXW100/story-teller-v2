@@ -7,7 +7,6 @@ $diceWidth: 35px;
 $numWidth: 15px;
 
 .holder {
-    @include colorText();
     position: absolute;
     z-index: 100;
     right: 0;
@@ -24,9 +23,8 @@ $numWidth: 15px;
 }
 
 .main {
+    @include colorWithShadow(second);
     @include centerGrid();
-    @include color(third);
-    @include colorShadow();
     
     position: relative;
     gap: 2.5px;
@@ -38,20 +36,16 @@ $numWidth: 15px;
 }
 
 .dice {
-    @include colorInteract(interactive);
-    @include colorShadow();
-    @include centerFlex();
+    @include colorShadow(interactive);
+    @include centerFlex;
     border-radius: $width / 2.0;
     padding: 4px;
     width: $diceWidth;
     height: $diceWidth;
 
     & > .number {
-        @include color(second);
-        @include colorShadow();
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include colorWithShadow(interactive);
+        @include centerFlex;
         position: absolute;
         padding: 0 3px;
         right: -1px;
@@ -65,9 +59,7 @@ $numWidth: 15px;
 }
 
 .rollBackground {
-    @include color(third);
-    @include colorShadow();
-
+    @include colorWithShadow(second);
     position: absolute;
     display: flex;
     right: 0;
@@ -79,9 +71,7 @@ $numWidth: 15px;
 }
 
 .roll {
-    @include colorInteract(interactive);
-    @include colorShadow();
-    @include centerFlex();
+    @include centerFlex;
     z-index: 1000;
     border-radius: $width / 2.0;
     width: 75px;

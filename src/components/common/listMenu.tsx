@@ -26,11 +26,10 @@ const ListMenu = ({ className, itemClassName, onChange, values = [], type = "tex
     }
 
     const Component = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
-        const style = itemClassName ? `${itemClassName} ${styles.collection}` : styles.collection;
         return editEnabled ? (
             <EditComponent value={value} onUpdate={onUpdate}/>
         ) : (
-            <div className={style}> {value} </div>
+            <div className={itemClassName}> {value} </div>
         )
     }
     

@@ -5,10 +5,9 @@
 @import 'animations.scss';
 
 .main {
-    @include color(background);
-    @include fontNormal();
-    @include scroll();
-    
+    @include colorDefaultBackground;
+    @include fontNormal;
+    @include scroll;
     position: relative;
     width: 100%;
     height: 100%;
@@ -27,9 +26,9 @@
     justify-content: end;
 
     & > span {
-        @include color(second);
-        @include fontNormal();
-        @include centerGrid();
+        @include colorBackground(second);
+        @include fontNormal;
+        @include centerGrid;
         padding: 2px 5px;
         width: 45px;
         border-radius: 15px;
@@ -54,7 +53,7 @@
 }
 
 .innerPage {
-    @include color(document);
+    @include colorBackground(document);
     font-family: Mrs Eaves;
     flex-shrink: 0;
     min-width: 0;
@@ -71,7 +70,7 @@
 }
 
 .error {
-    @include color(error);
+    color: color(error);
     margin: 10px;
     font-weight: bold;
 }
@@ -82,9 +81,8 @@
 }
 
 .ability {
-    @include color(third);
-    @include colorShadow();
-    @include fontNormal();
+    @include colorWithShadow(second);
+    @include fontNormal;
     padding: 5px;
     margin-bottom: 10px;
 
@@ -93,14 +91,13 @@
     }
     &[data=closed] {
         cursor: pointer;
-        border-bottom: 2px solid map-get($palette, border);
+        border-bottom: 2px solid;
     }
 }
 
 .spell {
-    @include color(third);
-    @include colorShadow();
-    @include fontNormal();
+    @include colorWithShadow(second);
+    @include fontNormal;
     padding: 5px;
     margin: 3px 0 7px 0;
     cursor: pointer;
@@ -113,7 +110,8 @@
 }
 
 .spellComponent {
-    @include colorInteract(third);
+    @include colorBackground(second);
+    @include colorInteractiveControl;
     border-radius: 3px;
     display: inline-flex;
     position: relative;
@@ -125,10 +123,10 @@
 }
 
 .spellSlotToggle {
-    @include color(forth);
+    @include colorDecoration(second);
     display: flex;
     position: relative;
-    box-shadow: inset map-get($palette, shadow) 0 0 5px -1px;
+    box-shadow: inset colorInGroup(second, shadow) 0 0 5px -1px;
     height: 15px;
     width: 15px;
     margin-left: 5px;
@@ -136,7 +134,7 @@
     cursor: pointer;
     
     &[data=active]::after {
-        @include color(text);
+        background: colorInGroup(second, text);
         position: absolute;
         z-index: 100;
         left: 0;
@@ -160,8 +158,7 @@
 }
 
 .encounterButton {
-    @include colorShadow();
-    @include colorText();
+    @include colorShadow(interactive);
     flex: 1;
     padding: 5px;
     font-weight: bold;
@@ -176,9 +173,7 @@
 }
 
 .encounterCard {
-    @include color(second);
-    @include colorShadow();
-    @include colorText();
+    @include colorWithShadow(second);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto 16px 16px 16px 1fr;
@@ -188,12 +183,12 @@
     position: relative;
 
     .encounterCardHeader {
-        @include colorShadow();
+        @include colorWithShadow(main);
         padding: 1px 5px;
         width: 100%;
 
         & > div {
-            @include fontNoLineBreak();
+            @include fontNoLineBreak;
             font-size: 15px;
             font-weight: bold;
             width: 100%;
@@ -201,9 +196,8 @@
     }
 
     .encounterCardToken {
-        @include color(second);
-        @include centerFlex();
-        @include colorShadow();
+        @include colorBackground(interactive);
+        @include centerFlex;
         position: absolute;
         height: 22px;
         width: 22px;
@@ -218,7 +212,7 @@
     }
 
     .encounterCardRow {
-        @include color(forth);
+        @include colorDecoration(second);
         display: grid;
         grid-template-columns: 1fr auto;
         padding: 0 2px;
@@ -232,8 +226,6 @@
         gap: 5px;
     
         .encounterCardInput {
-            @include colorText();
-            @include color(document);
             font: inherit;
             width: 100%;
             height: 16px;
@@ -261,8 +253,6 @@
     }
 
     .encounterCardTextarea {
-        @include colorText();
-        @include color(document);
         display: flex;
         font: inherit;
         border: none;

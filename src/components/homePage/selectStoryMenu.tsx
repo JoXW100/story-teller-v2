@@ -16,7 +16,8 @@ const SelectStoryMenu = ({ cards, setStatus }: SelectStoryMenuProps): JSX.Elemen
                     <StoryCard 
                         key={index} 
                         data={card} 
-                        setStatus={setStatus}/>
+                        setStatus={setStatus}
+                        zIndex={cards.length - index}/>
                 )) 
             }
         </div>

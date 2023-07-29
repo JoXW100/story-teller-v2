@@ -1,24 +1,31 @@
 @import 'styles/colors.scss';
 
-.file {
-    @include colorInteract(third);
-    @include colorText();
+@mixin colorFileByType {
+    @include colorIcon(second);
+    &[data=folder] > svg { color: color(folder); }
+    &[data=abi] > svg { color: color(abi); }
+    &[data=doc] > svg { color: color(doc); }
+    &[data=cha] > svg { color: color(cha); }
+    &[data=cre] > svg { color: color(cre); }
+    &[data=enc] > svg { color: color(enc); }
+    &[data=spe] > svg { color: color(spe); }
+}
 
+.file {
+    @include colorDecoration(second);
+    @include colorInteractiveControl;
+    @include colorFileByType;
     display: flex;
     justify-content: left;
     align-items: center;
     user-select: none;
-    font-weight: 400;
     height: fit-content;
-    border: none;
     font: inherit;
-    padding: 0;
 
-    & > SVG {
+    & > svg {
         padding: 4px 2px 1px 0;
         width: 20px;
         height: 20px;
-        font-size: inherit;
     }
 
     & > .text {
@@ -30,12 +37,10 @@
     }
 
     input {
-        @include color(background);
         display: block;
         flex: 1;
         width: 100%;
         height: inherit;
-        border: none;
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-left: -2px;
@@ -57,21 +62,21 @@
     min-width: 0px;
     width: 100%;
 
-    &[data=open]::after {
+    &[value=open]::after {
         position: absolute;
         right: 3px;
         top: calc(50% - 5px);
-        border-color: transparent map-get($palette, icons) transparent transparent;
+        border-color: transparent color(folder) transparent transparent;
         border-width: 5px;
         border-style: solid;
         content: " ";
     }
 
-    &[data=closed]::after {
+    &[value=closed]::after {
         position: absolute;
         right: -3px;
         top: calc(50% - 5px);
-        border-color: transparent transparent transparent map-get($palette, icons);
+        border-color: transparent transparent transparent color(folder);
         border-width: 5px;
         border-style: solid;
         content: " ";
@@ -88,8 +93,8 @@
 
 .content {
     display: block;
-    margin-left: 3px;
-    border-left: 1.5px solid map-get($palette, border);
+    margin-left: 1ch;
+    border-left: 1px solid color(folder);
 }
 
 .selected {

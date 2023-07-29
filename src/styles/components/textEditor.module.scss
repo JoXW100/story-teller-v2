@@ -1,5 +1,9 @@
 @import 'styles/colors.scss';
 @import 'styles/prefabs';
+@import 'styles/constants';
+
+
+$indent: calc(6ch - 15px);
 
 .holder {
     display: block;
@@ -8,9 +12,50 @@
     flex: 1;
 }
 
+#editing, #highlighting {
+    @include scroll;
+    position: absolute;
+    overflow: auto;
+    white-space: pre;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-bottom: $bottomViewMargin !important;
+    padding: 5px;
+    font-size: medium;
+}
+
+#editing {
+    z-index: 1;
+    color: transparent;
+    background: transparent;
+    outline: none;
+    border: none;
+    resize: none;
+    caret-color: colorInGroup(input, text);
+
+    &[data=show] {
+        left: $indent;
+        width: calc(100% - $indent);
+    }
+}
+
+#highlighting {
+    @include colorBackground(document);
+    z-index: 0;
+}
+
+#highlightingContent {
+    text-align: left;
+    white-space: pre;
+    hyphens: none;
+    counter-set: line;
+}
+
 .area {
-    @include color(document);
-    @include colorText();
+    @include colorBackground(document);
     @include scroll();
     overflow-x: auto;
     display: flex;

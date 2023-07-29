@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/CloseSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import Checkbox from "components/common/checkbox";
 import { Context } from "components/contexts/fileSystemContext";
+import { Context as AppContext } from "components/contexts/appContext";
 import { FileIcons } from "assets/icons";
 import { CreateFileOptions } from "data/fileTemplates";
 import Localization from "utils/localization";
@@ -10,6 +11,7 @@ import { FileType } from "types/database/files";
 import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileFilterMenu = (): JSX.Element => {
+    const [app] = useContext(AppContext)
     const [state, dispatch] = useContext(Context)
     const handleChangeFolder = () => {
         dispatch.setFileFilter({
@@ -35,7 +37,7 @@ const FileFilterMenu = (): JSX.Element => {
                     <CloseIcon/> 
                 </button>
             </div>
-            <div className={styles.fileFilterMenuItem}>
+            <div className={styles.fileFilterMenuItem} data={app.enableColorFileByType ? FileType.Folder : undefined}>
                 <Checkbox 
                     value={state.fileFilter.showEmptyFolders} 
                     onChange={handleChangeFolder}/>
@@ -45,7 +47,10 @@ const FileFilterMenu = (): JSX.Element => {
             { Object.keys(CreateFileOptions).map((type) => {
                 const Icon = FileIcons[type] ?? FileIcons[FileType.Document]
                 return (
-                    <div className={styles.fileFilterMenuItem} key={type}>
+                    <div 
+                        className={styles.fileFilterMenuItem} 
+                        key={type} 
+                        data={app.enableColorFileByType ? type : undefined}>
                         <Checkbox 
                             value={state.fileFilter[type]} 
                             onChange={() => handleChange(type as FileType)}/>

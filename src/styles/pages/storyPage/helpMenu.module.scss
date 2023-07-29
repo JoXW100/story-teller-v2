@@ -4,9 +4,7 @@
 @import 'styles/prefabs.scss';
 
 .main {
-    @include color(document);
-    @include colorShadow();
-    @include colorText();
+    @include colorWithShadow(main);
     display: grid;
     grid-template-rows: $pageHeaderHeight minmax(0, 1fr);
     row-gap: 1px;
@@ -19,18 +17,17 @@
 }
 
 .header {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     @include centerFlex();
     position: relative;
     width: 100%;
 }
 
 .closeBtn {
-    @include colorInteract(interactive);
     position: absolute;
     height: 100%;
     right: 0;
+    padding: 5px;
 
     & > SVG {
         width: 100%;
@@ -39,8 +36,7 @@
 }
 
 .item {
-    @include color(forth);
-    @include colorText();
+    @include colorDecoration(second);
     height: fit-content;
     min-height: 30px;
     margin: 5px;
@@ -52,25 +48,23 @@
     h3 { margin: 10px 0; }
 
     code {
-        @include color(forth);
-        @include colorShadow();
+        @include colorDecoration(second);
+        @include colorShadow(second);
         padding: 0 2px;
     }
 }
 
 .itemContent {
-    @include color(document);
+    @include colorBackground(document);
     width: 100%;
     height: fit-content;
     padding: 2.5px 20px;
 }
 
 .itemTitle {
-    @include color(second);
-    @include colorShadow();
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include colorDecoration(main);
+    @include colorShadow(main);
+    @include centerFlex;
     white-space: nowrap;
     font-weight: 700;
     font-size: 20px;

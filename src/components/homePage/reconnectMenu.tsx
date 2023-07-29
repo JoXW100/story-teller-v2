@@ -1,5 +1,5 @@
-import Localization from 'utils/localization';
 import ReplayIcon from '@mui/icons-material/Replay';
+import Localization from 'utils/localization';
 import { PageStatus } from 'types/homePage';
 import styles from 'styles/pages/homePage/menu.module.scss';
 
@@ -14,10 +14,10 @@ const ReconnectMenu = ({ setStatus }: ReconnectMenuProps):JSX.Element => {
     }
 
     return (
-        <div className={styles.reconnectMenu} onClick={handleClick}>
+        <button className={styles.reconnectMenu} onClick={handleClick}>
             { Localization.toText('reconnect-button') }
             <ReplayIcon/>
-        </div>
+        </button>
     )
 }
 

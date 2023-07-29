@@ -25,7 +25,7 @@ const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
             closePopup()
         }
     }
-
+    
     const handleClick = () => {
         callback({ type: InputType.File, data: state })
         closePopup()

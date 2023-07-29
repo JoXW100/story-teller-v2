@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Context as StoryContext } from 'components/contexts/storyContext';
 import { Context } from 'components/contexts/fileSystemContext';
+import { Context as StoryContext } from 'components/contexts/storyContext';
+import { Context as AppContext } from 'components/contexts/appContext';
 import { openContext } from 'components/common/contextMenu';
 import Localization from 'utils/localization';
 import IconClosed from '@mui/icons-material/FolderSharp';
@@ -27,6 +28,7 @@ type FolderProps = React.PropsWithChildren<{
 }>
 
 const Folder = ({ file, children }: FolderProps): JSX.Element => {
+    const [app] = useContext(AppContext);
     const [context] = useContext(StoryContext);
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({
@@ -210,7 +212,8 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
                 onClick={changeState}
                 onDragStart={handleDrag}
                 onContextMenu={handleContext}
-                data={state.open ? "open" : "closed"}
+                data={app.enableColorFileByType ? file.type : undefined}
+                value={state.open ? "open" : "closed"}
                 draggable={!state.inEditMode}
             >
                 <Icon/>

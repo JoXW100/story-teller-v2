@@ -51,6 +51,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
+                description={Localization.toText('create-confirmationDescription', file.name)}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {

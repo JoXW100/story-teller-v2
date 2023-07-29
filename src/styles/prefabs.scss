@@ -19,19 +19,19 @@
     }
 }
 
-@mixin centerGrid() {
+@mixin centerGrid {
     display: grid;
     align-items: center;
     justify-items: center;
 }
 
-@mixin centerFlex() {
+@mixin centerFlex {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-@mixin scroll() {
+@mixin scroll {
     cursor: auto;
     overflow: scroll;
 
@@ -41,14 +41,14 @@
     }
     
     &::-webkit-scrollbar-corner {
-        @include color(second);
+        @include colorDecoration(main);
     }
 
     &::-webkit-scrollbar-track {
-        @include colorInteract(second);
+        @include colorDecoration(main);
     }
 
     &::-webkit-scrollbar-thumb  {
-        @include color(interactive);
+        @include colorBackground(interactive);
     }
 }

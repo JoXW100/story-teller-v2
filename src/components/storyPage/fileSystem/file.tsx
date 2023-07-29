@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import DocumentIcon from '@mui/icons-material/InsertDriveFileSharp';
@@ -10,6 +10,7 @@ import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
 import DuplicateIcon from '@mui/icons-material/DifferenceSharp';
 import { FileIcons } from 'assets/icons';
 import { Context as StoryContext } from 'components/contexts/storyContext';
+import { Context as AppContext } from 'components/contexts/appContext';
 import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
@@ -22,6 +23,7 @@ type FileProps = React.PropsWithRef<{
 }>
 
 const File = ({ file }: FileProps): JSX.Element => {
+    const [app] = useContext(AppContext);
     const [context] = useContext(StoryContext);
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({ inEditMode: false, text: file.name });
@@ -139,6 +141,7 @@ const File = ({ file }: FileProps): JSX.Element => {
             onDragStart={handleDrag}
             onContextMenu={handleContext}
             draggable={!state.inEditMode}
+            data={app.enableColorFileByType ? file.type : undefined}
         >
             <Icon/>
             <input 

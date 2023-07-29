@@ -3,11 +3,12 @@ import styles from 'styles/common/confirmationPopup.module.scss'
 
 type ConfirmationPopupProps = React.PropsWithoutRef<{
     header: string
+    description: string
     options: string[]
     callback: (option: string) => void
 }>
 
-const ConfirmationPopup = ({ header, options = [], callback }: ConfirmationPopupProps): JSX.Element => {
+const ConfirmationPopup = ({ header, description, options = [], callback }: ConfirmationPopupProps): JSX.Element => {
     const handleClick = (option: string) => {
         callback(option)
         closePopup()
@@ -15,15 +16,13 @@ const ConfirmationPopup = ({ header, options = [], callback }: ConfirmationPopup
 
     return (
         <div className={styles.main}>
-            <div className={styles.header}> { header } </div>
-            <div className={styles.body}> 
+            <div className={styles.header}>{header}</div>
+            <div className={styles.body}>{description}</div>
+            <div className={styles.buttons}>
                 { options?.map((option, index) => (
-                    <div 
-                        key={index}
-                        className={styles.button} 
-                        onClick={() => handleClick(option)}> 
+                    <button key={index} onClick={() => handleClick(option)}> 
                         {option} 
-                    </div>
+                    </button>
                 ))}
             </div>
         </div>

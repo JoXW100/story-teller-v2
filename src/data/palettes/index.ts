@@ -12,3 +12,4 @@ const Palettes: Record<string, Palette> = {
 }
 
 export default Palettes
+

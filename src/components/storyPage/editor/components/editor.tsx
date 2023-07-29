@@ -17,15 +17,12 @@ import SpaceIcon from '@mui/icons-material/SpaceBarSharp';
 import IconIcon from '@mui/icons-material/InsertEmoticonSharp';
 import ImageIcon from '@mui/icons-material/InsertPhotoSharp';
 import TextIcon from '@mui/icons-material/TextFieldsSharp';
-import FormatIcon from '@mui/icons-material/FormatAlignCenterSharp';
 import { Context } from 'components/contexts/fileContext';
 import { openContext } from 'components/common/contextMenu';
-import TextEditor from 'components/common/textEditor';
+import TextEditorWithSyntaxHighlighting from 'components/common/textEditorWithSyntaxHighlighting';
 import Localization from 'utils/localization';
 import { TemplateComponentProps } from '.';
-import Elements, { ElementDictionary } from 'elements';
 import { FileTemplateParams } from 'types/templates';
-import { ElementObject } from 'types/elements';
 
 const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -41,57 +38,6 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
         e.selectionStart = end
         e.selectionEnd = end
         handleInput(e.value);
-    }
-
-    const formatText = (e: HTMLTextAreaElement) => {
-        const maxSize = 80
-        let text = e.value.replace(/(\t|\n|\r)/g, '')
-        let parts = text.split(/(\\[a-z0-9]+ *(?:\[[^\]]+\])?(?:[^a-z0-9\\]*{)?|})/gi) //(\\[a-z0-9]+ *(?:\[([^]]+)\])?) *({)?|(})
-        let depth = 0
-        let result = ""
-        let queue = []
-        var match: RegExpExecArray | null;
-        var element: ElementObject;
-        var prev: ElementObject = null;
-        for (let index = 0; index < parts.length; index++) {
-            let value = parts[index];
-            if (value == '}') {
-                element = queue.pop()
-                depth--
-                if (element.container) {
-                    result += `\n${'\t'.repeat(depth)}}\n${'\t'.repeat(depth)}`
-                } else {
-                    result += '}'
-                }
-                if (element.lineBreak && !element.container) {
-                    result += `\n${'\t'.repeat(depth)}`
-                }
-            } else if (match = /\\([a-z0-9]+) *(?:\[([^\]]+)\])?(?:[^a-z0-9\\]*({))?/i.exec(value)) {
-                if (element = ElementDictionary[match[1]]) {
-                    if (prev && !prev.lineBreak && !element.inline) {
-                        result += `\n${'\t'.repeat(depth)}`
-                    }
-                    result += `\\${match[1]}`
-                    if (match[2]) { result += `[${match[2]}]` }
-                    if (match[3]) {
-                        queue.push(element)
-                        depth++; 
-                        result += ' {'; 
-                    } 
-                    if ((!match[3] || element.container) && element.lineBreak) {
-                        result += `\n${'\t'.repeat(depth)}`
-                    }
-                    prev = element
-                } else {
-                    console.warn(`${match[1]} is not a recognized command`)
-                }
-            } else if (value) {
-                let size = depth * 4
-                result += value;
-                prev = ElementDictionary['text']
-            }
-        }
-        console.log("formatText:\n", result)
     }
 
     const handleContext = (e: React.MouseEvent<HTMLTextAreaElement>) => {
@@ -233,7 +179,7 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
     }
 
     return (
-        <TextEditor
+        <TextEditorWithSyntaxHighlighting
             text={context.file?.content.text} 
             handleInput={handleInput}
             handleContext={handleContext}/>

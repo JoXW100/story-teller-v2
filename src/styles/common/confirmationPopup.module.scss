@@ -4,14 +4,12 @@
 @import 'styles/prefabs.scss';
 
 .main {
-    @include color(background);
-    @include colorText();
-    @include colorShadow();
+    @include colorWithShadow(second);
     align-self: center;
     height: fit-content;
 
     @include desktop {
-        width: min(60%, 600px);
+        width: min(60%, 500px);
     }
 
     @include mobile {
@@ -23,12 +21,12 @@
     }
 
     & > .header {
-        @include color(main);
-        @include colorShadow();
+        @include colorWithShadow(main);
         @include centerFlex();
         @include fontLargeBold();
         height: $menuItemHeight;
         user-select: none;
+        margin-bottom: 10px;
 
         & > SVG {
             height: $menuItemHeight;
@@ -39,25 +37,21 @@
     }
 
     & > .body {
-        display: flex;
-        
-        & > .buttonOk {
-            @extend .button;
-        }
+        @include colorBackground(document);
+        margin: 5px;
+        min-height: 2cm;
+        text-align: center;
+    }
 
-        & > .buttonCancel {
-            @extend .button;
+    & > .buttons {
+        display: flex;
+        gap: 10px;
+        padding: 5px;
+        & > button {
+            @include centerFlex;
+            @include colorShadow(interactive);
+            height: 35px;
+            flex: 1;
         }
     }
-}
-
-.button {
-    @include colorInteract(third);
-    @include colorShadow();
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 35px;
-    margin: 5px;
-    flex: 1;
 }

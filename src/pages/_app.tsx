@@ -4,6 +4,7 @@ import PopupHolder from 'components/common/popupHolder'
 import AppContext from 'components/contexts/appContext'
 import { UserProvider } from '@auth0/nextjs-auth0';
 import 'styles/globals.scss'
+import 'styles/language.scss';
 
 function MyApp({ Component, pageProps, router }) {
     return (

@@ -6,8 +6,8 @@ import HomeButton from './homeButton';
 import SettingsButton from './settingsButton';
 import FileView from './fileView';
 import FileSystem, { FileSystemCollapsedBody } from "./fileSystem";
-import DiceButton from './diceButton';
-import RollHistoryButton from './rollHistoryButton';
+import DiceButton from './dicePanel/diceButton';
+import RollHistoryButton from './rollHistory/rollHistoryButton';
 import HelpMenuButton from './helpMenuButton';
 import EditModeButton from './editModeButton';
 import styles from 'styles/pages/storyPage/main.module.scss'
@@ -30,7 +30,7 @@ const StoryPage = (): JSX.Element => {
             </div>
             <Divider 
                 className={styles.divider}
-                minLeft={150}
+                minLeft={120}
                 minRight={100}
                 defaultSlider={0}
                 collapsed={!context.sidePanelExpanded}

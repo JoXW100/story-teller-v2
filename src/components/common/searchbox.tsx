@@ -4,7 +4,7 @@ import Localization from "utils/localization";
 import styles from 'styles/components/searchbox.module.scss';
 
 type SearchboxProps = React.PropsWithRef<{
-    className: string
+    className?: string
     value: string
     onChange: (value: string) => void
 }>

@@ -1,8 +1,7 @@
 @import 'styles/colors.scss';
 
 .main {
-    @include color(document);
-    @include colorText();
+    @include colorBackground(input);
     display:  inline-flex;
     align-items: center;
     justify-content: center;
@@ -12,6 +11,7 @@
     cursor: pointer;
 
     &[data=true] > svg {
+        @include colorIcons(input);
         height: 100%;
         width: 100%;
     }

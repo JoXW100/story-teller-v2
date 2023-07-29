@@ -1,9 +1,13 @@
 import { useMemo } from 'react';
-import { RollEvent, RollMethod } from 'types/dice';
+import { RollEvent, RollMethod, RollResult } from 'types/dice';
 import styles from 'styles/pages/storyPage/rollHistory.module.scss'
 
 export type HistoryRollEntryProps = React.PropsWithRef<{
     entry: RollEvent
+}>
+
+type HistoryRollNoticeProps = React.PropsWithRef<{
+    result: RollResult
 }>
 
 const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
@@ -38,9 +42,7 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
             <>
                 <div className={styles.entryHeader}>
                     <b>{result.desc}: </b>
-                    { result.method === RollMethod.Advantage && <b data='adv'>+ADV</b> } 
-                    { result.method === RollMethod.Disadvantage && <b data='dis'>-DIS</b> }
-                    { result.method === RollMethod.Crit && <b data='crit'>+CRIT</b> }
+                    <HistoryRollNotice result={result}/>
                 </div>
                 <div className={styles.entryContent}>
                     { content }
@@ -59,6 +61,21 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
             { Content }
         </div>
     )
+}
+
+const HistoryRollNotice = ({ result }: HistoryRollNoticeProps): JSX.Element => {
+    var rollWasFail = result.method !== RollMethod.Crit 
+        && result.results.length === 1 
+        && result.results[0].sum === 1
+        && result.results[0].values.length === 1
+        && result.results[0].values[0].dice.num === 20
+    if (rollWasFail) return <b data='fail'>-FAIL</b>
+    switch (result.method) {
+        case RollMethod.Advantage: return <b data='adv'>+ADV</b>
+        case RollMethod.Disadvantage: return <b data='adv'>+ADV</b>
+        case RollMethod.Crit: return <b data='crit'>+CRIT</b>;
+        default: return null;
+    }
 }
 
 export default HistoryRollEntry;

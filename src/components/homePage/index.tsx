@@ -103,10 +103,12 @@ const HomePage = (): JSX.Element => {
         <div className={styles.main}>
             <div className={styles.pageHeader}>
                 <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
-                    <label>
-                        { Localization.toText('home-logout', user?.name ?? "") }
-                    </label>
-                    <LogoutIcon/>
+                    <button>
+                        <label>
+                            { Localization.toText('home-logout', user?.name ?? "") }
+                        </label>
+                        <LogoutIcon/>
+                    </button>
                 </Link>
                 <Link className={styles.settingsButton} href={Navigation.settingsURL()} passHref>
                     <button tooltips={Localization.toText('storyPage-openSettingsMenu')}>

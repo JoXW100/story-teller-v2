@@ -1,18 +1,56 @@
 {
     "name": "Coral",
     "colors": {
-        "document": "#ffffff",
         "background": "#ffc6c6",
         "accents": "#bd7474",
-        "main": "#f17474",
-        "second": "#ff9393",
-        "third": "#ffa3a3",
-        "forth": "#fab5b5",
-        "text": "#542525",
-        "shadow": "#763535",
-        "border": "#763535",
+
+        "good": "#01ae01",
+        "bad": "#ff0000",
+        "neutral": "#f8a525",
+        "warning": "#f8a525",
         "error": "#ff0000",
-        "icons": "#681d1d",
-        "interactive": "#bd7474"
+
+        "folder": "#763535",
+        "abi": "#ff376d",
+        "doc": "#bd7474",
+        "cha": "#f73511",
+        "cre": "#a20000",
+        "enc": "#a20000",
+        "spe": "#ff0045",
+
+        "syntax-function-name": "#920021",
+        "syntax-function-option": "#ff7120",
+        "syntax-function-separator": "#ff0000",
+        "syntax-bracket": "#ff0000",
+        "syntax-variable": "#ff09d4",
+        "syntax-tab": "#542525",
+
+        "document-background": "#ffffff",
+        "document-text": "#542525",
+        "document-border": "#763535",
+
+        "input-background": "#ffffff",
+        "input-text": "#542525",
+        "input-border": "#763535",
+        "input-icons": "#681d1d",
+
+        "interactive-background": "#bd7474",
+        "interactive-text": "#ffffff",
+        "interactive-border": "#763535",
+        "interactive-icons": "#ffffff",
+
+        "main-background": "#f17474",
+        "main-decoration": "#ff9393",
+        "main-text": "#542525",
+        "main-border": "#763535",
+        "main-shadow": "#763535",
+        "main-icons": "#681d1d",
+
+        "second-background": "#ffa3a3",
+        "second-decoration": "#fab5b5",
+        "second-text": "#542525",
+        "second-border": "#763535",
+        "second-shadow": "#763535",
+        "second-icons": "#681d1d"
     }
 }

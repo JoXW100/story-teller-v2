@@ -26,8 +26,7 @@
 }
 
 .header {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     @include fontHeader1();
     display: grid;
     align-items: center;
@@ -38,16 +37,16 @@
 }
 
 .loginButton {
-    @include colorInteract(interactive);
-    @include colorShadow();
-    @include fontNormal();
     display: grid;
-    grid-template-columns: 1fr $iconNormalSize;
-    align-items: center;
-    justify-items: center;
-    user-select: none;
     height: 100%;
-    padding: 3px 10px 3px 10px + $iconNormalSize;
     margin: 0 5px;
-    border-radius: 5px;
+
+    & > button {
+        @include fontNormal;
+        display: grid;
+        grid-template-columns: 1fr $iconNormalSize;
+        user-select: none;
+        padding: 3px 10px 3px 10px + $iconNormalSize;
+        border-radius: 5px;
+    }
 }

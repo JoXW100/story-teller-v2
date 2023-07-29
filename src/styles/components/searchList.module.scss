@@ -4,20 +4,20 @@
 @import 'styles/prefabs.scss';
 
 .main {
-    @include color(document);
+    @include colorDefaultBackground;
     display: grid;
     grid-template-rows: $menuItemHeaderHeight minmax(0,1fr);
     width: 100%;
 }
 
 .search {
-    @include color(third);
-    @include colorShadow();
+    @include colorWithShadow(main);
     display: grid;
     grid-template-columns: $labelWidth minmax(0,1fr);
+    z-index: 2;
     
-    & > .text {
-        @include fontNormalBold();
+    & > label {
+        @include fontNormalBold;
         display: flex;
         align-items: center;
         margin: 0 10px;
@@ -25,19 +25,18 @@
     }
 
     & > input {
-        @include color(forth);
-        @include colorText();
-        font: inherit;
         padding: 0 10px;
     }
 }
 
 .content {
-    @include scroll();
+    @include colorBackground(document);
+    @include scroll;
+    z-index: 1;
     overflow-y: scroll;
     overflow-x: hidden;
 
     & > *:last-child {
-        margin-bottom: 150px;
+        margin-bottom: $bottomViewMargin;
     }
 }

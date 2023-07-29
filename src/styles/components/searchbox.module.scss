@@ -3,19 +3,21 @@
 $height: 30px;
 
 .main {
-    @include color(document);
+    @include colorBackground(input);
     display: flex;
     height: $height;
     cursor: pointer;
     align-items: center;
 
     & > svg {
+        @include colorIcons(input);
         padding: 5px;
         height: $height;
         width: $height;
     }
 
     & > input {
+        background: inherit;
         flex: 1;
         height: $height;
         min-width: 5px;

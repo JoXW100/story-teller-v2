@@ -1,41 +1,149 @@
 $palette: (
-    document: var(--color-document),
     background: var(--color-background),
     accents: var(--color-accents),
-    main: var(--color-main),
-    second: var(--color-second),
-    third: var(--color-third),
-    forth: var(--color-forth),
-    shadow: var(--color-shadow),
-    border: var(--color-border),
-    text: var(--color-text),
+    
+    good: var(--color-god),
+    bad: var(--color-bad),
+    neutral: var(--color-neutral),
+    warning: var(--color-error),
     error: var(--color-error),
-    icons: var(--color-icons),
-    interactive: var(--color-interactive)
+
+    folder: var(--color-folder),
+    abi: var(--color-abi),
+    doc: var(--color-doc),
+    cha: var(--color-cha),
+    cre: var(--color-cre),
+    enc: var(--color-enc),
+    spe: var(--color-spe),
+
+    document-background: var(--color-document-background),
+    document-text: var(--color-document-text),
+    document-border: var(--color-document-shadow),
+
+    input-background: var(--color-input-background),
+    input-text: var(--color-input-text),
+    input-border: var(--color-input-text),
+    input-icons: var(--color-input-icons),
+
+    interactive-background: var(--color-interactive-background),
+    interactive-text: var(--color-interactive-text),
+    interactive-border: var(--color-interactive-border),
+    interactive-icons: var(--color-interactive-icons),
+
+    syntax-function-name: var(--color-syntax-function-name),
+    syntax-function-option: var(--color-syntax-function-option),
+    syntax-function-separator: var(--color-syntax-function-separator),
+    syntax-bracket: var(--color-syntax-bracket),
+    syntax-variable: var(--color-syntax-variable),
+    syntax-tab: var(--color-syntax-tab),
+
+    main-background: var(--color-main-background),
+    main-decoration: var(--color-main-decoration),
+    main-text: var(--color-main-text),
+    main-border: var(--color-main-border),
+    main-shadow: var(--color-main-shadow),
+    main-icons: var(--color-main-icons),
+
+    second-background: var(--color-second-background),
+    second-decoration: var(--color-second-decoration),
+    second-text: var(--color-second-text),
+    second-border: var(--color-second-border),
+    second-shadow: var(--color-second-shadow),
+    second-icons: var(--color-second-icons),
 );
 
-@mixin color($colorName) {
-    background-color: map-get($palette, $colorName);
+$grouped-palette: (
+    main: (
+        background: var(--color-main-background),
+        decoration: var(--color-main-decoration),
+        text: var(--color-main-text),
+        border: var(--color-main-border),
+        shadow: var(--color-main-shadow),
+        icons: var(--color-main-icons),
+    ),
+    second: (
+        background: var(--color-second-background),
+        decoration: var(--color-second-decoration),
+        text: var(--color-second-text),
+        border: var(--color-second-border),
+        shadow: var(--color-second-shadow),
+        icons: var(--color-second-icons),
+    ),
+    input: (
+        background: var(--color-input-background),
+        decoration: var(--color-main-decoration),
+        text: var(--color-input-text),
+        border: var(--color-input-border),
+        shadow: var(--color-input-border),
+        icons: var(--color-input-icons),
+    ),
+    document: (
+        background: var(--color-document-background),
+        decoration: var(--color-main-decoration),
+        text: var(--color-document-text),
+        border: var(--color-document-border),
+        shadow: var(--color-document-border),
+        icons: var(--color-main-icons),
+    ),
+    interactive: (
+        background: var(--color-interactive-background),
+        decoration: var(--color-main-decoration),
+        text: var(--color-interactive-text),
+        border: var(--color-interactive-border),
+        shadow: var(--color-interactive-border),
+        icons: var(--color-interactive-icons),
+    )
+);
+
+@function color($colorName) {
+    @return map-get($palette, $colorName);
 }
 
-@mixin colorText() {
-    color: map-get($palette, text);
+@function colorInGroup($group, $colorName) {
+    @return map-get(map-get($grouped-palette, $group), $colorName);
 }
 
-@mixin colorShadow() {
-    box-shadow: map-get($palette, shadow) 0 0 5px 1px;
+@mixin colorDefaultBackground {
+    background-color: color(background);
 }
 
-@mixin colorInShadow() {
-    box-shadow: inset map-get($palette, shadow) 0 0 5px 1px;
+@mixin colorBackground($group) {
+    background-color: colorInGroup($group, background);
+    color: colorInGroup($group, text);
 }
 
-@mixin colorBorder() {
-    border: 2px solid map-get($palette, border);
+@mixin colorDecoration($group) {
+    background-color: colorInGroup($group, decoration);
+    color: colorInGroup($group, text);
 }
 
-@mixin colorInteract($colorName) {
-    background-color: map-get($palette, $colorName);
+@mixin colorText($group) {
+    color: colorInGroup($group, text);
+}
+
+@mixin colorIcons($group) {
+    color: colorInGroup($group, icons);
+}
+
+@mixin colorShadow($group) {
+    box-shadow: colorInGroup($group, shadow) 0 0 5px 1px;
+}
+
+@mixin colorBorder($group) {
+    border-color: colorInGroup($group, border);
+}
+
+@mixin colorOutline($group, $width) {
+    outline: $width solid colorInGroup($group, border);
+}
+
+@mixin colorIcon($group) {
+    & > svg {
+        color: colorInGroup($group, icons);
+    }
+}
+
+@mixin colorInteractiveControl {
     cursor: pointer;
     &:hover {
         filter: brightness(105%);
@@ -47,4 +155,23 @@ $palette: (
         opacity: 0.6;
         pointer-events: none;
     }
+}
+
+@mixin colorInteractive {
+    @include colorBackground(interactive);
+    @include colorText(interactive);
+    @include colorBorder(interactive);
+    @include colorIcon(interactive);
+    @include colorInteractiveControl;
+}
+
+@mixin colorWithShadow($group) {
+    @include colorBackground($group);
+    @include colorText($group);
+    @include colorShadow($group);
+}
+
+@mixin colorInteractiveWithShadow {
+    @include colorInteractive;
+    box-shadow: color(interactive-border) 0 0 5px 1px;
 }

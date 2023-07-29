@@ -28,8 +28,7 @@ $rowSize: 30px;
 }
 
 .header {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     @include centerGrid();
     overflow: visible;
     gap: 10px;
@@ -54,11 +53,10 @@ $rowSize: 30px;
 }
 
 .body {
-    @include color(third);
-    @include colorShadow();
+    @include colorWithShadow(second);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: $menuItemHeaderHeight;
+    grid-template-rows: repeat(auto-fill, $menuItemHeaderHeight);
     padding: 5px;
 }
 
@@ -82,14 +80,26 @@ $rowSize: 30px;
 }
 
 .row {
-    @include color(forth);
-    display: grid;
-    grid-template-columns: 200px 1fr;
+    @include colorDecoration(second);
+    display: flex;
     height: $rowSize;
     align-items: center;
-    text-indent: 1ch;
+    
+    & > label {
+        @include fontNoLineBreak;
+        text-indent: 1ch;
+        flex: 1;
+    }
+
+    & > :not(label) {
+        max-width: $controlWidth;
+    }
 }
 
 .dropdownItem {
-    height: $rowSize;
+    height: $rowSize !important;
+}
+
+.checkbox {
+    margin-left: auto;
 }

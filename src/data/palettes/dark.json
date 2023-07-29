@@ -1,18 +1,56 @@
 {
     "name": "Dark",
     "colors": {
-        "document": "#474747",
         "background": "#121212",
         "accents": "#ff7171",
-        "main": "#222222",
-        "second": "#333333",
-        "third": "#444444",
-        "forth": "#555555",
-        "text": "#eaeaea",
-        "shadow": "#bbbbbb",
-        "border": "#ffffff",
+
+        "good": "#01ae01",
+        "bad": "#ff0000",
+        "neutral": "#f8a525",
+        "warning": "#f8a525",
         "error": "#ff0000",
-        "icons": "#ffffff",
-        "interactive": "#ff7171"
+
+        "folder": "#ffffff",
+        "abi": "#ffffff",
+        "doc": "#ffffff",
+        "cha": "#ffffff",
+        "cre": "#ffffff",
+        "enc": "#ffffff",
+        "spe": "#ffffff",
+
+        "syntax-function-name": "#00f4ff",
+        "syntax-function-option": "#b5b5b5",
+        "syntax-function-separator": "#ffffff",
+        "syntax-bracket": "#ffffff",
+        "syntax-variable": "#87ff8b",
+        "syntax-tab": "#b5b5b5",
+
+        "document-background": "#474747",
+        "document-text": "#eaeaea",
+        "document-border": "#ffffff",
+
+        "input-background": "#474747",
+        "input-text": "#eaeaea",
+        "input-border": "#ffffff",
+        "input-icons": "#ffffff",
+
+        "interactive-background": "#ffffff",
+        "interactive-text": "#474747",
+        "interactive-border": "#ffffff",
+        "interactive-icons": "#474747",
+
+        "main-background": "#222222",
+        "main-decoration": "#333333",
+        "main-text": "#eaeaea",
+        "main-border": "#bbbbbb",
+        "main-shadow": "#ffffff",
+        "main-icons": "#ffffff",
+
+        "second-background": "#444444",
+        "second-decoration": "#555555",
+        "second-text": "#eaeaea",
+        "second-border": "#ffffff",
+        "second-shadow": "#bbbbbb",
+        "second-icons": "#ffffff"
     }
 }

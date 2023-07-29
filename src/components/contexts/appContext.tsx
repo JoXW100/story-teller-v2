@@ -2,8 +2,7 @@ import React, { useEffect, useReducer } from 'react'
 import Localization from 'utils/localization'
 import Storage from 'utils/storage'
 import Palettes from 'data/palettes'
-import { DispatchAction } from 'types/context'
-import { AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
+import { AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
@@ -19,7 +18,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     }
 
     /** Determines the correct action and executes it */
-    const reducer = (state: AppContextState, action: DispatchAction<any>): AppContextState => {
+    const reducer = (state: AppContextState, action: AppContextDispatchAction): AppContextState => {
         switch (action.type) {
             case 'init':
                 Localization.initialize();
@@ -28,7 +27,10 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
                         ...state, 
                         loading: false, 
                         palette: Storage.get("palette") ?? "cobalt",
-                        viewMode: Storage.get("viewMode") ?? ViewMode.SplitView 
+                        viewMode: Storage.get("viewMode") ?? ViewMode.SplitView,
+                        enableSyntaxHighlighting: Storage.get("enableSyntaxHighlighting") ?? true,
+                        enableRowNumbers: Storage.get("enableRowNumbers") ?? true,
+                        enableColorFileByType: Storage.get("enableColorFileByType") ?? true
                     } : state
             case 'setPalette':
                 Storage.set("palette", action.data)
@@ -36,6 +38,15 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
             case 'setViewMode':
                 Storage.set("viewMode", action.data)
                 return { ...state, viewMode: action.data }
+            case 'setEnableSyntaxHighlighting':
+                Storage.set("enableSyntaxHighlighting", action.data)
+                return { ...state, enableSyntaxHighlighting: action.data }
+            case 'setEnableRowNumbers':
+                Storage.set("enableRowNumbers", action.data)
+                return { ...state, enableRowNumbers: action.data }
+            case 'setEnableColorFileByType':
+                Storage.set("enableColorFileByType", action.data)
+                return { ...state, enableColorFileByType: action.data }
             default:
                 return state
         }
@@ -44,7 +55,10 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     const [state, dispatch] = useReducer(reducer, {
         loading: true,
         palette: "cobalt",
-        viewMode: ViewMode.SplitView
+        viewMode: ViewMode.SplitView,
+        enableSyntaxHighlighting: true,
+        enableRowNumbers: true,
+        enableColorFileByType: true
     })
 
     useEffect(() => { state.loading && dispatch({ type: 'init', data: null }) }, [])
@@ -53,7 +67,10 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     return (
         <Context.Provider value={[ state, {
             setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }),
-            setViewMode: (mode: ViewMode) => dispatch({ type: 'setViewMode', data: mode })
+            setViewMode: (mode: ViewMode) => dispatch({ type: 'setViewMode', data: mode }),
+            setEnableSyntaxHighlighting: (isEnabled: boolean) => dispatch({ type: 'setEnableSyntaxHighlighting', data: isEnabled }),
+            setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
+            setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }) 
         }]}>
             { !state.loading && children }
         </Context.Provider>

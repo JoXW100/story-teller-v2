@@ -1,35 +1,31 @@
 @import 'colors.scss';
+@import 'fonts.scss';
+@import 'constants.scss';
+@import 'prefabs.scss';
 
-@mixin fontExtension() {
-    @include colorText();
+@mixin fontExtension {
     font-weight: bold;
     font-size: small;
     text-align: center;
 }
 
-@mixin borderExtension(){
-    @include colorShadow();
-}
-
-@mixin roundedExtension() {
-    @include color(forth);
-    @include colorShadow();
+@mixin roundedExtension {
+    @include colorDecoration(second);
+    @include colorShadow(second);
     border-radius: 10px;
     padding: 0 5px;
 }
 
 .center {
+    @include centerFlex;
     flex: 1;
     height: 100%;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .save {
-    @include fontExtension();
-    @include roundedExtension();
+    @include fontExtension;
+    @include roundedExtension;
     
     display: inline-flex;
     user-select: none;
@@ -40,7 +36,7 @@
 }
 
 .link {
-    color: map-get($palette, accents);
+    color: color(accents);
     text-decoration: none;
     cursor: pointer;
     
@@ -74,12 +70,12 @@
 }
 
 .line {
-    border-bottom: 2px solid map-get($palette, border);
+    border-bottom: 2px solid colorInGroup(document, border);
     margin: 5px 0;
 }
 
 .line-vertical {
-    border-right: 2px solid map-get($palette, border);
+    border-right: 2px solid colorInGroup(document, border);
     border-bottom: none !important;
     margin: 0 5px;
 }
@@ -143,15 +139,15 @@
 }
 
 .box {
-    @include color(third);
+    @include colorBackground(second);
     padding: 5px;
 
     &[data=true] {
-        @include colorBorder();
+        border: 2px solid;
     }
     
     &[data=false] {
-        @include borderExtension();
+        @include colorShadow(second);
     }
 }
 
@@ -171,14 +167,14 @@
     height: fit-content;
 
     &[border=true] {
-        @include colorBorder();
+        @include colorBorder(second);
+        border: 2px solid;
     }
 
     & > img { width: 100%; }
 }
 
 .header {
-    @include colorText();
     font-weight: bold;
     margin-top: 1px;
     margin-bottom: 1px;
@@ -209,16 +205,12 @@
 }
 
 .error {
-    @include color(error);
-    @include colorBorder();
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include centerFlex;
+    @include fontLargeBold;
+    color: color(error);
     width: 100%;
     flex: 1;
     height: 50px;
-    font-size: large;
-    font-weight: bold;
 }
 
 .icon {
@@ -228,7 +220,7 @@
 
     & > svg {
         color: inherit;
-        fill: map-get($palette, forth);
+        fill: colorInGroup(second, decoration);
         padding: 1px;
         aspect-ratio: 1;
         height: 0.9em;
@@ -251,13 +243,13 @@
     width: 100%;
 
     &[data=true] {
-        @include color(border);
+        background: colorInGroup(document, border);
         th, td {
-            @include color(document);
+            @include colorBackground(document);
         }
     }
     
     &[data=false] {
-        @include borderExtension();
+        @include colorShadow(second);
     }
 }

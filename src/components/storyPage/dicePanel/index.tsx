@@ -4,14 +4,9 @@ import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import Localization from 'utils/localization';
 import styles from 'styles/pages/storyPage/dicePanel.module.scss';
+import DiceItem from './diceItem';
 
 type DicePanelProps = React.PropsWithRef<{ open: boolean }>
-
-type DiceItemProps = React.PropsWithRef<{
-    dice: Dice
-    num: number
-    onClick: (dice: Dice) => void
-}>
 
 const DiceOptions = [
     new Dice(100), 
@@ -41,12 +36,12 @@ const DicePanel = ({ open }: DicePanelProps): JSX.Element => {
         <div className={styles.holder} data={String(open)}>
             { state.collection.some((x) => x.num > 0) &&  (
                 <div className={styles.rollBackground}> 
-                    <div 
+                    <button 
                         className={styles.roll}
                         onClick={handleRoll}
                         tooltips={Localization.toText("storyPage-dicePanel-rollTooltips")}>
                         { Localization.toText("storyPage-dicePanel-roll") }
-                    </div> 
+                    </button> 
                 </div>
             )}
             <div className={styles.main}>
@@ -58,19 +53,6 @@ const DicePanel = ({ open }: DicePanelProps): JSX.Element => {
                         onClick={handleClick}/>
                 ))}
             </div>
-        </div>
-    )
-}
-
-const DiceItem = ({ dice, num, onClick }: DiceItemProps): JSX.Element => {
-    const Icon = dice.icon;
-    return (
-        <div
-            className={styles.dice} 
-            onClick={() => onClick(dice)}
-            tooltips={dice.text}>
-            <Icon/>
-            {num > 0 && <div className={styles.number}>{num}</div>}
         </div>
     )
 }

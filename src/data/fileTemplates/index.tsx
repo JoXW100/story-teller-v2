@@ -5,7 +5,7 @@ import CharacterTemplate from './cha.json';
 import EncounterTemplate from './enc.json';
 import SpellTemplate from './spe.json';
 import StoryTemplate from './sto.json';
-import { FileType } from "types/database/files";
+import { FileType, RenderedFileTypes, UsedFileTypes } from "types/database/files";
 import { FileTemplate } from 'types/templates';
 
 export {
@@ -25,7 +25,7 @@ const Templates = {
     [FileType.Document]: DocumentTemplate as FileTemplate,
     [FileType.Encounter]: EncounterTemplate as FileTemplate,
     [FileType.Spell]: SpellTemplate as FileTemplate,
-} satisfies Partial<Record<FileType, FileTemplate>>
+} satisfies Record<RenderedFileTypes, FileTemplate>
 
 export const CreateFileOptions = { 
     [FileType.Ability]: "Ability",
@@ -34,6 +34,6 @@ export const CreateFileOptions = {
     [FileType.Document]: 'Document',
     [FileType.Encounter]: "Encounter",
     [FileType.Spell]: "Spell"
-} satisfies Partial<Record<FileType, string>>
+} satisfies Record<RenderedFileTypes, string>
 
 export default Templates;

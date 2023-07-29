@@ -3,8 +3,7 @@
 @import 'styles/prefabs.scss';
 
 .header {
-    @include color(main);
-    @include colorShadow();
+    @include colorWithShadow(main);
     z-index: 1000;
     display: flex;
     gap: 1px;
@@ -15,7 +14,6 @@
 .container {
     display: grid;
     grid-template-rows: $pageHeaderHeight 1fr;
-    grid-template-columns: minmax(max-content, 1fr);
     row-gap: 5px;
     position: relative;
     overflow: hidden;
