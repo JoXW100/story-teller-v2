@@ -10,7 +10,7 @@ type TextEditorProps = React.PropsWithRef<{
 
 const TextEditor = ({ className, text, onChange, handleContext }: TextEditorProps): JSX.Element => {
     const name = className ? `${className} ${styles.holder}` : styles.holder
-    const [handleChange, handleKey, handleScroll] = useTextHandling(onChange)
+    const [handleChange, handleKey] = useTextHandling(onChange)
 
     return (
         <div className={name}>
@@ -19,7 +19,6 @@ const TextEditor = ({ className, text, onChange, handleContext }: TextEditorProp
                 value={text}
                 onChange={handleChange}
                 onContextMenu={handleContext}
-                onScroll={handleScroll}
                 onKeyDown={handleKey}
                 placeholder="Enter text here"
                 spellCheck/>

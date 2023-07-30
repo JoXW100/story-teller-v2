@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type NumberInputProps = React.PropsWithRef<{
     value: number
@@ -9,7 +9,7 @@ type NumberInputProps = React.PropsWithRef<{
 }>
 
 const NumberInput = ({ value, setValue, className, decimal, disabled }: NumberInputProps): JSX.Element => {
-    const [inputText, setText] = useState(!isNaN(value) ? value.toString() : "");
+    const [inputText, setText] = useState("");
     const error = isNaN(parseFloat(inputText))
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         try {
@@ -36,6 +36,10 @@ const NumberInput = ({ value, setValue, className, decimal, disabled }: NumberIn
             setText(e.target.value);
         }
     }
+
+    useEffect(() => {
+        setText(!isNaN(value) ? value.toString() : "")
+    }, [value])
 
     return (
         <input 

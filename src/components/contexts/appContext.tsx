@@ -31,7 +31,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
                         enableSyntaxHighlighting: Storage.get("enableSyntaxHighlighting") ?? true,
                         enableRowNumbers: Storage.get("enableRowNumbers") ?? true,
                         enableColorFileByType: Storage.get("enableColorFileByType") ?? true,
-                        enableAutomaticLineBreak: Storage.get("enableAutomaticLineBreak") ?? false
+                        automaticLineBreak: Storage.get("automaticLineBreak") ?? 0
                     } : state
             case 'setPalette':
                 Storage.set("palette", action.data)
@@ -48,9 +48,9 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
             case 'setEnableColorFileByType':
                 Storage.set("enableColorFileByType", action.data)
                 return { ...state, enableColorFileByType: action.data }
-            case 'setEnableAutomaticLineBreak':
-                Storage.set("enableColorFileByType", action.data)
-                return { ...state, enableAutomaticLineBreak: action.data }
+            case 'setAutomaticLineBreak':
+                Storage.set("automaticLineBreak", action.data)
+                return { ...state, automaticLineBreak: action.data }
             default:
                 return state
         }
@@ -63,7 +63,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         enableSyntaxHighlighting: true,
         enableRowNumbers: true,
         enableColorFileByType: true,
-        enableAutomaticLineBreak: false
+        automaticLineBreak: 0
     })
 
     useEffect(() => { state.loading && dispatch({ type: 'init', data: null }) }, [])
@@ -76,7 +76,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
             setEnableSyntaxHighlighting: (isEnabled: boolean) => dispatch({ type: 'setEnableSyntaxHighlighting', data: isEnabled }),
             setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
             setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }),
-            setEnableAutomaticLineBreak: (isEnabled: boolean) => dispatch({ type: 'setEnableAutomaticLineBreak', data: isEnabled }),
+            setAutomaticLineBreak: (count: number) => dispatch({ type: 'setAutomaticLineBreak', data: count }),
         }]}>
             { !state.loading && children }
         </Context.Provider>

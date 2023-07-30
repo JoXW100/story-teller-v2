@@ -35,14 +35,13 @@ Prism.languages["custom"] = {
 
 const TextEditorWithSyntaxHighlighting = ({ className, text, onChange, handleContext }: TextEditorProps): JSX.Element => {
     const [context] = useContext(Context)
-    const [handleChange, handleKey, handleScrollDefault] = useTextHandling(onChange)
+    const [handleChange, handleKey] = useTextHandling(onChange)
     const ref = useRef<HTMLTextAreaElement>()
     const highlightRef = useRef<HTMLPreElement>()
     const name = className ? `${className} ${styles.holder}` : styles.holder
 
     const handleScroll: React.FormEventHandler<HTMLTextAreaElement> = (e) => {
         var target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
-        handleScrollDefault(e);
         highlightRef.current.scrollTop = target.scrollTop;
         highlightRef.current.scrollLeft = target.scrollLeft;
     }

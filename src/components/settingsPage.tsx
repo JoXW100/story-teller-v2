@@ -9,6 +9,7 @@ import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/settingsPage.module.scss';
+import NumberInput from './common/numericInput';
 
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string
@@ -79,10 +80,14 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                 </div>
                 <div className={styles.row}>
                     <label>{Localization.toText("settingsPage-automaticLineBreak")}</label> 
+                    <NumberInput
+                        className={styles.numberInput}
+                        value={context.automaticLineBreak}
+                        setValue={(value) => dispatch.setAutomaticLineBreak(value)}/>
                     <Checkbox
                         className={styles.checkbox}
-                        value={context.enableAutomaticLineBreak}
-                        onChange={(value) => dispatch.setEnableAutomaticLineBreak(value)}/>
+                        value={context.automaticLineBreak > 0}
+                        onChange={(value) => dispatch.setAutomaticLineBreak(value ? 80 : 0)}/>
                 </div>
             </div>
         </div>

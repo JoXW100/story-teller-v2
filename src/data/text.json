@@ -77,7 +77,7 @@
             "settingsPage-syntaxHighlighting": "Syntax highlighting: ",
             "settingsPage-rowNumbers": "Show row numbers: ",
             "settingsPage-colorFileByType": "Color files by type:",
-            "settingsPage-automaticLineBreak": "Line break text when out of view:",
+            "settingsPage-automaticLineBreak": "Line break at character count:",
             "helpMenu-close": "Close help menu",
             "helpMenu-title": "Help Menu",
             "helpMenu-prompt": "Search: ",

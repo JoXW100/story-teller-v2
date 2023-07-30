@@ -103,3 +103,10 @@ $rowSize: 30px;
 .checkbox {
     margin-left: auto;
 }
+
+.numberInput {
+    height: 100%;
+    margin-right: 2px;
+    text-indent: 5px;
+    width: $controlWidth - $rowSize - 5px;
+}
