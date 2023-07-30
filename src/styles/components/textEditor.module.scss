@@ -45,6 +45,18 @@ $indent: calc(6ch - 15px);
 #highlighting {
     @include colorBackground(document);
     z-index: 0;
+
+    &::-webkit-scrollbar-corner {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-track {
+        @include colorDecoration(second);
+    }
+
+    &::-webkit-scrollbar-thumb  {
+        display: none;
+    }
 }
 
 #highlightingContent {
