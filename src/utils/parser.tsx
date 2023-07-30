@@ -32,6 +32,7 @@ class Parser
         // replace variables in text with its respective content
         var withVars = text.replace(this.matchVarsExpr, (...x) => {
             if (variables[x[1]]) return variables[x[1]]
+            else if (metadata[x[1]] && typeof(metadata[x[1]]) != typeof({})) return metadata[x[1]]
             else throw new ParseError(`Unset variable '${x[1]}'`)
         });
         var splits = withVars.split(this.matchBodyExpr);
