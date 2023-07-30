@@ -77,6 +77,13 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         value={context.enableColorFileByType}
                         onChange={(value) => dispatch.setEnableColorFileByType(value)}/>
                 </div>
+                <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-automaticLineBreak")}</label> 
+                    <Checkbox
+                        className={styles.checkbox}
+                        value={context.enableAutomaticLineBreak}
+                        onChange={(value) => dispatch.setEnableAutomaticLineBreak(value)}/>
+                </div>
             </div>
         </div>
     )

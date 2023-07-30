@@ -1,4 +1,4 @@
-import { useValidation } from 'utils/handlers/handleUser'
+import { useValidation } from 'utils/handlers/validation'
 import SettingsPage from 'components/settingsPage';
 
 type PageProps = {

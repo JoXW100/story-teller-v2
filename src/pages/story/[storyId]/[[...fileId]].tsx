@@ -1,6 +1,6 @@
 import StoryPage from 'components/storyPage'
 import StoryContext from 'components/contexts/storyContext'
-import { useValidation } from 'utils/handlers/handleUser'
+import { useValidation } from 'utils/handlers/validation'
 
 type LoginPageProps = {
     storyId: string,

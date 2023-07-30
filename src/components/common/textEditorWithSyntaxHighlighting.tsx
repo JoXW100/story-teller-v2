@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useRef } from 'react';
+import useTextHandling from 'utils/handlers/textHandler';
 import Prism from "prismjs"
-import styles from 'styles/components/textEditor.module.scss';
 import Parser from 'utils/parser';
 import { Context } from 'components/contexts/appContext';
-import TextEditor from './textEditor';
+import styles from 'styles/components/textEditor.module.scss';
 
 type TextEditorProps = React.PropsWithRef<{
-    text: string
     className?: string
-    handleInput: (value: string) => void
-    handleContext?: (e: React.MouseEvent<HTMLTextAreaElement, MouseEvent>) => void
+    text: string
+    onChange: (value: string) => void
+    handleContext?: React.MouseEventHandler<HTMLTextAreaElement>
 }>
 
 Prism.languages["custom"] = {
@@ -33,27 +33,18 @@ Prism.languages["custom"] = {
     'text': /.+/ 
 }
 
-const TextEditorWithSyntaxHighlighting = ({ className, text, handleInput, handleContext }: TextEditorProps): JSX.Element => {
+const TextEditorWithSyntaxHighlighting = ({ className, text, onChange, handleContext }: TextEditorProps): JSX.Element => {
     const [context] = useContext(Context)
+    const [handleChange, handleKey, handleScrollDefault] = useTextHandling(onChange)
     const ref = useRef<HTMLTextAreaElement>()
-    const editRef = useRef<HTMLTextAreaElement>()
     const highlightRef = useRef<HTMLPreElement>()
     const name = className ? `${className} ${styles.holder}` : styles.holder
 
-    const handleKey = (e : React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.code === 'Tab') {
-            e.preventDefault();
-            var target: HTMLTextAreaElement = e.target as unknown as HTMLTextAreaElement
-            var start = target.selectionStart;
-            target.value = `${target.value.substring(0, start)}\t${target.value.substring(start)}`;
-            target.selectionStart = target.selectionEnd = start + 1;
-            handleInput(target.value);
-        }
-    }
-
-    const handleScroll = () => {
-        highlightRef.current.scrollTop = editRef.current.scrollTop;
-        highlightRef.current.scrollLeft = editRef.current.scrollLeft;
+    const handleScroll: React.FormEventHandler<HTMLTextAreaElement> = (e) => {
+        var target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
+        handleScrollDefault(e);
+        highlightRef.current.scrollTop = target.scrollTop;
+        highlightRef.current.scrollLeft = target.scrollLeft;
     }
 
     useEffect(() => {
@@ -65,40 +56,27 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, handleInput, handle
         }
     }, [ref.current, text])
 
-    if (context.enableSyntaxHighlighting) {
-        return (
-            <div className={name}>
-                <textarea 
-                    ref={editRef}
-                    id={styles.editing}
-                    value={text}
-                    onChange={(e) => handleInput(e.target.value)}
-                    onContextMenu={handleContext}
-                    onKeyDown={handleKey}
-                    onInput={handleScroll}
-                    onScroll={handleScroll}
-                    placeholder="Enter text here"
+    return (
+        <div className={name}>
+            <textarea 
+                id={styles.editing}
+                value={text}
+                onChange={handleChange}
+                onContextMenu={handleContext}
+                onKeyDown={handleKey}
+                onInput={handleScroll}
+                onScroll={handleScroll}
+                placeholder="Enter text here"
+                data={context.enableRowNumbers ? 'show' : undefined}/>
+            <pre ref={highlightRef} id={styles.highlighting} aria-hidden="true">
+                <code 
+                    ref={ref} 
+                    id={styles.highlightingContent}
+                    className="language-custom"
                     data={context.enableRowNumbers ? 'show' : undefined}/>
-                <pre ref={highlightRef} id={styles.highlighting} aria-hidden="true">
-                    <code 
-                        ref={ref} 
-                        id={styles.highlightingContent}
-                        className="language-custom"
-                        data={context.enableRowNumbers ? 'show' : undefined}/>
-                </pre>
-            </div>
-        )
-    }
-    else {
-        return (
-            <TextEditor 
-                className={className} 
-                text={text} 
-                handleInput={handleInput}
-                handleContext={handleContext}/>
-        )
-    }
-    
+            </pre>
+        </div>
+    )
 }
 
 export default TextEditorWithSyntaxHighlighting;

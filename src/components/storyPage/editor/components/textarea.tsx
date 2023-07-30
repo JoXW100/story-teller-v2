@@ -20,7 +20,7 @@ const TextareaComponent = ({ params }: TemplateComponentProps<TextAreaTemplatePa
             className={styles.editTextArea}
             data={params.fill ? 'fill' : undefined}>
             <b> {`${params.label ?? "label"}:`} </b>
-            <TextEditor text={value} handleInput={handleInput}/>
+            <TextEditor text={value} onChange={handleInput}/>
         </div>
     )
 }

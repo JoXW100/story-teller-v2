@@ -1,7 +1,7 @@
 import ViewPage from 'components/viewPage'
 import FileContext from 'components/contexts/fileContext'
 import StoryContext from 'components/contexts/storyContext'
-import { useValidation } from 'utils/handlers/handleUser'
+import { useValidation } from 'utils/handlers/validation'
 
 type LoginPageProps = {
     fileId: [string]

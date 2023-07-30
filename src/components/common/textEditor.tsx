@@ -1,34 +1,25 @@
-import React from 'react';
+import useTextHandling from 'utils/handlers/textHandler';
 import styles from 'styles/components/textEditor.module.scss';
 
 type TextEditorProps = React.PropsWithRef<{
-    text: string
     className?: string
-    handleInput: (value: string) => void
-    handleContext?: (e: React.MouseEvent<HTMLTextAreaElement, MouseEvent>) => void
+    text: string
+    onChange: (value: string) => void
+    handleContext?: React.MouseEventHandler<HTMLTextAreaElement>
 }>
 
-const TextEditor = ({ className, text, handleInput, handleContext }: TextEditorProps): JSX.Element => {
+const TextEditor = ({ className, text, onChange, handleContext }: TextEditorProps): JSX.Element => {
     const name = className ? `${className} ${styles.holder}` : styles.holder
-
-    const handleKey = (e : React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.code === 'Tab') {
-            e.preventDefault();
-            var target: HTMLTextAreaElement = e.target as unknown as HTMLTextAreaElement
-            var start = target.selectionStart;
-            target.value = `${target.value.substring(0, start)}\t${target.value.substring(start)}`;
-            target.selectionStart = target.selectionEnd = start + 1;
-            handleInput(target.value);
-        }
-    }
+    const [handleChange, handleKey, handleScroll] = useTextHandling(onChange)
 
     return (
         <div className={name}>
             <textarea
                 className={styles.area}
                 value={text}
-                onChange={(e) => handleInput(e.target.value)}
+                onChange={handleChange}
                 onContextMenu={handleContext}
+                onScroll={handleScroll}
                 onKeyDown={handleKey}
                 placeholder="Enter text here"
                 spellCheck/>

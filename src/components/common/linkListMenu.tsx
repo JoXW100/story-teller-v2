@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import { useFiles } from "utils/handlers/files";
 import { FileType } from "types/database/files";

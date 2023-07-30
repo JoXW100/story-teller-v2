@@ -18,13 +18,16 @@ import IconIcon from '@mui/icons-material/InsertEmoticonSharp';
 import ImageIcon from '@mui/icons-material/InsertPhotoSharp';
 import TextIcon from '@mui/icons-material/TextFieldsSharp';
 import { Context } from 'components/contexts/fileContext';
+import { Context as AppContext } from 'components/contexts/appContext';
 import { openContext } from 'components/common/contextMenu';
 import TextEditorWithSyntaxHighlighting from 'components/common/textEditorWithSyntaxHighlighting';
-import Localization from 'utils/localization';
 import { TemplateComponentProps } from '.';
+import Localization from 'utils/localization';
 import { FileTemplateParams } from 'types/templates';
+import TextEditor from 'components/common/textEditor';
 
 const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
+    const [app] = useContext(AppContext)
     const [context, dispatch] = useContext(Context)
 
     const handleInput = (value: string) => {
@@ -178,10 +181,14 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
         ], { x: e.pageX, y: e.pageY }, true)
     }
 
+    const Editor = app.enableSyntaxHighlighting 
+        ? TextEditorWithSyntaxHighlighting
+        : TextEditor
+
     return (
-        <TextEditorWithSyntaxHighlighting
+        <Editor
             text={context.file?.content.text} 
-            handleInput={handleInput}
+            onChange={handleInput}
             handleContext={handleContext}/>
     )
 }
