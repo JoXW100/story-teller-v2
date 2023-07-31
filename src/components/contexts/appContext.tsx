@@ -6,6 +6,8 @@ import { AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
+const DefaultPalette: string = Object.keys(Palettes)[0];
+
 const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     /** Sets the global palette color variables */
     const setPalette = (palette: string) => {
@@ -21,35 +23,36 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     const reducer = (state: AppContextState, action: AppContextDispatchAction): AppContextState => {
         switch (action.type) {
             case 'init':
+                var palette = Storage.getString("palette");
                 Localization.initialize();
                 return state.loading 
                     ? { 
                         ...state, 
                         loading: false, 
-                        palette: Storage.get("palette") ?? "cobalt",
-                        viewMode: Storage.get("viewMode") ?? ViewMode.SplitView,
-                        enableSyntaxHighlighting: Storage.get("enableSyntaxHighlighting") ?? true,
-                        enableRowNumbers: Storage.get("enableRowNumbers") ?? true,
-                        enableColorFileByType: Storage.get("enableColorFileByType") ?? true,
-                        automaticLineBreak: Storage.get("automaticLineBreak") ?? 0
-                    } : state
+                        palette: Object.keys(Palettes).includes(palette) ? palette : DefaultPalette,
+                        viewMode: Storage.getString("viewMode") as ViewMode ?? ViewMode.SplitView,
+                        enableSyntaxHighlighting: Storage.getBoolean("enableSyntaxHighlighting") ?? true,
+                        enableRowNumbers: Storage.getBoolean("enableRowNumbers") ?? true,
+                        enableColorFileByType: Storage.getBoolean("enableColorFileByType") ?? true,
+                        automaticLineBreak: Storage.getInt("automaticLineBreak") ?? 0
+                    } satisfies AppContextState : state
             case 'setPalette':
-                Storage.set("palette", action.data)
+                Storage.setString("palette", action.data)
                 return { ...state, palette: action.data }
             case 'setViewMode':
-                Storage.set("viewMode", action.data)
+                Storage.setString("viewMode", action.data)
                 return { ...state, viewMode: action.data }
             case 'setEnableSyntaxHighlighting':
-                Storage.set("enableSyntaxHighlighting", action.data)
+                Storage.setBoolean("enableSyntaxHighlighting", action.data)
                 return { ...state, enableSyntaxHighlighting: action.data }
             case 'setEnableRowNumbers':
-                Storage.set("enableRowNumbers", action.data)
+                Storage.setBoolean("enableRowNumbers", action.data)
                 return { ...state, enableRowNumbers: action.data }
             case 'setEnableColorFileByType':
-                Storage.set("enableColorFileByType", action.data)
+                Storage.setBoolean("enableColorFileByType", action.data)
                 return { ...state, enableColorFileByType: action.data }
             case 'setAutomaticLineBreak':
-                Storage.set("automaticLineBreak", action.data)
+                Storage.setInt("automaticLineBreak", action.data)
                 return { ...state, automaticLineBreak: action.data }
             default:
                 return state

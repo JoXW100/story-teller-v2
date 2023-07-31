@@ -8,7 +8,7 @@ type NumberInputProps = React.PropsWithRef<{
     disabled?: boolean
 }>
 
-const NumberInput = ({ value, setValue, className, decimal, disabled }: NumberInputProps): JSX.Element => {
+const NumberInput = ({ value, setValue, className, decimal = false, disabled = false }: NumberInputProps): JSX.Element => {
     const [inputText, setText] = useState("");
     const error = isNaN(parseFloat(inputText))
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
