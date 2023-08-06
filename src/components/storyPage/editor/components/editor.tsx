@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useMemo } from 'react'
 import EditIcon from '@mui/icons-material/EditSharp';
 import AlignIcon from '@mui/icons-material/AlignHorizontalLeftSharp';
 import BoxIcon from '@mui/icons-material/CheckBoxOutlineBlankSharp';
@@ -21,10 +21,10 @@ import { Context } from 'components/contexts/fileContext';
 import { Context as AppContext } from 'components/contexts/appContext';
 import { openContext } from 'components/common/contextMenu';
 import TextEditorWithSyntaxHighlighting from 'components/common/textEditorWithSyntaxHighlighting';
+import TextEditor from 'components/common/textEditor';
 import { TemplateComponentProps } from '.';
 import Localization from 'utils/localization';
 import { FileTemplateParams } from 'types/templates';
-import TextEditor from 'components/common/textEditor';
 
 const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
     const [app] = useContext(AppContext)
@@ -189,6 +189,7 @@ const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.El
         <Editor
             text={context.file?.content.text} 
             onChange={handleInput}
+            variables={Object.keys(context.file?.metadata?.$vars ?? {})}
             handleContext={handleContext}/>
     )
 }

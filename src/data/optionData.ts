@@ -81,7 +81,8 @@ export const OptionTypes = {
             [DiceType.D8]: "D8",
             [DiceType.D10]: "D10",
             [DiceType.D12]: "D12",
-            [DiceType.D20]: "D20"
+            [DiceType.D20]: "D20",
+            [DiceType.D100]: "D100"
         }
     } satisfies OptionType<DiceType>,
     "movement": {

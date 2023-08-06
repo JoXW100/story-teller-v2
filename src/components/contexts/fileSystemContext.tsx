@@ -3,9 +3,10 @@ import { useRouter } from 'next/router';
 import { openPopup } from 'components/common/popupHolder'
 import CreateFilePopup from 'components/storyPage/fileSystem/createFilePopup';
 import ConfirmationPopup from 'components/common/confirmationPopup';
+import { Context as StoryContext } from "./storyContext";
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
-import { Context as StoryContext } from "./storyContext";
+import Logger from 'utils/logger';
 import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
 import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
@@ -15,17 +16,16 @@ import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
 
 const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Element => {
+    const router = useRouter();
     const [context] = useContext(StoryContext);
     const [state, setState] = useState<FileSystemContextState>({
         loading: false,
         fetching: true,
         searchFilter: "",
-        fileFilter: Object.values(FileType)
-            .reduce((prev, key) => ({ ...prev, [key]: true }), { showEmptyFolders: true } as FileFilter),
+        fileFilter: Object.values(FileType).reduce((prev, key) => ({ ...prev, [key]: true }), { showEmptyFolders: true } as FileFilter),
         showFilterMenu: false,
         files: []
     })
-    const router = useRouter();
 
     const openCreateFileMenu = (type: InputType, holder: ObjectId = context.story.root) => {
         openPopup(
@@ -140,6 +140,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     }
 
     useEffect(() => {
+        Logger.log("fileSystemContext", state.fetching ? "fetching..." : "done")
         if (state.fetching) {
             if (!state.loading) {
                 setState({ ...state, loading: true })

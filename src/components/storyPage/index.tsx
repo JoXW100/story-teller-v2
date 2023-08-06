@@ -19,7 +19,7 @@ const StoryPage = (): JSX.Element => {
             <div className={styles.header}>
                 <label className={styles.headerLabel}>
                     <Logo/>
-                    { String(context.story.name) }
+                    {String(context.story.name)}
                 </label>
                 <HelpMenuButton/>
                 <SettingsButton/>
@@ -34,9 +34,9 @@ const StoryPage = (): JSX.Element => {
                 minRight={100}
                 defaultSlider={0}
                 collapsed={!context.sidePanelExpanded}
-                left={<FileSystem/>}
+                left={<FileSystem key="system"/>}
                 collapsedLeft={<FileSystemCollapsedBody/>}
-                right={<FileView/>}/>
+                right={<FileView key="file"/>}/>
         </div>
     )
 }

@@ -38,7 +38,8 @@ const PopupHolder = (): JSX.Element => {
     const router = useRouter()
     const [state, setState] = useState({
         closeable: true,
-        content: null
+        content: null,
+        show: false
     })
 
     const popupHandler = (e: PopupEvent) => {
@@ -50,7 +51,8 @@ const PopupHolder = (): JSX.Element => {
             }
             setState({
                 closeable: e.detail.closable,
-                content: e.detail.content
+                content: e.detail.content,
+                show: e.detail.show
             })
         }
     }
@@ -65,7 +67,9 @@ const PopupHolder = (): JSX.Element => {
     }, []);
 
     return (
-        <dialog className={styles.dialog} ref={dialog}>{state.content}</dialog>
+        <dialog ref={dialog} className={styles.dialog} tabIndex={-1} style={state.show ? undefined : { display: "none" }}>
+            {state.content}
+        </dialog>
     )
 }
 

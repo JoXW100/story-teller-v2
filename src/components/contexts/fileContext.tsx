@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from 'react'
 import Head from 'next/head'
 import RequestQueue from 'utils/data/requestQueue'
 import Communication from 'utils/communication'
+import Logger from 'utils/logger'
 import { ObjectId } from 'types/database'
 import { FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/files'
@@ -19,31 +20,39 @@ type FileHeaderProps = React.PropsWithoutRef<{
     file: FileGetResult
 }>
 
-const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContextProps): JSX.Element => {
-    const reducer = (state: FileContextState, action: FileContextDispatchAction): FileContextState => {
-        switch (action.type) {
-            case 'init':
-                if (state.fetching)
-                    return state;
-                if (!action.data) 
-                    return { 
-                        ...state, 
-                        loading: false, 
-                        fetching: false, 
-                        fileSelected: false, 
-                        file: null 
-                    }
-                Communication.getFile(storyId, fileId).then((res) => {
-                    dispatch({ type: 'initSet', data: res })
-                })
+const fileReducer = (state: FileContextState, action: FileContextDispatchAction): FileContextState => {
+    Logger.log("fileContext", action.type);
+    switch (action.type) {
+        case 'init':
+            if (state.fetching)
+                return state;
+            if (!action.data.file) 
                 return { 
-                    ...state, 
-                    fileSelected: Boolean(action.data), 
-                    fetching: Boolean(action.data) 
+                    ...state,
+                    loading: false, 
+                    fetching: false, 
+                    fileSelected: false, 
+                    story: action.data.story,
+                    file: null 
                 }
+            if (action.dispatch) {
+                Communication.getFile(action.data.story, action.data.file).then((res) => {
+                    action.dispatch({ type: 'initSet', data: res })
+                })
+            } else {
+                Logger.error("fileContext.init", "missing: action.dispatch");
+                throw new Error("missing dispatch");
+            }
+            return { 
+                ...state, 
+                story: action.data.story,
+                fileSelected: Boolean(action.data), 
+                fetching: Boolean(action.data) 
+            }
 
-            case 'initSet':
-                var file = action.data.success ? action.data.result : null
+        case 'initSet':
+            if (action.data.success) {
+                var file = action.data.result
                 if (file) {
                     file.metadata = file.metadata ? file.metadata : {}
                 }
@@ -53,75 +62,114 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
                     fetching: false,
                     file: file
                 }
+            } 
+            return {
+                ...state,
+                loading: false, 
+                fetching: false,
+                file: null
+            }
 
-            case 'setText':
-                if (state.file) {
-                    state.queue.addRequest(() => {
-                        Communication.setFileText(storyId, state.file.id, action.data)
-                    }, "text");
-                    return  { 
-                        ...state,
-                        file: {
-                            ...state.file,
-                            content: { ...state.file.content, text: action.data }
+        case 'setText':
+            if (state.file) {
+                state.queue.addRequest(() => {
+                    Communication.setFileText(state.story, state.file.id, action.data).then((res) => {
+                        if (!res.success) {
+                            Logger.error("fileContext.setText", res.result);
                         }
-                    };
-                }
-                return state;
-            
-            case 'setMetadata':
-                if (state.file && action.data?.key) {
-                    let data = { 
-                        ...state.file.metadata, 
-                        [action.data.key]: action.data.value 
-                    } as FileMetadata
-                    delete data.$vars;
-                    delete data.$queries;
-                    state.queue.addRequest(() => {
-                        Communication.setFileMetadata(storyId, state.file.id, data)
-                    }, "metadata");
-                    return { 
-                        ...state, 
-                        file: { ...state.file, metadata: data } 
+                    })
+                }, "text");
+                return  { 
+                    ...state,
+                    file: {
+                        ...state.file,
+                        content: { ...state.file.content, text: action.data },
                     }
+                };
+            }
+            return state;
+        
+        case 'setMetadata':
+            if (state.file && action.data?.key) {
+                let data = { 
+                    ...state.file.metadata, 
+                    [action.data.key]: action.data.value 
+                } as FileMetadata
+                delete data.$vars;
+                delete data.$queries;
+                state.queue.addRequest(() => {
+                    Communication.setFileMetadata(state.story, state.file.id, data).then((res) => {
+                        if (!res.success) {
+                            Logger.error("fileContext.setMetadata", res.result);
+                        }
+                    })
+                }, "metadata");
+                return { 
+                    ...state, 
+                    file: { ...state.file, metadata: data } 
                 }
+            }
+            return state
 
-            case 'setStorage':
-                if (state.file && action.data?.key) {
-                    let data = { 
-                        ...state.file.storage, 
-                        [action.data.key]: action.data.value 
-                    }
-                    state.queue.addRequest(() => {
-                        Communication.setFileStorage(storyId, state.file.id, data)
-                    }, "storage");
-                    return { 
-                        ...state, 
-                        file: { ...state.file, storage: data } 
-                    }
+        case 'setStorage':
+            if (state.file && action.data?.key) {
+                let data = { 
+                    ...state.file.storage, 
+                    [action.data.key]: action.data.value 
                 }
+                state.queue.addRequest(() => {
+                    Communication.setFileStorage(state.story, state.file.id, data).then((res) => {
+                        if (!res.success) {
+                            Logger.error("fileContext.setStorage", res.result);
+                        }
+                    })
+                }, "storage");
+                return { 
+                    ...state, 
+                    file: { ...state.file, storage: data } 
+                }
+            }
+            return state
 
-            default:
-                return state
-        }
+        case 'setViewMode':
+            if (state.viewMode != action.data) {
+                return { ...state, viewMode: action.data }
+            }
+            return state
+
+        case 'setVariables': 
+            if (state.variables != action.data) {
+                state.file.metadata.$vars = action.data;
+                return { ...state, variables: action.data }
+            }
+            return state
+
+        default:
+            return state
     }
+}
 
-    const [state, dispatch] = useReducer(reducer, {
+const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContextProps): JSX.Element => {
+    const [state, dispatch] = useReducer(fileReducer, {
         loading: true,
         fetching: false,
         fileSelected: false,
         viewMode: viewMode,
         file: null,
+        variables: {},
+        story: storyId,
         queue: new RequestQueue()
     })
 
-    useEffect(() => { dispatch({ type: 'init', data: fileId }) }, [fileId])
+    useEffect(() => { dispatch({ type: 'init', data: { story: storyId, file: fileId }, dispatch: dispatch }) }, [storyId, fileId])
+    useEffect(() => { dispatch({ type: 'setViewMode', data: viewMode }) }, [viewMode])
     
     return (
         <Context.Provider value={[state, {
             setText: (text) => dispatch({ type: 'setText', data: text }),
             setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
-            setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } })
+            setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
+            setVariables: (variables) => dispatch({ type: 'setVariables', data: variables }),
         }]}>
             { !state.loading && <FileHeader file={state.file}/>}
             { !state.loading && children }

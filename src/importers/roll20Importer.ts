@@ -1,3 +1,4 @@
+import Logger from "utils/logger";
 import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
 import { CalculationMode, OptionType } from "types/database/editor"
 import { FileMetadata, FileType } from "types/database/files"
@@ -428,8 +429,8 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     if (fileContent.damageType === DamageType.None) {
         fileContent.effectText = results["title"]
     }
-    if (process.env.NODE_ENV == "development")
-        console.log("toSpell", { file: fileContent, result: results })
+    
+    Logger.log("toSpell", { file: fileContent, result: results })
     return fileContent
 }
 

@@ -7,10 +7,24 @@ import Editor from './editor';
 import Renderer from './renderer';
 import Templates from 'data/fileTemplates';
 import Localization from 'utils/localization'
+import Logger from 'utils/logger';
 import { EditInputType, TemplateComponent } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/storyPage/main.module.scss'
+
+const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
+    switch (template.type) {
+        case EditInputType.Root:
+        case EditInputType.Group:
+            template.content?.forEach((x) => setDefaults(x, metadata));
+            break;
+        default:
+            if (template.params?.key && metadata[template.params.key as string] === undefined && template.params?.default)
+                metadata[template.params.key as string] = template.params.default;
+            break;
+    }
+}
 
 const FileView = (): JSX.Element => {
     const [context] = useContext(StoryContext);
@@ -25,19 +39,6 @@ const FileContent = (): JSX.Element => {
     const [context] = useContext(Context)
     const [storyContext] = useContext(StoryContext);
     const [appContext] = useContext(AppContext);
-
-    const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
-        switch (template.type) {
-            case EditInputType.Root:
-            case EditInputType.Group:
-                template.content?.forEach((x) => setDefaults(x, metadata));
-                break;
-            default:
-                if (template.params?.key && metadata[template.params.key as string] === undefined && template.params?.default)
-                    metadata[template.params.key as string] = template.params.default;
-                break;
-        }
-    }
 
     const Content = useMemo(() => {
         if (!context.file && context.fileSelected)
@@ -54,21 +55,19 @@ const FileContent = (): JSX.Element => {
                     minLeft={70}
                     minRight={50}
                     collapsed={storyContext.editEnabled}
-                    left={<Editor template={template.editor}/>}
-                    collapsedLeft={null}
-                    right={<Renderer template={template.renderer}/>}/>
+                    left={<Editor key="editor" template={template.editor}/>}
+                    right={<Renderer key="renderer" template={template.renderer}/>}/>
             ) : storyContext.editEnabled 
             ? <Editor template={template.editor}/>
             : <Renderer template={template.renderer}/>
         }
-        console.error("No template for file type found, type:", context?.file?.type);
+        Logger.error("FileContent.template", `No template for file type found, type: ${context?.file?.type}`)
         return null;
-        
     }, [context, appContext.viewMode, storyContext.editEnabled]);
     
     return (
         <div className={styles.content}>
-            {Content}
+            { Content }
         </div>
     );
 }

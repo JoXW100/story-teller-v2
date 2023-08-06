@@ -1,6 +1,7 @@
-interface DispatchAction<D, T extends string = string> {
+interface DispatchAction<T extends string, D, A> {
     type: T
     data: D
+    dispatch?: React.Dispatch<A>
 }
 
 interface ContextState {

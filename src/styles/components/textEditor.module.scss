@@ -66,6 +66,20 @@ $indent: calc(6ch - 15px);
     counter-set: line;
 }
 
+#dialog {
+    @include colorWithShadow(input);
+    position: absolute;
+    left: 0;
+    top: 0;
+    outline: none;
+    border: none;
+    padding: 2px;
+
+    &[data=show] {
+        margin-left: $indent;
+    }
+}
+
 .area {
     @include colorBackground(document);
     @include scroll();
@@ -80,4 +94,28 @@ $indent: calc(6ch - 15px);
     overflow-y: scroll;
     border: none;
     padding-bottom: 50px !important;
+}
+
+.dialogContentHolder {
+    @include scrollSmall;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: block;
+    max-height: 5 * $smallMenuItemHeight;
+}
+
+.dialogOption {
+    @include colorBackground(input);
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    height: $smallMenuItemHeight;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid colorInGroup(input, border);
+    }
+
+    &[data=selected] {
+        @include colorDecoration(input);
+    }
 }

@@ -1,3 +1,4 @@
+import Logger from "utils/logger";
 import { DiceType, AbilityType, ActionType, EffectCondition, TargetType, DamageType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { AbilityMetadata } from "types/database/files/ability";
@@ -106,8 +107,7 @@ const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
             }
             break
     }
-    if (process.env.NODE_ENV == "development")
-        console.log("toAbility", { file: result, result: res })
+    Logger.log("toAbility", { file: result, result: res })
     return result
 }
 

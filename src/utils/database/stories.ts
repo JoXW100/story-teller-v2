@@ -1,5 +1,6 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import Database, { failure, success } from "./database";
+import Logger from "utils/logger";
 import { DBResponse } from "types/database";
 import { DBStory, DBStoryUpdate, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories";
 import { FileType } from "types/database/files";
@@ -30,7 +31,7 @@ class StoriesInterface
                     name: "",
                     metadata: {}
                 })
-                Database.log('stories.add', response.success ? result.insertedId : 'Null');
+                Logger.log('stories.add', response.success ? result.insertedId : 'Null');
                 if (response.success)
                     return success(result.insertedId)
                 throw new Error("Failed inserting root file")
@@ -71,10 +72,10 @@ class StoriesInterface
                 }},
                 { $limit: 1 }
             ]).toArray())[0] as StoryGetResult
-            Database.log('stories.get', result ? result.name : 'Null');
+            Logger.log('stories.get', result ? result.name : 'Null');
             return success(result);
         } catch (error) {
-            Database.log('stories.get', 'Null');
+            Logger.log('stories.get', 'Null');
             return failure(error.message);
         }
     }
@@ -85,11 +86,11 @@ class StoriesInterface
             let filter = { _userId: userId, _id: new ObjectId(storyId) }
             let result = await this.collection.deleteOne(filter)
             let removed = result.deletedCount === 1
-            Database.log('stories.delete', removed ? storyId : 'Null');
+            Logger.log('stories.delete', removed ? storyId : 'Null');
             if (removed) {
                 let res = await Database.files.deleteFrom(userId, storyId)
                 if (!res.success)
-                    Database.log('stories.delete', "Failed removing files of removed story: " + storyId)
+                Logger.log('stories.delete', "Failed removing files of removed story: " + storyId)
             }
             return success(removed as StoryDeleteResult);
         } catch (error) {
@@ -108,7 +109,7 @@ class StoriesInterface
                 values.$set.desc = update.desc
             let result = await this.collection.updateOne(filter, values)
             let updated = result.upsertedCount > 0
-            Database.log('stories.update', updated ? storyId : 'Null');
+            Logger.log('stories.update', updated ? storyId : 'Null');
             return updated
                 ? success(updated)
                 : failure(updated)
@@ -131,7 +132,7 @@ class StoriesInterface
                     dateUpdated: '$dateUpdated'
                 }}
             ]).toArray()) as StoryGetAllResult
-            Database.log('stories.getAll', result.length);
+            Logger.log('stories.getAll', result.length);
             return success(result);
         } catch (error) {
             return failure(error.message);

@@ -1,8 +1,8 @@
 import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
 
 export enum ViewMode {
-    Exclusive = "exclusive",
-    SplitView = "split"
+    SplitView = "split",
+    Exclusive = "exclusive"
 }
 
 interface AppContextState extends ContextState {
@@ -24,13 +24,14 @@ interface AppContextDispatch extends ContextDispatch {
     setAutomaticLineBreak: (count: number) => void
 }
 
-type AppContextDispatchAction = DispatchAction<null, "init"> 
-    | DispatchAction<string, "setPalette">
-    | DispatchAction<ViewMode, "setViewMode">
-    | DispatchAction<boolean, "setEnableSyntaxHighlighting">
-    | DispatchAction<boolean, "setEnableRowNumbers">
-    | DispatchAction<boolean, "setEnableColorFileByType">
-    | DispatchAction<number, "setAutomaticLineBreak">
+type AppContextDispatchAction = 
+      DispatchAction<"init", null, AppContextDispatchAction> 
+    | DispatchAction<"setPalette", string, AppContextDispatchAction>
+    | DispatchAction<"setViewMode", ViewMode, AppContextDispatchAction>
+    | DispatchAction<"setEnableSyntaxHighlighting", boolean, AppContextDispatchAction>
+    | DispatchAction<"setEnableRowNumbers", boolean, AppContextDispatchAction>
+    | DispatchAction<"setEnableColorFileByType", boolean, AppContextDispatchAction>
+    | DispatchAction<"setAutomaticLineBreak", number, AppContextDispatchAction>
 
 
 type AppContextProvider = ContextProvider<AppContextState, AppContextDispatch>

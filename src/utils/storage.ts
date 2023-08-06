@@ -1,5 +1,5 @@
 
-class Storage {
+abstract class Storage {
     /** Sets the value of the item at the given key */
     static setString(key: string, value: string): boolean {
         if (typeof window !== "undefined") {
@@ -28,7 +28,7 @@ class Storage {
     }
 
     /** Gets the value of the item at the given key */
-    static getString(key: string): string {
+    static getString(key: string): string | undefined {
         if (typeof window !== "undefined") {
             return window.localStorage.getItem(key) ?? undefined
         }
@@ -36,7 +36,7 @@ class Storage {
     }
 
     /** Gets the value of the item at the given key */
-    static getInt(key: string): number {
+    static getInt(key: string): number | undefined  {
         if (typeof window !== "undefined") {
             var value = window.localStorage.getItem(key)
             if (value !== null) {
@@ -48,7 +48,7 @@ class Storage {
     }
 
     /** Gets the value of the item at the given key */
-    static getBoolean(key: string): boolean {
+    static getBoolean(key: string): boolean | undefined {
         if (typeof window !== "undefined") {
             var value = window.localStorage.getItem(key)
             if (value !== null) {

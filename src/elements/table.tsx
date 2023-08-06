@@ -1,6 +1,7 @@
 import Parser, { ParseError } from 'utils/parser';
 import { element as cell } from './tableCell';
 import { element as header } from './tableHeader';
+import Logger from "utils/logger";
 import { Queries, ElementObject, ElementParams, Variables, ParserObject, Metadata } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
@@ -63,9 +64,7 @@ const validate = (options: TableOptions, content: ParserObject[]): Queries => {
 
     var errorElement = content.find((element) => !validContent.has(element?.type));
     if (errorElement) {
-        if (process.env.NODE_ENV == "development") {
-            console.log(errorElement);
-        }
+        Logger.error("elements.Table", errorElement);
         throw new ParseError(`Table cannot contain elements of type: '${errorElement.type}'`);
     }
 

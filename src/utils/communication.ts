@@ -13,7 +13,7 @@ export interface Open5eResponse<T> {
     readonly results: T[]
 }
 
-class Communication {
+abstract class Communication {
     private static readonly root = "/api/database/";
     private static readonly open5eRoot = "https://api.open5e.com/"
 

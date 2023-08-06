@@ -1,5 +1,5 @@
 import { Context } from "components/contexts/appContext";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 
 const useTextHandling  = (onChange: (value: string) => void): [
     handleChange: React.ChangeEventHandler<HTMLTextAreaElement>, 

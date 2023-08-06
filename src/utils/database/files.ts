@@ -1,5 +1,6 @@
 import { ObjectId, Collection, Db } from "mongodb";
-import Database, { failure, success } from "./database";
+import { failure, success } from "./database";
+import Logger from 'utils/logger';
 import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult } from "types/database/files";
 import { DBResponse } from "types/database";
 
@@ -10,7 +11,7 @@ interface StructureCollection {
 
 class FilesInterface
 {
-    private collection: Collection;
+    private collection: Collection<DBFile<FileMetadata, FileStorage>>;
 
     /** Creates a new DBRequestInterface */
     constructor(database: Db) {
@@ -62,7 +63,8 @@ class FilesInterface
                     whenNotMatched: 'insert'
                 }}
             ]).toArray())[0];
-            return success(true);
+            Logger.log("files.addCopy", result);
+            return success(result != null && result != undefined);
         } catch (error) {
             return failure(error.message);
         }
@@ -89,7 +91,7 @@ class FilesInterface
                 { $limit: 1 },
                 { $project: { 'content.metadata': 0 }},
             ]).toArray())[0] as FileGetResult;
-            Database.log('files.get', `${result?.name}${result ? '.' + result.type : ''}`);
+            Logger.log('files.get', `${result?.name}${result ? '.' + result.type : ''}`);
             return result 
                 ? success(result) 
                 : failure("Could not find any matching file");
@@ -113,7 +115,7 @@ class FilesInterface
                 }},
                 { $limit: 1 }
             ]).toArray())[0] as FileGetMetadataResult;
-            Database.log('files.getMetadata', fileId);
+            Logger.log('files.getMetadata', fileId);
             return result ? success(result) : failure("Could not find any matching file");
         } catch (error) {
             return failure(error.message);
@@ -125,7 +127,7 @@ class FilesInterface
         try {
             var ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
             if (ids.length < 1)
-                return failure("No fileIds provided");
+                return failure("No fileId's provided");
             let result = await this.collection.aggregate([
                 { $match: {
                     $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
@@ -138,7 +140,7 @@ class FilesInterface
                     metadata: '$content.metadata'
                 }}
             ]).toArray() as FileGetManyMetadataResult;
-            Database.log('files.getManyMetadata', result?.length ?? 0);
+            Logger.log('files.getManyMetadata', result?.length ?? 0);
             return result
                 ? success(result)
                 : failure("Could not find any matching file");
@@ -156,7 +158,7 @@ class FilesInterface
                 _storyId: new ObjectId(storyId)
             })
             var x = result.deletedCount === 1;
-            Database.log('files.delete', x ? fileId : 'Null');
+            Logger.log('files.delete', x ? fileId : 'Null');
             return x ? success(x) : failure("Could not find file to delete");
         } catch (error) {
             return failure(error.message);
@@ -190,7 +192,7 @@ class FilesInterface
                 }
             })
             var x = result.modifiedCount === 1;
-            Database.log('files.rename', x ? name : 'Null');
+            Logger.log('files.rename', x ? name : 'Null');
             return x ? success(x) : failure("Could not find file to rename");
         } catch (error) {
             return failure(error.message);
@@ -228,7 +230,7 @@ class FilesInterface
                     whenNotMatched: 'discard'
                 }}
             ]).toArray()
-            Database.log('files.move', `${fileId} -> ${targetId}`);
+            Logger.log('files.move', `${fileId} -> ${targetId}`);
             return success(true);
         } catch (error) {
             return failure(error.message);
@@ -254,7 +256,7 @@ class FilesInterface
 
             let result = await this.collection.updateOne(query, { $set: set })
             var x = result.modifiedCount === 1;
-            Database.log('files.setProperty', x ? `${property}: ${String(value).length > 20 ? '...' : value}` : 'Null');
+            Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 20 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");
         } catch (error) {
             return failure(error.message);
@@ -309,12 +311,12 @@ class FilesInterface
                     : { root: acc.root, files: { [String(value.id)]: value, ...acc.files } }
             ), { root: null, files: {} }) as StructureCollection;
 
-            Object.keys(data.files).forEach((key) => {
-                var file = data.files[key];
+            Object.values(data.files).forEach((file) => {
                 var holder = data.files[String(file.holderId)] ?? data.root;
                 holder.children = [file, ...holder.children ?? []]
             })
             
+            Logger.log("files.getStructure", result.length)
             return success(data.root.children ?? []);
         } catch (error) {
             console.error(error);

@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from "react";
+import Communication from "./communication";
+import { arrayUnique } from "./helpers";
 import { ElementDictionary, TableElementTypes } from "elements";
 import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
 import styles from 'styles/renderer.module.scss';
-import Communication from "./communication";
-import { arrayUnique } from "./helpers";
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -13,13 +12,13 @@ export class ParseError extends Error {
     }
 }
 
-class Parser
+abstract class Parser
 {
     public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
     public static readonly matchBodyExpr = /([\{\}])/
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
     public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi
-    public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]]*)\])?/i
+    public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\{\]]*)\])?/i
     private static queries: QueryResult = {}
 
     static async parse(text: string, metadata: Metadata): Promise<JSX.Element> {
@@ -29,6 +28,11 @@ class Parser
         var variables: Variables = { ...metadata.$vars ?? {} }
         // find variable content from text
         metadata.$vars = this.parseVariables(splits, variables);
+        Object.keys(metadata).forEach(key => {
+            if (typeof(metadata[key]) != typeof({}) && key !== "public") {
+                variables[key] = metadata[key]
+            }
+        });
         // replace variables in text with its respective content
         var withVars = text.replace(this.matchVarsExpr, (...x) => {
             if (variables[x[1]]) return variables[x[1]]

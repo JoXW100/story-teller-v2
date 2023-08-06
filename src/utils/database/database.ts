@@ -4,7 +4,7 @@ import StoriesInterface from "./stories";
 import { DBResponse } from "types/database";
 import { globalVars } from "types/globalVars";
 
-class Database 
+abstract class Database 
 {
     private static connection: MongoClient = null;
     private static _isConnected: boolean = false;
@@ -42,27 +42,6 @@ class Database
             }
         }
         return success(this.connection);
-    }
-
-    static log (name: string, data: any) {
-        if (process.env.NODE_ENV != "development")
-            return
-        var date = new Date()
-        var year = date.getFullYear()
-        var month = date.getMonth()
-        var m = (month < 10 ? '0' : '') + String(month)
-        var day = date.getDay()
-        var d = (day < 10 ? '0' : '') + String(day)
-        var hour = date.getHours()
-        var h = (hour < 10 ? '0' : '') + String(hour)
-        var minute = date.getMinutes()
-        var i = (minute < 10 ? '0' : '') + String(minute)
-        var second = date.getSeconds()
-        var s = (second < 10 ? '0' : '') + String(second)
-        var millisecond = date.getMilliseconds()
-        var l = (millisecond < 100 ? '0' : '') + String(Math.floor(millisecond / 10))
-        var dateText = `${year}-${m}-${d} ${h}:${i}:${s}.${l}`
-        console.log(`[${dateText}] ${name} → ${data}`)
     }
 }
 

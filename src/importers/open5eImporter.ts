@@ -1,4 +1,5 @@
 import Communication from "utils/communication"
+import Logger from "utils/logger";
 import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
@@ -509,10 +510,7 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         spells: res.spell_list ? res.spell_list : []
     } as CreatureMetadata
     
-    if (process.env.NODE_ENV == "development") {
-        console.log("toCreature", { file: res, result: metadata })
-    }
-    
+    Logger.log("toCreature", { file: res, result: metadata })
     return metadata
 }
 
@@ -555,9 +553,6 @@ export const open5eSpellImporter = async (id: string): Promise<SpellMetadata> =>
         effectDiceNum: effectDiceNum
     } as SpellMetadata
     
-    if (process.env.NODE_ENV == "development") {
-        console.log("toSpell", { file: res, result: metadata })
-    }
-        
+    Logger.log("toSpell", { file: res, result: metadata })
     return metadata
 }

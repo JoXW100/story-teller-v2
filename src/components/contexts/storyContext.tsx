@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router'
-import { RollEvent, RollMethod } from 'types/dice';
+import HelpMenu from 'components/storyPage/helpMenu';
 import Queue from 'utils/data/queue';
 import Communication from 'utils/communication';
-import HelpMenu from 'components/storyPage/helpMenu';
+import Logger from 'utils/logger';
 import { StoryData, StoryContextProvider, StoryContextState, StoryContextDispatchAction } from 'types/context/storyContext';
 import { DBResponse, ObjectId } from 'types/database';
-import { DispatchAction } from 'types/context';
+import { RollEvent, RollMethod } from 'types/dice';
 
 export const Context: React.Context<StoryContextProvider> = React.createContext([null, null])
 
@@ -21,6 +21,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
     const router = useRouter()
     
     const reducer = (state: StoryContextState, action: StoryContextDispatchAction): StoryContextState => {
+        Logger.log("storyContext", action.type)
         switch (action.type) {
             case 'init':
                 if (viewMode)

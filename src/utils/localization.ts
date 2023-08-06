@@ -1,6 +1,6 @@
 import { TextData } from 'types/localization'
 
-class Localization
+abstract class Localization
 {
     private static language: string;
     private static data: Record<string, TextData>;

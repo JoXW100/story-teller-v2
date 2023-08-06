@@ -22,13 +22,14 @@ interface StoryContextDispatch extends ContextDispatch {
     expandSidePanel: () => void
 }
 
-type StoryContextDispatchAction = DispatchAction<undefined, "init"> 
-    | DispatchAction<DBResponse<StoryData>, "initSet">
-    | DispatchAction<ObjectId, "setFile">
-    | DispatchAction<boolean, "setEditMode">
-    | DispatchAction<undefined, "roll">
-    | DispatchAction<undefined, "clearRolls">
-    | DispatchAction<boolean, "setSidePanelExpanded">
+type StoryContextDispatchAction = 
+      DispatchAction<"init", undefined, StoryContextDispatchAction> 
+    | DispatchAction<"initSet", DBResponse<StoryData>, StoryContextDispatchAction>
+    | DispatchAction<"setFile", ObjectId, StoryContextDispatchAction>
+    | DispatchAction<"setEditMode", boolean, StoryContextDispatchAction>
+    | DispatchAction<"roll", undefined, StoryContextDispatchAction>
+    | DispatchAction<"clearRolls", undefined, StoryContextDispatchAction>
+    | DispatchAction<"setSidePanelExpanded", boolean, StoryContextDispatchAction>
 
 type StoryContextProvider = ContextProvider<StoryContextState, StoryContextDispatch>
 

@@ -47,6 +47,10 @@ code {
             pointer-events: none;
         }
     }
+
+    .token.error {
+        color: color(error) !important;
+    }
     
     &[data=show] {
         & > .token:first-child,
