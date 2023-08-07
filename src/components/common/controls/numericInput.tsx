@@ -9,7 +9,7 @@ type NumberInputProps = React.PropsWithRef<{
 }>
 
 const NumberInput = ({ value, setValue, className, decimal = false, disabled = false }: NumberInputProps): JSX.Element => {
-    const [inputText, setText] = useState("");
+    const [inputText, setText] = useState("0");
     const error = isNaN(parseFloat(inputText))
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         try {
@@ -26,11 +26,11 @@ const NumberInput = ({ value, setValue, className, decimal = false, disabled = f
                             : `.${num2}`
                 setText(text1 + text2);
                 setValue(parseFloat(e.target.value));
+            } else if (/[\.,]/g.test(e.target.value)) {
+                setText(e.target.value.replace(/[\\.,]/, ''));
             } else {
                 setText(e.target.value);
-                setValue(/[.,]/.test(e.target.value)
-                    ? NaN
-                    : parseInt(e.target.value));
+                setValue(parseInt(e.target.value));
             }
         } catch (error) {
             setText(e.target.value);
@@ -38,7 +38,7 @@ const NumberInput = ({ value, setValue, className, decimal = false, disabled = f
     }
 
     useEffect(() => {
-        setText(!isNaN(value) ? value.toString() : "")
+        setText(!isNaN(value) ? value.toString() : "0")
     }, [value])
 
     return (
@@ -48,6 +48,7 @@ const NumberInput = ({ value, setValue, className, decimal = false, disabled = f
             className={className}
             disabled={disabled}
             value={inputText}
+            step={1}
             data={error ? "error" : undefined}
         />
     );

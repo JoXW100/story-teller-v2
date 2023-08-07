@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { Context } from 'components/contexts/storyContext';
-import Divider from 'components/common/divider'
+import Divider from 'components/common/controls/divider'
 import Logo from '@mui/icons-material/MenuBookSharp';
-import HomeButton from './homeButton';
-import SettingsButton from './settingsButton';
+import HomeButton from '../common/homeButton';
+import SettingsButton from '../common/settingsButton';
 import FileView from './fileView';
 import FileSystem, { FileSystemCollapsedBody } from "./fileSystem";
 import DiceButton from './dicePanel/diceButton';
-import RollHistoryButton from './rollHistory/rollHistoryButton';
+import RollHistoryButton from '../common/rollHistory/rollHistoryButton';
 import HelpMenuButton from './helpMenuButton';
 import EditModeButton from './editModeButton';
 import styles from 'styles/pages/storyPage/main.module.scss'

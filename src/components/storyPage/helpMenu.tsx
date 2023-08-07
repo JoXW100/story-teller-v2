@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import CloseIcon from '@mui/icons-material/Close';
-import SearchList, { SearchItem } from 'components/common/searchList';
+import SearchList, { SearchItem } from 'components/common/controls/searchList';
 import { closePopup } from 'components/common/popupHolder';
 import { HelpData } from 'data';
 import Localization from 'utils/localization';

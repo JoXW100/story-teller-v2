@@ -178,7 +178,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
 }
 
 const FileHeader = ({ file }: FileHeaderProps): JSX.Element => {
-    let file_title = file?.metadata?.title ?? file?.metadata?.name
+    let file_title = file?.metadata?.name ?? file?.metadata?.title
     file_title = (file_title ? file_title + " - " : "") + "Story Teller 2"
     let file_description = file?.metadata?.content ?? file?.metadata?.description ?? "Create your own story!"
 

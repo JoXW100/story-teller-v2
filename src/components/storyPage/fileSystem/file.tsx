@@ -8,6 +8,7 @@ import CopyIcon from '@mui/icons-material/ContentCopySharp';
 import OpenIcon from '@mui/icons-material/OpenInBrowserSharp';
 import OpenInNewPageIcon from '@mui/icons-material/LaunchSharp';
 import DuplicateIcon from '@mui/icons-material/DifferenceSharp';
+import ConvertIcon from '@mui/icons-material/BuildSharp';
 import { FileIcons } from 'assets/icons';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import { Context as AppContext } from 'components/contexts/appContext';
@@ -15,8 +16,9 @@ import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
-import { FileStructure } from "types/database/files";
+import { FileStructure, FileType, RenderedFileTypes } from "types/database/files";
 import styles from 'styles/pages/storyPage/file.module.scss';
+import { CreateFileOptions } from 'data/fileTemplates';
 
 type FileProps = React.PropsWithRef<{
     file: FileStructure
@@ -127,6 +129,18 @@ const File = ({ file }: FileProps): JSX.Element => {
                 text: Localization.toText('create-createCopy'), 
                 icon: DuplicateIcon, 
                 action: () => dispatch.createCopy(file)
+            },
+            { 
+                text: Localization.toText('create-convert'), 
+                icon: ConvertIcon, 
+                enabled: file.type === FileType.Document,
+                content: Object.keys(CreateFileOptions).filter((type) => type != FileType.Document).map((type) => (
+                    {
+                        text: CreateFileOptions[type as RenderedFileTypes], 
+                        icon: FileIcons[type], 
+                        action: () => dispatch.convert(file, type as RenderedFileTypes)
+                    }
+                ))
             }
         ], { x: e.pageX, y: e.pageY }, true)
     }

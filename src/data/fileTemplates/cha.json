@@ -96,11 +96,13 @@
                             },
                             { 
                                 "type": "textarea", 
-                                "params": { "label": "History", "key": "history" }
+                                "params": { "label": "History", "key": "history" },
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }]
                             },
                             { 
                                 "type": "textarea", 
-                                "params": { "label": "Notes", "key": "notes" }
+                                "params": { "label": "Notes", "key": "notes" },
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }]
                             }
                         ]
                     },

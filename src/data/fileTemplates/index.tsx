@@ -5,7 +5,7 @@ import CharacterTemplate from './cha.json';
 import EncounterTemplate from './enc.json';
 import SpellTemplate from './spe.json';
 import StoryTemplate from './sto.json';
-import { FileType, RenderedFileTypes, UsedFileTypes } from "types/database/files";
+import { FileType, RenderedFileTypes } from "types/database/files";
 import { FileTemplate } from 'types/templates';
 
 export {

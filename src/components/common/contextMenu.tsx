@@ -97,7 +97,7 @@ const ContextMenu = () => {
             className={styles.main} 
             style={state.anchors}
         >
-            { state.content.map((data, index) => 
+            { state.content.map((data, index) =>
                 <ContextMenuItem key={index} data={data}/>
             )}
         </div>
@@ -111,7 +111,7 @@ const ContextMenuItem = ({ data }: ContextMenuItemProps): JSX.Element => {
             id={data.id}
             onContextMenu={(e) => e.preventDefault()}
             onClick={data.action}
-            data={data.content ? "content" : undefined}
+            data={(data.enabled ?? true) ? data.content ? "content" : undefined : "hide"}
         >
             { data.icon && <data.icon/> }
             <div className={styles.text}> { data.text } </div>

@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-import DropdownMenu from 'components/common/dropdownMenu';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
+import NumberInput from 'components/common/controls/numericInput';
 import { Context } from 'components/contexts/fileContext';
 import { CalculationMode } from 'types/database/editor';
 import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
-import styles from 'styles/pages/storyPage/editor.module.scss';
-import NumberInput from 'components/common/numericInput';
 import { FileMetadata } from 'types/database/files';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 type OptionData = { type: string | number, value: number }
 

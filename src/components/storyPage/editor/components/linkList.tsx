@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import LinkListMenu from 'components/common/linkListMenu';
+import LinkListMenu from 'components/common/controls/linkListMenu';
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
 import { FileType } from 'types/database/files';

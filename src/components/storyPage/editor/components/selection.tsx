@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useMemo } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import SelectionMenu from 'components/common/selectionMenu';
+import SelectionMenu from 'components/common/controls/selectionMenu';
 import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';

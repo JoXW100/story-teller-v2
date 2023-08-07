@@ -3,7 +3,7 @@ import OpenExternalIcon from '@mui/icons-material/OpenInNewSharp';
 import NextIcon from '@mui/icons-material/NavigateNextSharp';
 import PrevIcon from '@mui/icons-material/NavigateBeforeSharp';
 import { closePopup } from "components/common/popupHolder";
-import Searchbox from "components/common/searchbox";
+import Searchbox from "components/common/controls/searchbox";
 import Loading from "components/common/loading";
 import { CreateContentProps } from ".";
 import { open5eCreatureImporter, open5eSpellImporter } from "utils/importers/open5eImporter";

@@ -1,7 +1,7 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import { failure, success } from "./database";
 import Logger from 'utils/logger';
-import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult } from "types/database/files";
+import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult, FileConvertResult } from "types/database/files";
 import { DBResponse } from "types/database";
 
 interface StructureCollection {
@@ -179,6 +179,31 @@ class FilesInterface
     }
 
     /** Changes the filename of a file in the database */
+    async convert(userId: string, storyId: string, fileId: string, type: FileType): Promise<DBResponse<FileConvertResult>> {
+        try {
+            if (!Object.values(FileType).includes(type)) {
+                Logger.error('files.convert', type);
+                return failure(`${type} is not a valid type`);
+            }
+            let result = await this.collection.updateOne({
+                _id: new ObjectId(fileId),
+                _userId: userId,
+                _storyId: new ObjectId(storyId)       
+            }, { 
+                $set: {
+                    type: type,
+                    dateUpdated: Date.now()
+                }
+            })
+            var x = result.modifiedCount === 1;
+            Logger.log('files.convert', x ? type : 'Null');
+            return x ? success(x) : failure("Could not find file to rename");
+        } catch (error) {
+            return failure(error.message);
+        }
+    }
+
+    /** Changes the filename of a file in the database */
     async rename(userId: string, storyId: string, fileId: string, name: string): Promise<DBResponse<FileRenameResult>> {
         try {
             let result = await this.collection.updateOne({
@@ -240,14 +265,17 @@ class FilesInterface
     /** Changes a property of a folder in the database */
     private async setProperty(userId: string, storyId: string, fileId: string, property: string, value: any, fileType?: Record<string, any> | FileType, updateDate: boolean = true): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            var set: Partial<DBFile<any>> = { [`content.${property}`]: value };
+            var set: Partial<DBFile<any>> = { 
+                [`content.${property}`]: value,
+                dateUpdated: Date.now()
+            };
             if (updateDate) 
                 set.dateUpdated = Date.now()
 
             var query: Record<string, any> = { 
                 _userId: userId, 
                 _storyId: new ObjectId(storyId),
-                _id: new ObjectId(fileId) 
+                _id: new ObjectId(fileId)
             }
             
             if (fileType) {

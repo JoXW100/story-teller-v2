@@ -53,7 +53,9 @@ const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps)
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
                     <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
                     <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
-                    <div><Elements.Bold>Traits </Elements.Bold>{character.traitsText}</div>
+                    { character.traits.length > 0 &&  <div>
+                        <Elements.Bold>Traits </Elements.Bold>{character.traitsText}
+                    </div>}
                     { character.languages.length > 0 && 
                         <div><Elements.Bold>Languages </Elements.Bold>
                             {character.languages}
@@ -68,16 +70,6 @@ const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps)
                         <Elements.Line/>
                         <Elements.Header3>Description</Elements.Header3>
                         <Elements.Text>{character.description}</Elements.Text>
-                    </> : null }
-                    { character.history.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>History</Elements.Header3>
-                        <Elements.Text>{character.history}</Elements.Text>
-                    </> : null }
-                    { character.notes.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>Notes</Elements.Header3>
-                        <Elements.Text>{character.notes}</Elements.Text>
                     </> : null }
                 </Elements.Block>
             </Elements.Align>
@@ -107,7 +99,9 @@ const DetailedCharacterRenderer = ({ character, content }: CharacterRendererProp
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
                     <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
                     <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
-                    <div><Elements.Bold>Traits </Elements.Bold>{character.traitsText}</div>
+                    { character.traits.length > 0 &&  <div>
+                        <Elements.Bold>Traits </Elements.Bold>{character.traitsText}
+                    </div>}
                     { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>

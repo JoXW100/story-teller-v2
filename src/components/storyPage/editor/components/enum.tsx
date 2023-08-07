@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import DropdownMenu from 'components/common/dropdownMenu';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
 import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';

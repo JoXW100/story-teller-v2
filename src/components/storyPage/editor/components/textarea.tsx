@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import TextEditor from 'components/common/textEditor';
+import TextEditor from 'components/common/controls/textEditor';
 import { TemplateComponentProps } from '.';
 import { TextAreaTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';

@@ -11,6 +11,7 @@ interface ContextRowData {
     text: string
     icon: any
     id?: string
+    enabled?: boolean
     action?: React.MouseEventHandler
     content?: ContextRowData[]
 }

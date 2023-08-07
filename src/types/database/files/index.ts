@@ -69,6 +69,7 @@ type FileAddCopyResult = boolean
 type FileGetResult = FileData<FileContent, FileMetadata, FileStorage>
 type FileDeleteResult = boolean
 type FileDeleteFromResult = boolean
+type FileConvertResult = boolean
 type FileRenameResult = boolean
 type FileMoveResult = boolean
 type FileSetPropertyResult = boolean
@@ -90,6 +91,7 @@ export type {
     FileGetResult,
     FileDeleteResult,
     FileDeleteFromResult,
+    FileConvertResult,
     FileRenameResult,
     FileMoveResult,
     FileSetPropertyResult,

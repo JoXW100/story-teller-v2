@@ -2,14 +2,14 @@ import { useContext } from 'react';
 import Link from 'next/link';
 import CloseIcon from '@mui/icons-material/Close';
 import { Context } from 'components/contexts/appContext';
-import DropdownMenu from 'components/common/dropdownMenu';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
+import NumberInput from './common/controls/numericInput';
 import Checkbox from './common/checkbox';
 import Palettes from 'data/palettes';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/settingsPage.module.scss';
-import NumberInput from './common/numericInput';
 
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string

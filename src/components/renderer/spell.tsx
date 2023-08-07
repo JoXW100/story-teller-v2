@@ -1,6 +1,6 @@
 import Elements from 'data/elements';
 import React, { useEffect, useState } from 'react';
-import SpellSlotToggle from 'components/common/spellSlotToggle';
+import SpellSlotToggle from 'components/common/controls/spellSlotToggle';
 import { useParser } from 'utils/parser';
 import { getComponents, getSpellRange } from 'utils/calculations';
 import Communication from 'utils/communication';

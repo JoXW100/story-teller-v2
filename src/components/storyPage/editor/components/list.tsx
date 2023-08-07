@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
-import ListMenu from 'components/common/listMenu';
+import ListMenu from 'components/common/controls/listMenu';
 import { TemplateComponentProps } from '.';
 import { ListTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';

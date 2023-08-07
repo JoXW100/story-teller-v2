@@ -9,8 +9,9 @@ import Communication from 'utils/communication';
 import Logger from 'utils/logger';
 import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from 'types/database/files'
+import { FileConvertResult, FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType, RenderedFileTypes } from 'types/database/files'
 import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
+import { CreateFileOptions } from 'data/fileTemplates';
 
 
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
@@ -51,11 +52,37 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
-                description={Localization.toText('create-confirmationDescription', file.name)}
+                description={Localization.toText('create-confirmationDeleteDescription', file.name)}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {
                         Communication.deleteFile(context.story.id, file.id)
+                        .then((res) => {
+                            if (!res.success) {
+                                console.warn(res.result);
+                            } else if (selected) {
+                                router.push('../' + context.story.id)
+                            }
+                            setState({ ...state, fetching: true})
+                        })
+                    }
+                }}  
+            />
+        )
+    }
+
+    const openConvertFileMenu = (file: FileStructure, type: FileType) => {
+        const optionYes = Localization.toText('create-confirmationYes');
+        const optionNo = Localization.toText('create-confirmationNo');
+        const selected = context.fileId === file.id;
+        openPopup(
+            <ConfirmationPopup 
+                header={Localization.toText('create-confirmationHeader')} 
+                description={Localization.toText('create-confirmationConvertDescription', file.name, CreateFileOptions[type as RenderedFileTypes])}
+                options={[optionYes, optionNo]} 
+                callback={(response) => {
+                    if (response === optionYes) {
+                        Communication.convertFile(context.story.id, file.id, type)
                         .then((res) => {
                             if (!res.success) {
                                 console.warn(res.result);
@@ -76,7 +103,9 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             if (!res.success) {
                 console.warn(res.result);
             }
-            callback(res);
+            if (callback) {
+                callback(res);
+            }
         })
     }
 
@@ -166,6 +195,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             moveFile: moveFile,
             setFileState: setFileState,
             createCopy: createCopy,
+            convert: openConvertFileMenu,
             setSearchFilter: setSearchFilter,
             setFileFilter: setFileFilter,
             setShowFilterMenuState: setFileFilterMenuIsOpen

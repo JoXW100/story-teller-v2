@@ -22,6 +22,7 @@ interface FileSystemContextDispatch extends ContextDispatch {
     moveFile: (file: FileStructure, target: FileStructure) => void
     setFileState: (file: FileStructure, state: boolean, callback?: Callback<FileSetPropertyResult>) => void
     createCopy: (file: FileStructure) => void,
+    convert: (file: FileStructure, type: FileType) => void,
     setSearchFilter: (filter: string) => void,
     setFileFilter: (filter: FileFilter) => void,
     setShowFilterMenuState: (isOpen: boolean) => void,

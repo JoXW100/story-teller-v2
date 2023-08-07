@@ -68,7 +68,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardBodyProps): JSX.Element => 
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
-                description={Localization.toText('create-confirmationDescription', data.name)}
+                description={Localization.toText('create-confirmationDeleteDescription', data.name)}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {

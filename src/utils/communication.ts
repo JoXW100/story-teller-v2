@@ -1,5 +1,5 @@
 import { DBResponse, ObjectId } from "types/database"
-import { FileAddCopyResult, FileAddResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
+import { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
 import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
 import { Open5eFetchType } from "types/open5eCompendium"
 
@@ -103,6 +103,14 @@ abstract class Communication {
         return await this.databaseFetch<FileDeleteFromResult>('deleteFile', 'DELETE', {
             storyId: storyId, 
             fileId: fileId 
+        })
+    }
+
+    public static async convertFile(storyId: ObjectId, fileId: ObjectId, type: FileType): Promise<DBResponse<FileConvertResult>> {
+        return await this.databaseFetch<FileConvertResult>('convertFile', 'PUT', {
+            storyId: storyId, 
+            fileId: fileId,
+            type: type
         })
     }
 

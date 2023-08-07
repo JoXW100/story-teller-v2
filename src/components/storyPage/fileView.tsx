@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import FileContext, { Context } from 'components/contexts/fileContext';
 import { Context as StoryContext } from 'components/contexts/storyContext';
 import { Context as AppContext } from 'components/contexts/appContext';
-import Divider from 'components/common/divider';
+import Divider from 'components/common/controls/divider';
 import Editor from './editor';
 import Renderer from './renderer';
 import Templates from 'data/fileTemplates';

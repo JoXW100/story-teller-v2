@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import DropdownMenu from "components/common/dropdownMenu";
+import DropdownMenu from "components/common/controls/dropdownMenu";
 import { closePopup } from "components/common/popupHolder";
 import Localization from "utils/localization"
 import { FileType } from "types/database/files";

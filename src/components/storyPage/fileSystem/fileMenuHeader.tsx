@@ -8,7 +8,7 @@ import FilterOpenIcon from '@mui/icons-material/FilterAltSharp';
 import CollapseIcon from '@mui/icons-material/ChevronLeftSharp';
 import { Context } from "components/contexts/fileSystemContext";
 import { Context as StoryContext } from "components/contexts/storyContext";
-import Searchbox from "components/common/searchbox";
+import Searchbox from "components/common/controls/searchbox";
 import Localization from "utils/localization";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/fileSystem.module.scss';

@@ -70,6 +70,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         
                     case 'renameFile':
                         return res.status(200).json(await Database.files.rename(userId, body.storyId, body.fileId, body.name));
+
+                    case 'convertFile':
+                        return res.status(200).json(await Database.files.convert(userId, body.storyId, body.fileId, body.type));
                     
                     case 'moveFile':
                         return res.status(200).json(await Database.files.move(userId, body.storyId, body.fileId, body.targetId));

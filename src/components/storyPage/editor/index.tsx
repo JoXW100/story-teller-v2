@@ -152,7 +152,7 @@ const Editor = ({ template }: EditorProps): JSX.Element => {
                 throw error;
             return null
         }
-    }, [context.file, template])
+    }, [context.file, context.file.metadata, template])
 
     return  (
         <div className={styles.main}>
