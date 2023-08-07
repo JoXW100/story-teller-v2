@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from 'styles/components/searchList.module.scss';
 
-interface SearchItem {
+export interface SearchItem {
     keyWords: string[]
     value: number
     content: JSX.Element

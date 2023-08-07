@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
 import { arrayUnique } from "./helpers";
-import { ElementDictionary, TableElementTypes } from "elements";
+import { ElementDictionary, TableElementTypes } from "data/elements";
 import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
 import styles from 'styles/renderer.module.scss';

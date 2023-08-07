@@ -1,5 +1,5 @@
 import React from 'react';
-import Elements from 'elements';
+import Elements from 'data/elements';
 import { IEncounterCardData } from 'types/database/files/encounter';
 import { CreatureMetadata } from 'types/database/files/creature';
 import { ObjectId } from 'types/database';

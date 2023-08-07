@@ -1,5 +1,5 @@
 import React from 'react';
-import Elements from 'elements';
+import Elements from 'data/elements';
 import { useParser } from 'utils/parser';
 import { DocumentContent, DocumentMetadata } from 'types/database/files/document';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';

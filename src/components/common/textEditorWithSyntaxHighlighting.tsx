@@ -4,7 +4,7 @@ import Prism from "prismjs"
 import Parser from 'utils/parser';
 import { Context } from 'components/contexts/appContext';
 import styles from 'styles/components/textEditor.module.scss';
-import { ElementDictionary } from 'elements';
+import { ElementDictionary } from 'data/elements';
 
 type TextEditorProps = React.PropsWithRef<{
     className?: string

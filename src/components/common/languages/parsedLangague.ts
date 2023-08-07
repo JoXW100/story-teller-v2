@@ -1,4 +1,4 @@
-import { ElementDictionary } from "elements";
+import { ElementDictionary } from "data/elements";
 
 export default {
     // Define the token rules for your custom language

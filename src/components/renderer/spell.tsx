@@ -1,11 +1,11 @@
-import Elements from 'elements';
+import Elements from 'data/elements';
 import React, { useEffect, useState } from 'react';
 import SpellSlotToggle from 'components/common/spellSlotToggle';
 import { useParser } from 'utils/parser';
 import { getComponents, getSpellRange } from 'utils/calculations';
 import Communication from 'utils/communication';
 import Localization from 'utils/localization';
-import SpellData from 'structures/spell';
+import SpellData from 'data/structures/spell';
 import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
 import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
 import { SpellContent, SpellMetadata } from 'types/database/files/spell';

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { closePopup } from "components/common/popupHolder";
-import roll20Importer from "importers/roll20Importer";
+import roll20Importer from "utils/importers/roll20Importer";
 import Localization from "utils/localization";
 import { CreateContentProps } from ".";
 import { InputType } from "types/context/fileSystemContext";

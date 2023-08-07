@@ -1,11 +1,11 @@
 import React from 'react';
-import Elements from 'elements';
-import RollElement from 'elements/roll';
+import Elements from 'data/elements';
+import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
 import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
-import CreatureData from 'structures/creature';
+import CreatureData from 'data/structures/creature';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { Attribute } from 'types/database/dnd';

@@ -1,6 +1,6 @@
 import { FileContent, FileMetadata } from "."
 import { Alignment, Attribute, CreatureType, DiceType, MovementType, SizeType, Skill } from "../dnd"
-import { OptionType } from "../editor"
+import { IOptionType } from "../editor"
 import ICreatureStats from "./iCreatureStats"
 
 interface CreatureContent extends FileContent {
@@ -19,10 +19,10 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     // Stats
     level?: number
     hitDice?: DiceType
-    health?: OptionType<number>
-    ac?: OptionType<number>
-    proficiency?: OptionType<number>
-    initiative?: OptionType<number>
+    health?: IOptionType<number>
+    ac?: IOptionType<number>
+    proficiency?: IOptionType<number>
+    initiative?: IOptionType<number>
     resistances?: string
     vulnerabilities?: string // TODO: Implement
     advantages?: string

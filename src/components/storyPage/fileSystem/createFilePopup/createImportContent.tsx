@@ -6,45 +6,31 @@ import { closePopup } from "components/common/popupHolder";
 import Searchbox from "components/common/searchbox";
 import Loading from "components/common/loading";
 import { CreateContentProps } from ".";
-import { open5eCreatureImporter, open5eSpellImporter } from "importers/open5eImporter";
+import { open5eCreatureImporter, open5eSpellImporter } from "utils/importers/open5eImporter";
+import { Open5eCompendiumData } from "data";
 import Localization from "utils/localization";
 import Navigation from "utils/navigation";
-import Communication, { Open5eFetchType } from "utils/communication";
+import Communication from "utils/communication";
 import { FileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
+import { ICompendiumMenuItem, Open5eItemInfo } from "types/open5eCompendium";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
 interface ImportContentState {
-    menu: CompendiumMenuItem
+    menu: ICompendiumMenuItem
     values: Open5eItemInfo[]
     sorting: SortingMethod
     selected: Open5eItemInfo | null
     loading: boolean
 }
 
-interface Open5eItemInfo {
-    slug: string
-    name: string
-    level_int?: number
-    [key: string]: any
-}
 
-interface CompendiumMenuItem {
-    title: string
-    type: Open5eFetchType
-    fields: string[]
-    sortFields: string[]
-    headers: string[]
-    query?: Record<string, string | number>
-    subItems?: CompendiumMenuItem[]
-}
 
 interface SortingMethod {
     field: string | null
     direction: "ascending" | "descending" | "none"
 }
 
-const menuItems = require('data/open5eCompendiumMenu.json') as CompendiumMenuItem[]
 const spellFilterItems = ["C", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/;
 const itemsPerPage = 100
@@ -56,7 +42,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const [spellFilter, setSpellFilter] = useState(Array.from({length: 10}, () => true))
     const [page, setPage] = useState<number>(0)
     const [state, setState] = useState<ImportContentState>({
-        menu: menuItems[0],
+        menu: Open5eCompendiumData[0],
         values: [],
         sorting: { field: null, direction: "none" },
         selected: null,
@@ -110,7 +96,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         setState({ ...state, selected: item })
     }
 
-    const handleMenuItemCLick = (item: CompendiumMenuItem) => {
+    const handleMenuItemCLick = (item: ICompendiumMenuItem) => {
         setState({ ...state, menu: item, selected: null })
     }
 
@@ -172,7 +158,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         return items.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
     }
 
-    const buildMenuItems = (items: CompendiumMenuItem[], level: number = 0): JSX.Element[] => {
+    const buildMenuItems = (items: ICompendiumMenuItem[], level: number = 0): JSX.Element[] => {
         return items.map((item, index) => {
             let selected = state.menu?.title == item.title
             let res = (
@@ -275,7 +261,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 </div>
                 <div className={styles.inputCompendium}>
                     <div className={styles.inputCompendiumMenu}>
-                        { buildMenuItems(menuItems) }
+                        { buildMenuItems(Open5eCompendiumData) }
                     </div>
                     <div className={styles.inputCompendiumValueList}>
                         <div className={styles.inputCompendiumListHeader}>

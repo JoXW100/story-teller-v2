@@ -1,15 +1,15 @@
 
-interface HelpData {
-    content: HelpDataEntry[]
+interface IHelpData {
+    content: IHelpDataEntry[]
 }
 
-interface HelpDataEntry {
+interface IHelpDataEntry {
     title: string
     keyWords: string[]
     text: string
 }
 
 export type {
-    HelpData,
-    HelpDataEntry
+    IHelpData,
+    IHelpDataEntry
 }

@@ -1,16 +1,15 @@
 import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import SearchList from 'components/common/searchList';
-import Localization from 'utils/localization';
 import CloseIcon from '@mui/icons-material/Close';
-import { HelpData, HelpDataEntry } from 'types/help';
-import styles from 'styles/pages/storyPage/helpMenu.module.scss';
+import SearchList, { SearchItem } from 'components/common/searchList';
 import { closePopup } from 'components/common/popupHolder';
-
-const HelpData = require('data/help.json') as HelpData;
+import { HelpData } from 'data';
+import Localization from 'utils/localization';
+import { IHelpDataEntry } from 'types/help';
+import styles from 'styles/pages/storyPage/helpMenu.module.scss';
 
 const HelpMenu = (): JSX.Element => {
-    const content =  useMemo(() => HelpData?.content?.map((item, index) => ({
+    const content =  useMemo<SearchItem[]>(() => HelpData?.content?.map((item, index) => ({
         keyWords: item.keyWords,
         value: index,
         content: <HelpItem item={item} key={index}/>
@@ -35,14 +34,13 @@ const HelpMenu = (): JSX.Element => {
             <SearchList 
                 items={content}
                 prompt={Localization.toText('helpMenu-prompt')}
-                placeholder={Localization.toText('helpMenu-placeholder')}
-            />
+                placeholder={Localization.toText('helpMenu-placeholder')}/>
         </div>
     )
 }
 
 type HelpItemProps = React.PropsWithRef<{
-    item: HelpDataEntry
+    item: IHelpDataEntry
 }>
 
 const HelpItem = ({ item }: HelpItemProps): JSX.Element => {

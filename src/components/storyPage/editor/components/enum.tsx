@@ -1,14 +1,14 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import DropdownMenu from 'components/common/dropdownMenu';
-import { OptionType, OptionTypes } from 'data/optionData';
+import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss'
 
 const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const type: OptionType = OptionTypes[params.type];
+    const type = getOptionType(params.type);
     if (!type){
         console.error("No option type of type: " + params.type)
         return null;

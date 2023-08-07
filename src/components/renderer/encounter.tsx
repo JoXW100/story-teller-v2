@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Elements from 'elements';
+import Elements from 'data/elements';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
 import Dice from 'utils/data/dice';
 import { useFiles } from 'utils/handlers/files';
-import CreatureData from 'structures/creature';
-import EncounterData from 'structures/encounter';
+import CreatureData from 'data/structures/creature';
+import EncounterData from 'data/structures/encounter';
 import EncounterCard from './encounterCard';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CalculationMode, RendererObject } from 'types/database/editor';

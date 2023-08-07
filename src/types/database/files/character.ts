@@ -6,6 +6,7 @@ interface CharacterContent {
 }
 
 interface CharacterMetadata extends CreatureMetadata {
+    simple?: boolean
     gender?: Gender
     age?: string
     height?: string

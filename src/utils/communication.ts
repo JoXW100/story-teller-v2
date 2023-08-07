@@ -1,10 +1,10 @@
 import { DBResponse, ObjectId } from "types/database"
 import { FileAddCopyResult, FileAddResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
 import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
+import { Open5eFetchType } from "types/open5eCompendium"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
-export type Open5eFetchType = "spells" | "monsters"
 
 export interface Open5eResponse<T> {
     readonly count: number

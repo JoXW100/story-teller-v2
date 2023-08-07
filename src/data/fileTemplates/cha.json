@@ -15,6 +15,10 @@
                         "params": { "label": "Publish", "key": "public", "viewURL": true }
                     },
                     { 
+                        "type": "boolean", 
+                        "params": { "label": "Simple", "key": "simple" }
+                    },
+                    { 
                         "type": "enum", 
                         "params": { "label": "Size", "key": "size", "type": "creatureSize", "default": "medium" }
                     },
@@ -30,9 +34,20 @@
                         "type": "text", 
                         "params": { "label": "Portrait", "key": "portrait" }
                     },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "Challenge", "key": "challenge", "allowFloat": true },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }]
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "XP", "key": "xp" },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }]
+                    },
                     {
                         "type": "linkList",
-                        "params": { "label": "Abilities", "key": "abilities", "fileTypes": ["abi"], "allowText": true, "placeholder": "Ability file ID ..." }
+                        "params": { "label": "Abilities", "key": "abilities", "fileTypes": ["abi"], "allowText": true, "placeholder": "Ability file ID ..." },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }]
                     },
                     {
                         "type": "group",
@@ -57,6 +72,11 @@
                             { 
                                 "type": "text", 
                                 "params": { "label": "Weight", "key": "weight" }
+                            },
+                            { 
+                                "type": "text", 
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, true] }],
+                                "params": { "label": "Languages", "key": "languages" }
                             },
                             { 
                                 "type": "text", 
@@ -87,6 +107,7 @@
                     { 
                         "type": "group",
                         "params": { "label": "Stats", "open": true },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }],
                         "content": [
                             { 
                                 "type": "number", 
@@ -141,6 +162,7 @@
                     { 
                         "type": "group",
                         "params": { "label": "Attributes", "open": true },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }],
                         "content": [
                             { 
                                 "type": "number", 
@@ -170,7 +192,8 @@
                     },
                     {
                         "type": "group",
-                        "params": { "label": "Info", "open": true },
+                        "params": { "label": "Proficiencies", "open": true },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }],
                         "content": [
                             { 
                                 "type": "selection", 
@@ -186,21 +209,15 @@
                             },
                             { 
                                 "type": "text", 
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }],
                                 "params": { "label": "Languages", "key": "languages" }
-                            },
-                            { 
-                                "type": "number", 
-                                "params": { "label": "Challenge", "key": "challenge", "allowFloat": true }
-                            },
-                            { 
-                                "type": "number", 
-                                "params": { "label": "XP", "key": "xp" }
                             }
                         ]
                     },
                     {
                         "type": "group",
                         "params": { "label": "Spells", "open": true },
+                        "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "simple" }, false] }],
                         "content": [
                             { 
                                 "type": "enum", 

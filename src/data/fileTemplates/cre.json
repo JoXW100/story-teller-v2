@@ -34,6 +34,14 @@
                         "type": "textarea", 
                         "params": { "label": "Description", "key": "description" }
                     },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "Challenge", "key": "challenge", "allowFloat": true }
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "XP", "key": "xp" }
+                    },
                     {
                         "type": "linkList",
                         "params": { "label": "Abilities", "key": "abilities", "fileTypes": ["abi"], "allowText": true, "placeholder": "Ability file ID ..." }
@@ -124,7 +132,7 @@
                     },
                     {
                         "type": "group",
-                        "params": { "label": "Info", "open": true },
+                        "params": { "label": "Proficiencies", "open": true },
                         "content": [
                             { 
                                 "type": "selection", 
@@ -141,14 +149,6 @@
                             { 
                                 "type": "text", 
                                 "params": { "label": "Languages", "key": "languages" }
-                            },
-                            { 
-                                "type": "number", 
-                                "params": { "label": "Challenge", "key": "challenge", "allowFloat": true }
-                            },
-                            { 
-                                "type": "number", 
-                                "params": { "label": "XP", "key": "xp" }
                             }
                         ]
                     },

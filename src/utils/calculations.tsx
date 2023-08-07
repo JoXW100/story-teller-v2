@@ -1,13 +1,13 @@
-import Elements from 'elements';
+import Elements from 'data/elements';
 import Dice from './data/dice';
 import { AreaType, Attribute, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionalAttribute } from "types/database/editor";
 import { CharacterMetadata } from "types/database/files/character";
 import { CreatureMetadata } from "types/database/files/creature";
-import { OptionTypes } from 'data/optionData';
+import { getOptionType } from 'data/optionData';
 import IConditionalHitEffect from 'types/database/files/iConditionalHitEffect';
-import CreatureData from 'structures/creature';
-import SpellData from 'structures/spell';
+import CreatureData from 'data/structures/creature';
+import SpellData from 'data/structures/spell';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 
 export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
@@ -214,8 +214,8 @@ export const getSkills = (creature: CreatureData): JSX.Element => {
 }
 
 export const getKeyName = (collection: string, value: string | number): string => {
-    return OptionTypes[collection].options[value] 
-        ?? OptionTypes[collection].options[OptionTypes[collection].default]
+    return getOptionType(collection).options[value] 
+        ?? getOptionType(collection).options[getOptionType(collection).default]
 }
 
 export const getComponents = (spell: SpellData): string[] => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Elements from 'elements';
-import AbilityData from 'structures/ability';
-import { toAbility } from 'importers/stringFormatAbilityImporter';
+import Elements from 'data/elements';
+import AbilityData from 'data/structures/ability';
+import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
 import { FileData, FileGetMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';

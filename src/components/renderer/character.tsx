@@ -1,6 +1,6 @@
 import React from 'react';
-import Elements from 'elements';
-import RollElement from 'elements/roll';
+import Elements from 'data/elements';
+import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
 import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import { AbilityGroups } from './ability';
@@ -9,7 +9,7 @@ import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { FileData, FileMetadataQueryResult } from 'types/database/files';
 import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
 import { Attribute } from 'types/database/dnd';
-import CharacterData from 'structures/character';
+import CharacterData from 'data/structures/character';
 import styles from 'styles/renderer.module.scss';
 import Localization from 'utils/localization';
 
@@ -17,19 +17,81 @@ type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata,undefined>
 }>
 
+type CharacterRendererProps = React.PropsWithRef<{
+    character: CharacterData,
+    content: JSX.Element
+}>
+
 type CharacterLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CharacterMetadata>
 }>
 
 const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
+    const content = useParser(file.content.text, file.metadata);
     let character = new CharacterData(file.metadata)
+    const Renderer = character.simple 
+        ? SimpleCharacterRenderer
+        : DetailedCharacterRenderer
+    return <Renderer character={character} content={content}/> 
+}
+
+const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps): JSX.Element => {
+    return (
+        <>
+            <Elements.Align>
+                <Elements.Block>
+                    <Elements.Header1> {character.name} </Elements.Header1>
+                    {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
+                    <Elements.Line/>
+                    <Elements.Image options={{href: character.portrait}}/>
+                </Elements.Block>
+                <Elements.Line/>
+                <Elements.Block>
+                    <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
+                    <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
+                    <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
+                    <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
+                    <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
+                    <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
+                    <div><Elements.Bold>Traits </Elements.Bold>{character.traitsText}</div>
+                    { character.languages.length > 0 && 
+                        <div><Elements.Bold>Languages </Elements.Bold>
+                            {character.languages}
+                        </div> 
+                    }
+                    { character.appearance.length > 0 ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Appearance</Elements.Header3>
+                        <Elements.Text>{character.appearance}</Elements.Text>
+                    </> : null }
+                    { character.description.length > 0 ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Description</Elements.Header3>
+                        <Elements.Text>{character.description}</Elements.Text>
+                    </> : null }
+                    { character.history.length > 0 ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>History</Elements.Header3>
+                        <Elements.Text>{character.history}</Elements.Text>
+                    </> : null }
+                    { character.notes.length > 0 ? <>
+                        <Elements.Line/>
+                        <Elements.Header3>Notes</Elements.Header3>
+                        <Elements.Text>{character.notes}</Elements.Text>
+                    </> : null }
+                </Elements.Block>
+            </Elements.Align>
+            {content && <Elements.Line/>}
+            {content}
+        </>
+    )
+} 
+
+const DetailedCharacterRenderer = ({ character, content }: CharacterRendererProps): JSX.Element => {
     let stats = character.getStats()
     let speed = getSpeed(character)
     let saves = getSaves(character)
     let skills = getSkills(character)
-
-    const Content = useParser(file.content.text, file.metadata);
-
     return (
         <>
             <Elements.Align>
@@ -187,8 +249,8 @@ const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Elemen
                         data={stats}/>
                 </>
             }  
-            {Content && <Elements.Line/>}
-            {Content}
+            {content && <Elements.Line/>}
+            {content}
         </>
     )
 }

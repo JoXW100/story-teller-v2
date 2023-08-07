@@ -18,7 +18,7 @@ export enum OptionalAttribute {
     CHA = "cha"
 }
 
-interface OptionType<T> { 
+interface IOptionType<T> { 
     type: CalculationMode
     value: T 
 }
@@ -29,6 +29,6 @@ interface RendererObject<A extends FileContent,B extends FileMetadata> {
 }
 
 export type {
-    OptionType,
+    IOptionType,
     RendererObject
 }

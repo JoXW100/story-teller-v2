@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useMemo } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/selectionMenu';
-import { OptionType, OptionTypes } from 'data/optionData';
+import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';
@@ -15,7 +15,7 @@ type SelectionItemElementProps = React.PropsWithChildren<{
 
 const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const type: OptionType = OptionTypes[params.enum];
+    const type = getOptionType(params.enum);
 
     const selection: Record<string, string | number> = context.file?.metadata 
         ? context.file.metadata[params.key] ?? {}

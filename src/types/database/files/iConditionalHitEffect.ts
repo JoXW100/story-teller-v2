@@ -1,5 +1,5 @@
 import { DiceType, ScalingType, Attribute, DamageType, EffectCondition, TargetType } from "../dnd"
-import { OptionType } from "../editor"
+import { IOptionType } from "../editor"
 
 interface ICreatureActionData {
     name?: string
@@ -14,12 +14,12 @@ interface ICreatureActionData {
     // Hit condition roll scaling
     conditionScaling?: ScalingType
     conditionProficiency?: boolean
-    conditionModifier?: OptionType<number>
+    conditionModifier?: IOptionType<number>
     // Hit effect roll scaling
     effectText?: string
     effectScaling?: ScalingType
     effectProficiency?: boolean
-    effectModifier?: OptionType<number>
+    effectModifier?: IOptionType<number>
     effectDice?: DiceType
     effectDiceNum?: number
 }

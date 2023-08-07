@@ -1,5 +1,5 @@
 import type { ObjectId } from "types/database";
-import { Open5eFetchType } from "./communication";
+import { Open5eFetchType } from "types/open5eCompendium";
 
 abstract class Navigation 
 {
