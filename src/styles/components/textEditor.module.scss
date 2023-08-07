@@ -1,6 +1,7 @@
 @import 'styles/colors.scss';
 @import 'styles/prefabs';
 @import 'styles/constants';
+@import 'styles/fonts';
 
 
 $indent: calc(6ch - 15px);
@@ -14,6 +15,7 @@ $indent: calc(6ch - 15px);
 
 #editing, #highlighting {
     @include scroll;
+    @include fontNormal;
     position: absolute;
     overflow: auto;
     white-space: pre;
@@ -24,7 +26,6 @@ $indent: calc(6ch - 15px);
     height: 100%;
     padding-bottom: $bottomViewMargin !important;
     padding: 5px;
-    font-size: medium;
 }
 
 #editing {
@@ -68,12 +69,13 @@ $indent: calc(6ch - 15px);
 
 #dialog {
     @include colorWithShadow(input);
-    position: absolute;
     left: 0;
     top: 0;
     outline: none;
     border: none;
     padding: 2px;
+    margin-left: 0;
+    z-index: 10;
 
     &[data=show] {
         margin-left: $indent;
@@ -82,7 +84,7 @@ $indent: calc(6ch - 15px);
 
 .area {
     @include colorBackground(document);
-    @include scroll();
+    @include scroll;
     overflow-x: auto;
     display: flex;
     white-space: pre;
@@ -106,6 +108,8 @@ $indent: calc(6ch - 15px);
 
 .dialogOption {
     @include colorBackground(input);
+    @include colorInteractiveControl;
+    @include fontNormal;
     display: flex;
     align-items: center;
     padding: 0 5px;

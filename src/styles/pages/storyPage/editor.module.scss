@@ -186,7 +186,6 @@ $componentColor: document;
     @include colorBackground(input);
     height: $size !important;
     display: flex;
-    justify-content: center;
 }
 
 .editSelectionMenu {

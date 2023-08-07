@@ -33,7 +33,6 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
     ))
 
     const Component = ({ value }: ListTemplateComponent<ObjectId>): JSX.Element => {
-        const style = itemClassName ? `${itemClassName} ${styles.collection}` : styles.collection;
         const file = files.find((file) => file.id == value)
         const valid = /[a-z0-9]{24}/.test(String(value))
             ? allowedFiles.has(file?.type)
@@ -42,7 +41,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
             ? file?.metadata?.name ?? file?.metadata?.title ?? String(value)
             : String(value)
         return (
-            <div className={style} data={valid && name ? undefined : "error"}>
+            <div className={itemClassName} data={valid && name ? undefined : "error"}>
                 { name }
             </div>
         )
@@ -96,8 +95,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
                 onDragLeave={handleDragLeave}
                 onDragEnter={handleDragEnter}
                 onDrop={handleDrop}
-                data={highlight ? "highlight" : undefined}
-            />
+                data={highlight ? "highlight" : undefined}/>
         )
     }
     

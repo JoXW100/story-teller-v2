@@ -72,7 +72,7 @@ const HistoryRollNotice = ({ result }: HistoryRollNoticeProps): JSX.Element => {
     if (rollWasFail) return <b data='fail'>-FAIL</b>
     switch (result.method) {
         case RollMethod.Advantage: return <b data='adv'>+ADV</b>
-        case RollMethod.Disadvantage: return <b data='adv'>+ADV</b>
+        case RollMethod.Disadvantage: return <b data='dis'>-DIS</b>
         case RollMethod.Crit: return <b data='crit'>+CRIT</b>;
         default: return null;
     }

@@ -22,7 +22,7 @@ interface DialogState {
 }
 
 const characterWidth = 7.2;
-const characterHeight = 15;
+const characterHeight = 15.05;
 const dialogShowExpression = /([\$\\])([a-z0-9]*)$/i
 
 
@@ -48,7 +48,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             var lastLine = lines[lines.length - 1];
             var match = dialogShowExpression.exec(lastLine);
             if (match) {
-                var positionX = 5 + characterWidth * lastLine.length;
+                var positionX = 5 + characterWidth * lastLine.replace(/\t/g, '    ').length;
                 var positionY = 5 + characterHeight * lines.length;
                 var options: string[] = [];
                 if (match[1] === "$") {
@@ -182,8 +182,8 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     className="language-custom"
                     data={context.enableRowNumbers ? 'show' : undefined}/>
                 <dialog 
-                    ref={dialog} id={styles.dialog} 
-                    role='complementary'
+                    ref={dialog} 
+                    id={styles.dialog} 
                     autoFocus={false}
                     open={dialogIsOpen}
                     data={context.enableRowNumbers ? 'show' : undefined}

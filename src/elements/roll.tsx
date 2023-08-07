@@ -67,7 +67,7 @@ class Options implements RollOptions {
     }
 
     public get desc(): string {
-        return this.options.desc ?? "20"
+        return this.options.desc ?? "Rolled"
     }
     
     public get tooltips(): string {
@@ -77,10 +77,6 @@ class Options implements RollOptions {
     public get show(): boolean {
         return this.mode === RollMode.Dice 
             || this.mode === RollMode.DMG
-    }
-
-    public get description(): string {
-        return this.options.desc ?? 'Rolled'
     }
 
     public get modText(): string {

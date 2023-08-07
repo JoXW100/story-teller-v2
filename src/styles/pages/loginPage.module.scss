@@ -17,7 +17,7 @@
     }
     
     @include mobile {
-        grid-template-columns: $phone_smallMenuWidth;
+        grid-template-columns: calc(100% - 30px);
     }
 
     @include mobile-landscape {
@@ -27,7 +27,7 @@
 
 .header {
     @include colorWithShadow(main);
-    @include fontHeader1();
+    @include fontHeaderStory;
     display: grid;
     align-items: center;
     justify-items: center;
