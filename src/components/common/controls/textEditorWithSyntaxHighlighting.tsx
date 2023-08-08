@@ -119,9 +119,13 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                         var selection: number = target.selectionEnd;
                         var start = target.value.substring(0, target.selectionStart)
                         var end = target.value.substring(target.selectionEnd)
+                        const endsWithWhiteSpace = end.startsWith(" ");
+                        const isOption = state.type === "option";
                         start = start.replace(dialogReplaceExpression, (...x) => {
-                            selection += state.options[state.index].length - x[0].length + (state.type === "option" ? 2 : 1);
-                            return `${state.options[state.index]}${state.type === "option" ? ": " : " "}`;
+                            selection += state.options[state.index].length - x[0].length
+                            if (isOption) selection += 1;
+                            if (!endsWithWhiteSpace) selection += 1;
+                            return `${state.options[state.index]}${isOption ? ":" : ""}${endsWithWhiteSpace ? "" : " "}`;
                         })
                         e.preventDefault();
                         e.stopPropagation();

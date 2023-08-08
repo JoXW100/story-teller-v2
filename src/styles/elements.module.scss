@@ -236,6 +236,9 @@
 
 .row {
     display: inline-flex;
+    flex-direction: row;
+    & > .line { @extend .line-vertical; }
+    & > .space { @extend .space-vertical; }
 }
 
 .table {
