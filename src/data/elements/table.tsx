@@ -71,18 +71,18 @@ const validate = (options: TableOptions, content: ParserObject[]): Queries => {
     return {}
 }
 
-const GetTableItems = (content: ParserObject[], metadata: Metadata): TableItems => {
+const GetTableItems = (content: ParserObject[], metadata: Metadata, key: string): TableItems => {
     return content.reduce((items, element, index) => {
         switch (true) {
             case validHeaders.has(element?.type):
                 return { 
                     ...items,
-                    headers: [...items.headers, Parser.buildComponent(element, index, metadata)] 
+                    headers: [...items.headers, Parser.buildComponent(element, key, index, metadata)] 
                 }
             case validCells.has(element?.type):
                 return { 
                     ...items,
-                    cells: [...items.cells, Parser.buildComponent(element, index, metadata)] 
+                    cells: [...items.cells, Parser.buildComponent(element, key, index, metadata)] 
                 }
             case element == null:
             case element?.type == 'text':
@@ -93,10 +93,10 @@ const GetTableItems = (content: ParserObject[], metadata: Metadata): TableItems 
     }, { headers: [], cells: [] } as TableItems)
 }
 
-const TableElement = ({ options = {}, content, metadata }: ElementParams<TableOptions>): JSX.Element => {
+const TableElement = ({ options = {}, content, metadata, variablesKey }: ElementParams<TableOptions>): JSX.Element => {
     const optionsTable = new Options(options)
     const style = { maxWidth: optionsTable.width } as Record<string, string | number>
-    const { headers, cells } = GetTableItems(content, metadata) ?? { headers: [], cells: [] };
+    const { headers, cells } = GetTableItems(content, metadata, variablesKey) ?? { headers: [], cells: [] };
     const columns = headers.length;
     const rows = cells.reduce((rows, cell, index) => {
         let i = index % columns;

@@ -1,3 +1,4 @@
+import Logger from "utils/logger";
 
 class RequestQueue {
     private waitTime = 1000;
@@ -33,7 +34,7 @@ class RequestQueue {
         }
         
         if (!success) {
-            console.warn(res);
+            Logger.warn("RequestQueue.handleRequest", res);
         }
 
         this.requestWorkerTimeout[id] = null;

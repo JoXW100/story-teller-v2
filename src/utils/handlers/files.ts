@@ -3,6 +3,7 @@ import { ObjectId } from "types/database"
 import { FileGetManyMetadataResult, FileMetadata } from "types/database/files"
 import Communication from "utils/communication"
 import { arrayUnique } from "utils/helpers"
+import Logger from "utils/logger"
 
 type ProcessFunction<T extends FileMetadata> = (ids: ObjectId[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: ObjectId[] }>
 
@@ -30,7 +31,7 @@ export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: Pro
                         let values = ids.map((id) => result.find((x) => String(x.id) == id))
                         resolve([...results, ...resolved, ...values])
                     } else {
-                        console.warn("Failed fetching files", res.result);
+                        Logger.warn("useFiles", res.result);
                         resolve([...results, ...resolved])
                     }
                 }
@@ -39,7 +40,7 @@ export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: Pro
             .then((res: FileGetManyMetadataResult<T>) => {
                 setState([res.sort((a,b) => String(a.id).localeCompare(String(b.id))), false])
             })
-            .catch(console.error)
+            .catch((e) => Logger.throw("useFiles", e))
         } else {
             setState([[], false])
         }

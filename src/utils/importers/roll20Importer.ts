@@ -317,7 +317,7 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
             .replace(/[\n\r]/g, '\n\\n\n')
         if (results['content']?.startsWith('<')) {
             results['content'] = ''
-            console.warn("Failed to import description")
+            Logger.warn("roll20Importer", "Failed to import description");
         }
             
 
@@ -340,7 +340,7 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
                 return null
         }
     } catch (error) {
-        console.error(error)
+        Logger.throw("roll20Importer", error)
         return null
     }
 }

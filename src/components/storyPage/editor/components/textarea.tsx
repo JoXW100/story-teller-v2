@@ -15,12 +15,19 @@ const TextareaComponent = ({ params }: TemplateComponentProps<TextAreaTemplatePa
         dispatch.setMetadata(params.key, value);
     }
 
+    const variables = (context.file?.metadata?.$vars ?? {})[params.key] ?? {}
+
     return (
         <div 
             className={styles.editTextArea}
             data={params.fill ? 'fill' : undefined}>
             <b> {`${params.label ?? "label"}:`} </b>
-            <TextEditor text={value} onChange={handleInput}/>
+            <TextEditor 
+                className={styles.editor}
+                text={value} 
+                useSyntaxEditor={params.useSyntaxEditor} 
+                variables={Object.keys(variables)} 
+                onChange={handleInput}/>
         </div>
     )
 }

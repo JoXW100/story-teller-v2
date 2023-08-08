@@ -43,7 +43,7 @@ const validateOptions = (options: ToggleOptions): Queries => {
     return {}
 }
 
-const ToggleElement = ({ options = {}, metadata }: ElementParams<ToggleOptions>): JSX.Element => {
+const ToggleElement = ({ options = {}, metadata, variablesKey }: ElementParams<ToggleOptions>): JSX.Element => {
     const toggleOptions = new Options(options)
     const [toggle, setToggle] = useState(toggleOptions.stateValue);
     const [content, setContent] = useState(null);
@@ -53,8 +53,8 @@ const ToggleElement = ({ options = {}, metadata }: ElementParams<ToggleOptions>)
             ? toggleOptions.alt 
             : toggleOptions.content;
         if (key) {
-            var data = metadata.$vars[key];
-            Parser.parse(data, metadata)
+            var data = (metadata.$vars[variablesKey] ?? {})[key];
+            Parser.parse(data, metadata, variablesKey)
             .then((res) => setContent(res))
             .catch(() => setContent(null))
         } else {

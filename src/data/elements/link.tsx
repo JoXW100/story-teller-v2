@@ -8,6 +8,7 @@ import { Queries, QueryType, ElementObject, ElementParams, Variables } from 'typ
 import { FileContent, FileMetadata, FileType } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
+import Logger from 'utils/logger';
 
 type LinkParams = React.PropsWithChildren<{
     href?: URL,
@@ -54,7 +55,7 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
                 return Navigation.fileURL(this.href)
             return undefined;
         } catch (error) {
-            console.warn("Invalid URL", this.href)
+            Logger.warn("Options.hrefURL", this.href);
             return undefined;
         }
     }
@@ -65,7 +66,7 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
                 return Navigation.fileURL(this.fileId)
             return undefined;
         } catch (error) {
-            console.warn("Invalid URL", this.fileId)
+            Logger.warn("Options.fileURL", this.fileId);
             return undefined;
         }
     }

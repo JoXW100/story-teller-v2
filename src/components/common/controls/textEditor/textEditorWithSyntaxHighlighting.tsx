@@ -1,19 +1,14 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import useTextHandling from 'utils/handlers/textHandler';
 import Prism from "prismjs"
-import Parser from 'utils/parser';
 import { Context } from 'components/contexts/appContext';
-import styles from 'styles/components/textEditor.module.scss';
 import { ElementDictionary, getElement } from 'data/elements';
+import useTextHandling from 'utils/handlers/textHandler';
+import Parser from 'utils/parser';
 import Logger from 'utils/logger';
-
-type TextEditorProps = React.PropsWithRef<{
-    className?: string
-    text: string
-    variables?: string[]
-    onChange: (value: string) => void
-    handleContext?: React.MouseEventHandler<HTMLTextAreaElement>
-}>
+import { TextEditorProps } from '.';
+import openTextEditorContext from './contextMenu';
+import { Point } from 'types/contextMenu';
+import styles from 'styles/components/textEditor.module.scss';
 
 type DialogType = "none" | "option" | "function" | "variable"
 
@@ -32,7 +27,7 @@ const dialogFunctionOptionExpression = /\\([a-z0-9]+)[ \t\n\r]*\[[^\]]*?(?:,? *(
 const dialogReplaceExpression = /([a-z0-9]*)$/i
 
 
-const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange, handleContext }: TextEditorProps): JSX.Element => {
+const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange }: TextEditorProps): JSX.Element => {
     const [context] = useContext(Context)
     const [state, setState] = useState<DialogState>({ left: 0, top: 0, options: [], type: "none", index: -1 })
     const [handleChange, handleKey, handlePreInput] = useTextHandling(onChange)
@@ -146,6 +141,14 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
         handleKey(e);
     }
 
+    const handleContext: React.MouseEventHandler<HTMLTextAreaElement> = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        var point: Point = { x: e.clientX, y: e.clientY }
+        openTextEditorContext(e.currentTarget, point, onChange)
+    }
+
+
     useEffect(() => {
         if (dialog.current && state.index != -1) {
             dialog.current.children[0].children[state.index].scrollIntoView({ block: 'nearest' });
@@ -174,19 +177,19 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     'separator': /,|:/,
                     'line': /\n|\r/,
                     'tab': /\t/,
-                    'text': /\S+/ 
+                    'text': / *\S+/ 
                 }
             },
             'bracket': /[\{\}]/,
-            'variable': variables.length > 0 
+            'variable': variables?.length ?? 0 > 0 
                 ? new RegExp(`\\$(?:${variables.join('|')})(?![a-z0-9]+)`, "i")
                 : Parser.matchVarsExpr,
             'variable error': Parser.matchVarsExpr,
             'line': /\n/,
             'tab': /\t/,
-            'text': /\S+/ 
+            'text': / *\S+/
         }
-    }, [variables])
+    }, [variables, elements])
 
     return (
         <div className={name}>
@@ -222,8 +225,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                             <div 
                                 key={option} 
                                 className={styles.dialogOption}
-                                data={state.index === index ? "selected" : undefined}
-                                onClick={() => console.log("CLick!")}>
+                                data={state.index === index ? "selected" : undefined}>
                                 {option}
                             </div>
                         ))}

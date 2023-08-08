@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { closePopup } from "components/common/popupHolder";
 import roll20Importer from "utils/importers/roll20Importer";
 import Localization from "utils/localization";
+import Logger from "utils/logger";
 import { CreateContentProps } from ".";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
@@ -21,7 +22,7 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
                 data: res.metadata
             }
         }))
-        .catch(console.error)
+        .catch(e => Logger.throw("createImportOldContent.handleClick", e))
         closePopup()
     }
 

@@ -2,6 +2,7 @@ import { DBResponse, ObjectId } from "types/database"
 import { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
 import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
 import { Open5eFetchType } from "types/open5eCompendium"
+import Logger from "./logger"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
@@ -183,7 +184,7 @@ abstract class Communication {
             }
             return await data.json() as DBResponse<T>
         } catch (error) {
-            console.error("Error in Communication." + type, params, error)
+            Logger.throw("communication.databaseFetch", error)
             return { success: false, result: String(error) }
         }
     }
@@ -201,7 +202,7 @@ abstract class Communication {
                 let data = await fetch(this.open5eRoot + type + fieldQuery)
                 resolve(await data.json() as Open5eResponse<T>)
             } catch (error) {
-                console.error("Error in Communication.open5eFetchAll/" + type, query, fields, error)
+                Logger.throw("communication.open5eFetchAll", error)
                 resolve ({
                     count: 0,
                     next: null,
@@ -218,7 +219,7 @@ abstract class Communication {
             let result = await data.json() as T
             return result;
         } catch (error) {
-            console.error("Error in Communication.open5eFetchOne/" + type, id, error)
+            Logger.throw("communication.open5eFetchOne", error)
             return null
         }
     }

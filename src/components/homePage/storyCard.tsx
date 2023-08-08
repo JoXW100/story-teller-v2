@@ -12,6 +12,7 @@ import { DBResponse } from 'types/database';
 import { PageStatus, StoryCardData } from 'types/homePage';
 import { StoryDeleteResult, StoryUpdateResult } from 'types/database/stories';
 import styles from 'styles/pages/homePage/storyCard.module.scss'
+import Logger from 'utils/logger';
 
 type StoryCardProps = React.PropsWithRef<{
     data: StoryCardData
@@ -75,7 +76,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardBodyProps): JSX.Element => 
                         Communication.deleteStory(data.id)
                         .then((res: DBResponse<StoryDeleteResult>) => {
                             if (!res.success)
-                                console.warn(res.result)
+                                Logger.warn("StoryCardBody.deleteStory", res.result);
                             setStatus(PageStatus.Loading)
                         })
                     }
@@ -94,7 +95,7 @@ const StoryCardBody = ({ data, setStatus }: StoryCardBodyProps): JSX.Element => 
                     Communication.updateStory(data.id, response)
                     .then((res: DBResponse<StoryUpdateResult>) => {
                         if (!res.success)
-                            console.warn(res.result)
+                            Logger.warn("StoryCardBody.updateStory", res.result);
                         setStatus(PageStatus.Loading)
                     })
                 }

@@ -11,6 +11,7 @@ import { Open5eCompendiumData } from "data";
 import Localization from "utils/localization";
 import Navigation from "utils/navigation";
 import Communication from "utils/communication";
+import Logger from "utils/logger";
 import { FileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
 import { ICompendiumMenuItem, Open5eItemInfo } from "types/open5eCompendium";
@@ -84,7 +85,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                     data: res
                 }
             }))
-            .catch(console.error)
+            .catch(e => Logger.throw("createImportContent.handleImportClick", e))
             closePopup()
         }
     }

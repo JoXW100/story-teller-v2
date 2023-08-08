@@ -30,7 +30,7 @@ interface QueryResult {
 }
 
 interface Metadata { 
-    $vars?: Variables
+    $vars?: Record<string, Variables>
     $queries?: QueryResult
     [key: string]: any
 }
@@ -50,7 +50,8 @@ interface ParserObject {
 type ElementParams<T extends Variables> = React.PropsWithChildren<{
     options?: T,
     content?: ParserObject[],
-    metadata?: Metadata
+    metadata?: Metadata,
+    variablesKey?: string
 }>;
 
 interface ElementObject {

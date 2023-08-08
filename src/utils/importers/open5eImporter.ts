@@ -329,7 +329,7 @@ const getAttribute = (attribute: string): Attribute => {
         case "wis":
             return Attribute.WIS
         default:
-            console.warn("Missed attribute, defaulting")
+            Logger.warn("getAttribute", "Missed attribute, ...defaulting")
             return Attribute.CHA
     }
 }

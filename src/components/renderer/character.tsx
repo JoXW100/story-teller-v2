@@ -17,25 +17,24 @@ type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata,undefined>
 }>
 
-type CharacterRendererProps = React.PropsWithRef<{
-    character: CharacterData,
-    content: JSX.Element
-}>
-
 type CharacterLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CharacterMetadata>
 }>
 
-const CharacterFileRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
-    const content = useParser(file.content.text, file.metadata);
-    let character = new CharacterData(file.metadata)
-    const Renderer = character.simple 
+const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
+    const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
-    return <Renderer character={character} content={content}/> 
+    return Renderer(props)
 }
 
-const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps): JSX.Element => {
+const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
+    let character = new CharacterData(file.metadata)
+    const content = useParser(file.content.text, file.metadata, "$content");
+    const appearance = useParser(character.appearance, file.metadata, "appearance")
+    const description = useParser(character.description, file.metadata, "description")
+    useParser(character.history, file.metadata, "history")
+    useParser(character.notes, file.metadata, "notes")
     return (
         <>
             <Elements.Align>
@@ -56,20 +55,20 @@ const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps)
                     { character.traits.length > 0 &&  <div>
                         <Elements.Bold>Traits </Elements.Bold>{character.traitsText}
                     </div>}
-                    { character.languages.length > 0 && 
+                    { character.languages.length > 0 ?
                         <div><Elements.Bold>Languages </Elements.Bold>
                             {character.languages}
                         </div> 
-                    }
+                    : null }
                     { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>
-                        <Elements.Text>{character.appearance}</Elements.Text>
+                        {appearance}
                     </> : null }
                     { character.description.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Description</Elements.Header3>
-                        <Elements.Text>{character.description}</Elements.Text>
+                        {description}
                     </> : null }
                 </Elements.Block>
             </Elements.Align>
@@ -79,7 +78,13 @@ const SimpleCharacterRenderer = ({ character, content }: CharacterRendererProps)
     )
 } 
 
-const DetailedCharacterRenderer = ({ character, content }: CharacterRendererProps): JSX.Element => {
+const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
+    let character = new CharacterData(file.metadata)
+    const content = useParser(file.content.text, file.metadata, "$content");
+    const appearance = useParser(character.appearance, file.metadata, "appearance")
+    const description = useParser(character.description, file.metadata, "description")
+    const history = useParser(character.history, file.metadata, "history")
+    const notes = useParser(character.notes, file.metadata, "notes")
     let stats = character.getStats()
     let speed = getSpeed(character)
     let saves = getSaves(character)
@@ -105,22 +110,22 @@ const DetailedCharacterRenderer = ({ character, content }: CharacterRendererProp
                     { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>
-                        <Elements.Text>{character.appearance}</Elements.Text>
+                        <Elements.Text>{appearance}</Elements.Text>
                     </> : null }
                     { character.description.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Description</Elements.Header3>
-                        <Elements.Text>{character.description}</Elements.Text>
+                        <Elements.Text>{description}</Elements.Text>
                     </> : null }
                     { character.history.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>History</Elements.Header3>
-                        <Elements.Text>{character.history}</Elements.Text>
+                        <Elements.Text>{history}</Elements.Text>
                     </> : null }
                     { character.notes.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Notes</Elements.Header3>
-                        <Elements.Text>{character.notes}</Elements.Text>
+                        <Elements.Text>{notes}</Elements.Text>
                     </> : null }
                 </Elements.Block>
                 <Elements.Line/>
@@ -250,13 +255,14 @@ const DetailedCharacterRenderer = ({ character, content }: CharacterRendererProp
 }
 
 const CharacterLinkRenderer = ({ file }: CharacterLinkRendererProps): JSX.Element => {
+    const description = useParser(file.metadata?.description, file.metadata, `$${file.id}.description`)
     return (
         <Elements.Align>
             <Elements.Image options={{ width: '120px', href: file.metadata?.portrait }}/>
             <Elements.Line/>
             <Elements.Block>
                 <Elements.Header3>{ file.metadata?.name }</Elements.Header3>
-                { file.metadata?.description }
+                { description }
             </Elements.Block>
         </Elements.Align>
     )

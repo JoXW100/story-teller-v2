@@ -91,14 +91,14 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
         
         case 'setMetadata':
             if (state.file && action.data?.key) {
-                let data = { 
+                let data = {
                     ...state.file.metadata, 
                     [action.data.key]: action.data.value 
                 } as FileMetadata
-                delete data.$vars;
-                delete data.$queries;
+
+                let { $vars, $queries, ...rest} = data;
                 state.queue.addRequest(() => {
-                    Communication.setFileMetadata(state.story, state.file.id, data).then((res) => {
+                    Communication.setFileMetadata(state.story, state.file.id, rest).then((res) => {
                         if (!res.success) {
                             Logger.error("fileContext.setMetadata", res.result);
                         }

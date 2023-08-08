@@ -6,6 +6,7 @@
 $size: 20px;
 $bottomMargin: 30ch;
 $sizeLarge: ($size + 1px) * 5 - 1px;
+$sizeExtra: ($size + 1px) * 8 - 1px;
 $componentColor: document;
 
 .main {
@@ -150,7 +151,7 @@ $componentColor: document;
 
 .editTextArea {
     @extend .editGroupItem;
-    height: $sizeLarge;
+    height: $sizeExtra;
 
     &[data=fill] {
         height: 100%;
@@ -162,6 +163,11 @@ $componentColor: document;
         grid-template-rows: auto minmax(0, 1fr);
         text-indent: 5px;
         margin: 0;
+    }
+
+    & > .editor {
+        overflow: hidden;
+        max-height: inherit;
     }
 }
 

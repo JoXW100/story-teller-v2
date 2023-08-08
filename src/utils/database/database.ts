@@ -3,6 +3,7 @@ import FilesInterface from "./files";
 import StoriesInterface from "./stories";
 import { DBResponse } from "types/database";
 import { globalVars } from "types/globalVars";
+import Logger from "utils/logger";
 
 abstract class Database 
 {
@@ -33,7 +34,7 @@ abstract class Database
                 this._files = new FilesInterface(database);
                 this._isConnected = true;
             } catch (error) {
-                console.error(error)
+                Logger.throw("Database.connect", error)
                 this.connection = null;
                 this._isConnected = false;
                 this._stories = null;

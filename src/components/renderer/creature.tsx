@@ -28,7 +28,8 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     let saves = getSaves(creature)
     let skills = getSkills(creature)
 
-    const Content = useParser(file.content.text, file.metadata);
+    const content = useParser(file.content.text, file.metadata, "$content");
+    const description = useParser(creature.description, file.metadata, "description")
 
     return (
         <>
@@ -40,7 +41,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     <Elements.Image options={{ href: creature.portrait }}/>
                     <Elements.Line/>
                     <Elements.Header2>Description</Elements.Header2>
-                    { creature.description }
+                    { description }
                     <Elements.Line/>
                     <div><Elements.Bold>Armor Class </Elements.Bold>{creature.acValue}</div>
                     <div><Elements.Bold>Hit Points </Elements.Bold>
@@ -162,20 +163,21 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     />
                 </>
             }
-            {Content && <Elements.Line/>}
-            {Content && Content}
+            {content && <Elements.Line/>}
+            {content && content}
         </>
     )
 }
 
 const CreatureLinkRenderer = ({ file }: CreatureLinkRendererProps): JSX.Element => {
+    const description = useParser(file.metadata?.description, file.metadata, `$${file.id}.description`)
     return (
         <Elements.Align>
             <Elements.Image options={{ width: '120px', href: file.metadata?.portrait }}/>
             <Elements.Line/>
             <Elements.Block>
                 <Elements.Header3>{ file.metadata?.name }</Elements.Header3>
-                { file.metadata?.description }
+                { description }
             </Elements.Block>
         </Elements.Align>
     )

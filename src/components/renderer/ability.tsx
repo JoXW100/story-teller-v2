@@ -43,11 +43,12 @@ type AbilityProps = React.PropsWithRef<{
     metadata: AbilityMetadata, 
     stats: ICreatureStats
     open: boolean
+    variablesKey: string
 }>
 
-const Ability = ({ metadata, stats, open }: AbilityProps): JSX.Element => {
+const Ability = ({ metadata, stats, open }: AbilityProps, variablesKey): JSX.Element => {
     let ability = new AbilityData(metadata, stats)
-    let description = useParser(ability.description, metadata)
+    let description = useParser(ability.description, metadata, variablesKey)
 
     switch(ability.type) {
         case AbilityType.Feature:
@@ -189,13 +190,13 @@ const AbilityToggleRenderer = ({ metadata = {}, stats = {}, isOpen = false }: Ab
 
     return (
         <div className={styles.ability} data={data} onClick={canClose ? handleClick : undefined}>
-            <Ability metadata={metadata} stats={stats} open={open}/>
+            <Ability metadata={metadata} stats={stats} open={open} variablesKey='description'/>
         </div>
     )
 }
 
 const AbilityLinkRenderer = ({ file, stats = {} }: AbilityLinkRendererProps): JSX.Element => {
-    return <Ability metadata={file.metadata} stats={stats} open={true}/>
+    return <Ability metadata={file.metadata} stats={stats} open={true} variablesKey={`$${file.id}.description`}/>
 }
 
 const AbilityRenderer: RendererObject<AbilityContent,AbilityMetadata> = {

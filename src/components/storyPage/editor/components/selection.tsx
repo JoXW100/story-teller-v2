@@ -5,6 +5,7 @@ import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';
+import Logger from 'utils/logger';
 
 type SelectionItemElementProps = React.PropsWithChildren<{
     item: ReactNode
@@ -46,7 +47,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     
     // UseMemo above must not be used conditionally
     if (!type){
-        console.error("No option type of type: " + params.type)
+        Logger.throw("selectionComponent", new Error("No option type of type: " + params.type))
         return null;
     }
     

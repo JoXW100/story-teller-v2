@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Communication from "./communication";
 import { arrayUnique } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
-import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
+import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
 import styles from 'styles/renderer.module.scss';
 
@@ -21,18 +21,18 @@ abstract class Parser
     public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]\n\r]*)\])?/i
     private static queries: QueryResult = {}
 
-    static async parse(text: string, metadata: Metadata): Promise<JSX.Element> {
+    static async parse(text: string, metadata: Metadata, variablesKey: string): Promise<JSX.Element> {
         if (!text)
             return null
         var splits = text.split(this.matchBodyExpr);
-        var variables: Variables = { ...metadata.$vars ?? {} }
-        // find variable content from text
-        metadata.$vars = this.parseVariables(splits, variables);
+        var variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
         Object.keys(metadata).forEach(key => {
-            if (typeof(metadata[key]) != typeof({}) && key !== "public") {
+            if (typeof(metadata[key]) != typeof({}) && key !== "public" && key !== variablesKey) {
                 variables[key] = metadata[key]
             }
         });
+        // find variable content from text
+        metadata.$vars = { ...metadata.$vars, [variablesKey]: this.parseVariables(splits, variables) };
         // replace variables in text with its respective content
         var withVars = text.replace(this.matchVarsExpr, (...x) => {
             if (variables[x[1]]) return variables[x[1]]
@@ -43,7 +43,7 @@ abstract class Parser
         // build tree structure
         var tree = this.buildTree(splits);
         metadata.$queries = await this.resolveQueries(tree)
-        return this.buildComponent(tree, 0, metadata)
+        return this.buildComponent(tree, variablesKey, 0, metadata)
     }
     
     private static buildTree(splits: string[]): ParserObject {
@@ -205,7 +205,7 @@ abstract class Parser
         return res
     }
 
-    public static buildComponent(tree: ParserObject, key: number = 0, metadata: Metadata, parent?: ParserObject): JSX.Element {
+    public static buildComponent(tree: ParserObject, variablesKey: string, key: number = 0, metadata: Metadata, parent?: ParserObject): JSX.Element {
         if (tree.type === 'set')
             return null
         if (tree.type === 'text' && tree.variables.text?.trim() == '')
@@ -215,13 +215,14 @@ abstract class Parser
              
         let element = getElement(tree.type);
         let children = element.buildChildren    
-            ? tree.content.map((child, key) => this.buildComponent(child, key, metadata, tree))
+            ? tree.content.map((child, key) => this.buildComponent(child, variablesKey, key, metadata, tree))
             : null;
         return (
             <element.toComponent 
                 options={tree.variables} 
                 content={tree.content} 
                 metadata={metadata} 
+                variablesKey={variablesKey}
                 key={key}>
                 { children }
             </element.toComponent>
@@ -229,10 +230,10 @@ abstract class Parser
     }
 }
 
-export const useParser = (text: string, metadata: Metadata): JSX.Element => {
+export const useParser = (text: string, metadata: Metadata, key: string): JSX.Element => {
     const [state, setState] = useState(null)
     useEffect(() => {
-        Parser.parse(text, metadata)
+        Parser.parse(text, metadata, key)
         .then((res) => setState(res))
         .catch((error) => {
             if (error instanceof ParseError) {

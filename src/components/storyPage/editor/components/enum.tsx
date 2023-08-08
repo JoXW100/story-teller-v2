@@ -5,12 +5,13 @@ import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
 import { EnumTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss'
+import Logger from 'utils/logger';
 
 const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const type = getOptionType(params.type);
     if (!type){
-        console.error("No option type of type: " + params.type)
+        Logger.throw("enumComponent", new Error("No option type of type: " + params.type))
         return null;
     }
     const value: string = context.file?.metadata 

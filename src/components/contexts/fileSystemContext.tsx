@@ -9,7 +9,7 @@ import Communication from 'utils/communication';
 import Logger from 'utils/logger';
 import { DBResponse, ObjectId } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileConvertResult, FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType, RenderedFileTypes } from 'types/database/files'
+import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType, RenderedFileTypes } from 'types/database/files'
 import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
 import { CreateFileOptions } from 'data/fileTemplates';
 
@@ -59,7 +59,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                         Communication.deleteFile(context.story.id, file.id)
                         .then((res) => {
                             if (!res.success) {
-                                console.warn(res.result);
+                                Logger.warn("FileSystemContext.openRemoveFileMenu", res.result);
                             } else if (selected) {
                                 router.push('../' + context.story.id)
                             }
@@ -85,7 +85,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                         Communication.convertFile(context.story.id, file.id, type)
                         .then((res) => {
                             if (!res.success) {
-                                console.warn(res.result);
+                                Logger.warn("FileSystemContext.openRemoveFileMenu", res.result);
                             } else if (selected) {
                                 router.push('../' + context.story.id)
                             }
@@ -101,7 +101,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         Communication.renameFile(context.story.id, file.id, name)
         .then((res) => {
             if (!res.success) {
-                console.warn(res.result);
+                Logger.warn("FileSystemContext.renameFile", res.result);
             }
             if (callback) {
                 callback(res);
@@ -113,7 +113,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         Communication.moveFile(context.story.id, file.id, target?.id ?? context.story.root)
         .then((res) => {
             if (!res.success) {
-                console.warn(res.result);
+                Logger.warn("FileSystemContext.moveFile", res.result);
             }
             setState({ ...state, fetching: true})
         })
@@ -123,7 +123,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         Communication.setFileState(context.story.id, file.id, state)
         .then((res) => {
             if (!res.success) {
-                console.warn(res.result);
+                Logger.warn("FileSystemContext.setFileState", res.result);
             }
             if (callback) {
                 callback(res);
@@ -143,14 +143,14 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                 name = res[1]
             }
         } catch (error) {
-            console.error(error)
+            Logger.throw("fileSystem.createCopy", error)
         }
 
         let newName = `${name} (${num + 1})`
         Communication.addFileCopy(context.story.id, file.holderId, file.id, newName)
         .then((res) => {
             if (!res.success) {
-                console.warn(res.result);
+                Logger.warn("FileSystemContext.createCopy", res.result);
             }
             setState({ ...state, fetching: true})
         })

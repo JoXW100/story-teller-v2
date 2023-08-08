@@ -6,6 +6,7 @@ import SpellRenderer from './spell';
 import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
 import { ParseError } from 'utils/parser';
+import Logger from 'utils/logger';
 import { RendererObject } from 'types/database/editor';
 import { FileType, FileData, FileContent, FileMetadata } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
@@ -30,7 +31,7 @@ const useRenderer = (template: FileRendererTemplate, file: FileData<any,any,any>
             case FileType.Encounter:
                 return EncounterRenderer
             default:
-                console.error("No renderer for template type exists: " + template.type)
+                Logger.throw("useRenderer", new Error("No renderer for template type exists: " + template.type))
                 return DocumentRenderer
         }
     }, [template])

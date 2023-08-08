@@ -20,7 +20,7 @@
                     },
                     { 
                         "type": "textarea", 
-                        "params": { "label": "Content", "key": "content" }
+                        "params": { "label": "Content", "key": "content", "useSyntaxEditor": false }
                     }
                 ]
             },

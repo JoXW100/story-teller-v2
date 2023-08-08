@@ -17,7 +17,7 @@ type DocumentLinkRendererProps = React.PropsWithRef<{
 }>
 
 const DocumentFileRenderer = ({ file }: DocumentFileRendererProps): JSX.Element => {
-    const content = useParser(file.content.text, file.metadata)
+    const content = useParser(file.content.text, file.metadata, "$content")
     return <>
         <Elements.Header1 options={{ underline: 'true' }}> 
             {file.metadata?.title} 

@@ -2,6 +2,7 @@ import Database, { failure, success }  from "utils/database/database";
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from "next";
 import { DBContent, FileMetadata, FileType } from "types/database/files";
+import Logger from "utils/logger";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<void> => {
     const { user } = getSession(req, res);
@@ -107,7 +108,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                 return res.status(400).json(failure("Missing"));
         }
     } catch (error) {
-        console.error(error)
+        Logger.throw("database.handler", error)
         return res.status(400).json(failure(error.message));
     }
 }

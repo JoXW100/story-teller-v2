@@ -1,7 +1,7 @@
 import { ParseError } from 'utils/parser';
 import { ElementObject, ElementParams, Variables } from 'types/elements';
 
-const BoldElement = ({ options, metadata, content, ...args }: ElementParams<{}>): JSX.Element => {
+const BoldElement = ({ options, metadata, content, variablesKey, ...args }: ElementParams<{}>): JSX.Element => {
     return <b {...args}/>
 }
 
@@ -11,7 +11,7 @@ const x = {
     buildChildren: true,
     validOptions: null,
     toComponent: BoldElement,
-    validate: (options: Variables) => {
+    validate: (options) => {
         if (Object.keys(options).length > 0)
             throw new ParseError(`'bold' command does not accept any options`);
         return {}

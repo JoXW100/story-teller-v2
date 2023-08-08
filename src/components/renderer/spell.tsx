@@ -14,6 +14,7 @@ import { DBResponse } from 'types/database';
 import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
+import Logger from 'utils/logger';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
@@ -28,6 +29,7 @@ type SpellGroupsProps = React.PropsWithRef<{
 type SpellProps = React.PropsWithRef<{
     metadata: SpellMetadata
     stats?: ICreatureStats
+    variablesKey: string
     open: boolean
 }>
 
@@ -47,9 +49,9 @@ type SpellToggleRendererProps = React.PropsWithRef<{
     isOpen?: boolean
 }>
 
-const Spell = ({ metadata, stats, open }: SpellProps) => {
+const Spell = ({ metadata, stats, open, variablesKey }: SpellProps) => {
     let spell = new SpellData(metadata, stats)
-    let description = useParser(spell.description, spell.metadata)
+    let description = useParser(spell.description, spell.metadata, variablesKey)
     let range = getSpellRange(spell)
     let components = getComponents(spell).map((x, i) => (
         <span key={i}
@@ -199,13 +201,13 @@ const SpellToggleRenderer = ({ metadata, stats, isOpen = false }: SpellToggleRen
 
     return (
         <div className={styles.spell} onClick={handleClick}>
-            <Spell metadata={metadata} stats={stats} open={open}/>
+            <Spell metadata={metadata} stats={stats} open={open} variablesKey="description"/>
         </div>
     )
 }
 
 const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element => {
-    return <Spell metadata={file.metadata} stats={stats} open={true}/>
+    return <Spell metadata={file.metadata} stats={stats} open={true} variablesKey={`$${file.id}.description`}/>
 }
 
 export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): JSX.Element => {
@@ -219,7 +221,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
                 if (res.success) {
                     setSpells(res.result as FileGetManyMetadataResult)
                 } else {
-                    console.warn(res.result);
+                    Logger.warn("SpellGroups.getManyMetadata", res.result);
                     setSpells([])
                 }
             })

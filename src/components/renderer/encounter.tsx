@@ -116,7 +116,8 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
     const [cards, setCards] = useEncounterCards(file)
     const encounter = new EncounterData<IEncounterCard>(file.metadata, cards, setCards)
-    const content = useParser(file.content.text, file.metadata)
+    const content = useParser(file.content.text, file.metadata, "$content")
+    const description = useParser(encounter.description, file.metadata, "description")
 
     const onRollInitiative = () => {
         encounter.cards.forEach((card, index) => {
@@ -190,7 +191,7 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
         <Elements.Line/>
         { encounter.description && encounter.description.length > 0 && <> 
             <Elements.Header2>Description</Elements.Header2>
-            <div>{encounter.description}</div>
+            <div>{description}</div>
         </>}
         <Elements.Space/>
         <div><Elements.Bold>Challenge: </Elements.Bold>{encounter.challengeText}</div>
@@ -218,9 +219,10 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
 
 const EncounterLinkRenderer = ({ file }: EncounterLinkRendererProps): JSX.Element => {
     const encounter = new EncounterData(file.metadata, [], null)
+    const description = useParser(encounter.description, file.metadata, `$${file.id}.description`)
     return <>
         <Elements.Header3>{encounter.name}</Elements.Header3>
-        { encounter.description }
+        {description}
     </>
 }
 

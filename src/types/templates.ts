@@ -130,6 +130,7 @@ interface TextTemplateParams extends IFileTemplateParams {
 interface TextAreaTemplateParams extends IFileTemplateParams {
     label: string
     key: string
+    useSyntaxEditor?: boolean
     fill?: boolean
 }
 

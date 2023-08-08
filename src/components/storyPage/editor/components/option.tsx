@@ -8,6 +8,7 @@ import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import styles from 'styles/pages/storyPage/editor.module.scss';
+import Logger from 'utils/logger';
 
 type OptionData = { type: string | number, value: number }
 
@@ -39,7 +40,7 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
                 dispatch.setMetadata(params.key, data);
             }
         } catch (error) {
-            console.error(error);
+            Logger.throw("optionComponent.handleInput", error);
         }
     }
 

@@ -7,6 +7,6 @@ export const element = {
         buildChildren: false,
         validOptions: null,
         toComponent: null,
-        validate: (_: Variables) => ({})
+        validate: () => ({})
     }
 } satisfies Record<string, ElementObject>

@@ -347,7 +347,7 @@ class FilesInterface
             Logger.log("files.getStructure", result.length)
             return success(data.root.children ?? []);
         } catch (error) {
-            console.error(error);
+            Logger.throw("FilesInterface.getStructure", error)
             return failure(error.message);
         }
     }

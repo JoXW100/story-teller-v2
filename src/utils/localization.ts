@@ -1,4 +1,5 @@
 import { TextData } from "data";
+import Logger from "./logger";
 
 abstract class Localization
 {
@@ -20,7 +21,7 @@ abstract class Localization
             }
             return text
         } catch (error) {
-            console.warn("No localization text for: " + key)
+            Logger.error("Localization.toText", "No localization text for: " + key);
             return ""
         }
     }
