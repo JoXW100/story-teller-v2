@@ -4,7 +4,8 @@ import Prism from "prismjs"
 import Parser from 'utils/parser';
 import { Context } from 'components/contexts/appContext';
 import styles from 'styles/components/textEditor.module.scss';
-import { ElementDictionary } from 'data/elements';
+import { ElementDictionary, getElement } from 'data/elements';
+import Logger from 'utils/logger';
 
 type TextEditorProps = React.PropsWithRef<{
     className?: string
@@ -14,22 +15,27 @@ type TextEditorProps = React.PropsWithRef<{
     handleContext?: React.MouseEventHandler<HTMLTextAreaElement>
 }>
 
+type DialogType = "none" | "option" | "function" | "variable"
+
 interface DialogState {
     left: number
     top: number
     options: string[]
+    type: DialogType
     index: number
 }
 
 const characterWidth = 7.2;
 const characterHeight = 15.05;
 const dialogShowExpression = /([\$\\])([a-z0-9]*)$/i
+const dialogFunctionOptionExpression = /\\([a-z0-9]+)[ \t\n\r]*\[[^\]]*?(?:,? *([a-z0-9]*))$/i
+const dialogReplaceExpression = /([a-z0-9]*)$/i
 
 
 const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange, handleContext }: TextEditorProps): JSX.Element => {
     const [context] = useContext(Context)
-    const [state, setState] = useState<DialogState>({ left: 0, top: 0, options: [], index: -1 })
-    const [handleChange, handleKey] = useTextHandling(onChange)
+    const [state, setState] = useState<DialogState>({ left: 0, top: 0, options: [], type: "none", index: -1 })
+    const [handleChange, handleKey, handlePreInput] = useTextHandling(onChange)
     const ref = useRef<HTMLTextAreaElement>()
     const dialog = useRef<HTMLDialogElement>()
     const highlightRef = useRef<HTMLPreElement>()
@@ -38,41 +44,58 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
     const dialogIsOpen = state.options.length > 0;
 
     const clearDialog = () => {
-        setState({ ...state, left: 0, top: 0, options: [], index: -1 })
+        setState({ ...state, left: 0, top: 0, options: [], type: "none", index: -1 })
     } 
 
     const handleInput: React.FormEventHandler<HTMLTextAreaElement> = (e) => {
+        handlePreInput(e);
         if (dialog.current) {
-            const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
-            var lines = target.value.substring(0, target.selectionStart).split('\n');
-            var lastLine = lines[lines.length - 1];
+            const target: HTMLTextAreaElement = e.currentTarget
+            const start = target.selectionStart;
+            const startText = target.value.substring(0, start)
+            const lines = startText.split('\n');
+            const lastLine = lines[lines.length - 1];
             var match = dialogShowExpression.exec(lastLine);
+            var options: string[] = [];
+            var type: DialogType = "none";
+
             if (match) {
-                var positionX = 5 + characterWidth * lastLine.replace(/\t/g, '    ').length;
-                var positionY = 5 + characterHeight * lines.length;
-                var options: string[] = [];
                 if (match[1] === "$") {
                     options = variables?.filter((variable) => variable.startsWith(match[2])) ?? []
+                    type = "variable"
                 } else if (match[1] === "\\") {
                     options = elements.filter((element) => element.startsWith(match[2])) ?? []
+                    type = "function"
+                } else {
+                    Logger.throw("textEditorWithSyntaxHighlighting.handleInput", new Error(match[1]))
                 }
-                setState({ ...state, left: positionX, top: positionY, options: options })
-            } else {
-                clearDialog();
+            } else if ((match = dialogFunctionOptionExpression.exec(startText))) {
+                var element = getElement(match[1]);
+                if (element) {
+                    options = Array.from(element.validOptions ?? [])
+                                   .filter((option => option.startsWith(match[2])))
+                    type = "option"
+                }
             }
+            else {
+                clearDialog();
+                return;
+            }
+            const positionX = 5 + characterWidth * lastLine.replace(/\t/g, '    ').length;
+            const positionY = 5 + characterHeight * lines.length;
+            setState({ ...state, left: positionX, top: positionY, options: options, type: type })
         }
-
         handleScroll(e);
     }
 
     const handleScroll: React.FormEventHandler<HTMLTextAreaElement> = (e) => {
-        const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
+        const target: HTMLTextAreaElement = e.currentTarget
         highlightRef.current.scrollTop = target.scrollTop;
         highlightRef.current.scrollLeft = target.scrollLeft;
     }
 
     const handlePreKey: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-        const target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
+        const target: HTMLTextAreaElement = e.currentTarget
         if (dialogIsOpen) {
             switch (e.key) {
                 case "ArrowDown":
@@ -92,13 +115,13 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     clearDialog();
                     break;
                 case "Enter":
-                    if (state.index !== -1) {
+                    if (state.index !== -1 && state.type !== "none") {
                         var selection: number = target.selectionEnd;
                         var start = target.value.substring(0, target.selectionStart)
                         var end = target.value.substring(target.selectionEnd)
-                        start = start.replace(dialogShowExpression, (...x) => {
-                            selection += state.options[state.index].length - x[0].length + 2;
-                            return `${x[1]}${state.options[state.index]} `;
+                        start = start.replace(dialogReplaceExpression, (...x) => {
+                            selection += state.options[state.index].length - x[0].length + (state.type === "option" ? 2 : 1);
+                            return `${state.options[state.index]}${state.type === "option" ? ": " : " "}`;
                         })
                         e.preventDefault();
                         e.stopPropagation();
@@ -142,11 +165,12 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                 inside: {
                     'name': new RegExp(`\\\\(?:${elements.join('|')})(?![a-z0-9]+)`, "i"),
                     'name error': /\\[a-z0-9]+/i,
-                    'bracket': /[\[\]]/,
-                    'option': /[a-z]+(?=:)(?!:\/)/i,
-                    'separator': /[,:]/,
-                    'line': /\n/,
+                    'bracket': /\[|\]/,
+                    'option': /[a-z0-9]+(?=:)(?!:\/)/i,
+                    'separator': /,|:/,
+                    'line': /\n|\r/,
                     'tab': /\t/,
+                    'text': /\S+/ 
                 }
             },
             'bracket': /[\{\}]/,
@@ -156,7 +180,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             'variable error': Parser.matchVarsExpr,
             'line': /\n/,
             'tab': /\t/,
-            'text': /.+/ 
+            'text': /\S+/ 
         }
     }, [variables])
 

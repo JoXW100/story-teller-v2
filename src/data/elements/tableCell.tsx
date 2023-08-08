@@ -38,9 +38,7 @@ const _element = {
     type: 'tableCell',
     defaultKey: 'color',
     buildChildren: true,
-    inline: true,
-    lineBreak: true,
-    container: false,
+    validOptions: validOptions,
     toComponent: TableCellElement,
     validate: validateOptions
 } satisfies ElementObject

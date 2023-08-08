@@ -11,9 +11,7 @@ export const element = {
         type: 'row',
         defaultKey: null,
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: null,
         toComponent: RowElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

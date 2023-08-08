@@ -61,9 +61,7 @@ export const element = {
         type: 'block',
         defaultKey: 'width',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: validOptions,
         toComponent: BlockElement,
         validate: validateOptions
     }

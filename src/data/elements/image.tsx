@@ -82,9 +82,7 @@ export const element = {
         type: 'image',
         defaultKey: 'href',
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: ImageElement,
         validate: validateOptions
     }

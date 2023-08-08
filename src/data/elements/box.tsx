@@ -78,9 +78,7 @@ export const element = {
         type: 'box',
         defaultKey: 'color',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: validOptions,
         toComponent: BoxElement,
         validate: validateOptions
     }

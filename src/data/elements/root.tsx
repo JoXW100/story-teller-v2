@@ -10,9 +10,7 @@ export const element = {
         type: 'root',
         defaultKey: null,
         buildChildren: true,
-        inline: false,
-        lineBreak: false,
-        container: false,
+        validOptions: null,
         toComponent: RootElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

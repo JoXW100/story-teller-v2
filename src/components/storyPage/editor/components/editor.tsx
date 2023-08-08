@@ -24,9 +24,9 @@ import TextEditorWithSyntaxHighlighting from 'components/common/controls/textEdi
 import TextEditor from 'components/common/controls/textEditor';
 import { TemplateComponentProps } from '.';
 import Localization from 'utils/localization';
-import { FileTemplateParams } from 'types/templates';
+import { IFileTemplateParams } from 'types/templates';
 
-const EditorComponent = ({}: TemplateComponentProps<FileTemplateParams>): JSX.Element => {
+const EditorComponent = ({}: TemplateComponentProps<IFileTemplateParams>): JSX.Element => {
     const [app] = useContext(AppContext)
     const [context, dispatch] = useContext(Context)
 

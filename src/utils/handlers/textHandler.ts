@@ -1,16 +1,22 @@
 import { Context } from "components/contexts/appContext";
 import { useContext } from "react";
 
+const MatchLastWorldExpression = /\s(\S*)$/;
+const MatchLastLineExpression = /.*$/;
+const ReplaceLastLineAfterLineBreakWithTabExpression = /[\n\r]\t(.*)$/g
+const ReplaceLastLineAfterLineBreakExpression = /[\n\r](.*)$/g
+const ReplaceStartOfLinesWithTabExceptFirstExpression = /([\n\r])^\t/gm
+const ReplaceStartOfLinesExceptFirstExpression = /([\n\r])^/gm
+
 const useTextHandling  = (onChange: (value: string) => void): [
     handleChange: React.ChangeEventHandler<HTMLTextAreaElement>, 
-    handleKey: React.KeyboardEventHandler<HTMLTextAreaElement>
+    handleKey: React.KeyboardEventHandler<HTMLTextAreaElement>,
+    handleInput: React.FormEventHandler<HTMLTextAreaElement>
 ] => {
     const [context] = useContext(Context)
-    const MatchLastWorldExpression = /\s(\S*)$/;
-    const MatchLastLineExpression = /.*$/;
 
     const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-        var target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
+        const target: HTMLTextAreaElement = e.currentTarget
         var value = target.value;
         if (context.automaticLineBreak > 0) {
             var preSelect = value.slice(0, target.selectionStart)
@@ -28,21 +34,60 @@ const useTextHandling  = (onChange: (value: string) => void): [
     }
 
     const handleKey: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+        const target: HTMLTextAreaElement = e.currentTarget
         if (e.code === 'Tab') {
             e.preventDefault();
-            var target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
             var start = target.selectionStart;
-            target.value = `${target.value.substring(0, start)}\t${target.value.substring(start)}`;
-            target.selectionStart = target.selectionEnd = start + 1;
+            var end = target.selectionEnd;
+            var stringStart = target.value.substring(0, start);
+            var stringMiddle = target.value.substring(start, end);
+            var stringEnd = target.value.substring(end);
+            if (e.shiftKey && start === end) {
+                var countStart = 0;
+                stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakWithTabExpression, (...x) => { countStart++; return `\n${x[1]}` })
+                target.value = stringStart + stringEnd;
+                target.selectionStart = target.selectionEnd = start - countStart;
+            } else if (e.shiftKey) {
+                var countStart = 0, count = 0;
+                stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakWithTabExpression, (...x) => { countStart++; return `\n${x[1]}` })
+                stringMiddle = stringMiddle.replace(ReplaceStartOfLinesWithTabExceptFirstExpression, () => { count++; return '\n' })
+                target.value = `${stringStart}${stringMiddle}${stringEnd}`;
+                target.selectionStart = start - countStart;
+                target.selectionEnd = end - countStart - count;
+            } else if (start === end) {
+                target.value = `${stringStart}\t${stringEnd}`;
+                target.selectionStart = target.selectionEnd = start + 1;
+            } else {
+                var countStart = 0, count = 0;
+                stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakExpression, (...x) => { countStart++; return `\n\t${x[1]}` })
+                stringMiddle = stringMiddle.replace(ReplaceStartOfLinesExceptFirstExpression, () => { count++; return '\n\t' })
+                target.value = `${stringStart}${stringMiddle}${stringEnd}`;
+                target.selectionStart = start + countStart;
+                target.selectionEnd = end + countStart + count;
+            }
             onChange(target.value);
         }
         if (e.code === 'Enter') {
-            var target: HTMLTextAreaElement = e.target as HTMLTextAreaElement
             target.scrollLeft = 0;
         }
     }
 
-    return [handleChange, handleKey]
+    const handleInput: React.FormEventHandler<HTMLTextAreaElement> = (e) => {
+        const target: HTMLTextAreaElement = e.currentTarget
+        const input = e.nativeEvent as InputEvent
+
+        const start = target.selectionStart;
+        const startText = target.value.substring(0, start)
+        if (input.data === '[') {
+            target.value = `${startText}]${target.value.substring(start)}`;
+            target.selectionStart = target.selectionEnd = start;
+        } else if (input.data === '{') {
+            target.value = `${startText}}${target.value.substring(start)}`;
+            target.selectionStart = target.selectionEnd = start;
+        }
+    }
+
+    return [handleChange, handleKey, handleInput]
 }
 
 export default useTextHandling;

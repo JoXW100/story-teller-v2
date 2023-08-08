@@ -42,9 +42,7 @@ export const element = {
         type: 'line',
         defaultKey: 'width',
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: LineElement,
         validate: validateOptions
     }

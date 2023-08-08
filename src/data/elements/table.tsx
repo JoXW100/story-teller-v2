@@ -132,9 +132,7 @@ export const element = {
         type: 'table',
         defaultKey: 'color',
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: validOptions,
         toComponent: TableElement,
         validate: validate
     }

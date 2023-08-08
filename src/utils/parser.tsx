@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
 import { arrayUnique } from "./helpers";
-import { ElementDictionary, TableElementTypes } from "data/elements";
+import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
 import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject, ElementObject } from "types/elements";
 import { FileGetManyMetadataResult } from "types/database/files";
 import styles from 'styles/renderer.module.scss';
@@ -17,8 +17,8 @@ abstract class Parser
     public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
     public static readonly matchBodyExpr = /([\{\}])/
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
-    public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]]*\])?)/gi
-    public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\{\]]*)\])?/i
+    public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]\n\r]*\])?)/gi
+    public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]\n\r]*)\])?/i
     private static queries: QueryResult = {}
 
     static async parse(text: string, metadata: Metadata): Promise<JSX.Element> {
@@ -167,7 +167,7 @@ abstract class Parser
         if (!(tree.type in ElementDictionary))
             throw new ParseError(`Unknown command '${tree.type}'`)
         
-        let element = ElementDictionary[tree.type] as ElementObject;
+        let element = getElement(tree.type);
         tree.options.forEach((option) => {
             tree.variables[option.key ?? element.defaultKey] = option.value
         })
@@ -213,7 +213,7 @@ abstract class Parser
         if (parent != null && parent.type !== 'table' && TableElementTypes.has(tree.type))
             throw new ParseError(`Element of type '\\${tree.type}' can only appear inside '\\table' elements.`)
              
-        let element = ElementDictionary[tree.type];
+        let element = getElement(tree.type);
         let children = element.buildChildren    
             ? tree.content.map((child, key) => this.buildComponent(child, key, metadata, tree))
             : null;

@@ -77,9 +77,7 @@ export const element = {
         type: 'align',
         defaultKey: 'direction',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: validOptions,
         toComponent: AlignElement,
         validate: validateOptions
     }

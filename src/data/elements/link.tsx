@@ -211,9 +211,7 @@ export const element = {
         type: 'link',
         defaultKey: 'href',
         buildChildren: true,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: validOptions1,
         toComponent: LinkElement,
         validate: validateOptions1
     },
@@ -221,9 +219,7 @@ export const element = {
         type: 'linkContent',
         defaultKey: 'fileId',
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions2,
         toComponent: LinkContentElement,
         validate: validateOptions2
     },
@@ -231,9 +227,7 @@ export const element = {
         type: 'linkTitle',
         defaultKey: 'fileId',
         buildChildren: false,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: validOptions3,
         toComponent: LinkTitleElement,
         validate: validateOptions3
     }

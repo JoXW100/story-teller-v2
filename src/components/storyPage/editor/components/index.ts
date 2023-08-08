@@ -9,9 +9,9 @@ import List from './list'
 import Number from './number'
 import Option from './option';
 import Selection from './selection';
-import { FileTemplateParams } from 'types/templates';
+import { IFileTemplateParams } from 'types/templates';
 
-type TemplateComponentProps<T extends FileTemplateParams> = React.PropsWithChildren<{
+type TemplateComponentProps<T extends IFileTemplateParams = IFileTemplateParams> = React.PropsWithChildren<{
     params: T
 }>
 

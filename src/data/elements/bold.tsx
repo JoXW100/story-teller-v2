@@ -9,9 +9,7 @@ const x = {
     type: 'bold',
     defaultKey: null,
     buildChildren: true,
-    inline: true,
-    lineBreak: false,
-    container: false,
+    validOptions: null,
     toComponent: BoldElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)

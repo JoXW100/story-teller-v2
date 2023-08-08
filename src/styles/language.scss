@@ -54,7 +54,7 @@ code {
     
     &[data=show] {
         & > .token:first-child,
-        .token:has(.token.line) + .token,
+        .token:has(.token.line:last-child) + .token,
         .token.line + .token {
             &::before {
                 @include line_nr;

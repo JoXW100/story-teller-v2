@@ -24,9 +24,7 @@ export const element = {
         type: 'text',
         defaultKey: 'text',
         buildChildren: true,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: validOptions,
         toComponent: TextElement,
         validate: validateOptions
     }

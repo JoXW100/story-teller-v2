@@ -122,7 +122,14 @@
             "filter-menu-closeTooltips": "Close Menu",
             "filter-menu-showEmptyFolders": "Show empty folders",
             "renderer-zoomIn": "Zoom In",
-            "renderer-zoomOut": "Zoom Out"
+            "renderer-zoomOut": "Zoom Out",
+            "file-abi": "Ability",
+            "file-cha": "Character",
+            "file-cre": "Creature",
+            "file-doc": "Document",
+            "file-enc": "Encounter",
+            "file-spe": "Spell",
+            "file-folder": "Folder"
         }
     }
 }

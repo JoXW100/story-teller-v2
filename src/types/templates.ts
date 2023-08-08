@@ -1,4 +1,4 @@
-import { FileType } from "./database/files"
+import { FileMetadata, FileType } from "./database/files"
 
 interface FileRendererTemplate {
     type: FileType
@@ -12,84 +12,80 @@ interface FileTemplate {
 // ------------------
 // TemplateConditions
 // ------------------
-interface TemplateCondition {
+
+interface ITemplateCondition {
     type: TemplateConditionType
-    value: any
+    value: unknown
 }
 
 type ConditionValue = TemplateConditionType | string | boolean
-class EqualsTemplateCondition implements TemplateCondition {
+class EqualsTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Equals
     value: ConditionValue[]
 }
 
-class NotEqualsTemplateCondition implements TemplateCondition {
+class NotEqualsTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.NotEquals
     value: ConditionValue[]
 }
 
-class AnyTemplateCondition implements TemplateCondition {
+class AnyTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Any
     value: ConditionValue[]
 }
 
-class AllTemplateCondition implements TemplateCondition {
+class AllTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.All
     value: ConditionValue[]
 }
 
-class ValueTemplateCondition implements TemplateCondition {
+class ValueTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Value
-    value: string
+    value: string | boolean | null
 }
 
-class MetadataTemplateCondition implements TemplateCondition {
+class MetadataTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Metadata
-    value: string
+    value: keyof FileMetadata
 }
 
-// ------------------
-// TemplateComponents
-// ------------------
-interface TemplateComponent {
-    type: EditInputType
-    params?: FileTemplateParams
-    conditions?: TemplateCondition[]
-    content?: TemplateComponent[]
-}
-
-class RootTemplateComponent implements TemplateComponent {
-    type: EditInputType.Root
-    params?: undefined;
-    content: TemplateComponent[]
-}
+type TemplateCondition = 
+      EqualsTemplateCondition
+    | NotEqualsTemplateCondition
+    | AnyTemplateCondition
+    | AllTemplateCondition
+    | ValueTemplateCondition
+    | MetadataTemplateCondition
+    | string
+    | boolean
+    | null
 
 // --------------
 // TemplateParams
 // --------------
 type ParamTypes = string | number | boolean
-interface FileTemplateParams {
+interface IFileTemplateParams {
     [key: string]: ParamTypes | ParamTypes[]
 }
 
-interface BooleanTemplateParams extends FileTemplateParams {
+interface BooleanTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     default?: boolean
 }
 
-interface EnumTemplateParams extends FileTemplateParams {
+interface EnumTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     type: string
 }
 
-interface GroupTemplateParams extends FileTemplateParams {
+interface GroupTemplateParams extends IFileTemplateParams {
     label: string
     open: boolean
 }
 
-interface ListTemplateParams extends FileTemplateParams {
+interface ListTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     type: string
@@ -98,7 +94,7 @@ interface ListTemplateParams extends FileTemplateParams {
     placeholder?: string
 }
 
-interface LinkListTemplateParams extends FileTemplateParams {
+interface LinkListTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     fileTypes: FileType[]
@@ -106,35 +102,51 @@ interface LinkListTemplateParams extends FileTemplateParams {
     placeholder?: string
 }
 
-interface NumberTemplateParams extends FileTemplateParams {
+interface NumberTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     allowNegative?: boolean
     allowFloat?: boolean
 }
 
-interface OptionTemplateParams extends FileTemplateParams {
+interface OptionTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     type: string
     default?: number
 }
 
-interface SelectionTemplateParams extends FileTemplateParams {
+interface SelectionTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     enum: string
 }
 
-interface TextTemplateParams extends FileTemplateParams {
+interface TextTemplateParams extends IFileTemplateParams {
     label: string
     key: string
 }
 
-interface TextAreaTemplateParams extends FileTemplateParams {
+interface TextAreaTemplateParams extends IFileTemplateParams {
     label: string
     key: string
     fill?: boolean
+}
+
+
+// ------------------
+// TemplateComponents
+// ------------------
+interface TemplateComponent {
+    type: EditInputType
+    params?: IFileTemplateParams
+    conditions?: TemplateCondition[]
+    content?: TemplateComponent[]
+}
+
+class RootTemplateComponent implements TemplateComponent {
+    type: EditInputType.Root
+    content: TemplateComponent[]
 }
 
 // -----
@@ -168,10 +180,10 @@ export enum EditInputType {
 
 export type {
     FileTemplate,
-    FileTemplateParams,
+    IFileTemplateParams,
     FileRendererTemplate,
     TemplateComponent,
-    TemplateCondition,
+    ITemplateCondition,
     BooleanTemplateParams,
     EnumTemplateParams,
     GroupTemplateParams,
@@ -183,6 +195,7 @@ export type {
     TextTemplateParams,
     TextAreaTemplateParams,
     ConditionValue,
+    TemplateCondition,
     EqualsTemplateCondition,
     NotEqualsTemplateCondition,
     AnyTemplateCondition,

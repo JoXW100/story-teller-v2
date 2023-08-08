@@ -15,9 +15,7 @@ export const element = {
         type: 'fill',
         defaultKey: null,
         buildChildren: true,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: null,
         toComponent: FillElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

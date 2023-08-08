@@ -5,9 +5,7 @@ export const element = {
         type: 'set',
         defaultKey: null,
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: null,
         toComponent: null,
         validate: (_: Variables) => ({})
     }

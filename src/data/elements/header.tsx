@@ -61,9 +61,7 @@ export const element = {
         type: 'header',
         defaultKey: 'underline',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: Header1,
         validate: validateOptions
     },
@@ -71,9 +69,7 @@ export const element = {
         type: 'header',
         defaultKey: 'underline',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: Header2,
         validate: validateOptions
     },
@@ -81,9 +77,7 @@ export const element = {
         type: 'header',
         defaultKey: 'underline',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: Header3,
         validate: validateOptions
     }

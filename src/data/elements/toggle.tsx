@@ -78,9 +78,7 @@ export const element = {
         type: 'toggle',
         defaultKey: 'content',
         buildChildren: false,
-        inline: true,
-        lineBreak: true,
-        container: false,
+        validOptions: validOptions,
         toComponent: ToggleElement,
         validate: validateOptions
     }

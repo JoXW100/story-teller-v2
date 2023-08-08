@@ -57,9 +57,7 @@ interface ElementObject {
     type: string
     defaultKey: string
     buildChildren: boolean
-    inline: boolean
-    lineBreak: boolean
-    container: boolean
+    validOptions: Set<string>
     validate: (options: Variables, content: ParserObject[]) => Queries
     toComponent: (params: ElementParams<any>) => JSX.Element
 }

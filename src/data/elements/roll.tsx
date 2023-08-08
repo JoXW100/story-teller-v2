@@ -60,7 +60,7 @@ class Options implements RollOptions {
             return this.options.mode as RollMode
         }
         let dice = this.diceValue
-        if (dice.num == 20 || dice.num == 0) {
+        if (this.numValue == 1 && (dice.num == 20 || dice.num == 0)) {
             return RollMode.Mod
         }
         return RollMode.Dice
@@ -198,9 +198,7 @@ export const element = {
         type: 'roll',
         defaultKey: 'dice',
         buildChildren: true,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: validOptions,
         toComponent: RollElement,
         validate: validateOptions
     }

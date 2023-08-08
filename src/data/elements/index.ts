@@ -82,4 +82,14 @@ export const Elements = {
     Toggle: Toggle.default
 }
 
+type ExtractElementType<T> = T extends keyof typeof ElementDictionary
+  ? typeof ElementDictionary[T]
+  : ElementObject;
+
+
+export function getElement<T extends string>(key: T): ExtractElementType<T>
+export function getElement<T extends keyof typeof ElementDictionary>(key: T): ExtractElementType<T> {
+    return ElementDictionary[key] as ExtractElementType<T>;
+}
+
 export default Elements;

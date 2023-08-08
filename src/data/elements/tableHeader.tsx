@@ -42,9 +42,7 @@ const _element = {
     type: 'tableHeader',
     defaultKey: 'color',
     buildChildren: true,
-    inline: true,
-    lineBreak: true,
-    container: false,
+    validOptions: validOptions,
     toComponent: TableHeaderElement,
     validate: validateOptions
 } satisfies ElementObject

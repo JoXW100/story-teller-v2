@@ -9,9 +9,7 @@ const _element = {
     type: 'newline',
     defaultKey: null,
     buildChildren: false,
-    inline: true,
-    lineBreak: true,
-    container: false,
+    validOptions: null,
     toComponent: NewLineElement,
     validate: (options: Variables) => {
         if (Object.keys(options).length > 0)

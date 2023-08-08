@@ -15,9 +15,7 @@ const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
         type: 'center',
         defaultKey: null,
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: null,
         toComponent: CenterElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)

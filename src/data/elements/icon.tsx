@@ -53,9 +53,7 @@ export const element = {
         type: 'icon',
         defaultKey: 'icon',
         buildChildren: false,
-        inline: true,
-        lineBreak: false,
-        container: false,
+        validOptions: validOptions,
         toComponent: IconElement,
         validate: validateOptions
     }

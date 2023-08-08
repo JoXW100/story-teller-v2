@@ -42,9 +42,7 @@ export const element = {
         type: 'margin',
         defaultKey: 'margin',
         buildChildren: true,
-        inline: false,
-        lineBreak: true,
-        container: true,
+        validOptions: validOptions,
         toComponent: Margin,
         validate: validateOptions
     }

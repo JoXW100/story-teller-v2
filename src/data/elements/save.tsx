@@ -77,9 +77,7 @@ const _element = {
     type: 'save',
     defaultKey: 'dc',
     buildChildren: false,
-    inline: true,
-    lineBreak: false,
-    container: false,
+    validOptions: validOptions,
     toComponent: SaveElement,
     validate: validateOptions
 } satisfies ElementObject

@@ -11,9 +11,7 @@ export const element = {
         type: 'space',
         defaultKey: null,
         buildChildren: false,
-        inline: false,
-        lineBreak: true,
-        container: false,
+        validOptions: null,
         toComponent: spaceElement,
         validate: (options: Variables) => {
             if (Object.keys(options).length > 0)
