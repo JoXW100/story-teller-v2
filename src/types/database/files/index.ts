@@ -1,5 +1,6 @@
 import { ObjectId, Document } from 'mongodb'
 import { DateValue, UserId } from ".."
+import { ModifierAddTypeProperty, ModifierBonusTypeProperty, ModifierType, Proficiency } from '../dnd'
 
 type FileMetadata = Record<string, any>
 type FileStorage = Record<string, any>
@@ -39,12 +40,31 @@ interface FileMetadataQueryResult<T extends FileMetadata> {
     metadata: T
 }
 
+interface Modifier extends FileMetadata {
+    type?: ModifierType
+    bonusProperty?: ModifierBonusTypeProperty
+    addProperty?: ModifierAddTypeProperty
+    value?: number
+    proficiency?: Proficiency
+}
+
+interface ModifierCollection {
+    bonusAC?: number
+    bonusNumHealthDice?: number
+    bonusHealth?: number
+    bonusProficiency?: number
+    bonusInitiative?: number
+
+    join: (other: ModifierCollection) => ModifierCollection
+}
+
 export enum FileType {
     Root = "root",
     Empty = "empty",
     Folder = "folder",
     Ability = "abi",
     Character = "cha",
+    Class = "cla",
     Creature =  "cre",
     Document = "doc",
     Encounter = "enc",
@@ -83,6 +103,8 @@ export type {
     FileData,
     FileStructure,
     FileMetadataQueryResult,
+    Modifier,
+    ModifierCollection,
     FileMetadata,
     FileStorage,
     FileContent,

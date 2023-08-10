@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import { useFiles } from "utils/handlers/files";
+import { isObjectId } from "utils/helpers";
 import { FileType } from "types/database/files";
 import { ObjectId } from "types/database";
 import styles from 'styles/components/listMenu.module.scss';
@@ -9,13 +10,16 @@ type ListMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string
     onChange: (selection: ObjectId[]) => void
+    validateInput?: (value: ObjectId, values: ObjectId[]) => boolean
     values: ObjectId[]
     fileTypes: FileType[]
     allowText: boolean
     placeholder?: string
 }>
 
-const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
+type IdCollection = { results: ObjectId[], rest: ObjectId[] } 
+
+const LinkListMenu = ({ className, itemClassName, onChange, validateInput, values = [], fileTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
     if (fileTypes == undefined || fileTypes.length === 0) {
         throw new Error("LinkListMenu with no accepted filetypes, expected at least one")
     }
@@ -23,8 +27,8 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
     const allowedFiles = new Set(fileTypes)
     const [files, loading] = useFiles(values, (values) => (
         new Promise((resolve) => {
-            let ids = values.reduce((prev, value) => (
-                /[a-z0-9]{24}/.test(String(value)) 
+            let ids = values.reduce<IdCollection>((prev, value) => (
+                isObjectId(value)
                 ? { ...prev, rest: [...prev.rest, value] }
                 : { ...prev, results: [...prev.results, value] }
             ), { results: [] as ObjectId[], rest: [] as ObjectId[]})
@@ -34,14 +38,14 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
 
     const Component = ({ value }: ListTemplateComponent<ObjectId>): JSX.Element => {
         const file = files.find((file) => file.id == value)
-        const valid = /[a-z0-9]{24}/.test(String(value))
+        const valid = isObjectId(value)
             ? allowedFiles.has(file?.type)
             : allowText
         const name = valid && allowedFiles.has(file?.type)
             ? file?.metadata?.name ?? file?.metadata?.title ?? String(value)
             : String(value)
         return (
-            <div className={itemClassName} data={valid && name ? undefined : "error"}>
+            <div className={itemClassName} error={String(valid && name)}>
                 { name }
             </div>
         )
@@ -73,7 +77,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
             }
         }
 
-        const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        const handleDrop = (e: React.DragEvent<HTMLInputElement>) => {
             if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -103,6 +107,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, values = [], fileTyp
         <ListTemplateMenu<ObjectId>
             className={className}
             onChange={onChange}
+            validateInput={validateInput}
             Component={Component}
             EditComponent={EditComponent}
             defaultValue={""}

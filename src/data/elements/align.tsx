@@ -40,8 +40,8 @@ const validateOptions = (options: AlignOptions): Queries => {
     });
 
     if (options.direction) {
-        var chars = options.direction.split('');
-        var taken = Object.values(validDirections).reduce((prev, val) => ({ 
+        let chars = options.direction.split('');
+        let taken = Object.values(validDirections).reduce((prev, val) => ({ 
             ...prev, [val]: false 
         }), {})
         chars.forEach((key) => {
@@ -52,7 +52,7 @@ const validateOptions = (options: AlignOptions): Queries => {
     }
 
     if (options.weight) {
-        var weight = parseFloat(options.weight)
+        let weight = parseFloat(options.weight)
         if (isNaN(weight))
             throw new ParseError(`Invalid align option value. weight: '${options.weight}', must be a number`);
     }

@@ -55,7 +55,7 @@ const validateOptions = (options: SaveOptions): Queries => {
     })
 
     if (options.dc ?? options.value) {
-        var num = parseInt(options.dc ?? options.value)
+        let num = parseInt(options.dc ?? options.value)
         if (isNaN(num) || num < 0)
             throw new ParseError(`Invalid save dc: '${options.dc ?? options.value}', must be a number >= 0`);
     }

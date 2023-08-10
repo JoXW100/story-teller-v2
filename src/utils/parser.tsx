@@ -24,33 +24,36 @@ abstract class Parser
     static async parse(text: string, metadata: Metadata, variablesKey: string): Promise<JSX.Element> {
         if (!text)
             return null
-        var splits = text.split(this.matchBodyExpr);
-        var variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
+
+        let splits = text.split(this.matchBodyExpr);
+        let variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
         Object.keys(metadata).forEach(key => {
             if (typeof(metadata[key]) != typeof({}) && key !== "public" && key !== variablesKey) {
                 variables[key] = metadata[key]
             }
         });
+
         // find variable content from text
         metadata.$vars = { ...metadata.$vars, [variablesKey]: this.parseVariables(splits, variables) };
         // replace variables in text with its respective content
-        var withVars = text.replace(this.matchVarsExpr, (...x) => {
+        let withVars = text.replace(this.matchVarsExpr, (...x) => {
             if (variables[x[1]]) return variables[x[1]]
             else if (metadata[x[1]] && typeof(metadata[x[1]]) != typeof({})) return metadata[x[1]]
             else throw new ParseError(`Unset variable '${x[1]}'`)
         });
-        var splits = withVars.split(this.matchBodyExpr);
+
+        splits = withVars.split(this.matchBodyExpr);
         // build tree structure
-        var tree = this.buildTree(splits);
+        let tree = this.buildTree(splits);
         metadata.$queries = await this.resolveQueries(tree)
         return this.buildComponent(tree, variablesKey, 0, metadata)
     }
     
     private static buildTree(splits: string[]): ParserObject {
         try {
-            var command: ParserObject = null;
-            var stack: ParserObject[] = [];
-            var current: ParserObject = { type: 'root', content: [], options: [], variables: {} };
+            let command: ParserObject = null;
+            let stack: ParserObject[] = [];
+            let current: ParserObject = { type: 'root', content: [], options: [], variables: {} };
             splits.forEach((part) => {
                 switch (part) {
                     case '\{':
@@ -83,9 +86,9 @@ abstract class Parser
     }
 
     private static parseVariables(splits: string[], data: Variables): Variables {
-        var counter = 0;
-        var variable: ParserObject = null;
-        var content: string[] = [];
+        let counter = 0;
+        let variable: ParserObject = null;
+        let content: string[] = [];
         splits.forEach((part) => {
             switch (part){
                 case '\{':
@@ -105,7 +108,7 @@ abstract class Parser
                     if (variable) {
                         content.push(part);
                     } else {;
-                        var x = this.parseFunction(part, null);
+                        let x = this.parseFunction(part, null);
                         if (x?.type === 'set' && x.options.length > 0){
                             variable = x;
                             content = [];
@@ -123,10 +126,10 @@ abstract class Parser
             return current;
         }
 
-        var result: ParserObject = null;
+        let result: ParserObject = null;
         part.split(this.splitFunctionExpr).forEach((part) => {
             if (part) {
-                var hit = new RegExp(this.matchFunctionExpr).exec(part)
+                let hit = new RegExp(this.matchFunctionExpr).exec(part)
                 if (hit) {
                     result = { 
                         type: hit[1], 
@@ -150,10 +153,10 @@ abstract class Parser
     }
 
     private static parseOptions(options: string): ParserOption[] {
-        var results: ParserOption[] = [];
+        let results: ParserOption[] = [];
         if (options) {
-            var expr = new RegExp(this.matchOptionsExpr)
-            var hit: RegExpExecArray = null;
+            let expr = new RegExp(this.matchOptionsExpr)
+            let hit: RegExpExecArray = null;
             while(null != (hit = expr.exec(options))){
                 results.push({ key: hit[1]?.trim(), value: hit[2]?.trim() })
             }
@@ -173,8 +176,8 @@ abstract class Parser
         })
 
         let queries = tree.content.reduce((prev, e) => {
-            var Q = this.getQueries(e);
-            for (var q in Q) {
+            let Q = this.getQueries(e);
+            for (let q in Q) {
                 prev[q] = Math.max(prev[q] ?? 0, Q[q])
             }
             return prev
@@ -198,7 +201,7 @@ abstract class Parser
         }
         
         let res: QueryResult = {}
-        for (var key in queries) {
+        for (let key in queries) {
             res[key] = this.queries[key]
         }
         

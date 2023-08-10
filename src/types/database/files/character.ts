@@ -1,7 +1,9 @@
+import { FileContent } from "."
+import { ObjectId } from ".."
 import { Gender } from "../dnd"
 import { CreatureMetadata } from "./creature"
 
-interface CharacterContent {
+interface CharacterContent extends FileContent {
     text: string
 }
 
@@ -19,6 +21,8 @@ interface CharacterMetadata extends CreatureMetadata {
     description?: string
     history?: string
     notes?: string
+    // Class
+    class?: ObjectId
 }
 
 export type {

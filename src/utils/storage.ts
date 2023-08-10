@@ -1,3 +1,4 @@
+import { asEnum, asKeyOf } from "./helpers"
 
 abstract class Storage {
     /** Sets the value of the item at the given key */
@@ -35,12 +36,29 @@ abstract class Storage {
         return undefined
     }
 
+    static getKeyOf<T extends Record<string, any>>(key: string, type: T): keyof T | undefined {
+        if (typeof window !== "undefined") {
+            let value = window.localStorage.getItem(key);
+            return asKeyOf(value, type)
+        }
+        return undefined
+    }
+
+
+    static getEnum<T extends Record<string, string | number | symbol>>(key: string, type: T): T[keyof T] | undefined {
+        if (typeof window !== "undefined") {
+            let value = window.localStorage.getItem(key);
+            return asEnum(value, type)
+        }
+        return undefined
+    }
+
     /** Gets the value of the item at the given key */
     static getInt(key: string): number | undefined  {
         if (typeof window !== "undefined") {
-            var value = window.localStorage.getItem(key)
+            let value = window.localStorage.getItem(key)
             if (value !== null) {
-                var num = parseInt(value)
+                let num = parseInt(value)
                 return isNaN(num) ? undefined : num;
             }
         }
@@ -50,7 +68,7 @@ abstract class Storage {
     /** Gets the value of the item at the given key */
     static getBoolean(key: string): boolean | undefined {
         if (typeof window !== "undefined") {
-            var value = window.localStorage.getItem(key)
+            let value = window.localStorage.getItem(key)
             if (value !== null) {
                 return value === "true"
             }

@@ -144,6 +144,24 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Modifiers", "open": true },
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "feature"] }],
+                        "content": [
+                            {
+                                "type": "itemList",
+                                "params": { 
+                                    "label": "Modifiers", 
+                                    "key": "modifiers", 
+                                    "prompt": "Edit", 
+                                    "placeholder": "Enter Name" ,
+                                    "default": [], 
+                                    "template": "modifier"
+                                }
+                            }
+                        ]
                     }
                 ]
             },
@@ -158,6 +176,38 @@
                 ]
             }
         ]
+    },
+    "editorSubTemplates": {
+        "modifier": {
+            "type": "root",
+            "content": [
+                { "type": "navigation" },
+                {
+                    "type": "group",
+                    "params": { "label": "Modifiers", "open": true },
+                    "content": [
+                        { 
+                            "type": "enum", 
+                            "params": { "label": "Type", "key": "type", "type": "modifierType", "default": "bonus" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "params": { "label": "Condition", "key": "condition", "type": "modifierCondition", "default": "none" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                            "params": { "label": "Property", "key": "bonusProperty", "type": "modifierBonusTypeProperty", "default": "ac" }
+                        },
+                        { 
+                            "type": "number", 
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                            "params": { "label": "Value", "key": "value" }
+                        }
+                    ]
+                }
+            ]
+        }
     },
     "renderer": { "type": "abi" }
 }

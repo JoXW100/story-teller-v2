@@ -16,9 +16,9 @@ import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
+import { CreateFileOptions } from 'data/fileTemplates';
 import { FileStructure, FileType, RenderedFileTypes } from "types/database/files";
 import styles from 'styles/pages/storyPage/file.module.scss';
-import { CreateFileOptions } from 'data/fileTemplates';
 
 type FileProps = React.PropsWithRef<{
     file: FileStructure

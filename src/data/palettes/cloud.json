@@ -1,0 +1,57 @@
+{
+    "name": "Cloud",
+    "colors": {
+        "background": "#547590",
+        "accents": "#9df4ff",
+
+        "good": "#01ae01",
+        "bad": "#ff0000",
+        "neutral": "#f8a525",
+        "warning": "#f8a525",
+        "error": "#ff0000",
+
+        "folder": "#ffffff",
+        "abi": "#00efff",
+        "cha": "#daff00",
+        "cla": "#e1e707",
+        "cre": "#ffc500",
+        "doc": "#ffffff",
+        "enc": "#ff0000",
+        "spe": "#e48eff",
+
+        "syntax-function-name": "#1440ff",
+        "syntax-function-option": "#0872f5",
+        "syntax-function-separator": "#1440ff",
+        "syntax-bracket": "#1a0078",
+        "syntax-variable": "#fe1eff",
+        "syntax-tab": "#00143c",
+
+        "document-background": "#d5ddde",
+        "document-text": "#00143c",
+        "document-border": "#00143c",
+
+        "input-background": "#e0efff",
+        "input-text": "#00143c",
+        "input-border": "#00143c",
+        "input-icons": "#00143c",
+
+        "interactive-background": "#d2f0fa",
+        "interactive-text": "#00143c",
+        "interactive-border": "#00143c",
+        "interactive-icons": "#00143c",
+
+        "main-background": "#284580",
+        "main-decoration": "#7d9ab5",
+        "main-text": "#eaeaea",
+        "main-border": "#284580",
+        "main-shadow": "#284580",
+        "main-icons": "#eaeaea",
+
+        "second-background": "#538dd6",
+        "second-decoration": "#7cb5fd",
+        "second-text": "#00143c",
+        "second-border": "#00143c",
+        "second-shadow": "#00143c",
+        "second-icons": "#00143c"
+    }
+}

@@ -50,6 +50,9 @@ a {
 
 * {
     box-sizing: border-box;
+    [error=true] {
+        color: color(error) !important;
+    }
 }
 
 input:focus {

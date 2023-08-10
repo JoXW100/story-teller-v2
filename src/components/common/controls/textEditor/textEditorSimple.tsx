@@ -11,7 +11,7 @@ const TextEditorSimple = ({ className, text, onChange }: TextEditorProps): JSX.E
     const handleContext: React.MouseEventHandler<HTMLTextAreaElement> = (e) => {
         e.preventDefault()
         e.stopPropagation()
-        var point: Point = { x: e.clientX, y: e.clientY }
+        let point: Point = { x: e.clientX, y: e.clientY }
         openTextEditorContext(e.currentTarget, point, onChange)
     }
 

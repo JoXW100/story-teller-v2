@@ -37,7 +37,7 @@ const validateOptions = (options: BlockOptions): Queries => {
     });
 
     if (options.weight) {
-        var weight = parseFloat(options.weight)
+        let weight = parseFloat(options.weight)
         if (isNaN(weight))
             throw new ParseError(`Invalid align option value. weight: '${options.weight}', must be a number`);
     }

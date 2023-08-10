@@ -30,10 +30,10 @@ abstract class Logger
     }
 
     private static get time(): string {
-        var now: Date = new Date();
-        var milliseconds = now.getMilliseconds();
-        var msText = milliseconds.toString();
-        var timeText = now.toLocaleString("sv-Se");
+        let now: Date = new Date();
+        let milliseconds = now.getMilliseconds();
+        let msText = milliseconds.toString();
+        let timeText = now.toLocaleString("sv-Se");
         return `${timeText}.${msText}`;
     }
 }

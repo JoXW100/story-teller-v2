@@ -49,8 +49,7 @@ const NumberInput = ({ value, setValue, className, decimal = false, disabled = f
             disabled={disabled}
             value={inputText}
             step={1}
-            data={error ? "error" : undefined}
-        />
+            error={String(error)}/>
     );
 }
 

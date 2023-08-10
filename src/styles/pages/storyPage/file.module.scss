@@ -2,11 +2,12 @@
 
 @mixin colorFileByType {
     @include colorIcon(second);
-    &[data=folder] > svg { color: color(folder); }
+    &[data=folder] > svg { color: color(var(data)); }
     &[data=abi] > svg { color: color(abi); }
-    &[data=doc] > svg { color: color(doc); }
     &[data=cha] > svg { color: color(cha); }
+    &[data=cla] > svg { color: color(cla); }
     &[data=cre] > svg { color: color(cre); }
+    &[data=doc] > svg { color: color(doc); }
     &[data=enc] > svg { color: color(enc); }
     &[data=spe] > svg { color: color(spe); }
 }

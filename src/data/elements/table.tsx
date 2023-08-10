@@ -57,12 +57,12 @@ const validate = (options: TableOptions, content: ParserObject[]): Queries => {
     });
 
     if (options.weight) {
-        var weight = parseFloat(options.weight)
+        let weight = parseFloat(options.weight)
         if (isNaN(weight))
             throw new ParseError(`Invalid box option value. weight: '${options.weight}', must be a number`);
     }
 
-    var errorElement = content.find((element) => !validContent.has(element?.type));
+    let errorElement = content.find((element) => !validContent.has(element?.type));
     if (errorElement) {
         Logger.error("elements.Table", errorElement);
         throw new ParseError(`Table cannot contain elements of type: '${errorElement.type}'`);

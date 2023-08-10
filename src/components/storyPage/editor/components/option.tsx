@@ -9,23 +9,22 @@ import { OptionTemplateParams } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 import Logger from 'utils/logger';
+import { getRelativeMetadata } from 'utils/helpers';
 
 type OptionData = { type: string | number, value: number }
 
 const getData = (metadata: FileMetadata, key: string, defaultValue: number): OptionData => {
     let data: OptionData = metadata ? metadata[key] : null
-    if (!data) {
-        data = { type: getOptionType('calc').default, value: defaultValue }
-    } else if (typeof data != typeof {}) {
+    if (!data || typeof data != typeof {}) {
         data = { type: getOptionType('calc').default, value: defaultValue }
     }
-    
     return data
 }
 
 const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const data = getData(context.file?.metadata, params.key, params.default)
+    const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
+    const data = getData(metadata, params.key, params.default)
         
     const handleChange = (value: string) => {
         data.type = Number(value) ?? value
@@ -34,7 +33,7 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
-            var num = parseInt(e.target.value);
+            let num = parseInt(e.target.value);
             if (!isNaN(num)) {
                 data.value = num;
                 dispatch.setMetadata(params.key, data);

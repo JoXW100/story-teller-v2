@@ -109,6 +109,7 @@
             "editor-insert-header": "Header",
             "editor-insert-subheader": "Subheader",
             "editor-insert-subsubheader": "Sub-Subheader",
+            "editor-navigationButton": "Close page",
             "spell-concentration": "Concentration",
             "spell-ritual": "Ritual",
             "spell-component-V": "Verbal",

@@ -1,4 +1,4 @@
-import { AbilityType, ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from 'types/database/dnd';
+import { AbilityType, ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, MagicSchool, ModifierAddTypeProperty, ModifierBonusTypeProperty, ModifierCondition, ModifierType, MovementType, Proficiency, ScalingType, SizeType, Skill, TargetType } from 'types/database/dnd';
 import { CalculationMode, OptionalAttribute } from 'types/database/editor';
 
 interface IOptionType<T extends Record<string, string | number>> {
@@ -284,7 +284,53 @@ const OptionTypes = {
             [CalculationMode.Modify]: "Modify",
             [CalculationMode.Override]: "Override"
         }
-    } satisfies IOptionType<typeof CalculationMode>
+    } satisfies IOptionType<typeof CalculationMode>,
+    "proficiency": {
+        enum: Proficiency,
+        default: Proficiency.ArmorAll,
+        options: {
+            [Proficiency.ArmorAll]: "All Armor",
+            [Proficiency.ArmorLight]: "Light Armor",
+            [Proficiency.ArmorMedium]: "Medium Armor",
+            [Proficiency.ArmorHeavy]: "Heavy Armor",
+            [Proficiency.Shields]: "Shields"
+        }
+    } satisfies IOptionType<typeof Proficiency>,
+    "modifierType": {
+        enum: ModifierType,
+        default: ModifierType.Bonus,
+        options: {
+            [ModifierType.Bonus]: "Bonus",
+            [ModifierType.Set]: "Set",
+            [ModifierType.Add]: "Add",
+            [ModifierType.Remove]: "Remove"
+        }
+    } satisfies IOptionType<typeof ModifierType>,
+    "modifierCondition": {
+        enum: ModifierCondition,
+        default: ModifierCondition.None,
+        options: {
+            [ModifierCondition.None]: "None",
+        }
+    } satisfies IOptionType<typeof ModifierCondition>,
+    "modifierBonusTypeProperty": {
+        enum: ModifierBonusTypeProperty,
+        default: ModifierBonusTypeProperty.AC,
+        options: {
+            [ModifierBonusTypeProperty.AC]: "AC",
+            [ModifierBonusTypeProperty.NumHitDice]: "Number of hit dice",
+            [ModifierBonusTypeProperty.Health]: "Health",
+            [ModifierBonusTypeProperty.Proficiency]: "Proficiency",
+            [ModifierBonusTypeProperty.Initiative]: "Initiative"
+        }
+    } satisfies IOptionType<typeof ModifierBonusTypeProperty>,
+    "modifierAddTypeProperty": {
+        enum: ModifierAddTypeProperty,
+        default: ModifierAddTypeProperty.Proficiency,
+        options: {
+            [ModifierAddTypeProperty.Proficiency]: "Proficiency"
+        }
+    } satisfies IOptionType<typeof ModifierAddTypeProperty>
 } satisfies Record<string, IOptionType<Record<string, string | number>>>
 
 type ExtractOptionType<T> = T extends keyof typeof OptionTypes

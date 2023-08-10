@@ -1,7 +1,9 @@
 import { getOptionType } from "data/optionData";
 import CreatureActionData from "./creatureActionData";
+import ModifierData from "./modifier";
 import { AbilityType, ActionType, DiceType } from "types/database/dnd";
 import { AbilityMetadata } from "types/database/files/ability";
+import { Modifier } from "types/database/files";
 
 class AbilityData extends CreatureActionData<AbilityMetadata> implements Required<AbilityMetadata>
 {
@@ -39,6 +41,12 @@ class AbilityData extends CreatureActionData<AbilityMetadata> implements Require
 
     public get effectVersatileDice(): DiceType {
         return this.metadata.effectVersatileDice ?? getOptionType("dice").default
+    }
+
+    // Modifiers
+
+    public get modifiers(): Modifier[] {
+        return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier))
     }
 }
 

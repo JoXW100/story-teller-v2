@@ -1,4 +1,3 @@
-
 // Credit: Makoto Matsumoto and Takuji Nishimura's code
 class Random {
     private static readonly MATRIX_A: number = 0x9908b0df;

@@ -69,7 +69,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
 
     const handleImportClick = () => {
         if (state.selected != null) {
-            var importer: Promise<FileMetadata>;
+            let importer: Promise<FileMetadata>;
             if (state.menu.type == "monsters") {
                 importer = open5eCreatureImporter(state.selected.slug)
             } else {
@@ -127,7 +127,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     }
 
     const splitHP = (hp: string) => {
-        var res = hpSplitExpr.exec(hp ?? "") ?? []
+        let res = hpSplitExpr.exec(hp ?? "") ?? []
         return {
             num: isNaN(Number(res[1])) ? 0 : Number(res[1]),
             dice: isNaN(Number(res[2])) ? 0 : Number(res[2]),

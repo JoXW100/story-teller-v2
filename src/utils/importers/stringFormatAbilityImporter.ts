@@ -2,6 +2,7 @@ import Logger from "utils/logger";
 import { DiceType, AbilityType, ActionType, EffectCondition, TargetType, DamageType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { AbilityMetadata } from "types/database/files/ability";
+import { asEnum } from "utils/helpers";
 
 const getAbilityType = (ability: string): AbilityType => {
     switch (ability?.toLowerCase()) {
@@ -89,7 +90,6 @@ const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
             break;
         default:
             var dmgNumDice = Number(res[7] ?? "1")
-            var dmgDice = Number(res[8] ?? "0")
             result = {
                 name: res[2] ?? "Missing name",
                 description: res[11] ?? "",
@@ -97,10 +97,10 @@ const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
                 action: getAction(res[1], type),
                 condition: EffectCondition.Hit,
                 conditionModifier: { type: CalculationMode.Override, value: getRollMod(res[4]) },
-                effectDiceNum: dmgNumDice ? dmgNumDice : 1,
-                effectDice: Object.values(DiceType).includes(dmgDice as DiceType) ? dmgDice : DiceType.None,
+                effectDiceNum: isNaN(dmgNumDice) ? 1 : dmgNumDice,
+                effectDice: asEnum(Number(res[8]), DiceType) ?? DiceType.None,
                 effectModifier: { type: CalculationMode.Override, value: getRollMod(res[9]) },
-                damageType: Object.values(DamageType).includes(res[10] as DamageType) ? res[10] as DamageType : DamageType.None,
+                damageType: asEnum(res[10], DamageType) ?? DamageType.None,
                 ...getRange(res[5]),
                 target: getTargetType(res[6]),
                 
@@ -110,7 +110,6 @@ const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
     Logger.log("toAbility", { file: result, result: res })
     return result
 }
-
 
 export {
     toAbility

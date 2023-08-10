@@ -17,11 +17,11 @@ const useTextHandling  = (onChange: (value: string) => void): [
 
     const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
         const target: HTMLTextAreaElement = e.currentTarget
-        var value = target.value;
+        let value = target.value;
         if (context.automaticLineBreak > 0) {
-            var preSelect = value.slice(0, target.selectionStart)
-            var postSelect = value.slice(target.selectionStart)
-            var length = MatchLastLineExpression.exec(preSelect)[0].replace('\t', '____').length;
+            let preSelect = value.slice(0, target.selectionStart)
+            let postSelect = value.slice(target.selectionStart)
+            let length = MatchLastLineExpression.exec(preSelect)[0].replace('\t', '____').length;
             if (length > context.automaticLineBreak) {
                 preSelect = preSelect.replace(MatchLastWorldExpression, (...x) => `\n${x[1]}`);
                 value = preSelect + postSelect
@@ -37,18 +37,18 @@ const useTextHandling  = (onChange: (value: string) => void): [
         const target: HTMLTextAreaElement = e.currentTarget
         if (e.code === 'Tab') {
             e.preventDefault();
-            var start = target.selectionStart;
-            var end = target.selectionEnd;
-            var stringStart = target.value.substring(0, start);
-            var stringMiddle = target.value.substring(start, end);
-            var stringEnd = target.value.substring(end);
+            let start = target.selectionStart;
+            let end = target.selectionEnd;
+            let stringStart = target.value.substring(0, start);
+            let stringMiddle = target.value.substring(start, end);
+            let stringEnd = target.value.substring(end);
             if (e.shiftKey && start === end) {
-                var countStart = 0;
+                let countStart = 0;
                 stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakWithTabExpression, (...x) => { countStart++; return `\n${x[1]}` })
                 target.value = stringStart + stringEnd;
                 target.selectionStart = target.selectionEnd = start - countStart;
             } else if (e.shiftKey) {
-                var countStart = 0, count = 0;
+                let countStart = 0, count = 0;
                 stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakWithTabExpression, (...x) => { countStart++; return `\n${x[1]}` })
                 stringMiddle = stringMiddle.replace(ReplaceStartOfLinesWithTabExceptFirstExpression, () => { count++; return '\n' })
                 target.value = `${stringStart}${stringMiddle}${stringEnd}`;
@@ -58,7 +58,7 @@ const useTextHandling  = (onChange: (value: string) => void): [
                 target.value = `${stringStart}\t${stringEnd}`;
                 target.selectionStart = target.selectionEnd = start + 1;
             } else {
-                var countStart = 0, count = 0;
+                let countStart = 0, count = 0;
                 stringStart = stringStart.replace(ReplaceLastLineAfterLineBreakExpression, (...x) => { countStart++; return `\n\t${x[1]}` })
                 stringMiddle = stringMiddle.replace(ReplaceStartOfLinesExceptFirstExpression, () => { count++; return '\n\t' })
                 target.value = `${stringStart}${stringMiddle}${stringEnd}`;

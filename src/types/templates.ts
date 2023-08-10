@@ -1,12 +1,13 @@
 import { FileMetadata, FileType } from "./database/files"
 
 interface FileRendererTemplate {
-    type: FileType
+    type: FileType | string
 }
 
 interface FileTemplate {
     editor: RootTemplateComponent
     renderer: FileRendererTemplate
+    editorSubTemplates?: Record<string, RootTemplateComponent>
 }
 
 // ------------------
@@ -63,91 +64,189 @@ type TemplateCondition =
 // --------------
 // TemplateParams
 // --------------
-type ParamTypes = string | number | boolean
 interface IFileTemplateParams {
-    [key: string]: ParamTypes | ParamTypes[]
+    label: string
+    key: string
+    default?: boolean | string | number
 }
 
 interface BooleanTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     default?: boolean
+    viewURL?: boolean
 }
 
 interface EnumTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     type: string
 }
 
 interface GroupTemplateParams extends IFileTemplateParams {
-    label: string
+    key: never
+    default: never
     open: boolean
+    fill?: boolean
 }
 
 interface ListTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
-    type: string
+    type: "text" | "number"
     default?: string | number
     editEnabled?: boolean
+    reverse?: boolean
+    placeholder?: string
+}
+interface ItemListTemplateParams extends IFileTemplateParams {
+    template: keyof FileTemplate['editorSubTemplates']
+    default?: string
+    prompt?: string
     placeholder?: string
 }
 
 interface LinkListTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     fileTypes: FileType[]
     allowText: boolean
     placeholder?: string
 }
 
+interface LinkInputTemplateParams extends IFileTemplateParams {
+    fileTypes: FileType[]
+    placeholder?: string
+}
+
 interface NumberTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     allowNegative?: boolean
     allowFloat?: boolean
 }
 
 interface OptionTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     type: string
     default?: number
 }
 
 interface SelectionTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
     enum: string
+    type: string
 }
 
-interface TextTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
-}
+interface TextTemplateParams extends IFileTemplateParams {}
 
-interface TextAreaTemplateParams extends IFileTemplateParams {
-    label: string
-    key: string
+interface TextareaTemplateParams extends IFileTemplateParams {
     useSyntaxEditor?: boolean
     fill?: boolean
 }
 
+interface NavigationTemplateParams extends IFileTemplateParams {
+    label: never
+    key: never
+    default: never
+}
 
 // ------------------
 // TemplateComponents
 // ------------------
-interface TemplateComponent {
+
+interface ITemplateComponent {
     type: EditInputType
     params?: IFileTemplateParams
     conditions?: TemplateCondition[]
-    content?: TemplateComponent[]
+    content?: ITemplateComponent[]
 }
 
-class RootTemplateComponent implements TemplateComponent {
+type TemplateComponent = 
+      RootTemplateComponent
+    | BooleanTemplateComponent
+    | EnumTemplateComponent
+    | GroupTemplateComponent
+    | ListTemplateComponent
+    | ItemListTemplateComponent
+    | LinkListTemplateComponent
+    | LinkInputTemplateComponent
+    | NumberTemplateComponent
+    | OptionTemplateComponent
+    | SelectionTemplateComponent
+    | TextTemplateComponent
+    | TextareaTemplateComponent
+    | NavigationTemplateComponent
+
+class RootTemplateComponent implements ITemplateComponent {
     type: EditInputType.Root
     content: TemplateComponent[]
+}
+
+class BooleanTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Boolean
+    conditions?: TemplateCondition[]
+    params?: BooleanTemplateParams;
+}
+
+class EnumTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Enum
+    conditions?: TemplateCondition[]
+    params?: EnumTemplateParams;
+}
+
+class GroupTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Group
+    conditions?: TemplateCondition[]
+    content?: TemplateComponent[];
+    params?: GroupTemplateParams;
+}
+
+class ListTemplateComponent implements ITemplateComponent {
+    type: EditInputType.List
+    conditions?: TemplateCondition[]
+    params?: ListTemplateParams;
+}
+
+class ItemListTemplateComponent implements ITemplateComponent {
+    type: EditInputType.ItemList
+    conditions?: TemplateCondition[]
+    params?: ItemListTemplateParams;
+}
+
+class LinkListTemplateComponent implements ITemplateComponent {
+    type: EditInputType.LinkList
+    conditions?: TemplateCondition[]
+    params?: LinkListTemplateParams;
+}
+
+class LinkInputTemplateComponent implements ITemplateComponent {
+    type: EditInputType.LinkInput
+    conditions?: TemplateCondition[]
+    params?: LinkInputTemplateParams;
+}
+
+class NumberTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Number
+    conditions?: TemplateCondition[]
+    params?: NumberTemplateParams;
+}
+
+class OptionTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Option
+    conditions?: TemplateCondition[]
+    params?: OptionTemplateParams;
+}
+
+class SelectionTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Selection
+    conditions?: TemplateCondition[]
+    params?: SelectionTemplateParams;
+}
+
+class TextTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Text
+    conditions?: TemplateCondition[]
+    params?: TextTemplateParams;
+}
+
+class TextareaTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Textarea
+    conditions?: TemplateCondition[]
+    params?: TextareaTemplateParams;
+}
+
+class NavigationTemplateComponent implements ITemplateComponent {
+    type: EditInputType.Navigation
+    params?: NavigationTemplateParams;
 }
 
 // -----
@@ -171,37 +270,45 @@ export enum EditInputType {
     Textarea = 'textarea',
     Number = 'number',
     List = 'list',
+    ItemList = 'itemList',
     LinkList = 'linkList',
+    LinkInput = 'linkInput',
+    TemplateList = 'templateList',
     Selection = 'selection',
     Option = 'option',
     Enum = 'enum',
     Boolean = 'boolean',
-    TemplateList = 'template-list'
+    Navigation = 'navigation'
 }
 
 export type {
     FileTemplate,
     IFileTemplateParams,
     FileRendererTemplate,
-    TemplateComponent,
+    ITemplateComponent,
     ITemplateCondition,
     BooleanTemplateParams,
     EnumTemplateParams,
     GroupTemplateParams,
     ListTemplateParams,
+    ItemListTemplateParams,
     LinkListTemplateParams,
+    LinkInputTemplateParams,
     NumberTemplateParams,
     OptionTemplateParams,
     SelectionTemplateParams,
     TextTemplateParams,
-    TextAreaTemplateParams,
+    TextareaTemplateParams,
+    NavigationTemplateParams,
     ConditionValue,
     TemplateCondition,
+    TemplateComponent,
     EqualsTemplateCondition,
     NotEqualsTemplateCondition,
     AnyTemplateCondition,
     AllTemplateCondition,
     ValueTemplateCondition,
     MetadataTemplateCondition,
-    RootTemplateComponent
+    RootTemplateComponent,
+    NavigationTemplateComponent
 }

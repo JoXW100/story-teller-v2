@@ -19,7 +19,8 @@ interface AbilityCategory {
 
 type AbilityGroupsProps = React.PropsWithRef<{
     abilityIds: string[]
-    data?: ICreatureStats
+    stats?: ICreatureStats
+    onLoaded?: (abilities: AbilityMetadata[]) => void 
 }>
 
 type AbilityFileRendererProps = React.PropsWithRef<{
@@ -224,12 +225,12 @@ const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
     ), { results: [], rest: [] })
 } 
 
-export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Element => {
+export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProps): React.ReactNode => {
     const [abilities, loading] = useFiles<AbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
 
     useEffect(() => {
-        var categories = {
+        const categories = {
             [ActionType.None]: { header: null, content: [] },
             [ActionType.Action]: { header: "Actions", content: [] },
             [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
@@ -239,26 +240,27 @@ export const AbilityGroups = ({ abilityIds, data }: AbilityGroupsProps): JSX.Ele
         } satisfies Record<ActionType, AbilityCategory>
         abilities.forEach((file: FileMetadataQueryResult<AbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.None].content.push(
-                <AbilityToggleRenderer key={index} metadata={file.metadata} stats={data}/>
+                <AbilityToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
             )
         })
         setCategories(categories)
-    }, [abilities, data])
-    return !loading && (
-        <>
-            { Object.keys(categories)
-                .filter((type) => categories[type].content.length > 0)
-                .map((type) => (
-                    <React.Fragment key={type}>
-                        { categories[type].header && (
-                            <Elements.Header2 options={{ underline: "true" }}>
-                                {categories[type].header}
-                            </Elements.Header2>
-                        )}
-                        { categories[type].content }
-                    </React.Fragment>
-            ))}
-        </>
+        if (!loading && onLoaded) {
+            onLoaded(abilities.map(x => x.metadata))
+        }
+    }, [abilities, loading])
+    
+    return !loading && Object.keys(categories)
+        .filter((type) => categories[type].content.length > 0)
+        .map((type) => (
+            <React.Fragment key={type}>
+                { categories[type].header && (
+                    <Elements.Header2 options={{ underline: "true" }}>
+                        {categories[type].header}
+                    </Elements.Header2>
+                )}
+                { categories[type].content }
+            </React.Fragment>
+        )
     )
 }
 

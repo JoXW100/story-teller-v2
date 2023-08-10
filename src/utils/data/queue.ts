@@ -41,9 +41,9 @@ class Queue<T> {
 
     /** Adds the items in the queue to an Array */
     toArray(): T[] {
-        var i = 0;
-        var result = new Array(this.length);
-        var selected = this.first;
+        let i = 0;
+        let result = new Array(this.length);
+        let selected = this.first;
         while((selected = selected.next)) {
             result[i++] = selected.value;
         }
@@ -62,7 +62,7 @@ class Queue<T> {
 
     /** Iterates over the queue until true */
     some(predicate: (value: T) => boolean): boolean {
-        var selected = this.first;
+        let selected = this.first;
         while((selected = selected.next)) {
             if (predicate(selected.value)) {
                 return true;
@@ -73,8 +73,8 @@ class Queue<T> {
 
     /** Iterates over the queue, filtering the result */
     filter(predicate: (value: T) => boolean): T[] {
-        var result = [];
-        var selected = this.first;
+        let result = [];
+        let selected = this.first;
         while((selected = selected.next)) {
             if (predicate(selected.value)) {
                 result.push(selected.value);
@@ -84,7 +84,7 @@ class Queue<T> {
     }
 
     modify(iterator: (value: T) => T) {
-        var selected = this.first;
+        let selected = this.first;
         while((selected = selected.next)) {
             selected.value = iterator(selected.value)
         }

@@ -16,44 +16,44 @@ class DiceCollection {
 
     /** Adds a number of dice to the collection */
     add(dice: Dice, num: number) {
-        var value = this.collection[dice.num] ?? 0;
+        let value = this.collection[dice.num] ?? 0;
         this.collection[dice.num] = value + num;
     }
 
     /** Rolls the dice in the collection */
     roll(method: RollMethod | null = RollMethod.Normal): RollResult {
-        var results: RollValue[] = [];
-        var selectedIndex = 0;
+        let results: RollValue[] = [];
+        let selectedIndex = 0;
         switch (method) {
             case RollMethod.Crit:
-                var result: DiceResult[] = this.map((value) => ({ 
+                let critResult: DiceResult[] = this.map((value) => ({ 
                     dice: value.dice, 
                     num: value.num * 2, 
                     result: value.dice.roll(value.num * 2)
                 }));
-                var sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                results = [{ values: result, sum: sum }];
+                let critSum = critResult.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
+                results = [{ values: critResult, sum: critSum }];
                 selectedIndex = 0;
                 break;
 
             case RollMethod.Disadvantage:
             case RollMethod.Advantage:
-                var roll1 = this.roll(RollMethod.Normal);
-                var roll2 = this.roll(RollMethod.Normal);
-                var res1 = roll1.results[roll1.selectedIndex];
-                var res2 = roll2.results[roll2.selectedIndex]
+                let roll1 = this.roll(RollMethod.Normal);
+                let roll2 = this.roll(RollMethod.Normal);
+                let res1 = roll1.results[roll1.selectedIndex];
+                let res2 = roll2.results[roll2.selectedIndex]
                 results = [res1, res2];
                 selectedIndex = +((res1.sum < res2.sum) === (method === RollMethod.Advantage));
                 break;
 
             case RollMethod.Normal:
             default:
-                var result: DiceResult[] = this.map((value) => ({ 
+                let result: DiceResult[] = this.map((value) => ({ 
                     dice: value.dice, 
                     num: value.num, 
                     result: value.dice.roll(value.num)
                 } as DiceResult));
-                var sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
+                let sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
                 results = [{ values: result, sum: sum }];
                 selectedIndex = 0;
                 break;

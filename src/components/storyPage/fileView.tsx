@@ -5,13 +5,16 @@ import { Context as AppContext } from 'components/contexts/appContext';
 import Divider from 'components/common/controls/divider';
 import Editor from './editor';
 import Renderer from './renderer';
-import Templates from 'data/fileTemplates';
+import { getTemplate } from 'data/fileTemplates';
 import Localization from 'utils/localization'
 import Logger from 'utils/logger';
-import { EditInputType, TemplateComponent } from 'types/templates';
+import { EditInputType, FileTemplate, RootTemplateComponent, TemplateComponent } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/storyPage/main.module.scss'
+import { EditFilePage } from 'types/context/fileContext';
+import { getRelativeMetadata, isEnum } from 'utils/helpers';
+import { getOptionType } from 'data/optionData';
 
 const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
     switch (template.type) {
@@ -20,8 +23,8 @@ const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
             template.content?.forEach((x) => setDefaults(x, metadata));
             break;
         default:
-            if (template.params?.key && metadata[template.params.key as string] === undefined && template.params?.default)
-                metadata[template.params.key as string] = template.params.default;
+            if (template.params?.key && metadata[template.params.key] === undefined && template.params?.default)
+                metadata[template.params.key] = template.params.default;
             break;
     }
 }
@@ -35,6 +38,14 @@ const FileView = (): JSX.Element => {
     );
 }
 
+const getFileEditorRoot = (template: FileTemplate, pages: EditFilePage[]): RootTemplateComponent => {
+    if (pages.length > 0 && template.editorSubTemplates) {
+        let subTemplateKey = pages[pages.length - 1].template;
+        return template.editorSubTemplates[subTemplateKey]
+    }
+    return template.editor
+}
+
 const FileContent = (): JSX.Element => {
     const [context] = useContext(Context)
     const [storyContext] = useContext(StoryContext);
@@ -46,24 +57,27 @@ const FileContent = (): JSX.Element => {
         if (!context.file)
             return <NoSelectedFileView/>;
             
-        var template = Templates[context.file.type]
+        let template = getTemplate(context.file.type)
         if (template) {
-            setDefaults(template.editor, context.file.metadata ?? {})
+            let pages = context.editFilePages ?? []
+            let editorRoot = getFileEditorRoot(template, pages)
+            let metadata = getRelativeMetadata(context.file?.metadata, pages) ?? {}
+            setDefaults(editorRoot, metadata)
             return appContext.viewMode === ViewMode.SplitView ? (
                 <Divider
                     className={styles.fileDivider}
                     minLeft={70}
                     minRight={50}
                     collapsed={storyContext.editEnabled}
-                    left={<Editor key="editor" template={template.editor}/>}
+                    left={<Editor key="editor" template={editorRoot} metadata={metadata}/>}
                     right={<Renderer key="renderer" template={template.renderer}/>}/>
             ) : storyContext.editEnabled 
-            ? <Editor template={template.editor}/>
+            ? <Editor template={editorRoot} metadata={metadata}/>
             : <Renderer template={template.renderer}/>
         }
         Logger.error("FileContent.template", `No template for file type found, type: ${context?.file?.type}`)
         return null;
-    }, [context, appContext.viewMode, storyContext.editEnabled]);
+    }, [context, context.file, context.file?.type, context.editFilePages, appContext.viewMode, storyContext.editEnabled]);
     
     return (
         <div className={styles.content}>

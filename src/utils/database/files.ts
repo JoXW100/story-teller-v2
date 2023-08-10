@@ -3,6 +3,7 @@ import { failure, success } from "./database";
 import Logger from 'utils/logger';
 import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult, FileConvertResult } from "types/database/files";
 import { DBResponse } from "types/database";
+import { asEnum, isEnum } from "utils/helpers";
 
 interface StructureCollection {
     root: FileStructure
@@ -24,7 +25,7 @@ class FilesInterface
             content.metadata = content.metadata ?? {}
         try {
             let date = Date.now();
-            var file: DBFile<FileMetadata> = {
+            let file: DBFile<FileMetadata> = {
                 _userId: userId,
                 _storyId: new ObjectId(storyId),
                 _holderId: holderId && new ObjectId(holderId),
@@ -125,7 +126,7 @@ class FilesInterface
     /** Gets the metadata from a file in the database */
     async getManyMetadata(userId: string, fileIds: string): Promise<DBResponse<FileGetManyMetadataResult>> {
         try {
-            var ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
+            let ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
             if (ids.length < 1)
                 return failure("No fileId's provided");
             let result = await this.collection.aggregate([
@@ -157,7 +158,7 @@ class FilesInterface
                 _userId: userId,
                 _storyId: new ObjectId(storyId)
             })
-            var x = result.deletedCount === 1;
+            let x = result.deletedCount === 1;
             Logger.log('files.delete', x ? fileId : 'Null');
             return x ? success(x) : failure("Could not find file to delete");
         } catch (error) {
@@ -181,7 +182,7 @@ class FilesInterface
     /** Changes the filename of a file in the database */
     async convert(userId: string, storyId: string, fileId: string, type: FileType): Promise<DBResponse<FileConvertResult>> {
         try {
-            if (!Object.values(FileType).includes(type)) {
+            if (!isEnum(type, FileType)) {
                 Logger.error('files.convert', type);
                 return failure(`${type} is not a valid type`);
             }
@@ -195,7 +196,7 @@ class FilesInterface
                     dateUpdated: Date.now()
                 }
             })
-            var x = result.modifiedCount === 1;
+            let x = result.modifiedCount === 1;
             Logger.log('files.convert', x ? type : 'Null');
             return x ? success(x) : failure("Could not find file to rename");
         } catch (error) {
@@ -216,7 +217,7 @@ class FilesInterface
                     dateUpdated: Date.now()
                 }
             })
-            var x = result.modifiedCount === 1;
+            let x = result.modifiedCount === 1;
             Logger.log('files.rename', x ? name : 'Null');
             return x ? success(x) : failure("Could not find file to rename");
         } catch (error) {
@@ -265,14 +266,14 @@ class FilesInterface
     /** Changes a property of a folder in the database */
     private async setProperty(userId: string, storyId: string, fileId: string, property: string, value: any, fileType?: Record<string, any> | FileType, updateDate: boolean = true): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            var set: Partial<DBFile<any>> = { 
+            let set: Partial<DBFile<any>> = { 
                 [`content.${property}`]: value,
                 dateUpdated: Date.now()
             };
             if (updateDate) 
                 set.dateUpdated = Date.now()
 
-            var query: Record<string, any> = { 
+                let query: Record<string, any> = { 
                 _userId: userId, 
                 _storyId: new ObjectId(storyId),
                 _id: new ObjectId(fileId)
@@ -283,7 +284,7 @@ class FilesInterface
             }
 
             let result = await this.collection.updateOne(query, { $set: set })
-            var x = result.modifiedCount === 1;
+            let x = result.modifiedCount === 1;
             Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 20 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");
         } catch (error) {
@@ -340,7 +341,7 @@ class FilesInterface
             ), { root: null, files: {} }) as StructureCollection;
 
             Object.values(data.files).forEach((file) => {
-                var holder = data.files[String(file.holderId)] ?? data.root;
+                let holder = data.files[String(file.holderId)] ?? data.root;
                 holder.children = [file, ...holder.children ?? []]
             })
             

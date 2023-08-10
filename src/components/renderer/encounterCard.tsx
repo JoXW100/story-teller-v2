@@ -23,7 +23,7 @@ const EncounterCard = ({ card, creature, id, num }: EncounterCardProps): JSX.Ele
     }
 
     const onHealthChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        var value = parseInt(e.currentTarget.value)
+        let value = parseInt(e.currentTarget.value)
         card.health = Math.max(0, isNaN(value) ? card.health : value)
     }
 

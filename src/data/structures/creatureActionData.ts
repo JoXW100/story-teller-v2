@@ -7,6 +7,7 @@ import { Attribute, DamageType, DiceType, EffectCondition, ScalingType, TargetTy
 import { CalculationMode, OptionalAttribute, IOptionType } from "types/database/editor";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
+import { asEnum } from "utils/helpers";
 
 abstract class CreatureActionData<T extends ICreatureActionData> extends FileData<T> implements Required<ICreatureActionData> 
 {
@@ -107,9 +108,9 @@ abstract class CreatureActionData<T extends ICreatureActionData> extends FileDat
     }
 
     public get effectModifierValue(): number {
-        var mod = this.effectModifier.value ?? 0;
-        var useProf = this.effectProficiency;
-        var prof = useProf ? this.stats.proficiency : 0;
+        let mod = this.effectModifier.value ?? 0;
+        let useProf = this.effectProficiency;
+        let prof = useProf ? this.stats.proficiency : 0;
         switch (this.effectModifier.type) {
             case CalculationMode.Modify:
                 return this.getScalingValue(this.effectScaling) + mod + prof
@@ -139,9 +140,8 @@ abstract class CreatureActionData<T extends ICreatureActionData> extends FileDat
             case ScalingType.None:
                 return 0;
             default:
-                return Object.values(Attribute).includes(scaling as Attribute) 
-                    ? getAttributeModifier(this.stats, scaling as Attribute) 
-                    : 0
+                let attribute = asEnum(scaling, Attribute);
+                return attribute ? getAttributeModifier(this.stats, attribute) : 0
         }
     }
 }

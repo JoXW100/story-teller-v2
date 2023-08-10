@@ -64,7 +64,7 @@ const FileMenu = (): JSX.Element => {
             e.preventDefault();
             e.stopPropagation();
             
-            var file = window.dragData?.file;
+            let file = window.dragData?.file;
             if (file && (file.holderId !== storyContext.story.root)) {
                 dispatch.moveFile(file, null)
             }

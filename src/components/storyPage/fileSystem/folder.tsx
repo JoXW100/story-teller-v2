@@ -52,7 +52,7 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
 
     const changeState = () => {
         if (!state.inEditMode) {
-            var value = { ...state, open: !state.open }
+            let value = { ...state, open: !state.open }
             setState(value);
             dispatch.setFileState(file, value.open);
         }
@@ -115,7 +115,7 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            var drag: FileStructure = window.dragData.file;
+            let drag: FileStructure = window.dragData.file;
             if (drag && drag.holderId !== file.id && !containsFile(file, drag)) {
                 dispatch.moveFile(drag, file)
             }
@@ -136,7 +136,7 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            var drag = window.dragData.file;
+            let drag = window.dragData.file;
             if (window.dragData.target !== file.id && drag.holderId !== file.id) {
                 window.dragData.target = file.id;
                 setState((state) => ({ ...state, highlight: true }));

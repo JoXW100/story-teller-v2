@@ -7,6 +7,7 @@ import { ObjectId } from 'types/database'
 import { FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/files'
 import { FileMetadata } from 'types/database/files'
+import { getRelativeMetadata } from 'utils/helpers'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])
 
@@ -33,7 +34,8 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                     fetching: false, 
                     fileSelected: false, 
                     story: action.data.story,
-                    file: null 
+                    file: null,
+                    editFilePages: []
                 }
             if (action.dispatch) {
                 Communication.getFile(action.data.story, action.data.file).then((res) => {
@@ -52,7 +54,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
 
         case 'initSet':
             if (action.data.success) {
-                var file = action.data.result
+                let file = action.data.result
                 if (file) {
                     file.metadata = file.metadata ? file.metadata : {}
                 }
@@ -60,14 +62,16 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                     ...state,
                     loading: false, 
                     fetching: false,
-                    file: file
+                    file: file,
+                    editFilePages: []
                 }
             } 
             return {
                 ...state,
                 loading: false, 
                 fetching: false,
-                file: null
+                file: null,
+                editFilePages: []
             }
 
         case 'setText':
@@ -91,12 +95,10 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
         
         case 'setMetadata':
             if (state.file && action.data?.key) {
-                let data = {
-                    ...state.file.metadata, 
-                    [action.data.key]: action.data.value 
-                } as FileMetadata
-
+                let data: FileMetadata = { ...state.file.metadata }
+                getRelativeMetadata(data, state.editFilePages)[action.data.key] = action.data.value
                 let { $vars, $queries, ...rest} = data;
+
                 state.queue.addRequest(() => {
                     Communication.setFileMetadata(state.story, state.file.id, rest).then((res) => {
                         if (!res.success) {
@@ -136,13 +138,18 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                 return { ...state, viewMode: action.data }
             }
             return state
-
-        case 'setVariables': 
-            if (state.variables != action.data) {
-                state.file.metadata.$vars = action.data;
-                return { ...state, variables: action.data }
+        
+        case 'openTemplatePage':
+            if (action.data) {
+                return { ...state, editFilePages: [...state.editFilePages, action.data ]}
             }
-            return state
+            return state;
+            
+        case 'closeTemplatePage':
+            if (action.data > 0 && state.editFilePages.length - action.data >= 0) {
+                return { ...state, editFilePages: state.editFilePages.slice(0, - action.data - 1)}
+            }
+            return state;
 
         default:
             return state
@@ -156,7 +163,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
         fileSelected: false,
         viewMode: viewMode,
         file: null,
-        variables: {},
+        editFilePages: [],
         story: storyId,
         queue: new RequestQueue()
     })
@@ -169,7 +176,8 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
             setText: (text) => dispatch({ type: 'setText', data: text }),
             setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
             setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
-            setVariables: (variables) => dispatch({ type: 'setVariables', data: variables }),
+            openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),
+            closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num })
         }]}>
             { !state.loading && <FileHeader file={state.file}/>}
             { !state.loading && children }

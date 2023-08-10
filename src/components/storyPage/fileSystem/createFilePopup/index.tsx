@@ -99,7 +99,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             <div className={styles.body}>
                 <div className={styles.navigation}>
                     { Object.keys(pageMap).map((key, index) => {
-                        var page = pageMap[key]
+                        let page = pageMap[key]
                         return (
                             <div 
                                 key={index} 

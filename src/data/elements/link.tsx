@@ -166,7 +166,7 @@ export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleO
     const linkOptions = new Options(options)
     const href = linkOptions.fileURL
     const title = useMemo(() => {
-        var data = metadata.$queries[linkOptions.fileId]
+        let data = metadata.$queries[linkOptions.fileId]
         switch (data?.type) {
             case FileType.Ability:
             case FileType.Character:

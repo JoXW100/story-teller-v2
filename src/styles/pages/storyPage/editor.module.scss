@@ -7,7 +7,6 @@ $size: 20px;
 $bottomMargin: 30ch;
 $sizeLarge: ($size + 1px) * 5 - 1px;
 $sizeExtra: ($size + 1px) * 8 - 1px;
-$componentColor: document;
 
 .main {
     @include colorBackground(document);
@@ -128,11 +127,15 @@ $componentColor: document;
     outline: none;
     font: inherit;
     font-size: small;
-    padding: 0 5px;
-    flex: 1;
+    text-indent: 3px;
 
     &[error=true] {
-        color: color(error)
+        color: color(error);
+        caret-color: colorInGroup(input, text);
+    }
+
+    &[data=highlight] {
+        filter: brightness(120%);
     }
 
     &:disabled {
@@ -168,6 +171,10 @@ $componentColor: document;
     & > .editor {
         overflow: hidden;
         max-height: inherit;
+
+        & > pre, & > textarea {
+            padding-bottom: 50px !important;
+        }
     }
 }
 
@@ -231,16 +238,17 @@ $componentColor: document;
     }
 
     & > a {
-        color: color(accents);
         display: flex;
-        align-items: center;
-        font-size: small;
+        overflow: hidden;
         flex: 1;
-        cursor: pointer;
-        &:hover {
-            text-decoration: underline;
-        }
     }
+}
+
+.linkHolder {
+    @include fontNoLineBreak;
+    flex: 1;
+    justify-content: left;
+    text-indent: 5px;
 }
 
 .loading {
@@ -249,4 +257,30 @@ $componentColor: document;
     & svg {
         height: 0.85in;
     }
+}
+
+.navigation {
+    @include colorWithShadow(main);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    font-size: large;
+    font-weight: bold;
+    padding: 1px;
+    text-indent: 5px;
+
+    & > label {
+        @include fontNoLineBreak;
+        width: 100%;
+        text-align: left;
+    }
+}
+
+.editLinkItemHolder {
+    & > button > svg {
+        height: $size;
+        width: $size;
+    }
+
+    & > input { @extend .editInput; }
 }

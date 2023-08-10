@@ -24,8 +24,7 @@ $indent: calc(6ch - 15px);
     left: 0;
     width: 100%;
     height: 100%;
-    padding-bottom: $bottomViewMargin !important;
-    padding: 5px;
+    padding: 5px 5px $bottomViewMargin 5px;
 }
 
 #editing {
@@ -44,7 +43,7 @@ $indent: calc(6ch - 15px);
 }
 
 #highlighting {
-    @include colorBackground(document);
+    @include colorBackground(input);
     z-index: 0;
 
     &::-webkit-scrollbar-corner {

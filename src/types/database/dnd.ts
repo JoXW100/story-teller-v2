@@ -199,3 +199,40 @@ export enum CastingTime {
     Hour = "hour",
     Custom = "custom",
 }
+
+export enum Proficiency {
+    ArmorAll = "armorAll",
+    ArmorLight = "armorLight",
+    ArmorMedium = "armorMedium",
+    ArmorHeavy = "armorHeavy",
+    Shields = "shields"
+}
+
+export enum ModifierType {
+    Bonus = "bonus", // Adds/Removes a flat value
+    Set = "set", // Sets value
+    Add = "add", // Adds item to collection
+    Remove = "remove" // Removes item from collection
+}
+
+export enum ModifierCondition {
+    None = "none",
+}
+
+export enum ModifierSetMethod {
+    Exact = "exact",
+    Max = "max",
+    Min = "min"
+}
+
+export enum ModifierBonusTypeProperty {
+    AC = "ac",
+    NumHitDice = "numHitDice",
+    Health = "health",
+    Proficiency = "proficiency",
+    Initiative = "initiative"
+}
+
+export enum ModifierAddTypeProperty {
+    Proficiency = "proficiency"
+}

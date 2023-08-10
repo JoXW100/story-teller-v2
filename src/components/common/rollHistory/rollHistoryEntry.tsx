@@ -12,14 +12,14 @@ type HistoryRollNoticeProps = React.PropsWithRef<{
 
 const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
     const Content = useMemo(() => {
-        var result = entry.result;
-        var selected = result.results[result.selectedIndex];
-        var mod = result.modifier;
-        var noRolls = selected.sum === 0
-        var modText = mod === 0 || noRolls ? null : mod < 0 
+        let result = entry.result;
+        let selected = result.results[result.selectedIndex];
+        let mod = result.modifier;
+        let noRolls = selected.sum === 0
+        let modText = mod === 0 || noRolls ? null : mod < 0 
             ? `${selected.sum} - ${Math.abs(mod)} ⟶`
             : `${selected.sum} + ${mod} ⟶`;
-        var content = result.results.map((res, index) => (
+        let content = result.results.map((res, index) => (
             <div 
                 key={index}
                 data={result.selectedIndex === index ? 'true' : 'false'}
@@ -64,7 +64,7 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
 }
 
 const HistoryRollNotice = ({ result }: HistoryRollNoticeProps): JSX.Element => {
-    var rollWasFail = result.method !== RollMethod.Crit 
+    let rollWasFail = result.method !== RollMethod.Crit 
         && result.results.length === 1 
         && result.results[0].sum === 1
         && result.results[0].values.length === 1

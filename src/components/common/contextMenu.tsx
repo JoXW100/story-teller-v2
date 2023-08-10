@@ -50,7 +50,7 @@ const ContextMenu = () => {
             icon: null,
             action: null,
             content: detail.content
-        } as ContextRowData)
+        } satisfies ContextRowData)
         let contentWidth = 240 * depth;
         let contentHeight = 26 * height;
 

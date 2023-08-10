@@ -13,10 +13,6 @@ type SelectionMenuProps = React.PropsWithRef<{
     onChange: (selection: string[]) => void
 }>
 
-type SelectionRowProps = React.PropsWithChildren<{
-    onClick: () => void
-}>
-
 const getFirstNotInCollection = (values: string[], collection: string[]): string => (
     values.find((key) => !collection.includes(key))
 )
@@ -50,8 +46,8 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
         )
     }
 
-    const Component = ({ value }: ListTemplateComponent<string>): JSX.Element => (
-        values[value] as JSX.Element
+    const Component = ({ value }: ListTemplateComponent<string>): React.ReactNode => (
+        values[value]
     )
 
     return (

@@ -116,8 +116,14 @@
                                 "params": { "label": "Level", "key": "level" }
                             },
                             { 
+                                "type": "linkInput", 
+                                "default": null,
+                                "params": { "label": "Class", "key": "class", "placeholder": "Class id...", "fileTypes": ["cla"] }
+                            },
+                            { 
                                 "type": "enum", 
-                                "params": { "label": "Hit Dice", "key": "hitDice", "type": "dice", "default": 0 }
+                                "params": { "label": "Hit Dice", "key": "hitDice", "type": "dice", "default": 0 },
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "class" }, { "type": "any", "value": ["", null] }] }]
                             },
                             { 
                                 "type": "option", 
@@ -228,7 +234,7 @@
                             {
                                 "type": "list",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1, "editEnabled": true }
+                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1, "editEnabled": true, "reverse": true }
                             },
                             {
                                 "type": "linkList",

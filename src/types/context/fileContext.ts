@@ -3,6 +3,14 @@ import type RequestQueue from "utils/data/requestQueue";
 import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
 import type { DBResponse, ObjectId } from "types/database";
 import { Variables } from "types/elements";
+import { FileTemplate } from "types/templates";
+
+interface EditFilePage {
+    template: keyof FileTemplate['editorSubTemplates']
+    rootKey: string
+    name: string
+    index: number
+}
 
 interface FileContextState extends ContextState {
     loading: boolean
@@ -10,7 +18,7 @@ interface FileContextState extends ContextState {
     fileSelected: boolean
     viewMode: boolean
     file: FileData<FileContent, FileMetadata, FileStorage>
-    variables: Variables
+    editFilePages: EditFilePage[]
     story: ObjectId
     queue: RequestQueue
 }
@@ -24,13 +32,15 @@ type FileContextDispatchAction =
     | DispatchAction<"setMetadata", KeyValuePair, FileContextDispatchAction>
     | DispatchAction<"setStorage", KeyValuePair, FileContextDispatchAction>
     | DispatchAction<"setViewMode", boolean, FileContextDispatchAction>
-    | DispatchAction<"setVariables", Variables, FileContextDispatchAction>
+    | DispatchAction<"openTemplatePage", EditFilePage, FileContextDispatchAction>
+    | DispatchAction<"closeTemplatePage", number, FileContextDispatchAction>
 
 interface FileContextDispatch extends ContextDispatch {
     setText: (text: string) => void
     setMetadata: (key: string, value: any) => void
     setStorage: (key: string, value: any) => void
-    setVariables: (variables: Variables) => void
+    openTemplatePage: (page: EditFilePage) => void
+    closeTemplatePage: (num?: number) => void
 }
 
 
@@ -41,5 +51,6 @@ export type {
     FileContextDispatchAction,
     FileContextState,
     FileContextDispatch,
-    KeyValuePair
+    KeyValuePair,
+    EditFilePage
 }

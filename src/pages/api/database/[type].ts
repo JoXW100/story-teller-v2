@@ -49,7 +49,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(400).json(failure("Missing"));
                 }
             case 'PUT':
-                var body: Record<string, any> = JSON.parse(req.body)
+                let body: Record<string, any> = JSON.parse(req.body)
                 switch (type) {
                     case 'connect':
                         return res.status(200).json(await success(Database.isConnected));
@@ -115,10 +115,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
 
 const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata, any> => {
     switch (data.type) {
-        case FileType.Document:
-        case FileType.Creature:
         case FileType.Ability:
+        case FileType.Document:
         case FileType.Character:
+        case FileType.Class:
+        case FileType.Creature:
         case FileType.Spell:
         case FileType.Encounter:
             return { name: data.name, text: "", metadata: metadata };

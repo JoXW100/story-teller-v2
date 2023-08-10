@@ -1,4 +1,5 @@
 import Logger from "utils/logger";
+import { asEnum, isEnum } from "utils/helpers";
 import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
 import { CalculationMode, IOptionType } from "types/database/editor"
 import { FileMetadata, FileType } from "types/database/files"
@@ -17,9 +18,7 @@ const damageExcMatchExpr = /([0-9]+)d([0-9]+)/
 
 const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, timeValue: number } => {
     var res = castTimeExpr.exec(time) ?? []
-    var type = Object.values(CastingTime).includes(res[2] as CastingTime) 
-        ? res[2] as CastingTime 
-        : CastingTime.Custom 
+    var type = asEnum(res[2], CastingTime) ?? CastingTime.Custom 
     return {
         time: type,
         timeCustom: time,
@@ -73,19 +72,17 @@ const getCondition = (results: {[key: string]: string}): { cond: EffectCondition
         return { cond: EffectCondition.Hit }
     }
     if (results['save']) {
-        let attr: Attribute = results['save']?.substring(0, 3) as Attribute
         return { 
             cond: EffectCondition.Save, 
-            attr: Object.values(Attribute).includes(attr) ? attr : undefined 
+            attr: asEnum(results['save']?.substring(0, 3), Attribute)
         }
     }
 
     let res = saveMatchExpr.exec(results['content']?.toLowerCase() ?? "") ?? []
     if (res[1]) {
-        let attr: Attribute = res[1].slice(0, 3) as Attribute
         return {
             cond: EffectCondition.Save,
-            attr: Object.values(Attribute).includes(attr) ? attr : undefined
+            attr: asEnum(res[1].slice(0, 3), Attribute)
         }
     }
     return{ cond: EffectCondition.None }
@@ -116,7 +113,7 @@ const getRange = (range: string): { range: number, area?: AreaType, areaSize?: n
         var r = Number(res[1]) ? Number(res[1]) : 0
         return {
             range: r,
-            area: Object.values(AreaType).includes(area) ? area : AreaType.None,
+            area: asEnum(area, AreaType) ?? AreaType.None,
             areaSize: r
         }
     }
@@ -187,28 +184,26 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
     return { area: area, areaSize: size, areaHeight: height }
 }
 
-const getDamage = (results: {[key: string]: string}): { damageType?: DamageType, 
-                   effectModifier?: IOptionType<number>, effectDice?: DiceType, 
-                   effectDiceNum?: number } => {
+const getDamage = (results: Record<string, string>): { damageType?: DamageType, effectModifier?: IOptionType<number>, effectDice?: DiceType, effectDiceNum?: number } => {
     let effectDiceNum: number = 1
-    let effectDice: DiceType = DiceType.None
-    let damageType: DamageType = DamageType.None
+    let effectDice: number = 0
+    let damageType: string = DamageType.None
     if (results['damage']) {
         let res = damageExcMatchExpr.exec(results['damage']) ?? [] // Todo expand
         effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
-        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2]) as DiceType
-        damageType = results['damage type'] as DamageType
+        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2])
+        damageType = results['damage type']
     } else {
         let res = damageMatchExpr.exec(results['content']?.toLocaleLowerCase() ?? '') ?? []
         effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
-        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2]) as DiceType
-        damageType = res[3] as DamageType
+        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2])
+        damageType = res[3]
     }
     
     return {
         effectDiceNum: effectDiceNum,
-        effectDice: Object.values(DiceType).includes(effectDice) ? effectDice : DiceType.None,
-        damageType: Object.values(DamageType).includes(damageType) ? damageType : DamageType.None,
+        effectDice: asEnum(effectDice, DiceType) ?? DiceType.None,
+        damageType: asEnum(damageType, DamageType) ?? DamageType.None,
     }
 }   
 
@@ -280,8 +275,8 @@ const getSpeed = (speed: string) => {
     var hit: RegExpExecArray = null;
     while(null != (hit = expr.exec(speed))){
         var key = hit[1] ?? MovementType.Walk
-        if (Object.values(MovementType).includes(key as unknown as MovementType)) {
-            result[key ?? MovementType.Walk] = Number(hit[2]) ? Number(hit[2]) : 0
+        if (isEnum(key, MovementType)) {
+            result[key] = isNaN(Number(hit[2])) ? 0 : Number(hit[2])
         }
     }
     return result
@@ -346,8 +341,6 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
 }
 
 const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
-    var type = results['type'] as CreatureType
-    var size = results['size'] as SizeType
     var ac = Number(results['ac'] ? (/(-?[0-9]+)/.exec(results['ac']) ?? [])[1] : undefined)
     var { hp, num, dice } = splitHP(results['hp'])
     var passive = `passive perception ${results['passive perception'] ?? "10"}`
@@ -355,17 +348,17 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
     var fileContent: CreatureMetadata = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
-        type: Object.values(CreatureType).includes(type) ? type : CreatureType.None,
-        size: Object.values(SizeType).includes(size) ? size : SizeType.Medium,
+        type: asEnum(results['type'], CreatureType) ?? CreatureType.None,
+        size: asEnum(results['size'], SizeType) ?? SizeType.Medium,
         alignment: getAlignment(results['alignment']),
         level: num ? num : 1,
-        hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
+        hitDice: asEnum(dice, DiceType) ?? DiceType.None,
         health: hp 
             ? { type: CalculationMode.Auto, value: hp } 
             : { type: CalculationMode.Auto } as IOptionType<number>,
-        ac: ac 
-            ? { type: CalculationMode.Auto, value: ac } 
-            : { type: CalculationMode.Auto } as IOptionType<number>,
+        ac: isNaN(ac) 
+            ? { type: CalculationMode.Auto } as IOptionType<number>
+            : { type: CalculationMode.Auto, value: ac } ,
         resistances: results['resistances'] ?? "",
         advantages: results['advantages'] ?? "", // @todo confirm 
         dmgImmunities: results['immunities'] ?? "",
@@ -386,7 +379,7 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
 }
 
 const toSpell = (results: {[key: string]: string}): SpellMetadata => {
-    var school = results['school'] as MagicSchool
+    var level = Number(results['level'])
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
     var { damageType, effectDice, effectDiceNum } = getDamage(results)
@@ -399,8 +392,8 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
     var fileContent: SpellMetadata = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
-        level: Number(results['level']) ? Number(results['level']) : 0,
-        school: Object.values(MagicSchool).includes(school) ? school : MagicSchool.Abjuration,
+        level: isNaN(level) ? 0 : Number(results['level']),
+        school: asEnum(results['school'], MagicSchool) ?? MagicSchool.Abjuration,
         time: time,
         timeCustom: timeCustom,
         timeValue: timeValue,

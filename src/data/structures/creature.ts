@@ -3,10 +3,12 @@ import Dice from "utils/data/dice";
 import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
+import ModifierCollectionData from "./modifierCollection";
 import { Alignment, Attribute, CreatureType, DiceType, MovementType, SizeType, Skill } from "types/database/dnd";
 import { CalculationMode, OptionalAttribute, IOptionType } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import ICreatureStats from "types/database/files/iCreatureStats";
+import { ModifierCollection } from "types/database/files";
 
 const OptionTypeAuto: IOptionType<number> = {
     type: CalculationMode.Auto,
@@ -15,6 +17,12 @@ const OptionTypeAuto: IOptionType<number> = {
 
 class CreatureData extends FileData<CreatureMetadata> implements Required<CreatureMetadata>
 {
+    protected readonly modifiers: ModifierCollection
+    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection) {
+        super(metadata)
+        this.modifiers = modifiers ?? new ModifierCollectionData([]);
+    }
+
     public getStats(): CreatureStats {
         return new CreatureStats({
             str: this.str,
@@ -111,6 +119,15 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.hitDice ?? getOptionType("dice").default
     }
 
+    public get hitDiceValue(): number {
+        let value = parseInt(String(this.hitDice))
+        return isNaN(value) ? 0 : value
+    }
+
+    public get numHitDice(): number {
+        return this.level + this.modifiers.bonusNumHealthDice
+    }
+
     public get health(): IOptionType<number> {
         return this.metadata.health ?? OptionTypeAuto
     }
@@ -119,14 +136,14 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         let value = this.health.value ?? 0;
         switch (this.health.type) {
             case CalculationMode.Override:
-                return value;
+                return value + this.modifiers.bonusHealth;
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Dice.average(this.hitDice, this.level) + mod * this.level + value
+                return Dice.average(this.hitDice, this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
             case CalculationMode.Auto:
             default:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Dice.average(this.hitDice, this.level) + mod * this.level
+                return Dice.average(this.hitDice, this.numHitDice) + mod * this.level + this.modifiers.bonusHealth
         }
     }
 
@@ -137,24 +154,18 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
                 return {
                     dice: "0",
                     num: "0",
-                    mod: String(value),
+                    mod: String(value + this.modifiers.bonusHealth),
                     desc: "Max health"
                 } as RollOptions;
+            default:
+            case CalculationMode.Auto:
+                value = 0;
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
                 return {
                     dice: String(this.hitDice),
-                    num: String(this.level),
-                    mod: String(mod * this.level + value),
-                    desc: "Max health"
-                } as RollOptions
-            case CalculationMode.Auto:
-            default:
-                var mod: number = this.getAttributeModifier(Attribute.CON)
-                return {
-                    dice: String(this.hitDice),
-                    num: String(this.level),
-                    mod: String(mod * this.level),
+                    num: String(this.numHitDice),
+                    mod: String(mod * this.level + value + this.modifiers.bonusHealth),
                     desc: "Max health"
                 } as RollOptions
         }
@@ -168,13 +179,13 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         let value = this.ac.value ?? 0;
         switch (this.ac.type) {
             case CalculationMode.Override:
-                return value;
+                return value + this.modifiers.bonusAC;
             case CalculationMode.Modify:
-                var mod = this.getAttributeModifier(Attribute.DEX);
-                return 10 + mod + value;
+                var mod: number = this.getAttributeModifier(Attribute.DEX);
+                return 10 + mod + value + this.modifiers.bonusAC;
             case CalculationMode.Auto:
             default:
-                return 10 + this.getAttributeModifier(Attribute.DEX);
+                return 10 + this.getAttributeModifier(Attribute.DEX) + this.modifiers.bonusAC;
         }
     }
 
@@ -186,12 +197,12 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         let value: number = this.proficiency.value ?? 0
         switch (this.proficiency.type) {
             case CalculationMode.Override:
-                return value
+                return value + this.modifiers.bonusProficiency
             case CalculationMode.Modify:
-                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + value;
+                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + value + this.modifiers.bonusProficiency;
             case CalculationMode.Auto:
             default:
-                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2
+                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + this.modifiers.bonusProficiency
         }
     }
 
@@ -203,13 +214,13 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         let value: number = this.initiative.value ?? 0
         switch (this.initiative.type) {
             case CalculationMode.Override:
-                return value;
+                return value + this.modifiers.bonusInitiative;
             case CalculationMode.Modify:
-                var mod = this.getAttributeModifier(Attribute.DEX);
-                return mod + value;
+                var mod: number = this.getAttributeModifier(Attribute.DEX);
+                return mod + value + this.modifiers.bonusInitiative;
             case CalculationMode.Auto:
             default:
-                return this.getAttributeModifier(Attribute.DEX);
+                return this.getAttributeModifier(Attribute.DEX) + this.modifiers.bonusInitiative;
         }
     }
 

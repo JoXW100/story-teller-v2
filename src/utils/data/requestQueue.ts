@@ -13,7 +13,7 @@ class RequestQueue {
     }
 
     /** Adds a request to the queue */
-    public addRequest(action: (...params: any[]) => any, id: string, ...params: any[]) {
+    public addRequest(action: (...params: any[]) => void, id: string, ...params: any[]) {
         clearTimeout(this.requestWorkerTimeout[id]);
         this.requestWorkerTimeout[id] = setTimeout(
             this.handleRequest, 
@@ -22,21 +22,12 @@ class RequestQueue {
         );
     }
 
-    private handleRequest = (action: (...params: any[]) => any, id: string, ...params: any[]) => {
-        var res = null;
-        var success = false;
-    
+    private handleRequest = (action: (...params: any[]) => void, id: string, ...params: any[]) => {
         try {
-            res = action(...params)
-            success = true;
-        } catch (error) {
-            res = error.message;
+            action(...params)
+        } catch (error: unknown) {
+            Logger.throw("RequestQueue.handleRequest", error);
         }
-        
-        if (!success) {
-            Logger.warn("RequestQueue.handleRequest", res);
-        }
-
         this.requestWorkerTimeout[id] = null;
         delete this.requestWorkerTimeout[id]
     }

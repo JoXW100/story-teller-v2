@@ -26,14 +26,12 @@ const appReducer = (state: AppContextState, action: AppContextDispatchAction): A
     switch (action.type) {
         case 'init':
             Localization.initialize();
-            var palette = Storage.getString("palette");
-            var viewMode = Storage.getString("viewMode") as ViewMode;
             return state.loading 
                 ? { 
                     ...state, 
                     loading: false, 
-                    palette: Object.keys(Palettes).includes(palette) ? palette : DefaultPalette,
-                    viewMode: Object.values(ViewMode).includes(viewMode) ? viewMode : ViewMode.SplitView,
+                    palette: Storage.getKeyOf("palette", Palettes) ?? DefaultPalette,
+                    viewMode: Storage.getEnum("viewMode", ViewMode) ?? ViewMode.SplitView,
                     enableSyntaxHighlighting: Storage.getBoolean("enableSyntaxHighlighting") ?? true,
                     enableRowNumbers: Storage.getBoolean("enableRowNumbers") ?? true,
                     enableColorFileByType: Storage.getBoolean("enableColorFileByType") ?? true,

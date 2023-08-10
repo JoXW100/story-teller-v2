@@ -59,8 +59,7 @@ class Options implements RollOptions {
         if (validModes.has(this.options.mode)) {
             return this.options.mode as RollMode
         }
-        let dice = this.diceValue
-        if (this.numValue == 1 && (dice.num == 20 || dice.num == 0)) {
+        if (this.numValue == 0 || (this.numValue == 1 && this.diceValue.num == 20)) {
             return RollMode.Mod
         }
         return RollMode.Dice
@@ -107,19 +106,19 @@ const validateOptions = (options: RollOptions): Queries => {
     });
 
     if (options.dice) {
-        var num = parseInt(options.dice)
+        let num = parseInt(options.dice)
         if (isNaN(num))
             throw new ParseError(`Invalid roll option value. dice: '${options.dice}', must be an integer`);
     }
 
     if (options.num) {
-        var num = parseInt(options.num)
+        let num = parseInt(options.num)
         if (isNaN(num) || num <= 0)
             throw new ParseError(`Invalid roll option value. num: '${options.num}', must be an integer > 0`);
     }
 
     if (options.mod) {
-        var num = parseInt(options.mod)
+        let num = parseInt(options.mod)
         if (isNaN(num))
             throw new ParseError(`Invalid roll option value. mod: '${options.mod}', must be an integer`);
     }
@@ -136,7 +135,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const rollOptions = new Options(options);
 
     const roll = (method: RollMethod) => {
-        var collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
+        let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
         dispatch.roll(collection, method);
     }

@@ -5,19 +5,22 @@ import styles from 'styles/components/listMenu.module.scss';
 
 type ListTemplateComponent<T> = React.PropsWithoutRef<{
     value: T
+    index: number
     onUpdate: (value: T) => void
 }>
 
 type ListTemplateMenuProps<T> = React.PropsWithoutRef<{
     className: string
     onChange: (items: T[]) => void
-    Component: (props: ListTemplateComponent<T>) => JSX.Element
-    EditComponent: (props: ListTemplateComponent<T>) => JSX.Element
+    validateInput?: (value: T, values: T[]) => boolean
+    Component: (props: ListTemplateComponent<T>) => React.ReactNode
+    EditComponent: (props: ListTemplateComponent<T>) => React.ReactNode
     defaultValue: T
     values: T[]
+    addLast?: boolean
 }>
 
-function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, defaultValue, values = [] }: ListTemplateMenuProps<T>): JSX.Element {
+function ListTemplateMenu<T>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast }: ListTemplateMenuProps<T>): JSX.Element {
     const [value, setValue] = useState<T>(defaultValue);
 
     const handleEditChange = (value: T) => {
@@ -32,7 +35,7 @@ function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, de
     }
 
     const handleAdd = () => {
-        onChange([value, ...values]);
+        onChange(addLast ? [...values, value] : [value, ...values]);
         setValue(defaultValue)
     } 
 
@@ -48,16 +51,16 @@ function ListTemplateMenu<T>({ className, onChange, Component, EditComponent, de
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div className={styles.addRow}>
                 <div className={styles.collection}>
-                    <EditComponent value={value} onUpdate={(value) => handleEditChange(value)}/>
+                    <EditComponent value={value} index={-1} onUpdate={(value) => handleEditChange(value)}/>
                 </div>
-                <button className={styles.button} onClick={handleAdd}>
+                <button className={styles.button} onClick={handleAdd} disabled={validateInput && !validateInput(value, values ?? [])}>
                     <AddIcon sx={{ width: '100%' }}/>
                 </button>
             </div>
             <div className={styles.content}>
                 { values?.map((value, index) => (
                     <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
-                        <Component value={value} onUpdate={(value) => handleChange(value, index)}/>
+                        <Component value={value} index={index} onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 )) }
             </div>

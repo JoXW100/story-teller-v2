@@ -231,10 +231,10 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
     }, [spellIds])
 
     useEffect(() => {
-        var categories: Record<number, JSX.Element[]> = []
+        let categories: Record<number, JSX.Element[]> = []
         spells.forEach((file, index) => {
             if (file.type === 'spe') {
-                var level = file.metadata.level as number ?? 1
+                let level = file.metadata.level as number ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 
                     <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>

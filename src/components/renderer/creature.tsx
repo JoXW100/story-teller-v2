@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
+import Localization from 'utils/localization';
 import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import CreatureData from 'data/structures/creature';
+import AbilityData from 'data/structures/ability';
+import ModifierCollectionData from 'data/structures/modifierCollection';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
-import { FileData, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
 import { Attribute } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
+import { AbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
-import Localization from 'utils/localization';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata,undefined>
@@ -22,7 +25,8 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
 }>
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
-    let creature = new CreatureData(file.metadata)
+    const [modifiers, setModifiers] = useState<ModifierCollection>(null)
+    let creature = new CreatureData(file.metadata, modifiers)
     let stats = creature.getStats()
     let speed = getSpeed(creature)
     let saves = getSaves(creature)
@@ -30,6 +34,12 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
 
     const content = useParser(file.content.text, file.metadata, "$content");
     const description = useParser(creature.description, file.metadata, "description")
+
+    const handleAbilitiesLoaded = (abilities: AbilityMetadata[]) => {
+        let modifiers = abilities.flatMap((ability) => new AbilityData(ability).modifiers ?? []);
+        let collection = new ModifierCollectionData(modifiers)
+        setModifiers(collection);
+    }
 
     return (
         <>
@@ -123,7 +133,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <AbilityGroups abilityIds={creature.abilities} data={stats}/>
+                    <AbilityGroups abilityIds={creature.abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
                 </Elements.Block>
             </Elements.Align>
             { creature.spellAttribute != OptionalAttribute.None &&
@@ -176,7 +186,9 @@ const CreatureLinkRenderer = ({ file }: CreatureLinkRendererProps): JSX.Element 
             <Elements.Image options={{ width: '120px', href: file.metadata?.portrait }}/>
             <Elements.Line/>
             <Elements.Block>
-                <Elements.Header3>{ file.metadata?.name }</Elements.Header3>
+                <Elements.Header3>
+                    { file.metadata?.name }
+                </Elements.Header3>
                 { description }
             </Elements.Block>
         </Elements.Align>

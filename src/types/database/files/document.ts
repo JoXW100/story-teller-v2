@@ -6,7 +6,6 @@ interface DocumentContent extends FileContent {
 
 interface DocumentMetadata extends FileMetadata {
     title?: string
-    publish?: boolean
     content?: string
 }
 

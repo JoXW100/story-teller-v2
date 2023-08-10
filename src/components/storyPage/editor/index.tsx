@@ -3,12 +3,13 @@ import Components, { TemplateComponentProps } from './components';
 import { Context } from 'components/contexts/fileContext';
 import Loading from 'components/common/loading';
 import Logger from 'utils/logger';
-import { EditInputType, RootTemplateComponent, TemplateComponent, TemplateCondition, TemplateConditionType } from 'types/templates';
+import { EditInputType, RootTemplateComponent, ITemplateComponent, TemplateCondition, TemplateConditionType } from 'types/templates';
 import { FileMetadata } from 'types/database/files';
 import styles from 'styles/pages/storyPage/editor.module.scss'
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent
+    metadata: FileMetadata
 }>
 
 interface ConditionsData {
@@ -28,7 +29,7 @@ const handleCondition = (condition: TemplateCondition, data: ConditionsData) => 
         switch (condition.type) {
             case TemplateConditionType.Equals:
             case TemplateConditionType.NotEquals:
-                var params: ConditionsData = { ...data, cmp: "$empty", mode: condition.type }
+                let params: ConditionsData = { ...data, cmp: "$empty", mode: condition.type }
                 return condition.value?.every((x) => handleCondition(x, params)) ?? false;
             case TemplateConditionType.Metadata:
                 if (data.cmp === "$empty") {
@@ -63,7 +64,7 @@ const handleCondition = (condition: TemplateCondition, data: ConditionsData) => 
     }
 }
 
-const checkConditions = (template: TemplateComponent, metadata: FileMetadata): boolean => {
+const checkConditions = (template: ITemplateComponent, metadata: FileMetadata): boolean => {
     const data: ConditionsData = { metadata: metadata }
     return template.conditions?.every((c) => handleCondition(c, data) ) ?? true
 }
@@ -76,22 +77,25 @@ const getComponent = (type: EditInputType): (props: TemplateComponentProps) => R
         case EditInputType.Text: return Components.Text;
         case EditInputType.Enum: return Components.Enum;
         case EditInputType.Textarea: return Components.Textarea;
+        case EditInputType.ItemList: return Components.ItemList;
         case EditInputType.LinkList: return Components.LinkList;
+        case EditInputType.LinkInput: return Components.LinkInput;
         case EditInputType.List: return Components.List;
         case EditInputType.Selection: return Components.Selection;
         case EditInputType.Option: return Components.Option;
         case EditInputType.Number: return Components.Number;
+        case EditInputType.Navigation: return Components.Navigation;
         default: return null;
     }
 }
 
-export const buildEditor = (template: TemplateComponent, metadata: FileMetadata = {}, key = 0): React.ReactNode => {
+export const buildEditor = (template: ITemplateComponent, metadata: FileMetadata = {}, key = 0): React.ReactNode => {
     if (!checkConditions(template, metadata)) return null;
     
-    var content = template.content?.map((item, key) => buildEditor(item, metadata, key));
+    const content = template.content?.map((item, key) => buildEditor(item, metadata, key));
     if (template.type === EditInputType.Root) return content;
     
-    var Component = getComponent(template.type);
+    const Component = getComponent(template.type);
     return Component && (
         <Component key={key} params={template.params}> 
             { content }
@@ -99,7 +103,7 @@ export const buildEditor = (template: TemplateComponent, metadata: FileMetadata 
     )
 }
 
-const Editor = ({ template }: EditorProps): JSX.Element => {
+const Editor = ({ template, metadata }: EditorProps): JSX.Element => {
     const [context] = useContext(Context)
 
     // Prevent leaving page with unsaved changes
@@ -118,13 +122,13 @@ const Editor = ({ template }: EditorProps): JSX.Element => {
     const content = useMemo<React.ReactNode>(() => {
         try {
             return context.file
-                ? buildEditor(template, { ...context.file.metadata })
+                ? buildEditor(template, { ...metadata })
                 : null
         } catch (error: unknown) {
             Logger.throw("editor.content", error)
             return null
         }
-    }, [context.file, context.file.metadata, template])
+    }, [context.file, context.editFilePages, template, metadata])
 
     return  (
         <div className={styles.main}>

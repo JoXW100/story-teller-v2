@@ -4,8 +4,8 @@ import FileSystemContext from "components/contexts/fileSystemContext";
 import { Context } from "components/contexts/storyContext";
 import FileMenuHeader from "./fileMenuHeader";
 import FileMenu from "./fileMenu";
-import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 import Localization from "utils/localization";
+import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileSystem = (): JSX.Element => {
     return (

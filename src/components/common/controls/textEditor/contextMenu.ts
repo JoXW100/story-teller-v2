@@ -21,7 +21,7 @@ import { openContext } from 'components/common/contextMenu';
 import { Point } from 'types/contextMenu';
 
 const insertText = (e: HTMLTextAreaElement, insertion: string, onChange: (value: string) => void) => {
-    var end = e.selectionEnd + insertion.length
+    let end = e.selectionEnd + insertion.length
     e.value = e.value.substring(0, e.selectionStart) + insertion + e.value.substring(e.selectionEnd)
     e.select()
     e.selectionStart = end
@@ -30,7 +30,7 @@ const insertText = (e: HTMLTextAreaElement, insertion: string, onChange: (value:
 }
 
 const openTextEditorContext = (target: HTMLTextAreaElement, point: Point, onChange: (value: string) => void): void => {
-    var selection = target.value.substring(target.selectionStart, target.selectionEnd)
+    let selection = target.value.substring(target.selectionStart, target.selectionEnd)
     openContext([
         {
             text: Localization.toText('editor-insert'), 

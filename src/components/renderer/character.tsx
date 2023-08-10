@@ -1,20 +1,27 @@
-import React from 'react';
-import Elements from 'data/elements';
-import RollElement from 'data/elements/roll';
+import React, { useState } from 'react';
 import { useParser } from 'utils/parser';
 import { getSaves, getSkills, getSpeed } from 'utils/calculations';
+import Localization from 'utils/localization';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
+import Elements from 'data/elements';
+import RollElement from 'data/elements/roll';
+import CharacterData from 'data/structures/character';
+import AbilityData from 'data/structures/ability';
+import ModifierCollectionData from 'data/structures/modifierCollection';
+import ClassData from 'data/structures/classData';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { FileData, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
 import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
 import { Attribute } from 'types/database/dnd';
-import CharacterData from 'data/structures/character';
+import { AbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
-import Localization from 'utils/localization';
+import { useFile } from 'utils/handlers/files';
+import { ClassMetadata } from 'types/database/files/class';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent,CharacterMetadata,undefined>
+    classMetadata?: ClassMetadata
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
@@ -22,10 +29,11 @@ type CharacterLinkRendererProps = React.PropsWithRef<{
 }>
 
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
+    const [classFile, loading] = useFile<ClassMetadata>(props.file?.metadata?.class)
     const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
-    return Renderer(props)
+    return <Renderer {...props} classMetadata={classFile?.metadata}/>
 }
 
 const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
@@ -78,17 +86,26 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
     )
 } 
 
-const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
-    let character = new CharacterData(file.metadata)
+const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendererProps): JSX.Element => {
+    const [modifiers, setModifiers] = useState<ModifierCollection>(null)
+    const classData = new ClassData(classMetadata);
+    const character = new CharacterData(file.metadata, modifiers, classData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
     const description = useParser(character.description, file.metadata, "description")
     const history = useParser(character.history, file.metadata, "history")
     const notes = useParser(character.notes, file.metadata, "notes")
-    let stats = character.getStats()
-    let speed = getSpeed(character)
-    let saves = getSaves(character)
-    let skills = getSkills(character)
+    const stats = character.getStats()
+    const speed = getSpeed(character)
+    const saves = getSaves(character)
+    const skills = getSkills(character)
+
+    const handleAbilitiesLoaded = (abilities: AbilityMetadata[]) => {
+        let modifiers = abilities.flatMap((ability) => new AbilityData(ability).modifiers ?? []);
+        let collection = new ModifierCollectionData(modifiers)
+        setModifiers(collection);
+    }
+
     return (
         <>
             <Elements.Align>
@@ -139,9 +156,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <div>
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
-                            mod: character.initiativeValue as any, 
-                            desc: "Initiative" }}
-                        />
+                            mod: character.initiativeValue.toString(), 
+                            desc: "Initiative" 
+                        }}/>
                     </div>
                     <Elements.Line/>
                     <Elements.Align>
@@ -151,7 +168,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                                     <Elements.Bold>{attr}</Elements.Bold>
                                     { character[Attribute[attr]] ?? 0 }
                                     <Elements.Roll options={{ 
-                                        mod: character.getAttributeModifier(Attribute[attr]) as any, 
+                                        mod: character.getAttributeModifier(Attribute[attr]).toString(), 
                                         desc: `${attr} Check`
                                     }}/>
                                 </Elements.Align>
@@ -209,7 +226,10 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         }}/>
                     </div>
                     <Elements.Line/>
-                    <AbilityGroups abilityIds={character.abilities} data={stats}/>
+                    <AbilityGroups 
+                        abilityIds={character.abilities} 
+                        stats={stats} 
+                        onLoaded={handleAbilitiesLoaded}/>
                 </Elements.Block>
             </Elements.Align>
             { character.spellAttribute !== OptionalAttribute.None &&
@@ -222,7 +242,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Modifier</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: character.getAttributeModifier(stats.spellAttribute) as any, 
+                                    mod: character.getAttributeModifier(stats.spellAttribute).toString(), 
                                     desc: Localization.toText('spell-spellModifier')
                                 }}/>
                             </Elements.Align>
@@ -230,7 +250,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Attack</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: character.spellAttackModifier as any, 
+                                    mod: character.spellAttackModifier.toString(), 
                                     desc: Localization.toText('spell-spellAttack')
                                 }}/>
                             </Elements.Align>
@@ -238,7 +258,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Save</Elements.Bold>
                                 <Elements.Save options={{
-                                    dc: character.spellSaveModifier as any
+                                    dc: character.spellSaveModifier.toString()
                                 }}/>
                             </Elements.Align>
                     </Elements.Align>
@@ -261,7 +281,9 @@ const CharacterLinkRenderer = ({ file }: CharacterLinkRendererProps): JSX.Elemen
             <Elements.Image options={{ width: '120px', href: file.metadata?.portrait }}/>
             <Elements.Line/>
             <Elements.Block>
-                <Elements.Header3>{ file.metadata?.name }</Elements.Header3>
+                <Elements.Header3>
+                    { file.metadata?.name }
+                </Elements.Header3>
                 { description }
             </Elements.Block>
         </Elements.Align>

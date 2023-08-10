@@ -1,5 +1,5 @@
-import { FileContent, FileMetadata } from "."
-import { AbilityType, ActionType, DiceType } from "../dnd"
+import { FileContent, FileMetadata, Modifier } from "."
+import { AbilityType, ActionType, DiceType, ModifierBonusTypeProperty, ModifierType } from "../dnd"
 import ICreatureActionData from "./iConditionalHitEffect"
 
 interface AbilityContent extends FileContent {
@@ -15,6 +15,8 @@ interface AbilityMetadata extends FileMetadata, ICreatureActionData {
     rangeLong?: number
     rangeThrown?: number
     effectVersatileDice?: DiceType
+    // Modifiers
+    modifiers?: Modifier[]
 }
 
 export type {

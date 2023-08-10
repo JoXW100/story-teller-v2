@@ -1,15 +1,100 @@
+import Dice from "utils/data/dice";
 import CreatureData from "./creature";
+import ModifierCollectionData from "./modifierCollection";
+import ClassData from "./classData";
 import { getOptionType } from "data/optionData";
+import { RollOptions } from "data/elements/roll";
 import { CharacterMetadata } from "types/database/files/character";
-import { Gender } from "types/database/dnd";
+import { Attribute, DiceType, Gender } from "types/database/dnd";
+import { ObjectId } from "types/database";
+import { ModifierCollection } from "types/database/files";
+import { CreatureMetadata } from "types/database/files/creature";
+import { ClassMetadata } from "types/database/files/class";
+import { CalculationMode } from "types/database/editor";
 
 class CharacterData extends CreatureData implements Required<CharacterMetadata>
 {
     public readonly metadata: CharacterMetadata;
+    private readonly characterClass: Required<ClassMetadata> 
+    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection, characterClass?: Required<ClassMetadata> ) {
+        if (characterClass) {
+            let classModifierCollection = new ModifierCollectionData(characterClass.modifiers);
+            super(metadata, modifiers?.join(classModifierCollection) ?? classModifierCollection)
+        } else {
+            characterClass = new ClassData({})
+            super(metadata, modifiers)
+        }
+        this.characterClass = characterClass;
+    }
+
+    // overrides
+
+    public override get hitDice(): DiceType {
+        if (this.characterClass.hitDice !== DiceType.None) {
+            return this.characterClass.hitDice
+        } else {
+            return this.metadata.hitDice ?? getOptionType("dice").default
+        }
+    }
+    
+    public override get healthValue(): number {
+        let value = this.health.value ?? 0;
+        switch (this.health.type) {
+            case CalculationMode.Override:
+                return value + this.modifiers.bonusHealth;
+            default:
+            case CalculationMode.Auto:
+                    value = 0;
+            case CalculationMode.Modify:
+                var mod: number = this.getAttributeModifier(Attribute.CON)
+                if (this.level > 0 && this.hitDiceValue) {
+                    return Dice.average(this.hitDice, this.numHitDice - 1) + this.hitDiceValue + mod * this.level + value + this.modifiers.bonusHealth
+                } else {
+                    return Dice.average(this.hitDice, this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
+                }
+        }
+    }
+
+    public override get healthRoll(): RollOptions {
+        let value = this.health.value ?? 0;
+        switch (this.health.type) {
+            case CalculationMode.Override:
+                return {
+                    dice: "0",
+                    num: "0",
+                    mod: String(value + this.modifiers.bonusHealth),
+                    desc: "Max health"
+                } as RollOptions;
+            default:
+            case CalculationMode.Auto:
+                value = 0;
+            case CalculationMode.Modify:
+                var mod: number = this.getAttributeModifier(Attribute.CON)
+                if (this.level > 0 && this.hitDiceValue) {
+                    return {
+                        dice: String(this.hitDice),
+                        num: String(this.numHitDice - 1),
+                        mod: String(this.hitDiceValue + mod * this.level + value + this.modifiers.bonusHealth),
+                        desc: "Max health"
+                    } as RollOptions
+                } else {
+                    return {
+                        dice: String(this.hitDice),
+                        num: String(this.numHitDice),
+                        mod: String(mod * this.level + value + this.modifiers.bonusHealth),
+                        desc: "Max health"
+                    } as RollOptions
+                }
+        }
+    }
+
+    // Metadata
 
     public get simple(): boolean {
         return this.metadata.simple ?? false;
     }
+
+    // Details
 
     public get gender(): Gender {
         return this.metadata.gender ?? getOptionType("gender").default
@@ -62,6 +147,12 @@ class CharacterData extends CreatureData implements Required<CharacterMetadata>
 
     public get notes(): string {
         return this.metadata.notes ?? ""
+    }
+
+    // Class
+
+    public get class(): ObjectId {
+        return this.metadata.class ?? null
     }
 }
 

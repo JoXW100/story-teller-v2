@@ -5,14 +5,16 @@ type ListMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string
     onChange: (selection: string[]) => void
-    values: string[]
-    type: string
+    validateInput?: (value: string | number, values: (string | number)[]) => boolean
+    values: (string | number)[]
+    type: "text" | "number"
     defaultValue: string | number, 
     editEnabled: boolean,
     placeholder?: string
+    addLast?: boolean
 }>
 
-const ListMenu = ({ className, itemClassName, onChange, values = [], type = "text", defaultValue = "", editEnabled = false, placeholder }: ListMenuProps): JSX.Element => {
+const ListMenu = ({ className, itemClassName, onChange, validateInput, values = [], type = "text", defaultValue = "", editEnabled = false, placeholder, addLast }: ListMenuProps): JSX.Element => {
     const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
         const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
         return (
@@ -25,11 +27,11 @@ const ListMenu = ({ className, itemClassName, onChange, values = [], type = "tex
         )
     }
 
-    const Component = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
-        return editEnabled ? (
-            <EditComponent value={value} onUpdate={onUpdate}/>
-        ) : (
-            <div className={itemClassName}> {value} </div>
+    const Component = ({ value }: ListTemplateComponent<string>): JSX.Element => {
+        return (
+            <div className={itemClassName}> 
+                {value} 
+            </div>
         )
     }
     
@@ -37,10 +39,12 @@ const ListMenu = ({ className, itemClassName, onChange, values = [], type = "tex
         <ListTemplateMenu<string | number>
             className={className}
             onChange={onChange}
-            Component={Component}
+            validateInput={validateInput}
+            Component={editEnabled ? EditComponent : Component}
             EditComponent={EditComponent}
             defaultValue={defaultValue}
-            values={values}/>
+            values={values}
+            addLast={addLast}/>
     )
 }
 

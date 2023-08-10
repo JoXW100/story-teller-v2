@@ -10,22 +10,22 @@ import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/settingsPage.module.scss';
+import { isEnum } from 'utils/helpers';
 
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string
 }>
 
-const viewModes = {
+const viewModes: Record<ViewMode, string> = {
     [ViewMode.SplitView]: "Split View",
     [ViewMode.Exclusive]: "Exclusive" 
-} as Record<ViewMode, string>
-
-const palettes = Object.keys(Palettes).reduce((prev, val) => (
-    { ...prev, [val]: Palettes[val].name }
-), {} as Record<string, string>) 
+}
 
 const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
     const [context, dispatch] = useContext(Context)
+    const palettes = Object.keys(Palettes).reduce<Record<string, string>>((prev, val) => (
+        { ...prev, [val]: Palettes[val].name }
+    ), {}) 
     return (
         <div className={styles.main}>
             <div className={styles.header}>
@@ -45,8 +45,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         itemClassName={styles.dropdownItem}
                         value={context.palette}
                         values={palettes}
-                        onChange={(value) => dispatch.setPalette(value) }
-                    />
+                        onChange={(value) => dispatch.setPalette(value) }/>
                 </div>
                 <div className={styles.row}>
                     <label>{Localization.toText("settingsPage-viewMode")}</label>
@@ -54,8 +53,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         itemClassName={styles.dropdownItem}
                         value={context.viewMode}
                         values={viewModes}
-                        onChange={(value) => dispatch.setViewMode(value as ViewMode) }
-                    />
+                        onChange={(value) => isEnum(value, ViewMode) && dispatch.setViewMode(value)}/>
                 </div>
                 <div className={styles.row}>
                     <label>{Localization.toText("settingsPage-syntaxHighlighting")}</label> 

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import Link from 'next/link';
 import Navigation from 'utils/navigation';
+import { getRelativeMetadata } from 'utils/helpers';
 import { Context } from 'components/contexts/fileContext';
 import Checkbox from 'components/common/checkbox';
 import { TemplateComponentProps } from '.';
@@ -10,10 +11,8 @@ import styles from 'styles/pages/storyPage/editor.module.scss'
 const BooleanComponent = ({ params }: TemplateComponentProps<BooleanTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const href = params.viewURL && Navigation.viewURL(context.file?.id)
-    const defaultValue = params.default ?? 0;
-    const value = context.file?.metadata 
-        ? context.file.metadata[params.key] ?? defaultValue
-        : defaultValue;
+    const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
+    const value: boolean = (metadata && metadata[params.key]) ?? params.default ?? 0
 
     const handleChange = (value: boolean) => {
         dispatch.setMetadata(params.key, Boolean(value));
@@ -23,7 +22,13 @@ const BooleanComponent = ({ params }: TemplateComponentProps<BooleanTemplatePara
         <div className={styles.editBoolean}>
             <b> {`${params.label ?? "label"}:`} </b>
             <Checkbox value={value} onChange={handleChange} />
-            { href && value ? <Link href={href}>{String(href)}</Link> : null  }
+            { href && value ? (
+                <Link href={href}>
+                    <button className={styles.linkHolder}>
+                        {String(href)}
+                    </button> 
+                </Link>
+            ) : null}
         </div>
     )
 }

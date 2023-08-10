@@ -1,5 +1,5 @@
 import { DBResponse, ObjectId } from "types/database"
-import { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
+import { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
 import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
 import { Open5eFetchType } from "types/open5eCompendium"
 import Logger from "./logger"
@@ -63,6 +63,12 @@ abstract class Communication {
     public static async getFileStructure(storyId: ObjectId): Promise<DBResponse<FileGetStructureResult>> {
         return await this.databaseFetch<FileGetStructureResult>('getFileStructure', 'GET', {
             storyId: storyId
+        })
+    }
+
+    public static async getMetadata(fileId: ObjectId): Promise<DBResponse<FileGetMetadataResult>> {
+        return await this.databaseFetch<FileGetMetadataResult>('getMetadata', 'GET', {
+            fileId: fileId
         })
     }
 

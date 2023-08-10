@@ -49,11 +49,11 @@ const ToggleElement = ({ options = {}, metadata, variablesKey }: ElementParams<T
     const [content, setContent] = useState(null);
 
     useEffect(() => {
-        var key = toggle 
+        const key = toggle 
             ? toggleOptions.alt 
             : toggleOptions.content;
         if (key) {
-            var data = (metadata.$vars[variablesKey] ?? {})[key];
+            let data = (metadata.$vars[variablesKey] ?? {})[key];
             Parser.parse(data, metadata, variablesKey)
             .then((res) => setContent(res))
             .catch(() => setContent(null))

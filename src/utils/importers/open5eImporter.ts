@@ -1,7 +1,8 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
+import { asEnum, isEnum } from "utils/helpers";
 import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
-import { CalculationMode, IOptionType, OptionalAttribute } from "types/database/editor";
+import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
 
@@ -100,7 +101,7 @@ interface Open5eSpell {
 }
 
 const splitHP = (hp: string) => {
-    var res = hpSplitExpr.exec(hp ?? "") ?? []
+    let res = hpSplitExpr.exec(hp ?? "") ?? []
     return {
         num: isNaN(Number(res[1])) ? 0 : Number(res[1]),
         dice: isNaN(Number(res[2])) ? 0 : Number(res[2]),
@@ -155,7 +156,7 @@ const getAlignment = (alignment: string): Alignment => {
 
 const getSpeed = (speed: Record<string, number>): Partial<Record<MovementType, number>> => {
     return Object.keys(speed).reduce((prev, val) => 
-        Object.values(MovementType).includes(val as MovementType) 
+        isEnum(val, MovementType)
             ? { ...prev, [val]: speed[val] } 
             : { ...prev }
     , {}) as Partial<Record<MovementType, number>>
@@ -247,10 +248,8 @@ const getSkills = (skills: Record<string, number>): Partial<Record<Skill, number
 }
 
 const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, timeValue: number } => {
-    var res = castTimeExpr.exec(time.toLowerCase()) ?? []
-    var type = Object.values(CastingTime).includes(res[2] as CastingTime) 
-        ? res[2] as CastingTime 
-        : CastingTime.Custom 
+    let res = castTimeExpr.exec(time.toLowerCase()) ?? []
+    let type = asEnum(res[2], CastingTime) ?? CastingTime.Custom 
     return {
         time: type,
         timeCustom: time,
@@ -367,8 +366,8 @@ const getDamage = (desc: string): { damageType: DamageType, effectDice: DiceType
     
     return {
         effectDiceNum: effectDiceNum,
-        effectDice: Object.values(DiceType).includes(effectDice) ? effectDice : DiceType.None,
-        damageType: Object.values(DamageType).includes(damageType) ? damageType : DamageType.None,
+        effectDice: asEnum(effectDice, DiceType) ?? DiceType.None,
+        damageType: asEnum(damageType, DamageType) ?? DamageType.None,
     }
 }
 
@@ -470,8 +469,8 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
     let { num, dice } = splitHP(res.hit_dice)
     let metadata = {
         name: res.name,
-        type: Object.values(CreatureType).includes(res.type as CreatureType) ? res.type as CreatureType : CreatureType.None,
-        size: Object.keys(SizeType).includes(res.size) ? SizeType[res.size] : SizeType.Medium,
+        type: asEnum(res.type, CreatureType) ?? CreatureType.None,
+        size: asEnum(res.size.toLowerCase(), SizeType) ?? SizeType.Medium,
         alignment: getAlignment(res.alignment.toLowerCase()),
         portrait: res.img_main ?? null,
         // description:
@@ -482,9 +481,9 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
             ...(res.reactions  as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
         ].map((x) => `${x.name}. ${x.desc}`),
         level: num,
-        hitDice: Object.values(DiceType).includes(dice) ? dice : DiceType.None,
-        health: { type: CalculationMode.Auto, value: res.hit_points } as IOptionType<number>,
-        ac: { type: CalculationMode.Override, value: res.armor_class } as IOptionType<number>,
+        hitDice: asEnum(dice, DiceType) ?? DiceType.None,
+        health: { type: CalculationMode.Auto, value: res.hit_points } satisfies OptionType<number>,
+        ac: { type: CalculationMode.Override, value: res.armor_class } satisfies OptionType<number>,
         str: res.strength,
         dex: res.dexterity,
         con: res.constitution,
@@ -492,8 +491,8 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         wis: res.wisdom,
         cha: res.charisma,
         spellAttribute: estimateSpellAttribute(res),
-        proficiency: { type: CalculationMode.Auto } as IOptionType<number>,
-        initiative: { type: CalculationMode.Auto } as IOptionType<number>,
+        proficiency: { type: CalculationMode.Auto } satisfies OptionType<number>,
+        initiative: { type: CalculationMode.Auto } satisfies OptionType<number>,
         resistances: res.damage_resistances,
         vulnerabilities: res.damage_vulnerabilities,
         // advantages: 
@@ -527,7 +526,7 @@ export const open5eSpellImporter = async (id: string): Promise<SpellMetadata> =>
         name: res.name,
         description: res.desc,
         level: res.level_int,
-        school: Object.keys(MagicSchool).includes(res.school) ? MagicSchool[res.school] : MagicSchool.Abjuration,
+        school: asEnum(res.school.toLowerCase(), MagicSchool) ?? MagicSchool.Abjuration,
         time: time,
         timeCustom: timeCustom,
         timeValue: timeValue,

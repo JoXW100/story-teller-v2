@@ -28,9 +28,9 @@ export const getScaling = (stats: ICreatureStats = {}, scaling: ScalingType): nu
 }
 
 export const getEffectModifier = (metadata: IConditionalHitEffect = {}, data: ICreatureStats = {}) => {
-    var mod = metadata.effectModifier?.value ?? 0
-    var useProf = metadata.effectProficiency ?? false
-    var prof = useProf ? data.proficiency ?? 0 : 0;
+    let mod = metadata.effectModifier?.value ?? 0
+    let useProf = metadata.effectProficiency ?? false
+    let prof = useProf ? data.proficiency ?? 0 : 0;
     switch (metadata.effectModifier?.type) {
         case CalculationMode.Modify:
             return getScaling(data, metadata.effectScaling) + mod + prof
@@ -44,7 +44,7 @@ export const getEffectModifier = (metadata: IConditionalHitEffect = {}, data: IC
 }
 
 export const getSpellRange = (spell: SpellData): string => {
-    var area = null;
+    let area = null;
     switch (spell.area) {
         case AreaType.Cone:
         case AreaType.Cube:
@@ -143,12 +143,12 @@ export const getHealth = (metadata: CharacterMetadata | CreatureMetadata = {}): 
 }
 
 export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number => {
-    var stats = getStats(metadata)
+    let stats = getStats(metadata)
     switch (metadata.ac?.type) {
         case CalculationMode.Override:
             return metadata.ac.value ?? 0;
         case CalculationMode.Modify:
-            var mod = getAttributeModifier(stats, Attribute.DEX);
+            let mod = getAttributeModifier(stats, Attribute.DEX);
             return 10 + mod + (metadata.ac?.value ?? 0);
         case CalculationMode.Auto:
         default:
@@ -157,12 +157,12 @@ export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number =>
 }
 
 export const getInitiative = (metadata: CharacterMetadata | CreatureMetadata): number => {
-    var stats = getStats(metadata)
+    let stats = getStats(metadata)
     switch (metadata.initiative?.type) {
         case CalculationMode.Override:
             return metadata.initiative?.value ?? 0;
         case CalculationMode.Modify:
-            var mod = getAttributeModifier(stats, Attribute.DEX);
+            let mod = getAttributeModifier(stats, Attribute.DEX);
             return mod + (metadata.initiative?.value ?? 0);
         case CalculationMode.Auto:
         default:
@@ -201,7 +201,7 @@ export const getSaves = (creature: CreatureData): JSX.Element => {
 export const getSkills = (creature: CreatureData): JSX.Element => {
     return creature.skills && Object.keys(creature.skills).length > 0
         ? <>{ Object.keys(creature.skills).map((key, index) => {
-            var skill = getKeyName("skill", key)
+            let skill = getKeyName("skill", key)
             return skill ? (
                 <Elements.Roll
                     key={index} 

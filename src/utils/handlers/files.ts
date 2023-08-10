@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { ObjectId } from "types/database"
-import { FileGetManyMetadataResult, FileMetadata } from "types/database/files"
+import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadata } from "types/database/files"
 import Communication from "utils/communication"
-import { arrayUnique } from "utils/helpers"
+import { arrayUnique, isObjectId } from "utils/helpers"
 import Logger from "utils/logger"
 
+type ResolvedIdsCollection<T extends FileMetadata> = { resolved: FileGetManyMetadataResult<T>, ids: string[] }
 type ProcessFunction<T extends FileMetadata> = (ids: ObjectId[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: ObjectId[] }>
 
 export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
@@ -12,17 +13,14 @@ export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: Pro
     useEffect(() => {
         if (fileIDs && fileIDs.length > 0) {
             new Promise(async (resolve) => {
-                let { results, rest } = func 
-                    ? await func(fileIDs)
-                    : { results: [], rest: fileIDs }
-
+                let { results, rest } = func ? await func(fileIDs) : { results: [], rest: fileIDs }
                 let { resolved, ids } = rest
                     .map((x) => String(x).trim())
-                    .reduce((prev, value) => (
+                    .reduce<ResolvedIdsCollection<T>>((prev, value) => (
                         state[0].some((x) => String(x.id) == value)
                         ? { resolved: [...prev.resolved, state[0].find((file) => String(file.id) === value)], ids: prev.ids }
                         : { ids: [...prev.ids, value], resolved: prev.resolved }
-                    ), { resolved: [], ids: [] } as { resolved: FileGetManyMetadataResult, ids: string[] })
+                    ), { resolved: [], ids: [] })
 
                 if (ids.length > 0) {
                     let res = await Communication.getManyMetadata(arrayUnique(ids))
@@ -45,6 +43,31 @@ export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: Pro
             setState([[], false])
         }
     }, [fileIDs])
+
+    return state
+}
+
+export const useFile = <T extends FileMetadata>(fileID?: ObjectId): [FileGetMetadataResult<T>, boolean] => {
+    const [state, setState] = useState<[FileGetMetadataResult<T>, boolean]>([null, true])
+    useEffect(() => {
+        if (fileID && isObjectId(fileID)) {
+            new Promise<FileGetMetadataResult>(async (resolve) => {
+                let res = await Communication.getMetadata(fileID)
+                if (res.success) {
+                    resolve(res.result)
+                } else {
+                    Logger.warn("useFile", res.result);
+                    resolve(null)
+                }
+            })
+            .then((res: FileGetMetadataResult<T>) => {
+                setState([res, false])
+            })
+            .catch((e) => Logger.throw("useFiles", e))
+        } else {
+            setState([null, false])
+        }
+    }, [fileID])
 
     return state
 }

@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import AbilityRenderer from './ability';
-import CreatureRenderer from './creature';
 import CharacterRenderer from './character';
+import ClassRenderer from './class';
+import CreatureRenderer from './creature';
 import SpellRenderer from './spell';
 import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
@@ -18,12 +19,14 @@ const useRenderer = (template: FileRendererTemplate, file: FileData<any,any,any>
 
     const Renderer = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
         switch (template?.type) {
-            case FileType.Creature:
-                return CreatureRenderer
             case FileType.Ability:
                 return AbilityRenderer
             case FileType.Character:
                 return CharacterRenderer
+            case FileType.Class:
+                return ClassRenderer
+            case FileType.Creature:
+                return CreatureRenderer
             case FileType.Spell:
                 return SpellRenderer
             case FileType.Document:

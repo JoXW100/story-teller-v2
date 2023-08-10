@@ -2,16 +2,23 @@ import React, { useContext } from 'react'
 import LinkListMenu from 'components/common/controls/linkListMenu';
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
+import { asEnum, getRelativeMetadata, isObjectId } from 'utils/helpers';
 import { FileType } from 'types/database/files';
 import { LinkListTemplateParams } from 'types/templates';
+import { ObjectId } from 'types/database';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const values = context.file?.metadata[params.key] ?? []
+    const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
+    const values: string[] = (metadata && metadata[params.key]) ?? []
         
     const handleChange = (values: string[]) => {
         dispatch.setMetadata(params.key, values)
+    }
+
+    const handleValidate = (value: ObjectId): boolean => {
+        return isObjectId(value)
     }
 
     return (
@@ -19,10 +26,11 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
             <b> {`${ params.label ?? "label"}:`} </b>
             <LinkListMenu
                 itemClassName={styles.editListItem}
-                values={typeof values === 'object' ? values : []}
+                values={Array.isArray(values) ? values : []}
                 onChange={handleChange}
+                validateInput={handleValidate}
                 placeholder={params.placeholder} 
-                fileTypes={params.fileTypes?.map((fileType) => fileType as FileType ) ?? []}
+                fileTypes={params.fileTypes?.map((fileType) => asEnum(fileType, FileType)) ?? []}
                 allowText={params.allowText}/>
         </div>
     )

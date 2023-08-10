@@ -8,10 +8,10 @@ abstract class Navigation
     }
 
     public static fileURL(fileId: ObjectId, storyId: ObjectId | null = null): URL {
-        var page = 'story'
+        let page = 'story'
         if (!storyId) {
             const expr = /\/([A-z]+)\/([^\/\?]+)/i
-            var match = expr.exec(location.pathname);
+            let match = expr.exec(location.pathname);
             page = match[1];
             storyId = match[2];
         }
@@ -37,7 +37,7 @@ abstract class Navigation
     }
 
     public static editModeURL(editMode: boolean): URL {
-        var split = location.search.split(/[\?,] */)
+        let split = location.search.split(/[\?,] */)
         split = split.filter(x => x && !/edit= *[^, ]+/.test(x))
         split.push('edit=' + editMode);
         return new URL(location.origin + location.pathname + '?' + split.join(','))

@@ -1,11 +1,12 @@
 import React, { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
-import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
+import { getOptionType } from 'data/optionData';
+import Logger from 'utils/logger';
+import { getRelativeMetadata } from 'utils/helpers';
 import { EnumTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss'
-import Logger from 'utils/logger';
 
 const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -14,9 +15,8 @@ const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): 
         Logger.throw("enumComponent", new Error("No option type of type: " + params.type))
         return null;
     }
-    const value: string = context.file?.metadata 
-        ? context.file.metadata[params.key] ?? type.default
-        : type.default;
+    const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
+    const value: string = (metadata && metadata[params.key]) ?? type.default
 
     const handleInput = (value: string) => {
         dispatch.setMetadata(params.key, value);

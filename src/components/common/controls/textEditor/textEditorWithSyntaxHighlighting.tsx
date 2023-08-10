@@ -50,9 +50,9 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             const startText = target.value.substring(0, start)
             const lines = startText.split('\n');
             const lastLine = lines[lines.length - 1];
-            var match = dialogShowExpression.exec(lastLine);
-            var options: string[] = [];
-            var type: DialogType = "none";
+            let match = dialogShowExpression.exec(lastLine);
+            let options: string[] = [];
+            let type: DialogType = "none";
 
             if (match) {
                 if (match[1] === "$") {
@@ -65,7 +65,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     Logger.throw("textEditorWithSyntaxHighlighting.handleInput", new Error(match[1]))
                 }
             } else if ((match = dialogFunctionOptionExpression.exec(startText))) {
-                var element = getElement(match[1]);
+                let element = getElement(match[1]);
                 if (element) {
                     options = Array.from(element.validOptions ?? [])
                                    .filter((option => option.startsWith(match[2])))
@@ -111,9 +111,9 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     break;
                 case "Enter":
                     if (state.index !== -1 && state.type !== "none") {
-                        var selection: number = target.selectionEnd;
-                        var start = target.value.substring(0, target.selectionStart)
-                        var end = target.value.substring(target.selectionEnd)
+                        let selection: number = target.selectionEnd;
+                        let start = target.value.substring(0, target.selectionStart)
+                        let end = target.value.substring(target.selectionEnd)
                         const endsWithWhiteSpace = end.startsWith(" ");
                         const isOption = state.type === "option";
                         start = start.replace(dialogReplaceExpression, (...x) => {
@@ -144,7 +144,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
     const handleContext: React.MouseEventHandler<HTMLTextAreaElement> = (e) => {
         e.preventDefault()
         e.stopPropagation()
-        var point: Point = { x: e.clientX, y: e.clientY }
+        let point: Point = { x: e.clientX, y: e.clientY }
         openTextEditorContext(e.currentTarget, point, onChange)
     }
 

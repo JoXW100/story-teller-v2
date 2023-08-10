@@ -12,6 +12,7 @@ declare module 'react' {
     export interface HTMLAttributes<T> {
         tooltips?: string
         disabled?: boolean
+        error?: string
         data?: string
         value?: string
     }

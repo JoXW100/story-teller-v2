@@ -2,17 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import styles from 'styles/components/popupHolder.module.scss'
 
-interface PopupEvent extends Omit<MouseEvent, 'detail'> { 
-    detail: { 
-        show?: boolean,
-        interrupt?: boolean,
-        closable?: boolean,
-        content?: JSX.Element
-    } 
+interface PopupEventDetails { 
+    show?: boolean,
+    interrupt?: boolean,
+    closable?: boolean,
+    content?: JSX.Element
 }
 
 export const openPopup = (content: JSX.Element, closable: boolean = true, interrupt: boolean = true) => {
-    document.dispatchEvent(new CustomEvent('popup', {
+    document.dispatchEvent(new CustomEvent<PopupEventDetails>('popup', {
         bubbles: true,
         detail: {
             show: true,
@@ -20,17 +18,17 @@ export const openPopup = (content: JSX.Element, closable: boolean = true, interr
             closable: closable,
             content: content
         } 
-    } as PopupEvent))
+    }))
 }
 
 export const closePopup = () => {
-    document.dispatchEvent(new CustomEvent('popup', {
+    document.dispatchEvent(new CustomEvent<PopupEventDetails>('popup', {
         bubbles: true,
         detail: {
             show: false,
             interrupt: true
         }
-    } as PopupEvent))
+    }))
 }
 
 const PopupHolder = (): JSX.Element => {
@@ -42,7 +40,7 @@ const PopupHolder = (): JSX.Element => {
         show: false
     })
 
-    const popupHandler = (e: PopupEvent) => {
+    const popupHandler = (e: CustomEvent<PopupEventDetails>) => {
         if (!dialog.current.open || e.detail.interrupt) {
             if (e.detail.show) {
                 dialog.current?.showModal()

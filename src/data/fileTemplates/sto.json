@@ -31,7 +31,7 @@
                         "params": { "label": "Content", "key": "content" }
                     },
                     { 
-                        "type": "template-list", 
+                        "type": "templateList", 
                         "params": { 
                             "label": "Parts", 
                             "key": "parts", 

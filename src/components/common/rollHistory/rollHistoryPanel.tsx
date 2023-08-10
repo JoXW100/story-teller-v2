@@ -17,12 +17,12 @@ const RollHistoryPanel = ({ open, close, isOpen }: RollHistoryPanelProps): JSX.E
     const interval = 200; // 200 ms
 
     useEffect(() => {
-        var res = context.rollHistory.some(x => Date.now() - x.time < duration);
-        var interrupt = null;
+        let res = context.rollHistory.some(x => Date.now() - x.time < duration);
+        let interrupt = null;
 
         if (res) {
             interrupt = setInterval(() => {
-                var res = context.rollHistory.some(x => Date.now() - x.time < duration);
+                let res = context.rollHistory.some(x => Date.now() - x.time < duration);
                 setState((state) => ({ ...state, active: res }))
             }, interval)
         }

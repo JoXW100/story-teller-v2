@@ -1,0 +1,307 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true },
+                "content": [
+                    {
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name", "default": "Class name" }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                    },
+                    {
+                        "type": "textarea",
+                        "params": { "label": "Description", "key": "description", "fill": true, "useSyntaxEditor": false  }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Stats", "open": true },
+                "content": [
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Hit Dice", "key": "hitDice", "type": "dice", "default": 0 }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Levels", "open": true },
+                "content": [
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 1", 
+                            "key": "1", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 2", 
+                            "key": "2", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 3", 
+                            "key": "3", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 4", 
+                            "key": "4", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 5", 
+                            "key": "5", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 6", 
+                            "key": "6", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 7", 
+                            "key": "7", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 8", 
+                            "key": "8", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 9", 
+                            "key": "9", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 10", 
+                            "key": "10", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 11", 
+                            "key": "11", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 12", 
+                            "key": "12", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 13", 
+                            "key": "13", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 14", 
+                            "key": "14", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 15", 
+                            "key": "15", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 16", 
+                            "key": "16", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 17", 
+                            "key": "17", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 18", 
+                            "key": "18", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 19", 
+                            "key": "19", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    },
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Level 20", 
+                            "key": "20", 
+                            "prompt": "Edit", 
+                            "placeholder": "Enter Name" ,
+                            "default": [], 
+                            "template": "modifier"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "editorSubTemplates": {
+        "modifier": {
+            "type": "root",
+            "content": [
+                { "type": "navigation" },
+                {
+                    "type": "group",
+                    "params": { "label": "Modifiers", "open": true },
+                    "content": [
+                        { 
+                            "type": "enum", 
+                            "params": { "label": "Type", "key": "type", "type": "modifierType", "default": "bonus" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "params": { "label": "Condition", "key": "condition", "type": "modifierCondition", "default": "none" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                            "params": { "label": "Property", "key": "bonusProperty", "type": "modifierBonusTypeProperty", "default": "ac" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] }],
+                            "params": { "label": "Property", "key": "addProperty", "type": "modifierAddTypeProperty", "default": "proficiency" }
+                        },
+                        { 
+                            "type": "number", 
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                            "params": { "label": "Value", "key": "value" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addProperty" }, "proficiency"] }
+                            ],
+                            "params": { "label": "Proficiency", "key": "proficiency", "type": "proficiency", "default": "armorAll" }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "renderer": { "type": "cla" }
+}

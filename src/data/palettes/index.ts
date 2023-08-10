@@ -3,13 +3,15 @@ import Cobalt from "./cobalt.json"
 import Coral from "./coral.json"
 import Dark from "./dark.json"
 import Neon from "./neon.json"
+import Cloud from "./cloud.json"
 
-const Palettes: Record<string, Palette> = {
+const Palettes = {
     "cobalt": Cobalt,
     "coral": Coral,
     "dark": Dark,
-    "neon": Neon
-}
+    "neon": Neon,
+    "cloud": Cloud
+} satisfies Record<string, Palette>
 
 export default Palettes
 

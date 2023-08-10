@@ -3,9 +3,10 @@ import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/controls/selectionMenu';
 import { getOptionType } from 'data/optionData';
 import { TemplateComponentProps } from '.';
+import Logger from 'utils/logger';
+import { getRelativeMetadata } from 'utils/helpers';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';
-import Logger from 'utils/logger';
 
 type SelectionItemElementProps = React.PropsWithChildren<{
     item: ReactNode
@@ -16,11 +17,9 @@ type SelectionItemElementProps = React.PropsWithChildren<{
 
 const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const type = getOptionType(params.enum);
-
-    const selection: Record<string, string | number> = context.file?.metadata 
-        ? context.file.metadata[params.key] ?? {}
-        : {};
+    const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
+    const selection: Record<string, string | number> = metadata ? metadata[params.key] ?? {} : {};
+    const option = getOptionType(params.enum);
         
     const handleChange = (selected: string[]) => {
         const data = {};
@@ -34,20 +33,20 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     }
 
     const values = useMemo<{[key: string]: ReactNode }>(() => (
-        Object.keys(type?.options ?? {}).reduce((prev, key) => 
+        Object.keys(option?.options ?? {}).reduce((prev, key) => 
             ({ ...prev, [key]: (
                 <SelectionItemElement 
-                    item={type.options[key]} 
+                    item={option.options[key]} 
                     value={selection[key]}
                     onChange={(value) => handleInput(value, key)}
-                    inputType="number"/>
+                    inputType={params.type}/>
             )})
         , {})
-    ), [selection, context.file.metadata])
+    ), [params.enum, params.type, selection, context.file?.metadata, context.editFilePages])
     
     // UseMemo above must not be used conditionally
-    if (!type){
-        Logger.throw("selectionComponent", new Error("No option type of type: " + params.type))
+    if (!option){
+        Logger.throw("selectionComponent", new Error("No option type of enum: " + params.enum))
         return null;
     }
     
@@ -58,9 +57,8 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
                 className={styles.editSelectionMenu}
                 values={values}
                 selection={Object.keys(selection)}
-                alternate={type.options}
-                onChange={handleChange}
-            />
+                alternate={option.options}
+                onChange={handleChange}/>
         </div>
     )
 }
