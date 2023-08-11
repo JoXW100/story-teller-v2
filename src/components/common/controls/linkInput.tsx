@@ -9,9 +9,9 @@ import styles from 'styles/components/linkInput.module.scss';
 type EditLinkInputComponentProps = React.PropsWithRef<{
     className?: string
     value: ObjectId
-    placeholder: string
-    fileTypes: FileType[]
-    onUpdate: (value: ObjectId) => void
+    placeholder?: string
+    fileTypes?: FileType[]
+    onChange: (value: ObjectId) => void
 }>
 
 interface EditLinkInputState {
@@ -20,16 +20,16 @@ interface EditLinkInputState {
     highlight: boolean
 }
 
-const LinkInput = ({ className, value, placeholder, fileTypes, onUpdate }: EditLinkInputComponentProps): JSX.Element => {
+const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value, error: false, highlight: false })
     const [file, loading] = useFile(value)
     const style = className ? `${styles.holder} ${className}` : styles.holder;
     const valid: boolean = value && !loading && file !== null;
-    const name: string = file?.metadata?.name ?? file?.metadata?.title
-    const allowedFiles = new Set<FileType>(fileTypes)
+    const name: string = file?.metadata?.name
+    const allowedFiles = new Set<FileType>(fileTypes ?? Object.values(FileType))
 
     const handleRemove: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-        onUpdate(null);
+        onChange(null);
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLInputElement>) => {
@@ -61,14 +61,14 @@ const LinkInput = ({ className, value, placeholder, fileTypes, onUpdate }: EditL
             let id = window.dragData.file.id;
             window.dragData.target = null;
             window.dragData.file = null;
-            onUpdate(id)
+            onChange(id)
         }
     }
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         let value = e.target.value
         if (isObjectId(value) || value === "") {
-            onUpdate(value === "" ? null : value);
+            onChange(value === "" ? null : value);
             setState({ ...state, text: value, error: false, highlight: false })
         } else {
             setState({ ...state, text: value, error: true, highlight: false })

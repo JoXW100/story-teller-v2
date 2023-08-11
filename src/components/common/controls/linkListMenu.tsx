@@ -42,7 +42,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
             ? allowedFiles.has(file?.type)
             : allowText
         const name = valid && allowedFiles.has(file?.type)
-            ? file?.metadata?.name ?? file?.metadata?.title ?? String(value)
+            ? file?.metadata?.name ?? String(value)
             : String(value)
         return (
             <div className={itemClassName} error={String(valid && name)}>

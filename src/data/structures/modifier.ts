@@ -3,6 +3,7 @@ import FileData from "./file"
 import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { Modifier } from "types/database/files"
 import { ModifierSelectType, ModifierType } from "types/database/editor"
+import { ObjectId } from "types/database"
 
 class ModifierData extends FileData<Modifier> implements Required<Modifier> 
 {
@@ -19,6 +20,10 @@ class ModifierData extends FileData<Modifier> implements Required<Modifier>
 
     public get label(): string {
         return this.metadata.label
+    }
+
+    public get allowAny(): boolean {
+        return this.metadata.allowAny ?? false
     }
 
     public get type(): ModifierType {
@@ -45,6 +50,14 @@ class ModifierData extends FileData<Modifier> implements Required<Modifier>
 
     public get value(): number {
         return this.metadata.value ?? 0
+    }
+    
+    public get file(): ObjectId {
+        return this.metadata.file ?? null
+    }
+
+    public get files(): ObjectId[] {
+        return this.metadata.files ?? []
     }
 
     public get armor(): ArmorType {

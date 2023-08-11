@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
@@ -7,21 +7,21 @@ import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import CreatureData from 'data/structures/creature';
 import AbilityData from 'data/structures/ability';
+import { getOptionType } from 'data/optionData';
 import ModifierCollectionData from 'data/structures/modifierCollection';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
-import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
+import { FileData, FileGetManyMetadataResult, IFileMetadataQueryResult, ModifierCollection } from 'types/database/files';
 import { Attribute, Skill } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { AbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
-import { getOptionType } from 'data/optionData';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata,undefined>
 }>
 
 type CreatureLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<CreatureMetadata>
+    file: IFileMetadataQueryResult<CreatureMetadata>
 }>
 
 type CreatureProficienciesPageProps = React.PropsWithRef<{
@@ -38,6 +38,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
 
     const content = useParser(file.content.text, file.metadata, "$content");
     const description = useParser(creature.description, file.metadata, "description")
+    const abilities = useMemo(() => creature.abilities, [file.metadata, file?.storage])
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
         let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
@@ -78,13 +79,13 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             <div className={styles.attributeBox} key={index}>
                                 <Elements.Bold>{attr}</Elements.Bold>
                                 <Elements.Bold>{creature[Attribute[attr]] ?? 0}</Elements.Bold>
-                                <Elements.Roll options={{ 
+                                <Elements.Roll options={{
                                     mod: creature.getAttributeModifier(Attribute[attr]).toString(), 
                                     desc: `${attr} Check`,
                                     tooltips: `${attr} Check`
                                 }}/>
                                 <div/>
-                                <Elements.Roll options={{ 
+                                <Elements.Roll options={{
                                     mod: creature.getSaveModifier(Attribute[attr]).toString(), 
                                     desc: `${attr} Save`,
                                     tooltips: `${attr} Save`
@@ -141,7 +142,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     </div>
                     <Elements.Line/>
                     <div className={styles.pageItem} data={page === "Actions" ? "show" : "hide"}>
-                        <AbilityGroups abilityIds={creature.abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
+                        <AbilityGroups abilityIds={abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
                         <CharacterProficienciesPage data={creature}/>

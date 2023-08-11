@@ -1,7 +1,7 @@
-import { ExtractOptionType } from "data/optionData";
+import { ObjectId } from "types/database";
 import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ModifierSelectType, ModifierType } from "types/database/editor";
-import { ChoiceData, Modifier, ModifierCollection } from "types/database/files";
+import { ChoiceData, FileType, Modifier, ModifierCollection } from "types/database/files";
 import { CharacterStorage } from "types/database/files/character";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
@@ -39,16 +39,25 @@ class ModifierCollectionData implements ModifierCollection
     }
 
     public getChoices(): Record<string, ChoiceData> {
-        return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => (
-            mod.type === ModifierType.Add 
-            && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-            && mod.select === ModifierSelectType.Choice 
-            ? { ...prev, [mod.$name]: { 
-                type: mod.proficiency, 
-                label: mod.label,
-                options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } }
-            : prev
-        ), {})
+        return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
+            if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
+                && mod.select === ModifierSelectType.Choice ) {
+                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
+            } else if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
+                && mod.select === ModifierSelectType.Choice
+                && mod.allowAny) {
+                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies ChoiceData}
+            } else if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
+                && mod.select === ModifierSelectType.Choice
+                && !mod.allowAny) {
+                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies ChoiceData}
+            }
+
+            return prev
+        }, {})
     }
 
     public modifyProficiencies<T extends string>(proficiencies: T[], type: ProficiencyType, onlyRemove: boolean): T[] {
@@ -110,6 +119,23 @@ class ModifierCollectionData implements ModifierCollection
     }
     public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove?: boolean): Skill[]{
         return this.modifyProficiencies<Skill>(proficiencies, ProficiencyType.Skill, onlyRemove)
+    }
+
+    public modifyAbilities(abilities: ObjectId[]): ObjectId[] {
+        return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
+            if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
+                && mod.select === ModifierSelectType.Value) {
+                return [...prev, mod.file]
+            } else if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
+                && mod.select === ModifierSelectType.Choice
+                && this.storage?.classData
+                && this.storage.classData[mod.$name]) {
+                return [...prev, this.storage.classData[mod.$name]]
+            }
+            return prev
+        }, abilities)
     }
 
     public get bonusAC(): number {
@@ -204,6 +230,11 @@ class CombinedModifierCollection implements ModifierCollection {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesSkill(proficiencies) }
         proficiencies = this.c2.modifyProficienciesSkill(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesSkill(proficiencies, true) // Remove those added by c2
+    }
+
+    public modifyAbilities(abilities: ObjectId[]): ObjectId[] {
+        abilities = this.c1.modifyAbilities(abilities)
+        return this.c2.modifyAbilities(abilities)
     }
 
     public get bonusAC(): number {

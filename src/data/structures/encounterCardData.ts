@@ -5,6 +5,9 @@ type EncounterCardDispatch = React.Dispatch<React.SetStateAction<IEncounterCardD
 
 class EncounterCardData implements Required<IEncounterCardData>
 {
+    $vars: never;
+    $queries: never;
+
     public readonly data: IEncounterCardData;
     private readonly dispatch: EncounterCardDispatch;
     public constructor(data: IEncounterCardData, dispatch: EncounterCardDispatch) {

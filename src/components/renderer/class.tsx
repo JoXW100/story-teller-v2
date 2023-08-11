@@ -1,6 +1,6 @@
 import Elements from 'data/elements';
 import { RendererObject } from 'types/database/editor';
-import { FileData, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, IFileMetadataQueryResult } from 'types/database/files';
 import { ClassContent, ClassMetadata } from 'types/database/files/class';
 
 type ClassFileRendererProps = React.PropsWithRef<{
@@ -8,7 +8,7 @@ type ClassFileRendererProps = React.PropsWithRef<{
 }>
 
 type ClassLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<ClassMetadata>
+    file: IFileMetadataQueryResult<ClassMetadata>
 }>
 
 const ClassFileRenderer = ({ file }: ClassFileRendererProps): JSX.Element => {

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
@@ -14,22 +14,23 @@ import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
 import { getOptionType } from 'data/optionData';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
+import { EnumChoiceData, FileData, FileGetManyMetadataResult, FileGetMetadataResult, IFileMetadataQueryResult, ModifierCollection } from 'types/database/files';
 import { CharacterContent, CharacterMetadata, CharacterStorage } from 'types/database/files/character';
-import { FileContextDispatch } from 'types/context/fileContext';
-import { Attribute, Skill } from 'types/database/dnd';
+import { Attribute } from 'types/database/dnd';
 import { AbilityMetadata } from 'types/database/files/ability';
 import { ClassMetadata } from 'types/database/files/class';
 import styles from 'styles/renderer.module.scss';
 import { CharacterProficienciesPage } from './creature';
+import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
+import LinkInput from 'components/common/controls/linkInput';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: FileData<CharacterContent, CharacterMetadata, CharacterStorage>
-    classData?: ClassData
+    classFile?: FileGetMetadataResult<ClassMetadata>
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<CharacterMetadata>
+    file: IFileMetadataQueryResult<CharacterMetadata>
 }>
 
 type CharacterBackgroundPageProps = React.PropsWithRef<{
@@ -43,22 +44,22 @@ type CharacterBackgroundPageProps = React.PropsWithRef<{
 type CharacterClassPageProps = React.PropsWithRef<{
     character: CharacterData 
     classData: ClassData
-    dispatch: FileContextDispatch
 }>
 
 const Pages = ["Background", "Proficiencies", "Class"] as const
 
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
-    const [classFile] = useFile<ClassMetadata>(props.file?.metadata?.class)
+    const [file] = useFile<ClassMetadata>(props.file?.metadata?.classFile)
     const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
-    const classData = new ClassData(classFile?.metadata, props.file?.storage, classFile?.id ? String(classFile?.id) : undefined);
-    return <Renderer {...props} classData={classData}/>
+
+    return <Renderer {...props} classFile={file}/>
 }
 
-const SimpleCharacterRenderer = ({ file, classData }: CharacterFileRendererProps): JSX.Element => {
-    let character = new CharacterData(file.metadata, null, classData)
+const SimpleCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps): JSX.Element => {
+    const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
+    const character = new CharacterData(file.metadata, null, classData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
     const description = useParser(character.description, file.metadata, "description")
@@ -97,10 +98,10 @@ const SimpleCharacterRenderer = ({ file, classData }: CharacterFileRendererProps
     )
 } 
 
-const DetailedCharacterRenderer = ({ file, classData }: CharacterFileRendererProps): JSX.Element => {
-    const [_, dispatch] = useContext(Context)
+const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps): JSX.Element => {
     const [modifiers, setModifiers] = useState<ModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
+    const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
     const character = new CharacterData(file.metadata, modifiers, classData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
@@ -108,6 +109,8 @@ const DetailedCharacterRenderer = ({ file, classData }: CharacterFileRendererPro
     const history = useParser(character.history, file.metadata, "history")
     const notes = useParser(character.notes, file.metadata, "notes")
     const stats = character.getStats()
+
+    const abilities = useMemo(() => character.abilities, [file.metadata, file?.storage, classFile])
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
         let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
@@ -141,7 +144,7 @@ const DetailedCharacterRenderer = ({ file, classData }: CharacterFileRendererPro
                         <CharacterProficienciesPage data={character}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
-                        <CharacterClassPage character={character} classData={classData} dispatch={dispatch}/>
+                        <CharacterClassPage character={character} classData={classData}/>
                     </div>
                 </Elements.Block>
                 <Elements.Line/>
@@ -219,7 +222,7 @@ const DetailedCharacterRenderer = ({ file, classData }: CharacterFileRendererPro
                     <div><Elements.Bold>Passive Insight: </Elements.Bold>{character.passiveInsightValue.toString()}</div>
                     <Elements.Line/>
                     <AbilityGroups 
-                        abilityIds={character.abilities} 
+                        abilityIds={abilities} 
                         stats={stats} 
                         onLoaded={handleAbilitiesLoaded}/>
                 </Elements.Block>
@@ -303,28 +306,51 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
     )
 }
 
-const CharacterClassPage = ({ character, classData, dispatch }: CharacterClassPageProps): JSX.Element => {
+const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): JSX.Element => {
+    const [_, dispatch] = useContext(Context)
     const choices = character.modifiers.getChoices()
     const storage = { ...(classData.storage?.classData ?? {}) }
 
-    const handleChange = (value: string, key: string) => {
+    const handleChange = (value: any, key: string) => {
         dispatch.setStorage("classData", { ...storage, [key]: value });
     }
 
+    const reduceEnumOptions = (value: EnumChoiceData) => (
+        value.options.reduce((prev, option) => (
+            { ...prev, [option]: getOptionType(value.enum).options[option] }
+        ), { null: "Unset" })
+    )
+
     return (
         <>
-            { Object.keys(choices).map(key => (
-                <div className={styles.modifierChoice} key={key}>
-                    <Elements.Bold>{`${choices[key].label}:`} </Elements.Bold>
-                    <DropdownMenu
-                        value={storage[key] ?? null}
-                        itemClassName={styles.dropdownItem}
-                        values={choices[key].options.reduce((prev, option) => (
-                            { ...prev, [option]: getOptionType(choices[key].type).options[option] }
-                        ), { null: "Unset" })}
-                        onChange={(value) => handleChange(value, key)}/>
-                </div>
-            ))}
+            { Object.keys(choices).map(key => {
+                let value = choices[key]
+                return (
+                    <div className={styles.modifierChoice} key={key}>
+                        <Elements.Bold>{`${value.label}:`} </Elements.Bold>
+                        { value.type === "enum" &&
+                            <DropdownMenu
+                                value={storage[key] ?? null}
+                                itemClassName={styles.dropdownItem}
+                                values={reduceEnumOptions(value)}
+                                onChange={(value) => handleChange(value, key)}/>
+                        }
+                        { value.type === "file" && !value.allowAny &&
+                            <LinkDropdownMenu
+                                value={storage[key] ?? null}
+                                itemClassName={styles.dropdownItem}
+                                values={value.options}
+                                onChange={(value) => handleChange(value, key)}/>
+                        }
+                        { value.type === "file" && value.allowAny &&
+                            <LinkInput
+                                value={storage[key] ?? null}
+                                fileTypes={value.options}
+                                onChange={(value) => handleChange(value, key)}/>
+                        }
+                    </div>
+                )
+            })}
         </>
     )
 }

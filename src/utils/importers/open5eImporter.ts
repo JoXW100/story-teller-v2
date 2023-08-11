@@ -1,7 +1,7 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
 import { asEnum, isEnum } from "utils/helpers";
-import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, Skill, TargetType } from "types/database/dnd";
+import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import { SpellMetadata } from "types/database/files/spell";
@@ -22,6 +22,7 @@ interface Open5eMonsterAction {
 
 interface Open5eMonster {
     slug: string // id
+    desc: string
     // Stats
     charisma: number
     constitution: number
@@ -162,88 +163,120 @@ const getSpeed = (speed: Record<string, number>): Partial<Record<MovementType, n
     , {}) as Partial<Record<MovementType, number>>
 }
 
-const getSaves = (monster: Open5eMonster): Partial<Record<Attribute, number>> => {
-    let saves = {}
-    if (monster.charisma_save != null) {
-        saves[Attribute.CHA] = monster.charisma_save
+const getSaveProficiencies = (monster: Open5eMonster): Attribute[] => {
+    let saves: Attribute[] = []
+    if (monster.strength_save !== null) {
+        saves.push(Attribute.STR)
     }
-    if (monster.constitution_save != null) {
-        saves[Attribute.CON] = monster.constitution_save
+    if (monster.charisma_save !== null) {
+        saves.push(Attribute.CHA)
     }
-    if (monster.dexterity_save != null) {
-        saves[Attribute.DEX] = monster.dexterity_save
+    if (monster.constitution_save !== null) {
+        saves.push(Attribute.CON)
     }
-    if (monster.intelligence_save != null) {
-        saves[Attribute.INT] = monster.intelligence_save
+    if (monster.dexterity_save  !== null) {
+        saves.push(Attribute.DEX)
     }
-    if (monster.wisdom_save != null) {
-        saves[Attribute.WIS] = monster.wisdom_save
+    if (monster.intelligence_save !== null) {
+        saves.push(Attribute.INT)
+    }
+    if (monster.wisdom_save !== null) {
+        saves.push(Attribute.WIS)
     }
     return saves
 }
 
-const getSkills = (skills: Record<string, number>): Partial<Record<Skill, number>> => {
-    let res: Partial<Record<Skill, number>> = {}
+const getSkillProficiencies = (skills: Record<string, number>): Skill[] => {
+    let res: Skill[] = []
     Object.keys(skills).forEach((key) => {
+        if (skills[key] ?? null === null) return;
         switch (key.toLowerCase()) {
             case "acrobatics": // TODO: Verify
-                res[Skill.Acrobatics] = skills[key]
+                res.push(Skill.Acrobatics)
                 break
             case "animal_handling": // TODO: Verify
-                res[Skill.AnimalHandling] = skills[key]
+                res.push(Skill.AnimalHandling)
                 break
             case "arcana": // TODO: Verify
-                res[Skill.Arcana] = skills[key]
+                res.push(Skill.Arcana)
                 break
             case "athletics": // TODO: Verify
-                res[Skill.Athletics] = skills[key]
+                res.push(Skill.Athletics)
                 break
             case "deception": // TODO: Verify
-                res[Skill.Deception] = skills[key]
+                res.push(Skill.Deception)
                 break
             case "history":
-                res[Skill.History] = skills[key]
+                res.push(Skill.History)
                 break
             case "insight": // TODO: Verify
-                res[Skill.Insight] = skills[key]
+                res.push(Skill.Insight)
                 break
             case "intimidation": // TODO: Verify
-                res[Skill.Intimidation] = skills[key]
+                res.push(Skill.Intimidation)
                 break
             case "investigation": // TODO: Verify
-                res[Skill.Investigation] = skills[key]
+                res.push(Skill.Investigation)
                 break
             case "medicine": // TODO: Verify
-                res[Skill.Medicine] = skills[key]
+                res.push(Skill.Medicine)
                 break
             case "nature": // TODO: Verify
-                res[Skill.Nature] = skills[key]
+                res.push(Skill.Nature)
                 break
             case "perception":
-                res[Skill.Perception] = skills[key]
+                res.push(Skill.Perception)
                 break
             case "performance": // TODO: Verify
-                res[Skill.Performance] = skills[key]
+                res.push(Skill.Performance)
                 break
             case "persuasion": // TODO: Verify
-                res[Skill.Persuasion] = skills[key]
+                res.push(Skill.Persuasion)
                 break
             case "religion": // TODO: Verify
-                res[Skill.Religion] = skills[key]
+                res.push(Skill.Religion)
                 break
             case "sleightOfHand": // TODO: Verify
-                res[Skill.SleightOfHand] = skills[key]
+                res.push(Skill.SleightOfHand)
                 break
             case "stealth":
-                res[Skill.Stealth] = skills[key]
+                res.push(Skill.Stealth)
                 break
             case "survival": // TODO: Verify
-                res[Skill.Survival] = skills[key]
+                res.push(Skill.Survival)
                 break
             default:
                 break
         }
     })
+    return res
+}
+
+const getSenses = (senses: string): Partial<Record<Sense, number>> => {
+    let res: Partial<Record<Sense, number>> = {}
+    let parts = senses.toLowerCase().split(/\.\,?/g)
+    parts.forEach(part => {
+        let match = /([a-z]+) +([0-9]+)/.exec(part)
+        if (match && match[0]) {
+            let num = parseInt(match[2])
+            switch (match[1]) {
+                case "blindsight":
+                    res[Sense.BlindSight] = isNaN(num) ? num : 0
+                    break;
+                case "darkvission":
+                    res[Sense.DarkVision] = isNaN(num) ? num : 0
+                    break;
+                case "tremorsense":
+                    res[Sense.TremorSense] = isNaN(num) ? num : 0
+                    break;
+                case "truesight":
+                    res[Sense.TrueSight] = isNaN(num) ? num : 0
+                    break;
+                default:
+                    break;
+            }
+        }
+    });
     return res
 }
 
@@ -469,21 +502,40 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
     let { num, dice } = splitHP(res.hit_dice)
     let metadata = {
         name: res.name,
-        type: asEnum(res.type, CreatureType) ?? CreatureType.None,
+        type: asEnum(res.type.toLowerCase(), CreatureType) ?? CreatureType.None,
         size: asEnum(res.size.toLowerCase(), SizeType) ?? SizeType.Medium,
         alignment: getAlignment(res.alignment.toLowerCase()),
         portrait: res.img_main ?? null,
-        // description:
+        description: res.desc,
         abilities: [
             ...res.actions, 
             ...(res.special_abilities as Open5eMonsterAction[]),
             ...(res.legendary_actions as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Legendary}: ${val.name}` })),
             ...(res.reactions  as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
         ].map((x) => `${x.name}. ${x.desc}`),
+        challenge: res.cr,
+        // xp: 
+
         level: num,
         hitDice: asEnum(dice, DiceType) ?? DiceType.None,
         health: { type: CalculationMode.Auto, value: res.hit_points } satisfies OptionType<number>,
         ac: { type: CalculationMode.Override, value: res.armor_class } satisfies OptionType<number>,
+        proficiency: { type: CalculationMode.Auto, value: 0 } satisfies OptionType<number>,
+        initiative: { type: CalculationMode.Auto, value: 0 } satisfies OptionType<number>,
+
+        resistances: res.damage_resistances,
+        vulnerabilities: res.damage_vulnerabilities,
+        // advantages: 
+        dmgImmunities: res.damage_immunities,
+        conImmunities: res.condition_immunities,
+
+        speed: getSpeed(res.speed),
+        senses: getSenses(res.senses),
+
+        proficienciesSave: getSaveProficiencies(res),
+        proficienciesSkill: getSkillProficiencies(res.skills),
+        // languages:
+
         str: res.strength,
         dex: res.dexterity,
         con: res.constitution,
@@ -491,23 +543,10 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
         wis: res.wisdom,
         cha: res.charisma,
         spellAttribute: estimateSpellAttribute(res),
-        proficiency: { type: CalculationMode.Auto } satisfies OptionType<number>,
-        initiative: { type: CalculationMode.Auto } satisfies OptionType<number>,
-        resistances: res.damage_resistances,
-        vulnerabilities: res.damage_vulnerabilities,
-        // advantages: 
-        dmgImmunities: res.damage_immunities,
-        conImmunities: res.condition_immunities,
-        speed: getSpeed(res.speed),
-        saves: getSaves(res),
-        skills: getSkills(res.skills),
-        senses: res.senses,
-        languages: res.languages,
-        challenge: res.cr,
-        // xp: 
+
         // spellSlots: 
-        spells: res.spell_list ? res.spell_list : []
-    } as CreatureMetadata
+        spells: res.spell_list ? res.spell_list : [],
+    } satisfies CreatureMetadata
     
     Logger.log("toCreature", { file: res, result: metadata })
     return metadata

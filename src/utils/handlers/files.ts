@@ -8,7 +8,7 @@ import Logger from "utils/logger"
 type ResolvedIdsCollection<T extends FileMetadata> = { resolved: FileGetManyMetadataResult<T>, ids: string[] }
 type ProcessFunction<T extends FileMetadata> = (ids: ObjectId[]) => Promise<{ results: FileGetManyMetadataResult<T>, rest: ObjectId[] }>
 
-export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: ProcessFunction<T> = null): [FileGetManyMetadataResult<T>, boolean] => {
+export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: ProcessFunction<T> = null): [file: FileGetManyMetadataResult<T>, loading: boolean] => {
     const [state, setState] = useState<[FileGetManyMetadataResult<T>, boolean]>([[], true])
     useEffect(() => {
         if (fileIDs && fileIDs.length > 0) {
@@ -47,7 +47,7 @@ export const useFiles = <T extends FileMetadata>(fileIDs?: ObjectId[], func: Pro
     return state
 }
 
-export const useFile = <T extends FileMetadata>(fileID?: ObjectId): [FileGetMetadataResult<T>, boolean] => {
+export const useFile = <T extends FileMetadata>(fileID?: ObjectId): [file: FileGetMetadataResult<T>, loading: boolean] => {
     const [state, setState] = useState<[FileGetMetadataResult<T>, boolean]>([null, true])
     useEffect(() => {
         if (fileID && isObjectId(fileID)) {
@@ -68,7 +68,6 @@ export const useFile = <T extends FileMetadata>(fileID?: ObjectId): [FileGetMeta
             setState([null, false])
         }
     }, [fileID])
-
     return state
 }
 

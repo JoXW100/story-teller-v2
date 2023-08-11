@@ -10,6 +10,7 @@ import { CreatureMetadata } from "types/database/files/creature";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { ModifierCollection } from "types/database/files";
 import { isEnum } from "utils/helpers";
+import { ObjectId } from "types/database";
 
 const OptionTypeAuto: IOptionType<number> = {
     type: CalculationMode.Auto,
@@ -18,6 +19,9 @@ const OptionTypeAuto: IOptionType<number> = {
 
 class CreatureData extends FileData<CreatureMetadata> implements Required<CreatureMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     public readonly modifiers: ModifierCollection
     public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection) {
         super(metadata)
@@ -168,8 +172,8 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.xp ?? 0
     }
 
-    public get abilities(): string[] {
-        return this.metadata.abilities ?? []
+    public get abilities(): ObjectId[] {
+        return this.modifiers.modifyAbilities(this.metadata.abilities ?? [])
     }
 
     // Stats

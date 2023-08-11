@@ -25,7 +25,7 @@ interface CharacterMetadata extends CreatureMetadata {
     history?: string
     notes?: string
     // Class
-    class?: ObjectId
+    classFile?: ObjectId
 }
 
 export type {

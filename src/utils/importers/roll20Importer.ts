@@ -345,7 +345,7 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
     var { hp, num, dice } = splitHP(results['hp'])
     var passive = `passive perception ${results['passive perception'] ?? "10"}`
     var senses = results['senses'] ? [passive , results['senses']] : [passive]
-    var fileContent: CreatureMetadata = {
+    var fileContent = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
         type: asEnum(results['type'], CreatureType) ?? CreatureType.None,
@@ -370,10 +370,10 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
         int: Number(results['int']) ? Number(results['int']) : 0,
         wis: Number(results['wis']) ? Number(results['wis']) : 0,
         cha: Number(results['cha']) ? Number(results['cha']) : 0,
-        languages: results['languages'] ?? "",
-        senses: senses.join(', '),
+        // languages: results['languages'] ?? "",
+        // senses: senses.join(', '),
         challenge: getChallenge(results['challenge rating'])
-    }
+    } satisfies CreatureMetadata
 
     return fileContent
 }

@@ -13,6 +13,9 @@ import { ClassMetadataProperties } from "types/database/files/class";
 
 class CharacterData extends CreatureData implements Required<CharacterMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     public readonly metadata: CharacterMetadata;
     private readonly characterClass: ClassMetadataProperties 
     public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection, characterClass?: ClassMetadataProperties) {
@@ -142,8 +145,8 @@ class CharacterData extends CreatureData implements Required<CharacterMetadata>
 
     // Class
 
-    public get class(): ObjectId {
-        return this.metadata.class ?? null
+    public get classFile(): ObjectId {
+        return this.metadata.classFile ?? null
     }
 }
 

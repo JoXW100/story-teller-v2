@@ -315,26 +315,32 @@
                         },
                         { 
                             "type": "enum", 
-                            "conditions": [
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
-                            ],
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] }],
                             "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
                         },
                         { 
                             "type": "text", 
                             "conditions": [
                                 { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
                                 { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                             ],
                             "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
+                        },
+                        { 
+                            "type": "boolean", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Allow Any", "key": "allowAny" }
                         },
                         { 
                             "type": "number", 
                             "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
                             "params": { "label": "Value", "key": "value" }
                         },
+
                         { 
                             "type": "enum", 
                             "conditions": [
@@ -453,6 +459,25 @@
                                 { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                             ],
                             "params": { "label": "Options", "key": "skills", "enum": "skill", "fill": true }
+                        },
+                        
+                        { 
+                            "type": "linkInput", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Ability", "key": "file", "placeholder": "Ability id...", "fileTypes": ["abi"] }
+                        }, { 
+                            "type": "linkList", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "allowAny" }, false] }
+                            ],
+                            "params": { "label": "Options", "key": "files", "fill": true, "fileTypes": ["abi"], "placeholder": "Ability file ID ..." }
                         }
                     ]
                 }

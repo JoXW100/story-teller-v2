@@ -5,6 +5,9 @@ import CreatureActionData from "./creatureActionData";
 
 class SpellData extends CreatureActionData<SpellMetadata> implements Required<SpellMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     public get level(): number {
         return this.metadata.level ?? 0
     }
@@ -90,9 +93,13 @@ class SpellData extends CreatureActionData<SpellMetadata> implements Required<Sp
     public get range(): number {
         return this.metadata.range ?? 0
     }
+
+    public get rangeLong(): number {
+        return this.metadata.rangeLong ?? 0
+    }
     
     public get area(): AreaType {
-        return this.metadata.rangeLong ?? getOptionType("area").default
+        return this.metadata.area ?? getOptionType("area").default
     }
     
     public get areaName(): string {

@@ -1,7 +1,4 @@
-import { FileMetadata } from "types/database/files";
-
-
-abstract class FileData<T extends FileMetadata>
+abstract class FileData<T>
 {
     public readonly metadata: T;
 

@@ -7,7 +7,7 @@ import Communication from 'utils/communication';
 import Localization from 'utils/localization';
 import SpellData from 'data/structures/spell';
 import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
-import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, FileGetManyMetadataResult, IFileMetadataQueryResult } from 'types/database/files';
 import { SpellContent, SpellMetadata } from 'types/database/files/spell';
 import { RendererObject } from 'types/database/editor';
 import { DBResponse } from 'types/database';
@@ -39,7 +39,7 @@ type SpellFileRendererProps = React.PropsWithRef<{
 }>
 
 type SpellLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<SpellMetadata>
+    file: IFileMetadataQueryResult<SpellMetadata>
     stats?: ICreatureStats
 }>
 

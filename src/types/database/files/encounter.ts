@@ -12,7 +12,6 @@ interface IEncounterCardData {
 }
 
 interface EncounterMetadata extends FileMetadata {
-    name?: string
     description?: string
     public?: boolean
     creatures?: string[]

@@ -165,20 +165,8 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
 export const LinkTitleElement = ({ options, metadata }: ElementParams<LinkTitleOptions>): JSX.Element => {
     const linkOptions = new Options(options)
     const href = linkOptions.fileURL
-    const title = useMemo(() => {
-        let data = metadata.$queries[linkOptions.fileId]
-        switch (data?.type) {
-            case FileType.Ability:
-            case FileType.Character:
-            case FileType.Creature:
-            case FileType.Encounter:
-                return data?.metadata.name ?? null;
-            case FileType.Document:
-            default:
-                return data?.metadata.title ?? null;
-        }
-    }, [options.fileId, metadata.$queries[linkOptions.fileId]])
-
+    const data = metadata.$queries[linkOptions.fileId]
+    const title = data?.metadata?.name ?? null
     return href ? (
         <LinkComponent 
             className={styles.linkTitle} 

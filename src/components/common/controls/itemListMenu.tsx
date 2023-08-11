@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useCallback } from "react";
+import { FileMetadata } from "types/database/files";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
-interface ItemListItem {
+interface ItemListItem extends FileMetadata {
     $name: string
 }
 
@@ -19,34 +20,29 @@ type ItemListMenuProps<T extends ItemListItem> = React.PropsWithRef<{
 }>
 
 const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChange, onClick, validateInput, values = [], prompt = "Edit", defaultValue = "", placeholder }: ItemListMenuProps<T>): JSX.Element => {
-    
-    const EditComponent = useMemo(() => {
-        return ({ value, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
-            const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
-            return (
-                <input 
-                    className={style} 
-                    value={value.$name}
-                    type="text"
-                    placeholder={placeholder}
-                    onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
-            )
-        }
+    const EditComponent = useCallback(({ value, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
+        const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
+        return (
+            <input 
+                className={style} 
+                value={value.$name}
+                type="text"
+                placeholder={placeholder}
+                onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
+        )
     }, [itemClassName, placeholder])
 
-    const Component = useMemo(() => {
-        return ({ value, index, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
-            const style = itemClassName ? `${itemClassName} ${styles.itemComponent}` : styles.itemComponent;
-            return (
-                <div className={style}> 
-                    <EditComponent value={value} index={index} onUpdate={onUpdate}/>
-                    <button onClick={() => onClick(value, index)}>
-                        {prompt}
-                    </button>
-                </div>
-            )
-        }
-    }, [itemClassName, prompt, onClick])
+    const Component = useCallback(({ value, index, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
+        const style = itemClassName ? `${itemClassName} ${styles.itemComponent}` : styles.itemComponent;
+        return (
+            <div className={style}> 
+                <EditComponent value={value} index={index} onUpdate={onUpdate}/>
+                <button onClick={() => onClick(value, index)}>
+                    {prompt}
+                </button>
+            </div>
+        )
+    }, [EditComponent, itemClassName, prompt, onClick])
     
     return (
         <ListTemplateMenu<T>

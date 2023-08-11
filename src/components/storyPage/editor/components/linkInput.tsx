@@ -13,7 +13,7 @@ const LinkInputComponent = ({ params }: TemplateComponentProps<LinkInputTemplate
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
     const value: ObjectId = (metadata && metadata[params.key]) ?? params.default ?? ""
 
-    const handleUpdate = (value: ObjectId) => {
+    const handleChange = (value: ObjectId) => {
         dispatch.setMetadata(params.key, value)
     }
 
@@ -25,7 +25,7 @@ const LinkInputComponent = ({ params }: TemplateComponentProps<LinkInputTemplate
                 value={value}
                 placeholder={params.placeholder}
                 fileTypes={params.fileTypes?.map((fileType) => asEnum(fileType, FileType)) ?? []}
-                onUpdate={handleUpdate}/>
+                onChange={handleChange}/>
         </div>
     )
 }

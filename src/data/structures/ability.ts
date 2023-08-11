@@ -8,6 +8,9 @@ import ICreatureStats from "types/database/files/iCreatureStats";
 
 class AbilityData extends CreatureActionData<AbilityMetadata> implements Required<AbilityMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     private readonly id?: string;
     constructor(metadata: AbilityMetadata, stats?: ICreatureStats, id?: string) {
         super(metadata, stats)

@@ -1,4 +1,5 @@
 import { FileContent, FileMetadata } from "."
+import { ObjectId } from ".."
 import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
 import { IOptionType } from "../editor"
 import ICreatureStats from "./iCreatureStats"
@@ -8,7 +9,6 @@ interface CreatureContent extends FileContent {
 }
 
 interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficiency"> {
-    name?: string
     public?: boolean
     type?: CreatureType
     size?: SizeType
@@ -16,7 +16,7 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     portrait?: string
     description?: string
 
-    abilities?: string[]
+    abilities?: ObjectId[]
     challenge?: number
     xp?: number
 
@@ -27,11 +27,13 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     ac?: IOptionType<number>
     proficiency?: IOptionType<number>
     initiative?: IOptionType<number>
+
     resistances?: string
     vulnerabilities?: string // TODO: Implement
     advantages?: string
     dmgImmunities?: string
     conImmunities?: string
+    
     speed?: Partial<Record<MovementType, number>>
     senses?: Partial<Record<Sense, number>>
 

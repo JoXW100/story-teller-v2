@@ -5,7 +5,6 @@ interface DocumentContent extends FileContent {
 }
 
 interface DocumentMetadata extends FileMetadata {
-    title?: string
     content?: string
 }
 

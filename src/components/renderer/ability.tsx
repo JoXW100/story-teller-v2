@@ -4,14 +4,15 @@ import AbilityData from 'data/structures/ability';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
-import { FileData, FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';
+import Localization from 'utils/localization';
+import { FileData, FileGetManyMetadataResult, FileGetMetadataResult, IFileMetadataQueryResult, FileType } from 'types/database/files';
 import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
 import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
+import { ObjectId } from 'types/database';
 import styles from 'styles/renderer.module.scss';
-import Localization from 'utils/localization';
 
 interface AbilityCategory { 
     header: string, 
@@ -19,7 +20,7 @@ interface AbilityCategory {
 }
 
 type AbilityGroupsProps = React.PropsWithRef<{
-    abilityIds: string[]
+    abilityIds: ObjectId[]
     stats?: ICreatureStats
     onLoaded?: (abilities: FileGetManyMetadataResult<AbilityMetadata>) => void 
 }>
@@ -34,7 +35,7 @@ type AbilityFileRendererProps = React.PropsWithRef<{
 }>
 
 type AbilityLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<AbilityMetadata>
+    file: IFileMetadataQueryResult<AbilityMetadata>
     stats?: ICreatureStats
 }>
 
@@ -243,7 +244,7 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
             [ActionType.Special]: { header: "Special", content: [] },
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
         } satisfies Record<ActionType, AbilityCategory>
-        abilities.forEach((file: FileMetadataQueryResult<AbilityMetadata>, index) => {
+        abilities.forEach((file: IFileMetadataQueryResult<AbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.None].content.push(
                 <AbilityToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
             )

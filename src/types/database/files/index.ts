@@ -2,11 +2,18 @@ import { ObjectId, Document } from 'mongodb'
 import { DateValue, UserId } from ".."
 import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from '../dnd'
 import { ModifierSelectType, ModifierType } from '../editor'
-import { ExtractOptionType, IOptionType, OptionTypeKey } from 'data/optionData'
-import { Enum } from 'types'
-type FileMetadata = {}
+
+interface FileMetadata { 
+    name?: string
+    description?: string
+    $vars?: any
+    $queries?: any
+}
+
 type FileStorage = {}
-type FileContent = {}
+interface FileContent {
+    text?: string
+}
 
 interface DBFile<T extends FileMetadata, K extends FileStorage = undefined> extends Document {
     _id?: ObjectId
@@ -23,7 +30,7 @@ interface DBContent<T extends FileMetadata, K extends FileStorage> {
     name: string
     text?: string
     open?: boolean
-    metadata?: T
+    metadata?: Omit<T,"$vars"|"$queries">
     storage?: K
 }
 
@@ -36,24 +43,28 @@ interface FileStructure {
     children?: FileStructure[]
 }
 
-interface FileMetadataQueryResult<T extends FileMetadata> {
+interface IFileMetadataQueryResult<T extends FileMetadata> {
     id: ObjectId,
     type: FileType
     metadata: T
 }
 
-interface Modifier extends FileMetadata {
+interface Modifier {
     $name: string
     type?: ModifierType
     select?: ModifierSelectType
     bonusProperty?: ModifierBonusTypeProperty
     addRemoveProperty?: ModifierAddRemoveTypeProperty
 
-    proficiency?: ProficiencyType
     label?: string
+    allowAny?: boolean
+
+    proficiency?: ProficiencyType
 
     // Values
     value?: number
+    file?: (ObjectId | string)
+    files?: (ObjectId | string)[]
     armor?: ArmorType
     armors?: ArmorType[]
     weapon?: WeaponType
@@ -68,11 +79,11 @@ interface Modifier extends FileMetadata {
     skills?: Skill[]
 }
 
-type ChoiceData = { 
-    type: string, 
-    label: string,
-    options: string[]  
-}
+export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[] }
+export type AnyFileChoiceData = { type: "file", label: string, allowAny: true, options: FileType[] }
+export type FileChoiceData = { type: "file", label: string, allowAny: false, options: (ObjectId | string)[] }
+
+export type ChoiceData = EnumChoiceData | AnyFileChoiceData | FileChoiceData
  
 interface ModifierCollection {
     bonusAC: number
@@ -87,6 +98,7 @@ interface ModifierCollection {
     modifyProficienciesLanguage: (proficiencies: Language[], onlyRemove?: boolean) => Language[]
     modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
     modifyProficienciesSkill: (proficiencies: Skill[], onlyRemove?: boolean) => Skill[]
+    modifyAbilities: (abilities: (ObjectId | string)[]) => (ObjectId | string)[]
 
     join: (other: ModifierCollection) => ModifierCollection
     getChoices: () => Record<string, ChoiceData>
@@ -127,7 +139,7 @@ type FileConvertResult = boolean
 type FileRenameResult = boolean
 type FileMoveResult = boolean
 type FileSetPropertyResult = boolean
-type FileGetMetadataResult<T extends FileMetadata = FileMetadata> = FileMetadataQueryResult<T>
+type FileGetMetadataResult<T extends FileMetadata = FileMetadata> = IFileMetadataQueryResult<T>
 type FileGetManyMetadataResult<T extends FileMetadata = FileMetadata> = FileGetMetadataResult<T>[]
 type FileGetStructureResult = FileStructure[]
 
@@ -136,10 +148,9 @@ export type {
     DBContent,
     FileData,
     FileStructure,
-    FileMetadataQueryResult,
+    IFileMetadataQueryResult,
     Modifier,
     ModifierCollection,
-    ChoiceData,
     FileMetadata,
     FileStorage,
     FileContent,

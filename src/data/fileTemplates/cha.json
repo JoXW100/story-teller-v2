@@ -104,7 +104,7 @@
                             { 
                                 "type": "linkInput", 
                                 "default": null,
-                                "params": { "label": "Class", "key": "class", "placeholder": "Class id...", "fileTypes": ["cla"] }
+                                "params": { "label": "Class", "key": "classFile", "placeholder": "Class id...", "fileTypes": ["cla"] }
                             },
                             { 
                                 "type": "enum", 

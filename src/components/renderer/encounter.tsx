@@ -7,7 +7,7 @@ import { useFiles } from 'utils/handlers/files';
 import CreatureData from 'data/structures/creature';
 import EncounterData from 'data/structures/encounter';
 import EncounterCard from './encounterCard';
-import { FileData, FileMetadataQueryResult } from 'types/database/files';
+import { FileData, IFileMetadataQueryResult } from 'types/database/files';
 import { CalculationMode, RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { IEncounterCardData, EncounterContent, EncounterMetadata, EncounterStorage } from 'types/database/files/encounter';
@@ -22,7 +22,7 @@ type EncounterFileRendererProps = React.PropsWithRef<{
 }>
 
 type EncounterLinkRendererProps = React.PropsWithRef<{
-    file: FileMetadataQueryResult<EncounterMetadata>
+    file: IFileMetadataQueryResult<EncounterMetadata>
     stats?: ICreatureStats
 }>
 

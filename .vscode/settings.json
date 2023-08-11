@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
+    "blindsight",
     "COND",
+    "darkvission",
     "dndbeyond",
     "dunamancy",
     "DXSVG",
@@ -11,8 +13,10 @@
     "prismjs",
     "searchbox",
     "svgr",
+    "tremorsense",
+    "truesight",
     "upserted"
-  ],
+],
   "svg.preview.background": "dark-transparent",
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

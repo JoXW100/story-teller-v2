@@ -1,7 +1,7 @@
 import Database, { failure, success }  from "utils/database/database";
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from "next";
-import { DBContent, FileMetadata, FileType } from "types/database/files";
+import { DBContent, FileMetadata, FileStorage, FileType } from "types/database/files";
 import Logger from "utils/logger";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<void> => {
@@ -113,7 +113,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata, any> => {
+const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata, FileStorage> => {
     switch (data.type) {
         case FileType.Ability:
         case FileType.Document:

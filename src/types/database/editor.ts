@@ -1,5 +1,5 @@
 import React from "react"
-import { FileContent, FileData, FileMetadata, FileMetadataQueryResult } from "./files"
+import { FileContent, FileData, FileMetadata, IFileMetadataQueryResult } from "./files"
 import ICreatureStats from "./files/iCreatureStats"
 
 export enum CalculationMode {
@@ -40,6 +40,16 @@ export enum ModifierSetMethod {
     Min = "min"
 }
 
+export enum RenderedFileType {
+    Ability = "abi",
+    Character = "cha",
+    Class = "cla",
+    Creature =  "cre",
+    Document = "doc",
+    Encounter = "enc",
+    Spell = "spe",
+}
+
 interface IOptionType<T> { 
     type: CalculationMode
     value: T 
@@ -49,7 +59,7 @@ type OptionType<T> = { type: CalculationMode.Auto } | IOptionType<T>
 
 interface RendererObject<A extends FileContent,B extends FileMetadata> {
     fileRenderer: (props: React.PropsWithRef<{ file: FileData<A, B, any>, stats?: ICreatureStats }>) => JSX.Element
-    linkRenderer: (props: React.PropsWithRef<{ file: FileMetadataQueryResult<B>, stats?: ICreatureStats }>) => JSX.Element
+    linkRenderer: (props: React.PropsWithRef<{ file: IFileMetadataQueryResult<B>, stats?: ICreatureStats }>) => JSX.Element
 }
 
 export type {

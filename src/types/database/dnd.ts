@@ -247,5 +247,6 @@ export enum ProficiencyType {
 }
 
 export enum ModifierAddRemoveTypeProperty {
-    Proficiency = "proficiency"
+    Proficiency = "proficiency",
+    Ability = "ability"
 }

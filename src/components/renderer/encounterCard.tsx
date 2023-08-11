@@ -1,16 +1,15 @@
-import React from 'react';
-import Elements from 'data/elements';
-import { IEncounterCardData } from 'types/database/files/encounter';
-import { CreatureMetadata } from 'types/database/files/creature';
-import { ObjectId } from 'types/database';
-import styles from 'styles/renderer.module.scss';
 import Link from 'next/link';
 import Navigation from 'utils/navigation';
+import Elements from 'data/elements';
+import CreatureData from 'data/structures/creature';
+import { IEncounterCardData } from 'types/database/files/encounter';
+import { ObjectId } from 'types/database';
+import styles from 'styles/renderer.module.scss';
 
 
 type EncounterCardProps = React.PropsWithRef<{
     card?: IEncounterCardData,
-    creature?: CreatureMetadata,
+    creature?: CreatureData,
     id: ObjectId,
     num: number
 }>

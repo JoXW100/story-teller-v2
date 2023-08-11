@@ -1,6 +1,6 @@
 import { Enum } from 'types';
 import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, MovementType, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
-import { CalculationMode, ModifierCondition, ModifierSelectType, ModifierType, OptionalAttribute } from 'types/database/editor';
+import { CalculationMode, ModifierCondition, ModifierSelectType, ModifierType, OptionalAttribute, RenderedFileType } from 'types/database/editor';
 
 interface IOptionType<T extends Enum> {
     enum: T
@@ -382,9 +382,23 @@ const OptionTypes = {
         enum: ModifierAddRemoveTypeProperty,
         default: ModifierAddRemoveTypeProperty.Proficiency,
         options: {
-            [ModifierAddRemoveTypeProperty.Proficiency]: "Proficiency"
+            [ModifierAddRemoveTypeProperty.Proficiency]: "Proficiency",
+            [ModifierAddRemoveTypeProperty.Ability]: "Ability"
         }
-    } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>
+    } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>,
+    "fileTypes": {
+        enum: RenderedFileType,
+        default: RenderedFileType.Ability,
+        options: {
+            [RenderedFileType.Ability]: "Ability",
+            [RenderedFileType.Character]: "Character",
+            [RenderedFileType.Creature]: "Creature",
+            [RenderedFileType.Class]: "Class",
+            [RenderedFileType.Document]: "Document",
+            [RenderedFileType.Encounter]: "Encounter",
+            [RenderedFileType.Spell]: "Spell"
+        }
+    }
 } satisfies Record<string, IOptionType<Record<string, string | number>>>
 
 type OptionTypeKey = keyof typeof OptionTypes;

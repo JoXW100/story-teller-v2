@@ -7,6 +7,9 @@ type EncounterDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData[
 
 class EncounterData extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     protected readonly storage: IEncounterCardData[];
     protected readonly dispatch: EncounterDispatch;
 

@@ -22,6 +22,7 @@ interface SpellMetadata extends FileMetadata, ICreatureActionData {
     materials?: string
     // Range
     range?: number
+    rangeLong?: number
     area?: AreaType
     areaSize?: number
     areaHeight?: number

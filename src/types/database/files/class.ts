@@ -28,15 +28,14 @@ interface ClassLevelsMetadata {
     20?: Modifier[]
 }
 
-interface ClassMetadataProperties extends FileMetadata {
-    name?: string
+interface ClassMetadataProperties {
     description?: string
     hitDice?: DiceType
 
     getModifiers?: (level: number) => ModifierCollection
 }
 
-interface ClassMetadata extends ClassMetadataProperties, ClassLevelsMetadata {}
+interface ClassMetadata extends ClassMetadataProperties, ClassLevelsMetadata, FileMetadata {}
 
 export type {
     ClassContent,

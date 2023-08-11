@@ -79,14 +79,13 @@ input:focus {
         /* Text box */
         &::after {
             @include colorWithShadow(document);
-            font-family: fontNormal;
+            font-family: $fontNormal;
             display: block;
             position: absolute;
             z-index: 9000;
             top: 100%;
             padding: 2px 4px;
             font-size: 12px;
-            font-weight: 10;
             white-space: pre;
             pointer-events: none;
             user-select: none;
