@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
+import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
-import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import Localization from 'utils/localization';
+import { useFile } from 'utils/handlers/files';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import Elements from 'data/elements';
@@ -10,39 +12,56 @@ import CharacterData from 'data/structures/character';
 import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
+import { getOptionType } from 'data/optionData';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { FileData, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
-import { CharacterContent, CharacterMetadata } from 'types/database/files/character';
-import { Attribute } from 'types/database/dnd';
+import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
+import { CharacterContent, CharacterMetadata, CharacterStorage } from 'types/database/files/character';
+import { FileContextDispatch } from 'types/context/fileContext';
+import { Attribute, Skill } from 'types/database/dnd';
 import { AbilityMetadata } from 'types/database/files/ability';
-import styles from 'styles/renderer.module.scss';
-import { useFile } from 'utils/handlers/files';
 import { ClassMetadata } from 'types/database/files/class';
+import styles from 'styles/renderer.module.scss';
+import { CharacterProficienciesPage } from './creature';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
-    file: FileData<CharacterContent,CharacterMetadata,undefined>
-    classMetadata?: ClassMetadata
+    file: FileData<CharacterContent, CharacterMetadata, CharacterStorage>
+    classData?: ClassData
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CharacterMetadata>
 }>
 
+type CharacterBackgroundPageProps = React.PropsWithRef<{
+    character: CharacterData 
+    appearance: JSX.Element 
+    description: JSX.Element  
+    history: JSX.Element 
+    notes: JSX.Element 
+}>
+
+type CharacterClassPageProps = React.PropsWithRef<{
+    character: CharacterData 
+    classData: ClassData
+    dispatch: FileContextDispatch
+}>
+
+const Pages = ["Background", "Proficiencies", "Class"] as const
+
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
-    const [classFile, loading] = useFile<ClassMetadata>(props.file?.metadata?.class)
+    const [classFile] = useFile<ClassMetadata>(props.file?.metadata?.class)
     const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
-    return <Renderer {...props} classMetadata={classFile?.metadata}/>
+    const classData = new ClassData(classFile?.metadata, props.file?.storage, classFile?.id ? String(classFile?.id) : undefined);
+    return <Renderer {...props} classData={classData}/>
 }
 
-const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
-    let character = new CharacterData(file.metadata)
+const SimpleCharacterRenderer = ({ file, classData }: CharacterFileRendererProps): JSX.Element => {
+    let character = new CharacterData(file.metadata, null, classData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
     const description = useParser(character.description, file.metadata, "description")
-    useParser(character.history, file.metadata, "history")
-    useParser(character.notes, file.metadata, "notes")
     return (
         <>
             <Elements.Align>
@@ -60,14 +79,6 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
                     <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
                     <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
-                    { character.traits.length > 0 &&  <div>
-                        <Elements.Bold>Traits </Elements.Bold>{character.traitsText}
-                    </div>}
-                    { character.languages.length > 0 ?
-                        <div><Elements.Bold>Languages </Elements.Bold>
-                            {character.languages}
-                        </div> 
-                    : null }
                     { character.appearance.length > 0 ? <>
                         <Elements.Line/>
                         <Elements.Header3>Appearance</Elements.Header3>
@@ -86,9 +97,10 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
     )
 } 
 
-const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendererProps): JSX.Element => {
+const DetailedCharacterRenderer = ({ file, classData }: CharacterFileRendererProps): JSX.Element => {
+    const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<ModifierCollection>(null)
-    const classData = new ClassData(classMetadata);
+    const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const character = new CharacterData(file.metadata, modifiers, classData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
@@ -96,13 +108,10 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
     const history = useParser(character.history, file.metadata, "history")
     const notes = useParser(character.notes, file.metadata, "notes")
     const stats = character.getStats()
-    const speed = getSpeed(character)
-    const saves = getSaves(character)
-    const skills = getSkills(character)
 
-    const handleAbilitiesLoaded = (abilities: AbilityMetadata[]) => {
-        let modifiers = abilities.flatMap((ability) => new AbilityData(ability).modifiers ?? []);
-        let collection = new ModifierCollectionData(modifiers)
+    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
+        let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let collection = new ModifierCollectionData(modifiers, file?.storage)
         setModifiers(collection);
     }
 
@@ -111,39 +120,29 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
             <Elements.Align>
                 <Elements.Block>
                     <Elements.Header1> {character.name} </Elements.Header1>
-                    {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
                     <Elements.Line/>
-                    <Elements.Image options={{href: character.portrait}}/>
+                    <div className={styles.pageSelector}>
+                        { Object.values(Pages).map((p, index) => (
+                            <button key={index} disabled={page === p} onClick={() => setPage(p)}>
+                                { p }
+                            </button>
+                        ))}
+                    </div>
                     <Elements.Line/>
-                    <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
-                    <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
-                    <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
-                    <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
-                    <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
-                    <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
-                    { character.traits.length > 0 &&  <div>
-                        <Elements.Bold>Traits </Elements.Bold>{character.traitsText}
-                    </div>}
-                    { character.appearance.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>Appearance</Elements.Header3>
-                        <Elements.Text>{appearance}</Elements.Text>
-                    </> : null }
-                    { character.description.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>Description</Elements.Header3>
-                        <Elements.Text>{description}</Elements.Text>
-                    </> : null }
-                    { character.history.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>History</Elements.Header3>
-                        <Elements.Text>{history}</Elements.Text>
-                    </> : null }
-                    { character.notes.length > 0 ? <>
-                        <Elements.Line/>
-                        <Elements.Header3>Notes</Elements.Header3>
-                        <Elements.Text>{notes}</Elements.Text>
-                    </> : null }
+                    <div className={styles.pageItem} data={page === "Background" ? "show" : "hide"}>
+                        <CharacterBackgroundPage
+                            character={character}
+                            appearance={appearance}
+                            description={description}
+                            history={history}
+                            notes={notes} />
+                    </div>
+                    <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
+                        <CharacterProficienciesPage data={character}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
+                        <CharacterClassPage character={character} classData={classData} dispatch={dispatch}/>
+                    </div>
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
@@ -152,7 +151,6 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
                         {`${character.healthValue} `}
                         <Elements.Roll options={character.healthRoll}/>
                     </div>
-                    <div><Elements.Bold>Speed </Elements.Bold>{speed}</div>
                     <div>
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
@@ -160,33 +158,34 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
                             desc: "Initiative" 
                         }}/>
                     </div>
+                    <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
+                        <RollElement options={{ 
+                            mod: String(character.proficiencyValue), 
+                            desc: "Proficiency Check"
+                        }}/>
+                    </div>
                     <Elements.Line/>
                     <Elements.Align>
                         { Object.keys(Attribute).map((attr, index) => (
-                            <React.Fragment key={index}>
-                                <Elements.Align options={{ direction: 'vc' }}>
-                                    <Elements.Bold>{attr}</Elements.Bold>
-                                    { character[Attribute[attr]] ?? 0 }
-                                    <Elements.Roll options={{ 
-                                        mod: character.getAttributeModifier(Attribute[attr]).toString(), 
-                                        desc: `${attr} Check`
-                                    }}/>
-                                </Elements.Align>
-                            </React.Fragment>
+                            <div className={styles.attributeBox} key={index}>
+                                <Elements.Bold>{attr}</Elements.Bold>
+                                <Elements.Bold>{character[Attribute[attr]] ?? 0}</Elements.Bold>
+                                <Elements.Roll options={{ 
+                                    mod: character.getAttributeModifier(Attribute[attr]).toString(), 
+                                    desc: `${attr} Check`,
+                                    tooltips: `${attr} Check`
+                                }}/>
+                                <div/>
+                                <Elements.Roll options={{ 
+                                    mod: character.getSaveModifier(Attribute[attr]).toString(), 
+                                    desc: `${attr} Save`,
+                                    tooltips: `${attr} Save`
+                                }}/>
+                            </div>
                         ))}
                     </Elements.Align>
                     <Elements.Line/>
-                    { saves && 
-                        <div className={styles.spaceOutRolls}>
-                            <Elements.Bold>Saving Throws </Elements.Bold>
-                            {saves}
-                        </div> 
-                    }{ skills && 
-                        <div className={styles.spaceOutRolls}>
-                            <Elements.Bold>Skills </Elements.Bold>
-                            {skills}
-                        </div> 
-                    }{ character.resistances.length > 0 && 
+                    { character.resistances.length > 0 && 
                         <div>
                             <Elements.Bold>Resistances </Elements.Bold>
                             {character.resistances}
@@ -207,24 +206,17 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
                         <div><Elements.Bold>COND Immunities </Elements.Bold>
                             {character.conImmunities}
                         </div>
-                    }{ character.senses.length > 0 && 
-                        <div><Elements.Bold>Senses </Elements.Bold>
-                            {character.senses}
-                        </div>
-                    }{ character.languages.length > 0 && 
-                        <div><Elements.Bold>Languages </Elements.Bold>
-                            {character.languages}
-                        </div> 
                     }
-                    <div><Elements.Bold>Challenge </Elements.Bold>
-                        {character.challengeText}
-                    </div>
-                    <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
-                        <RollElement options={{ 
-                            mod: String(character.proficiencyValue), 
-                            desc: "Proficiency Check" 
-                        }}/>
-                    </div>
+                    <div><Elements.Bold>Speed </Elements.Bold>{character.speedAsText}</div>
+                    { Object.keys(character.senses).length > 0 &&
+                        <div><Elements.Bold>Senses </Elements.Bold>
+                            {character.sensesAsText}
+                        </div>
+                    }
+                    <Elements.Space/>
+                    <div><Elements.Bold>Passive Perception: </Elements.Bold>{character.passivePerceptionValue.toString()}</div>
+                    <div><Elements.Bold>Passive Investigation: </Elements.Bold>{character.passiveInvestigationValue.toString()}</div>
+                    <div><Elements.Bold>Passive Insight: </Elements.Bold>{character.passiveInsightValue.toString()}</div>
                     <Elements.Line/>
                     <AbilityGroups 
                         abilityIds={character.abilities} 
@@ -270,6 +262,69 @@ const DetailedCharacterRenderer = ({ file, classMetadata }: CharacterFileRendere
             }  
             {content && <Elements.Line/>}
             {content}
+        </>
+    )
+}
+
+const CharacterBackgroundPage = ({ character, appearance, description, history, notes }: CharacterBackgroundPageProps): JSX.Element => {
+    return (
+        <>
+            {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
+            <Elements.Line/>
+            <Elements.Image options={{href: character.portrait}}/>
+            <Elements.Line/>
+            <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
+            <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
+            <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
+            <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>
+            <div><Elements.Bold>Weight </Elements.Bold>{character.weight}</div>
+            <div><Elements.Bold>Occupation </Elements.Bold>{character.occupation}</div>
+            { character.appearance.length > 0 ? <>
+                <Elements.Line/>
+                <Elements.Header3>Appearance</Elements.Header3>
+                <Elements.Text>{appearance}</Elements.Text>
+            </> : null }
+            { character.description.length > 0 ? <>
+                <Elements.Line/>
+                <Elements.Header3>Description</Elements.Header3>
+                <Elements.Text>{description}</Elements.Text>
+            </> : null }
+            { character.history.length > 0 ? <>
+                <Elements.Line/>
+                <Elements.Header3>History</Elements.Header3>
+                <Elements.Text>{history}</Elements.Text>
+            </> : null }
+            { character.notes.length > 0 ? <>
+                <Elements.Line/>
+                <Elements.Header3>Notes</Elements.Header3>
+                <Elements.Text>{notes}</Elements.Text>
+            </> : null }
+        </>
+    )
+}
+
+const CharacterClassPage = ({ character, classData, dispatch }: CharacterClassPageProps): JSX.Element => {
+    const choices = character.modifiers.getChoices()
+    const storage = { ...(classData.storage?.classData ?? {}) }
+
+    const handleChange = (value: string, key: string) => {
+        dispatch.setStorage("classData", { ...storage, [key]: value });
+    }
+
+    return (
+        <>
+            { Object.keys(choices).map(key => (
+                <div className={styles.modifierChoice} key={key}>
+                    <Elements.Bold>{`${choices[key].label}:`} </Elements.Bold>
+                    <DropdownMenu
+                        value={storage[key] ?? null}
+                        itemClassName={styles.dropdownItem}
+                        values={choices[key].options.reduce((prev, option) => (
+                            { ...prev, [option]: getOptionType(choices[key].type).options[option] }
+                        ), { null: "Unset" })}
+                        onChange={(value) => handleChange(value, key)}/>
+                </div>
+            ))}
         </>
     )
 }

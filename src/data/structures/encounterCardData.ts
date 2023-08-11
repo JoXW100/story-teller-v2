@@ -1,13 +1,13 @@
 
 import { IEncounterCardData } from "types/database/files/encounter"
 
-type Dispatch = React.Dispatch<React.SetStateAction<IEncounterCardData>>
+type EncounterCardDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData>>
 
 class EncounterCardData implements Required<IEncounterCardData>
 {
     public readonly data: IEncounterCardData;
-    private readonly dispatch: Dispatch;
-    public constructor(data: IEncounterCardData, dispatch: Dispatch) {
+    private readonly dispatch: EncounterCardDispatch;
+    public constructor(data: IEncounterCardData, dispatch: EncounterCardDispatch) {
         if (!data) {
             throw new Error("Missing IEncounterCardData argument")
         }

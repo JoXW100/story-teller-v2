@@ -82,6 +82,7 @@ const getComponent = (type: EditInputType): (props: TemplateComponentProps) => R
         case EditInputType.LinkInput: return Components.LinkInput;
         case EditInputType.List: return Components.List;
         case EditInputType.Selection: return Components.Selection;
+        case EditInputType.SelectionInput: return Components.SelectionInput;
         case EditInputType.Option: return Components.Option;
         case EditInputType.Number: return Components.Number;
         case EditInputType.Navigation: return Components.Navigation;

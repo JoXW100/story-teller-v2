@@ -67,7 +67,7 @@ type TemplateCondition =
 interface IFileTemplateParams {
     label: string
     key: string
-    default?: boolean | string | number
+    default?: boolean | string | number | (boolean | string | number)[]
 }
 
 interface BooleanTemplateParams extends IFileTemplateParams {
@@ -92,18 +92,21 @@ interface ListTemplateParams extends IFileTemplateParams {
     editEnabled?: boolean
     reverse?: boolean
     placeholder?: string
+    fill?: boolean
 }
 interface ItemListTemplateParams extends IFileTemplateParams {
     template: keyof FileTemplate['editorSubTemplates']
     default?: string
     prompt?: string
     placeholder?: string
+    fill?: boolean
 }
 
 interface LinkListTemplateParams extends IFileTemplateParams {
     fileTypes: FileType[]
     allowText: boolean
     placeholder?: string
+    fill?: boolean
 }
 
 interface LinkInputTemplateParams extends IFileTemplateParams {
@@ -123,10 +126,20 @@ interface OptionTemplateParams extends IFileTemplateParams {
 
 interface SelectionTemplateParams extends IFileTemplateParams {
     enum: string
-    type: string
+    default?: string[]
+    fill?: boolean
 }
 
-interface TextTemplateParams extends IFileTemplateParams {}
+interface SelectionInputTemplateParams extends IFileTemplateParams {
+    enum: string
+    default?: string | number
+    type?: "none" | "text" | "number"
+    fill?: boolean
+}
+
+interface TextTemplateParams extends IFileTemplateParams {
+    placeholder?: string
+}
 
 interface TextareaTemplateParams extends IFileTemplateParams {
     useSyntaxEditor?: boolean
@@ -162,6 +175,7 @@ type TemplateComponent =
     | NumberTemplateComponent
     | OptionTemplateComponent
     | SelectionTemplateComponent
+    | SelectionInputTemplateComponent
     | TextTemplateComponent
     | TextareaTemplateComponent
     | NavigationTemplateComponent
@@ -232,6 +246,12 @@ class SelectionTemplateComponent implements ITemplateComponent {
     params?: SelectionTemplateParams;
 }
 
+class SelectionInputTemplateComponent implements ITemplateComponent {
+    type: EditInputType.SelectionInput
+    conditions?: TemplateCondition[]
+    params?: SelectionInputTemplateParams;
+}
+
 class TextTemplateComponent implements ITemplateComponent {
     type: EditInputType.Text
     conditions?: TemplateCondition[]
@@ -275,6 +295,7 @@ export enum EditInputType {
     LinkInput = 'linkInput',
     TemplateList = 'templateList',
     Selection = 'selection',
+    SelectionInput = 'selectionInput',
     Option = 'option',
     Enum = 'enum',
     Boolean = 'boolean',
@@ -297,6 +318,7 @@ export type {
     NumberTemplateParams,
     OptionTemplateParams,
     SelectionTemplateParams,
+    SelectionInputTemplateParams,
     TextTemplateParams,
     TextareaTemplateParams,
     NavigationTemplateParams,

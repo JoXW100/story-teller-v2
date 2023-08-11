@@ -8,41 +8,25 @@ import { getRelativeMetadata } from 'utils/helpers';
 import { SelectionTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 
-type SelectionItemElementProps = React.PropsWithChildren<{
-    item: ReactNode
-    inputType: string
-    value: string | number
-    onChange: (value: string) => void
-}>
-
 const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const selection: Record<string, string | number> = metadata ? metadata[params.key] ?? {} : {};
+    const selection: string[] = (metadata && metadata[params.key]) ?? params.default ?? []
     const option = getOptionType(params.enum);
         
     const handleChange = (selected: string[]) => {
-        const data = {};
-        selected.forEach((key) => (data[key] = selection[key] ?? params.default))
-        dispatch.setMetadata(params.key, data)
-    }
-
-    const handleInput = (value: any, key: string) => {
-        selection[key] = value;
-        dispatch.setMetadata(params.key, selection)
+        dispatch.setMetadata(params.key, selected)
     }
 
     const values = useMemo<{[key: string]: ReactNode }>(() => (
         Object.keys(option?.options ?? {}).reduce((prev, key) => 
             ({ ...prev, [key]: (
-                <SelectionItemElement 
-                    item={option.options[key]} 
-                    value={selection[key]}
-                    onChange={(value) => handleInput(value, key)}
-                    inputType={params.type}/>
+                <div key={key} className={styles.editGroupItem}>
+                    <b>{option.options[key]}</b>
+                </div>
             )})
         , {})
-    ), [params.enum, params.type, selection, context.file?.metadata, context.editFilePages])
+    ), [params.enum, selection, context.file?.metadata, context.editFilePages])
     
     // UseMemo above must not be used conditionally
     if (!option){
@@ -51,26 +35,14 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     }
     
     return (
-        <div className={styles.editList}>
+        <div className={styles.editList} data={params.fill && "fill"}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <SelectionMenu
                 className={styles.editSelectionMenu}
                 values={values}
-                selection={Object.keys(selection)}
+                selection={Array.isArray(selection) ? selection : params.default ?? []}
                 alternate={option.options}
                 onChange={handleChange}/>
-        </div>
-    )
-}
-
-const SelectionItemElement = ({ item, value, onChange, inputType }: SelectionItemElementProps): JSX.Element => {
-    return (
-        <div className={styles.editGroupItem}>
-            <b>{item}</b>
-            <input 
-                type={inputType} 
-                value={value ?? ""} 
-                onChange={(e) => onChange(e.target.value)}/>
         </div>
     )
 }

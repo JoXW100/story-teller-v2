@@ -1,7 +1,8 @@
-import { AbilityType, ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, MagicSchool, ModifierAddTypeProperty, ModifierBonusTypeProperty, ModifierCondition, ModifierType, MovementType, Proficiency, ScalingType, SizeType, Skill, TargetType } from 'types/database/dnd';
-import { CalculationMode, OptionalAttribute } from 'types/database/editor';
+import { Enum } from 'types';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, MovementType, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
+import { CalculationMode, ModifierCondition, ModifierSelectType, ModifierType, OptionalAttribute } from 'types/database/editor';
 
-interface IOptionType<T extends Record<string, string | number>> {
+interface IOptionType<T extends Enum> {
     enum: T
     default: T[keyof T],
     options: Record<T[keyof T], string>
@@ -285,17 +286,62 @@ const OptionTypes = {
             [CalculationMode.Override]: "Override"
         }
     } satisfies IOptionType<typeof CalculationMode>,
-    "proficiency": {
-        enum: Proficiency,
-        default: Proficiency.ArmorAll,
+    "armor": {
+        enum: ArmorType,
+        default: ArmorType.Light,
         options: {
-            [Proficiency.ArmorAll]: "All Armor",
-            [Proficiency.ArmorLight]: "Light Armor",
-            [Proficiency.ArmorMedium]: "Medium Armor",
-            [Proficiency.ArmorHeavy]: "Heavy Armor",
-            [Proficiency.Shields]: "Shields"
+            [ArmorType.Light]: "Light Armor",
+            [ArmorType.Medium]: "Medium Armor",
+            [ArmorType.Heavy]: "Heavy Armor",
+            [ArmorType.Shields]: "Shields",
         }
-    } satisfies IOptionType<typeof Proficiency>,
+    } satisfies IOptionType<typeof ArmorType>,
+    "weapon": {
+        enum: WeaponType,
+        default: WeaponType.Simple,
+        options: {
+            [WeaponType.Simple]: "Simple Weapons",
+            [WeaponType.Martial]: "Martial Weapons"
+        }
+    } satisfies IOptionType<typeof WeaponType>,
+    "language": {
+        enum: Language,
+        default: Language.Common,
+        options: {
+            [Language.Common]: "Common"
+        }
+    } satisfies IOptionType<typeof Language>,
+    "sense": {
+        enum: Sense,
+        default: Sense.DarkVision,
+        options: {
+            [Sense.BlindSight]: "Blind Sight",
+            [Sense.DarkVision]: "Dark Vision",
+            [Sense.TremorSense]: "Tremor Sense",
+            [Sense.TrueSight]: "True Sight"
+        }
+    } satisfies IOptionType<typeof Sense>,
+    "tool": {
+        enum: Tool,
+        default: Tool.AlchemistsSupplies,
+        options: {
+            [Tool.AlchemistsSupplies]: "Alchemist's Supplies",
+            [Tool.HerbalismKit]: "Herbalism Kit",
+            [Tool.PoisonersKit]: "Poisoner's Kit",
+        }
+    } satisfies IOptionType<typeof Tool>,
+    "proficiencyType": {
+        enum: ProficiencyType,
+        default: ProficiencyType.Armor,
+        options: {
+            [ProficiencyType.Armor]: "Armor",
+            [ProficiencyType.Weapon]: "Weapon",
+            [ProficiencyType.Tool]: "Tool",
+            [ProficiencyType.Language]: "Language",
+            [ProficiencyType.Save]: "Save",
+            [ProficiencyType.Skill]: "Skill",
+        }
+    } satisfies IOptionType<typeof ProficiencyType>,
     "modifierType": {
         enum: ModifierType,
         default: ModifierType.Bonus,
@@ -306,6 +352,14 @@ const OptionTypes = {
             [ModifierType.Remove]: "Remove"
         }
     } satisfies IOptionType<typeof ModifierType>,
+    "modifierSelect": {
+        enum: ModifierSelectType,
+        default: ModifierSelectType.Value,
+        options: {
+            [ModifierSelectType.Value]: "Value",
+            [ModifierSelectType.Choice]: "Choice",
+        }
+    } satisfies IOptionType<typeof ModifierSelectType>,
     "modifierCondition": {
         enum: ModifierCondition,
         default: ModifierCondition.None,
@@ -324,16 +378,18 @@ const OptionTypes = {
             [ModifierBonusTypeProperty.Initiative]: "Initiative"
         }
     } satisfies IOptionType<typeof ModifierBonusTypeProperty>,
-    "modifierAddTypeProperty": {
-        enum: ModifierAddTypeProperty,
-        default: ModifierAddTypeProperty.Proficiency,
+    "modifierAddRemoveTypeProperty": {
+        enum: ModifierAddRemoveTypeProperty,
+        default: ModifierAddRemoveTypeProperty.Proficiency,
         options: {
-            [ModifierAddTypeProperty.Proficiency]: "Proficiency"
+            [ModifierAddRemoveTypeProperty.Proficiency]: "Proficiency"
         }
-    } satisfies IOptionType<typeof ModifierAddTypeProperty>
+    } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>
 } satisfies Record<string, IOptionType<Record<string, string | number>>>
 
-type ExtractOptionType<T> = T extends keyof typeof OptionTypes
+type OptionTypeKey = keyof typeof OptionTypes;
+
+type ExtractOptionType<T> = T extends OptionTypeKey
   ? typeof OptionTypes[T]
   : IOptionType<Record<string, string | number>>;
 
@@ -344,5 +400,7 @@ export function getOptionType<T extends keyof typeof OptionTypes>(key: T): Extra
 }
 
 export type {
-    IOptionType
+    IOptionType,
+    OptionTypeKey,
+    ExtractOptionType
 }

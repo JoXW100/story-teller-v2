@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
@@ -18,29 +19,34 @@ type ItemListMenuProps<T extends ItemListItem> = React.PropsWithRef<{
 }>
 
 const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChange, onClick, validateInput, values = [], prompt = "Edit", defaultValue = "", placeholder }: ItemListMenuProps<T>): JSX.Element => {
-    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
-        const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
-        return (
-            <input 
-                className={style} 
-                value={value.$name}
-                type="text"
-                placeholder={placeholder}
-                onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
-        )
-    }
+    
+    const EditComponent = useMemo(() => {
+        return ({ value, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
+            const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
+            return (
+                <input 
+                    className={style} 
+                    value={value.$name}
+                    type="text"
+                    placeholder={placeholder}
+                    onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
+            )
+        }
+    }, [itemClassName, placeholder])
 
-    const Component = ({ value, index }: ListTemplateComponent<T>): JSX.Element => {
-        const style = itemClassName ? `${itemClassName} ${styles.itemComponent}` : styles.itemComponent;
-        return (
-            <div className={style}> 
-                <label>{value.$name}</label>
-                <button onClick={() => onClick(value, index)}>
-                    {prompt}
-                </button>
-            </div>
-        )
-    }
+    const Component = useMemo(() => {
+        return ({ value, index, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
+            const style = itemClassName ? `${itemClassName} ${styles.itemComponent}` : styles.itemComponent;
+            return (
+                <div className={style}> 
+                    <EditComponent value={value} index={index} onUpdate={onUpdate}/>
+                    <button onClick={() => onClick(value, index)}>
+                        {prompt}
+                    </button>
+                </div>
+            )
+        }
+    }, [itemClassName, prompt, onClick])
     
     return (
         <ListTemplateMenu<T>

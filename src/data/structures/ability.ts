@@ -4,9 +4,16 @@ import ModifierData from "./modifier";
 import { AbilityType, ActionType, DiceType } from "types/database/dnd";
 import { AbilityMetadata } from "types/database/files/ability";
 import { Modifier } from "types/database/files";
+import ICreatureStats from "types/database/files/iCreatureStats";
 
 class AbilityData extends CreatureActionData<AbilityMetadata> implements Required<AbilityMetadata>
 {
+    private readonly id?: string;
+    constructor(metadata: AbilityMetadata, stats?: ICreatureStats, id?: string) {
+        super(metadata, stats)
+        this.id = id;
+    }
+
     public get type(): AbilityType {
         return this.metadata.type ?? getOptionType('abilityType').default
     }
@@ -45,8 +52,8 @@ class AbilityData extends CreatureActionData<AbilityMetadata> implements Require
 
     // Modifiers
 
-    public get modifiers(): Modifier[] {
-        return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier))
+    public get modifiers(): Required<Modifier>[] {
+        return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id))
     }
 }
 

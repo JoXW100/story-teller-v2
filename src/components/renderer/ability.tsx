@@ -4,13 +4,14 @@ import AbilityData from 'data/structures/ability';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
-import { FileData, FileGetMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';
+import { FileData, FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult, FileType } from 'types/database/files';
 import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
 import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
+import Localization from 'utils/localization';
 
 interface AbilityCategory { 
     header: string, 
@@ -20,7 +21,11 @@ interface AbilityCategory {
 type AbilityGroupsProps = React.PropsWithRef<{
     abilityIds: string[]
     stats?: ICreatureStats
-    onLoaded?: (abilities: AbilityMetadata[]) => void 
+    onLoaded?: (abilities: FileGetManyMetadataResult<AbilityMetadata>) => void 
+}>
+
+type AbilityGroupProps = React.PropsWithChildren<{
+    header: string
 }>
 
 type AbilityFileRendererProps = React.PropsWithRef<{
@@ -245,23 +250,39 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
         })
         setCategories(categories)
         if (!loading && onLoaded) {
-            onLoaded(abilities.map(x => x.metadata))
+            onLoaded(abilities)
         }
     }, [abilities, loading])
     
     return !loading && Object.keys(categories)
-        .filter((type) => categories[type].content.length > 0)
-        .map((type) => (
-            <React.Fragment key={type}>
-                { categories[type].header && (
-                    <Elements.Header2 options={{ underline: "true" }}>
-                        {categories[type].header}
-                    </Elements.Header2>
-                )}
+        .filter((type: ActionType) => categories[type].content.length > 0)
+        .map((type: ActionType) => (
+            <AbilityGroup key={type} header={categories[type].header}>
                 { categories[type].content }
-            </React.Fragment>
+            </AbilityGroup>
         )
     )
+}
+
+const AbilityGroup = ({ header, children }: AbilityGroupProps): JSX.Element => {
+    const [open, setOpen] = useState(true)
+    const tooltips = open 
+        ? Localization.toText('common-collapse')
+        : Localization.toText('common-expand')
+    return <>
+        { header && (
+            <div className={styles.abilityGroupHeader} data={open ? "open" : "closed"}>
+                <button 
+                    onClick={() => setOpen(!open)}
+                    tooltips={tooltips}>
+                    <Elements.Header2>
+                        {header}
+                    </Elements.Header2>
+                </button>
+            </div>
+        )}
+        { open && children }
+    </>
 }
 
 export default AbilityRenderer;

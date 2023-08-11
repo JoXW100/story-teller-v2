@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useCallback, useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import ItemListMenu, { ItemListItem } from 'components/common/controls/itemListMenu';
 import { TemplateComponentProps } from '.';
@@ -20,17 +20,17 @@ const ItemListComponent = ({ params }: TemplateComponentProps<ItemListTemplatePa
         return value?.length > 0 && !values.some(x => x.$name.toLocaleLowerCase().localeCompare(value.toLowerCase()) == 0);
     }
 
-    const handleCLick = (item: ItemListItem, index: number) => {
+    const handleCLick = useCallback((item: ItemListItem, index: number) => {
         dispatch.openTemplatePage({
             template: params.template,
             rootKey: params.key,
             name: item.$name,
             index: index
         } satisfies EditFilePage);
-    }
+    }, [params.template, params.key, dispatch])
 
     return (
-        <div className={styles.editList}>
+        <div className={styles.editList} data={params.fill && "fill"}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <ItemListMenu
                 itemClassName={styles.editListItem}

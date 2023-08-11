@@ -28,10 +28,9 @@ function ListTemplateMenu<T>({ className, onChange, validateInput, Component, Ed
     }
 
     const handleChange = (value: T, index: number) => {
-        values = [...values]
-        values[index] = value
-        onChange(values)
-        
+        let newValues = [...values]
+        newValues[index] = value
+        onChange(newValues)
     }
 
     const handleAdd = () => {
@@ -60,9 +59,12 @@ function ListTemplateMenu<T>({ className, onChange, validateInput, Component, Ed
             <div className={styles.content}>
                 { values?.map((value, index) => (
                     <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
-                        <Component value={value} index={index} onUpdate={(value) => handleChange(value, index)}/>
+                        <Component 
+                            value={value} 
+                            index={index} 
+                            onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
-                )) }
+                ))}
             </div>
         </div>
     )

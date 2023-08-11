@@ -1,10 +1,10 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useMemo, useReducer } from 'react'
 import Head from 'next/head'
 import RequestQueue from 'utils/data/requestQueue'
 import Communication from 'utils/communication'
 import Logger from 'utils/logger'
 import { ObjectId } from 'types/database'
-import { FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
+import { FileContextDispatch, FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/files'
 import { FileMetadata } from 'types/database/files'
 import { getRelativeMetadata } from 'utils/helpers'
@@ -171,14 +171,16 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
     useEffect(() => { dispatch({ type: 'init', data: { story: storyId, file: fileId }, dispatch: dispatch }) }, [storyId, fileId])
     useEffect(() => { dispatch({ type: 'setViewMode', data: viewMode }) }, [viewMode])
     
+    const memoizedDispatch = useMemo<FileContextDispatch>(() => ({
+        setText: (text) => dispatch({ type: 'setText', data: text }),
+        setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
+        setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
+        openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),
+        closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num })
+    }), [dispatch])
+
     return (
-        <Context.Provider value={[state, {
-            setText: (text) => dispatch({ type: 'setText', data: text }),
-            setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
-            setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
-            openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),
-            closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num })
-        }]}>
+        <Context.Provider value={[state, memoizedDispatch]}>
             { !state.loading && <FileHeader file={state.file}/>}
             { !state.loading && children }
         </Context.Provider>

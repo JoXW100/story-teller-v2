@@ -1,9 +1,9 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useMemo, useReducer } from 'react'
 import Localization from 'utils/localization'
 import Storage from 'utils/storage'
 import Logger from 'utils/logger'
 import Palettes from 'data/palettes'
-import { AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
+import { AppContextDispatch, AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
@@ -74,15 +74,17 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
     useEffect(() => { state.loading && dispatch({ type: 'init', data: null, dispatch: dispatch }) }, [])
     useEffect(() => setPalette(state.palette), [state.palette])
 
+    const memoizedDispatch = useMemo<AppContextDispatch>(() => ({
+        setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }),
+        setViewMode: (mode: ViewMode) => dispatch({ type: 'setViewMode', data: mode }),
+        setEnableSyntaxHighlighting: (isEnabled: boolean) => dispatch({ type: 'setEnableSyntaxHighlighting', data: isEnabled }),
+        setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
+        setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }),
+        setAutomaticLineBreak: (count: number) => dispatch({ type: 'setAutomaticLineBreak', data: count }),
+    }), [dispatch])
+
     return (
-        <Context.Provider value={[ state, {
-            setPalette: (palette: string) => dispatch({ type: 'setPalette', data: palette }),
-            setViewMode: (mode: ViewMode) => dispatch({ type: 'setViewMode', data: mode }),
-            setEnableSyntaxHighlighting: (isEnabled: boolean) => dispatch({ type: 'setEnableSyntaxHighlighting', data: isEnabled }),
-            setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
-            setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }),
-            setAutomaticLineBreak: (count: number) => dispatch({ type: 'setAutomaticLineBreak', data: count }),
-        }]}>
+        <Context.Provider value={[ state, memoizedDispatch]}>
             { !state.loading && children }
         </Context.Provider>
     )

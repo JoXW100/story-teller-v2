@@ -11,6 +11,7 @@ import List from './list'
 import Number from './number'
 import Option from './option';
 import Selection from './selection';
+import SelectionInput from './selectionInput';
 import Navigation from './navigation';
 import { IFileTemplateParams } from 'types/templates';
 
@@ -33,6 +34,7 @@ const Components = {
     Number,
     Option,
     Selection,
+    SelectionInput,
     Navigation
 }
 

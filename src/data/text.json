@@ -5,6 +5,8 @@
         "content": {
             "home-title": "Story Teller 2.0",
             "home-logout": "Logout @0",
+            "common-expand": "Expand",
+            "common-collapse": "Collapse",
             "storyCard-create-story": "Create a new story",
             "reconnect-button": "Retry connection",
             "createStory-header": "Create Story",
@@ -35,8 +37,6 @@
             "create-uploadTooltips": "Upload",
             "create-importTooltips": "Import",
             "create-importOldTooltips": "Old Import",
-            "create-expanderExpandedTooltips": "Collapse",
-            "create-expanderCollapsedTooltipsClose": "Expand",
             "create-filterTooltips": "Filter",
             "create-filterTooltipsClose": "Close Filter Menu",
             "create-rename": "Rename",

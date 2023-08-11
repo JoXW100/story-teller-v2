@@ -1,5 +1,5 @@
 import { FileContent, FileMetadata, Modifier } from "."
-import { AbilityType, ActionType, DiceType, ModifierBonusTypeProperty, ModifierType } from "../dnd"
+import { AbilityType, ActionType, DiceType } from "../dnd"
 import ICreatureActionData from "./iConditionalHitEffect"
 
 interface AbilityContent extends FileContent {

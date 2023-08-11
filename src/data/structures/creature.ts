@@ -4,11 +4,12 @@ import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
-import { Alignment, Attribute, CreatureType, DiceType, MovementType, SizeType, Skill } from "types/database/dnd";
+import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, OptionalAttribute, IOptionType } from "types/database/editor";
 import { CreatureMetadata } from "types/database/files/creature";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { ModifierCollection } from "types/database/files";
+import { isEnum } from "utils/helpers";
 
 const OptionTypeAuto: IOptionType<number> = {
     type: CalculationMode.Auto,
@@ -17,10 +18,10 @@ const OptionTypeAuto: IOptionType<number> = {
 
 class CreatureData extends FileData<CreatureMetadata> implements Required<CreatureMetadata>
 {
-    protected readonly modifiers: ModifierCollection
+    public readonly modifiers: ModifierCollection
     public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection) {
         super(metadata)
-        this.modifiers = modifiers ?? new ModifierCollectionData([]);
+        this.modifiers = modifiers ?? new ModifierCollectionData([], {});
     }
 
     public getStats(): CreatureStats {
@@ -64,6 +65,51 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return Math.ceil((value - 11) / 2.0)
     }
 
+    public getSaveModifier(attribute: Attribute | OptionalAttribute): number {
+        let mod = isEnum(attribute, Attribute) && this.proficienciesSave.includes(attribute) 
+            ? this.proficiencyValue 
+            : 0;
+        return this.getAttributeModifier(attribute) + mod
+    }
+
+    public getSkillAttribute(skill: Skill): OptionalAttribute {
+        switch (skill) {
+            case Skill.Athletics:
+                return OptionalAttribute.STR;
+            case Skill.Acrobatics:
+            case Skill.SleightOfHand:
+            case Skill.Stealth:
+                return OptionalAttribute.DEX;
+            case Skill.Arcana:
+            case Skill.History:
+            case Skill.Investigation:
+            case Skill.Nature:
+            case Skill.Religion:
+                return OptionalAttribute.INT;
+            case Skill.AnimalHandling:
+            case Skill.Insight:
+            case Skill.Medicine:
+            case Skill.Perception:
+            case Skill.Survival:
+                return OptionalAttribute.WIS;
+            case Skill.Deception:
+            case Skill.Intimidation:
+            case Skill.Performance:
+            case Skill.Persuasion:
+                return OptionalAttribute.CHA;
+            default:
+                return OptionalAttribute.None
+        }
+    }
+
+    public getSkillModifier(skill: Skill): number {
+        let attr = this.getSkillAttribute(skill)
+        let mod = this.proficienciesSkill.includes(skill) 
+            ? this.proficiencyValue 
+            : 0;
+        return this.getAttributeModifier(attr) + mod
+    }
+
     public get name(): string {
         return this.metadata.name ?? ""
     }
@@ -103,6 +149,23 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
 
     public get description(): string {
         return this.metadata.description ?? ""
+    }
+
+    public get challenge(): number {
+        return this.metadata.challenge ?? 0
+    }
+
+    public get challengeText():string {
+        let fraction: string = this.challenge > 0
+            ? (this.challenge < 1
+                ? `1/${Math.floor(1/this.challenge)}` 
+                : String(this.challenge)) 
+            : '0'
+        return `${fraction} (${this.xp} XP)`
+    }
+
+    public get xp(): number {
+        return this.metadata.xp ?? 0
     }
 
     public get abilities(): string[] {
@@ -248,6 +311,35 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.speed ?? {}
     }
 
+    public get speedAsText(): string {
+        let movement = getOptionType("movement").options;
+        return Object.keys(this.speed).map((key) => `${movement[key]} ${this.speed[key]}ft`).join(', ')
+    }
+
+    public get senses(): Partial<Record<Sense, number>> {
+        return this.metadata.senses ?? {}
+    }
+
+    public get sensesAsText(): string {
+        let senses = getOptionType("sense").options;
+        return Object.keys(this.senses).map((key) => `${senses[key]} ${this.senses[key]}ft`).join(', ')
+    }
+
+    public get passivePerceptionValue(): number {
+        let proficiency = this.proficienciesSkill.includes(Skill.Perception) ? this.proficiencyValue : 0
+        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
+    }
+
+    public get passiveInvestigationValue(): number {
+        let proficiency = this.proficienciesSkill.includes(Skill.Investigation) ? this.proficiencyValue : 0
+        return 10 + this.getAttributeModifier(Attribute.INT) + proficiency
+    }
+
+    public get passiveInsightValue(): number {
+        let proficiency = this.proficienciesSkill.includes(Skill.Insight) ? this.proficiencyValue : 0
+        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
+    }
+
     // Attributes
 
     public get str(): number {
@@ -274,39 +366,50 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.cha ?? 10
     }
 
-    // Info
-
-    public get saves(): Partial<Record<Attribute, number>> {
-        return this.metadata.saves ?? {}
-    }
-
-    public get skills(): Partial<Record<Skill, number>> {
-        return this.metadata.skills ?? {}
-    }
-
-    public get senses(): string {
-        return this.metadata.senses ?? ""
+    // Proficiencies
+    
+    public get proficienciesSave(): Attribute[] {
+        return this.modifiers.modifyProficienciesSave(this.metadata.proficienciesSave ?? [])
     }
     
-    public get languages(): string {
-        return this.metadata.languages ?? ""
+    public get proficienciesSkill(): Skill[] {
+        return this.modifiers.modifyProficienciesSkill(this.metadata.proficienciesSkill ?? [])
+    }
+    
+    public get proficienciesWeapon(): WeaponType[] {
+        return this.modifiers.modifyProficienciesWeapon(this.metadata.proficienciesWeapon ?? [])
     }
 
-    public get challenge(): number {
-        return this.metadata.challenge ?? 0
+    public get proficienciesWeaponText(): string {
+        let weapon = getOptionType('weapon').options;
+        return this.proficienciesWeapon.map((key) => weapon[key]).join(', ')
+    }
+    
+    public get proficienciesArmor(): ArmorType[] {
+        return this.modifiers.modifyProficienciesArmor(this.metadata.proficienciesArmor ?? [])
     }
 
-    public get xp(): number {
-        return this.metadata.xp ?? 0
+    public get proficienciesArmorText(): string {
+        let armor = getOptionType('armor').options;
+        return this.proficienciesArmor.map((key) => armor[key]).join(', ')
+    }
+    
+    public get proficienciesTool(): Tool[] {
+        return this.modifiers.modifyProficienciesTool(this.metadata.proficienciesTool ?? [])
     }
 
-    public get challengeText():string {
-        let fraction: string = this.challenge > 0
-            ? (this.challenge < 1
-                ? `1/${Math.floor(1/this.challenge)}` 
-                : String(this.challenge)) 
-            : '0'
-        return `${fraction} (${this.xp} XP)`
+    public get proficienciesToolText(): string {
+        let tool = getOptionType('tool').options;
+        return this.proficienciesTool.map((key) => tool[key]).join(', ')
+    }
+    
+    public get proficienciesLanguage(): Language[] {
+        return this.modifiers.modifyProficienciesLanguage(this.metadata.proficienciesLanguage ?? [])
+    }
+
+    public get proficienciesLanguageText(): string {
+        let language = getOptionType('language').options;
+        return this.proficienciesLanguage.map((key) => language[key]).join(', ')
     }
 
     // Spells

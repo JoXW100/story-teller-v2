@@ -63,7 +63,7 @@ const FileMenuHeader = (): JSX.Element => {
                 <button
                     className={styles.headerEndButton}
                     onClick={handleCollapse}
-                    tooltips={Localization.toText('create-expanderExpandedTooltips')}>
+                    tooltips={Localization.toText('common-collapse')}>
                     <CollapseIcon/>
                 </button>
             </div>

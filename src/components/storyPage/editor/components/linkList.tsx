@@ -22,7 +22,7 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
     }
 
     return (
-        <div className={styles.editList}>
+        <div className={styles.editList} data={params.fill && "fill"}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <LinkListMenu
                 itemClassName={styles.editListItem}

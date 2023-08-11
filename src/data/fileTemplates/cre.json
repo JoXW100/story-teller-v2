@@ -95,8 +95,12 @@
                                 "params": { "label": "COND Immunities", "key": "conImmunities", "type": "string" }
                             },
                             { 
-                                "type": "selection", 
+                                "type": "selectionInput", 
                                 "params": { "label": "Speed", "key": "speed", "enum": "movement", "type": "number", "default": 0 }
+                            },
+                            { 
+                                "type": "selectionInput", 
+                                "params": { "label": "Senses", "key": "senses", "enum": "sense", "type": "number", "default": 0 }
                             }
                         ]
                     },
@@ -136,19 +140,27 @@
                         "content": [
                             { 
                                 "type": "selection", 
-                                "params": { "label": "Saving throws", "key": "saves", "enum": "attr", "type": "number", "default": 0 }
+                                "params": { "label": "Saving throws", "key": "proficienciesSave", "enum": "attr" }
                             },
                             { 
                                 "type": "selection", 
-                                "params": { "label": "Skills", "key": "skills", "enum": "skill", "type": "number", "default": 0 }
+                                "params": { "label": "Skills", "key": "proficienciesSkill", "enum": "skill" }
                             },
                             { 
-                                "type": "text", 
-                                "params": { "label": "Senses", "key": "senses" }
+                                "type": "selection", 
+                                "params": { "label": "Armors", "key": "proficienciesArmor", "enum": "armor" }
                             },
                             { 
-                                "type": "text", 
-                                "params": { "label": "Languages", "key": "languages" }
+                                "type": "selection", 
+                                "params": { "label": "Weapons", "key": "proficienciesWeapon", "enum": "weapon" }
+                            },
+                            { 
+                                "type": "selection", 
+                                "params": { "label": "Tools", "key": "proficienciesTool", "enum": "tool" }
+                            },
+                            { 
+                                "type": "selection", 
+                                "params": { "label": "Languages", "key": "proficienciesLanguage", "enum": "language" }
                             }
                         ]
                     },

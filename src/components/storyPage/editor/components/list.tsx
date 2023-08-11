@@ -20,7 +20,7 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
     }
 
     return (
-        <div className={styles.editList}>
+        <div className={styles.editList} data={params.fill && "fill"}>
             <b> {`${ params.label ?? "label"}:`} </b>
             <ListMenu
                 itemClassName={styles.editListItem}

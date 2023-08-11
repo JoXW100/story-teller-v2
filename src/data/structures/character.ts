@@ -1,6 +1,5 @@
 import Dice from "utils/data/dice";
 import CreatureData from "./creature";
-import ModifierCollectionData from "./modifierCollection";
 import ClassData from "./classData";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
@@ -9,19 +8,19 @@ import { Attribute, DiceType, Gender } from "types/database/dnd";
 import { ObjectId } from "types/database";
 import { ModifierCollection } from "types/database/files";
 import { CreatureMetadata } from "types/database/files/creature";
-import { ClassMetadata } from "types/database/files/class";
 import { CalculationMode } from "types/database/editor";
+import { ClassMetadataProperties } from "types/database/files/class";
 
 class CharacterData extends CreatureData implements Required<CharacterMetadata>
 {
     public readonly metadata: CharacterMetadata;
-    private readonly characterClass: Required<ClassMetadata> 
-    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection, characterClass?: Required<ClassMetadata> ) {
+    private readonly characterClass: ClassMetadataProperties 
+    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection, characterClass?: ClassMetadataProperties) {
         if (characterClass) {
-            let classModifierCollection = new ModifierCollectionData(characterClass.modifiers);
-            super(metadata, modifiers?.join(classModifierCollection) ?? classModifierCollection)
+            let collection = characterClass.getModifiers(metadata?.level ?? 0);
+            super(metadata, collection?.join(modifiers) ?? modifiers)
         } else {
-            characterClass = new ClassData({})
+            characterClass = new ClassData({}, {})
             super(metadata, modifiers)
         }
         this.characterClass = characterClass;
@@ -121,14 +120,6 @@ class CharacterData extends CreatureData implements Required<CharacterMetadata>
 
     public get occupation(): string {
         return this.metadata.occupation ?? ""
-    }
-
-    public get traits(): string[] {
-        return this.metadata.traits ?? []
-    }
-
-    public get traitsText(): string {
-        return this.traits.join(', ')
     }
 
     // Texts

@@ -33,6 +33,10 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
                 }, {}) 
     ), [selection, alternate, values])
 
+    const handleValidateInput = (value: string): boolean => {
+        return value != undefined;
+    }
+
     const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>) => {
         const style = dropdownClassName ? `${styles.dropdown} ${dropdownClassName}` : styles.dropdown;
         const itemStyle = dropdownItemClassName ? `${styles.dropdownItem} ${dropdownItemClassName}` : styles.dropdownItem
@@ -56,6 +60,7 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
             defaultValue={defaultValue}
             values={selection}
             onChange={onChange}
+            validateInput={handleValidateInput}
             Component={Component}
             EditComponent={EditComponent}/>
     )

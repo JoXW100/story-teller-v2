@@ -18,6 +18,28 @@ export enum OptionalAttribute {
     CHA = "cha"
 }
 
+export enum ModifierType {
+    Bonus = "bonus", // Adds/Removes a flat value
+    Set = "set", // Sets value
+    Add = "add", // Adds item to collection
+    Remove = "remove" // Removes item from collection
+}
+
+export enum ModifierSelectType {
+    Value = "value",
+    Choice = "choice",
+}
+
+export enum ModifierCondition {
+    None = "none",
+}
+
+export enum ModifierSetMethod {
+    Exact = "exact",
+    Max = "max",
+    Min = "min"
+}
+
 interface IOptionType<T> { 
     type: CalculationMode
     value: T 

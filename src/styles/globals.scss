@@ -1,7 +1,6 @@
 @import './colors.scss';
 @import './prefabs.scss';
-
-$font: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+@import './fonts.scss';
 
 html {
     height: 100vh;
@@ -12,7 +11,7 @@ body {
     margin: 0;
     height: 100vh;
     overflow: hidden;
-    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    font-family: $fontNormal;
 }
 
 div, p, span, textarea, code {
@@ -80,7 +79,7 @@ input:focus {
         /* Text box */
         &::after {
             @include colorWithShadow(document);
-            font-family: $font;;
+            font-family: fontNormal;
             display: block;
             position: absolute;
             z-index: 9000;

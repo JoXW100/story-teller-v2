@@ -211,7 +211,7 @@ const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element
 }
 
 export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): JSX.Element => {
-    const [spells, setSpells] = useState<FileGetManyMetadataResult>([])
+    const [spells, setSpells] = useState<FileGetManyMetadataResult<SpellMetadata>>([])
     const [categories, setCategories] = useState<SpellCategory>({})
     
     useEffect(() => {

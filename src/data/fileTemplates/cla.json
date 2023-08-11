@@ -42,7 +42,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -53,7 +54,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -64,7 +66,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -75,7 +78,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -86,7 +90,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -97,7 +102,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -108,7 +114,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -119,7 +126,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -130,7 +138,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -141,7 +150,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -152,7 +162,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -163,7 +174,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -174,7 +186,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -185,7 +198,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -196,7 +210,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -207,7 +222,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -218,7 +234,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -229,7 +246,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -240,7 +258,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     },
                     {
@@ -251,7 +270,8 @@
                             "prompt": "Edit", 
                             "placeholder": "Enter Name" ,
                             "default": [], 
-                            "template": "modifier"
+                            "template": "modifier", 
+                            "fill": true
                         }
                     }
                 ]
@@ -282,8 +302,33 @@
                         },
                         { 
                             "type": "enum", 
-                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] }],
-                            "params": { "label": "Property", "key": "addProperty", "type": "modifierAddTypeProperty", "default": "proficiency" }
+                            "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] }],
+                            "params": { "label": "Property", "key": "addRemoveProperty", "type": "modifierAddRemoveTypeProperty", "default": "proficiency" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
+                            ],
+                            "params": { "label": "Proficiency Type", "key": "proficiency", "type": "proficiencyType", "default": "armor" }
+                        },
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
+                            ],
+                            "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
+                        },
+                        { 
+                            "type": "text", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
                         },
                         { 
                             "type": "number", 
@@ -293,10 +338,121 @@
                         { 
                             "type": "enum", 
                             "conditions": [
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "addProperty" }, "proficiency"] }
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "armor"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
                             ],
-                            "params": { "label": "Proficiency", "key": "proficiency", "type": "proficiency", "default": "armorAll" }
+                            "params": { "label": "Armor", "key": "armor", "type": "armor" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "armor"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "armors", "enum": "armor", "fill": true }
+                        },
+
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "weapon"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Weapon", "key": "weapon", "type": "weapon" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "weapon"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "weapons", "enum": "weapon", "fill": true }
+                        },
+
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "tool"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Tool", "key": "tool", "type": "tool" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "tool"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "tools", "enum": "tool", "fill": true }
+                        },
+
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "language"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Language", "key": "language", "type": "language" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "language"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "languages", "enum": "language", "fill": true }
+                        },
+
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "save"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Save", "key": "save", "type": "attr" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "save"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "saves", "enum": "attr", "fill": true }
+                        },
+                        
+                        { 
+                            "type": "enum", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "skill"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                            ],
+                            "params": { "label": "Skill", "key": "skill", "type": "skill" }
+                        }, { 
+                            "type": "selection", 
+                            "conditions": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "skill"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ],
+                            "params": { "label": "Options", "key": "skills", "enum": "skill", "fill": true }
                         }
                     ]
                 }

@@ -3,18 +3,18 @@ import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
-import { getSaves, getSkills, getSpeed } from 'utils/calculations';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import CreatureData from 'data/structures/creature';
 import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
 import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
-import { FileData, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
-import { Attribute } from 'types/database/dnd';
+import { FileData, FileGetManyMetadataResult, FileMetadataQueryResult, ModifierCollection } from 'types/database/files';
+import { Attribute, Skill } from 'types/database/dnd';
 import { OptionalAttribute, RendererObject } from 'types/database/editor';
 import { AbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
+import { getOptionType } from 'data/optionData';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: FileData<CreatureContent,CreatureMetadata,undefined>
@@ -24,20 +24,24 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<CreatureMetadata>
 }>
 
+type CreatureProficienciesPageProps = React.PropsWithRef<{
+    data: CreatureData 
+}>
+
+const Pages = ["Actions", "Proficiencies"] as const
+
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     const [modifiers, setModifiers] = useState<ModifierCollection>(null)
+    const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     let creature = new CreatureData(file.metadata, modifiers)
     let stats = creature.getStats()
-    let speed = getSpeed(creature)
-    let saves = getSaves(creature)
-    let skills = getSkills(creature)
 
     const content = useParser(file.content.text, file.metadata, "$content");
     const description = useParser(creature.description, file.metadata, "description")
 
-    const handleAbilitiesLoaded = (abilities: AbilityMetadata[]) => {
-        let modifiers = abilities.flatMap((ability) => new AbilityData(ability).modifiers ?? []);
-        let collection = new ModifierCollectionData(modifiers)
+    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
+        let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let collection = new ModifierCollectionData(modifiers, null)
         setModifiers(collection);
     }
 
@@ -50,15 +54,11 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     <Elements.Line/>
                     <Elements.Image options={{ href: creature.portrait }}/>
                     <Elements.Line/>
-                    <Elements.Header2>Description</Elements.Header2>
-                    { description }
-                    <Elements.Line/>
                     <div><Elements.Bold>Armor Class </Elements.Bold>{creature.acValue}</div>
                     <div><Elements.Bold>Hit Points </Elements.Bold>
                         {`${creature.healthValue} `}
                         <Elements.Roll options={creature.healthRoll}/>
                     </div>
-                    <div><Elements.Bold>Speed </Elements.Bold>{speed}</div>
                     <div>
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
@@ -66,33 +66,38 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             desc: "Initiative" 
                         }}/>
                     </div>
+                    <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
+                        <RollElement options={{ 
+                            mod: String(creature.proficiencyValue), 
+                            desc: "Proficiency Check"
+                        }}/>
+                    </div>
                     <Elements.Line/>
                     <Elements.Align>
                         { Object.keys(Attribute).map((attr, index) => (
-                            <React.Fragment key={index}>
-                                <Elements.Align options={{ direction: 'vc' }}>
-                                    <Elements.Bold>{attr}</Elements.Bold>
-                                    { creature[Attribute[attr]] }
-                                    <Elements.Roll options={{ 
-                                        mod: creature.getAttributeModifier(Attribute[attr]) as any, 
-                                        desc: `${attr} Check`
-                                    }}/>
-                                </Elements.Align>
-                            </React.Fragment>
+                            <div className={styles.attributeBox} key={index}>
+                                <Elements.Bold>{attr}</Elements.Bold>
+                                <Elements.Bold>{creature[Attribute[attr]] ?? 0}</Elements.Bold>
+                                <Elements.Roll options={{ 
+                                    mod: creature.getAttributeModifier(Attribute[attr]).toString(), 
+                                    desc: `${attr} Check`,
+                                    tooltips: `${attr} Check`
+                                }}/>
+                                <div/>
+                                <Elements.Roll options={{ 
+                                    mod: creature.getSaveModifier(Attribute[attr]).toString(), 
+                                    desc: `${attr} Save`,
+                                    tooltips: `${attr} Save`
+                                }}/>
+                            </div>
                         ))}
                     </Elements.Align>
                     <Elements.Line/>
-                    { saves && 
-                        <div className={styles.spaceOutRolls}>
-                            <Elements.Bold>Saving Throws </Elements.Bold>
-                            {saves}
-                        </div> 
-                    }{ skills && 
-                        <div className={styles.spaceOutRolls}>
-                            <Elements.Bold>Skills </Elements.Bold>
-                            {skills}
-                        </div> 
-                    }{ creature.resistances.length > 0 && 
+                    <Elements.Header2>Description</Elements.Header2>
+                    { description }
+                    <Elements.Line/>
+                    <div><Elements.Bold>Challenge </Elements.Bold>{creature.challengeText}</div>
+                    { creature.resistances.length > 0 && 
                         <div>
                             <Elements.Bold>Resistances </Elements.Bold>
                             {creature.resistances}
@@ -113,27 +118,34 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                         <div><Elements.Bold>COND Immunities </Elements.Bold>
                             {creature.conImmunities}
                         </div>
-                    }{ creature.senses.length > 0 && 
-                        <div><Elements.Bold>Senses </Elements.Bold>
-                            {creature.senses}
-                        </div>
-                    }{ creature.languages.length > 0 && 
-                        <div><Elements.Bold>Languages </Elements.Bold>
-                            {creature.languages}
-                        </div> 
                     }
-                    <div><Elements.Bold>Challenge </Elements.Bold>{creature.challengeText}</div>
-                    <div>
-                        <Elements.Bold>Proficiency Bonus </Elements.Bold>
-                        <RollElement options={{ 
-                            mod: creature.proficiencyValue as any,
-                            desc: "Proficient Check" 
-                        }}/>
-                    </div>
+                    <div><Elements.Bold>Speed </Elements.Bold>{creature.speedAsText}</div>
+                    { Object.keys(creature.senses).length > 0 &&
+                        <div><Elements.Bold>Senses </Elements.Bold>
+                            {creature.sensesAsText}
+                        </div>
+                    }
+                    <Elements.Space/>
+                    <div><Elements.Bold>Passive Perception: </Elements.Bold>{creature.passivePerceptionValue.toString()}</div>
+                    <div><Elements.Bold>Passive Investigation: </Elements.Bold>{creature.passiveInvestigationValue.toString()}</div>
+                    <div><Elements.Bold>Passive Insight: </Elements.Bold>{creature.passiveInsightValue.toString()}</div>
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <AbilityGroups abilityIds={creature.abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
+                    <div className={styles.pageSelector}>
+                        { Object.values(Pages).map((p, index) => (
+                            <button key={index} disabled={page === p} onClick={() => setPage(p)}>
+                                { p }
+                            </button>
+                        ))}
+                    </div>
+                    <Elements.Line/>
+                    <div className={styles.pageItem} data={page === "Actions" ? "show" : "hide"}>
+                        <AbilityGroups abilityIds={creature.abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
+                        <CharacterProficienciesPage data={creature}/>
+                    </div>
                 </Elements.Block>
             </Elements.Align>
             { creature.spellAttribute != OptionalAttribute.None &&
@@ -169,12 +181,47 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     <SpellGroups 
                         spellIds={creature.spells} 
                         spellSlots={creature.spellSlots} 
-                        data={stats}
-                    />
+                        data={stats}/>
                 </>
             }
             {content && <Elements.Line/>}
             {content && content}
+        </>
+    )
+}
+
+export const CharacterProficienciesPage = ({ data }: CreatureProficienciesPageProps): JSX.Element => {
+    const skills = getOptionType("skill").options
+    const attributes = getOptionType("attr").options;
+    return (
+        <>
+            <div className={styles.skillTable}>
+                <div>
+                    <b>Mod</b>
+                    <b>Skill</b>
+                    <b>Bonus</b>
+                </div>
+                { Object.keys(skills).map((skill: Skill) => (
+                    <div key={skill}>
+                        <b>{attributes[data.getSkillAttribute(skill)]}</b>
+                        <label>{skills[skill]}</label>
+                        <Elements.Roll options={{
+                            mod: data.getSkillModifier(skill).toString(),
+                            desc: `${skills[skill]} Check`,
+                            tooltips: `Roll ${skills[skill]} Check`
+                        }}/>
+                    </div>
+                ))}
+            </div>
+            <Elements.Line/>
+            <Elements.Header3>Armor</Elements.Header3>
+            <div>{data.proficienciesArmorText}</div>
+            <Elements.Header3>Weapons</Elements.Header3>
+            <div>{data.proficienciesWeaponText}</div>
+            <Elements.Header3>Languages</Elements.Header3>
+            <div>{data.proficienciesLanguageText}</div>
+            <Elements.Header3>Tools</Elements.Header3>
+            <div>{data.proficienciesToolText}</div>
         </>
     )
 }

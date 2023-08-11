@@ -179,40 +179,6 @@ export const getChallenge = (creature: CreatureData): string => {
     return `${fraction} (${creature.xp} XP)`
 };
 
-export const getSpeed = (creature: CreatureData): string => {
-    return Object.keys(creature.speed)
-        .map((key) => `${key} ${creature.speed[key]}ft`).join(', ')
-}
-
-export const getSaves = (creature: CreatureData): JSX.Element => {
-    return creature.saves && Object.keys(creature.saves).length > 0
-        ? <>{ Object.keys(creature.saves).map((key, index) => (
-                <Elements.Roll
-                    key={index}
-                    options={{
-                        mod: creature.saves[key] ?? "0" as string, 
-                        desc: `${key.toUpperCase()} Save` }}>
-                    {key.toUpperCase()}
-                </Elements.Roll>
-            ))}</>
-        : null
-}
-
-export const getSkills = (creature: CreatureData): JSX.Element => {
-    return creature.skills && Object.keys(creature.skills).length > 0
-        ? <>{ Object.keys(creature.skills).map((key, index) => {
-            let skill = getKeyName("skill", key)
-            return skill ? (
-                <Elements.Roll
-                    key={index} 
-                    options={{ mod: creature.skills[key], desc: `${skill} Check` }}> 
-                    {skill} 
-                </Elements.Roll>
-            ) : null
-        })}</>
-        : null
-}
-
 export const getKeyName = (collection: string, value: string | number): string => {
     return getOptionType(collection).options[value] 
         ?? getOptionType(collection).options[getOptionType(collection).default]

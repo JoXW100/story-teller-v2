@@ -50,8 +50,8 @@ const DropdownMenu = ({ className, itemClassName, values, value, showButton = tr
             data={showButton ? "button" : "nobutton"}>
             <div className={styles.content} onMouseLeave={clickHandler}> 
                 <div className={styles.menu} data={open ? "open" : "close"} >
-                    { [value, ...keys].map((key) => (
-                        <button key={key} className={itemStyle} onClick={() => handleClick(key)}>  
+                    { [value, ...keys].map((key, index) => (
+                        <button key={index} className={itemStyle} onClick={() => handleClick(key)}>  
                             { values[key] }
                         </button>   
                     ))}

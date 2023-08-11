@@ -111,6 +111,7 @@ class FilesInterface
                 }},
                 { $project: {
                     _id: 0,
+                    id: '$_id',
                     type: '$type',
                     metadata: '$content.metadata'
                 }},

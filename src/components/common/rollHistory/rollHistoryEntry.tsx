@@ -20,10 +20,7 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
             ? `${selected.sum} - ${Math.abs(mod)} ⟶`
             : `${selected.sum} + ${mod} ⟶`;
         let content = result.results.map((res, index) => (
-            <div 
-                key={index}
-                data={result.selectedIndex === index ? 'true' : 'false'}
-            >
+            <div key={index} data={result.selectedIndex === index ? 'true' : 'false'}>
                 { res.values.map((res, key) => (
                     <div key={key}>
                         {`${res.num}${res.dice.text} ⟶ ${res.result.join(' ')}`}

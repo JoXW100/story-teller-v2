@@ -70,7 +70,7 @@
 .entryTotal {
     display: inline-flex;
 
-    & > *:first-child {
-        margin-right: 6px;
+    & > *:not(:first-child) {
+        text-indent: 1ch;
     }
 }

@@ -21,6 +21,7 @@ const TextComponent = ({ params }: TemplateComponentProps<TextTemplateParams>): 
                 className={styles.editInput}
                 value={value} 
                 type="text"
+                placeholder={params.placeholder}
                 onChange={handleInput}/>
         </div>
     )

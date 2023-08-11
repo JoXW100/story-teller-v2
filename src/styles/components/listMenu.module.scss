@@ -11,14 +11,13 @@ $size: 20px;
     min-width: 0;
     user-select: none;
     height: inherit;
-    cursor: pointer;
     font: inherit;
     flex: 1;
 
     & > .addRow {
+        @include colorBackground(input);
         display: grid;
         grid-template-columns: 1fr auto;
-        background: inherit;
         min-width: 0;
         flex-shrink: 0;
     }

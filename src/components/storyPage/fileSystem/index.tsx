@@ -30,7 +30,7 @@ export const FileSystemCollapsedBody = (): JSX.Element => {
             <button
                 className={styles.collapsedButton}
                 onClick={handleExpand}
-                tooltips={Localization.toText('create-expanderCollapsedTooltipsClose') }>
+                tooltips={Localization.toText('common-expand') }>
                 <ExpandIcon/>
             </button>
         </div>

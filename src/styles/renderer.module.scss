@@ -54,7 +54,7 @@
 
 .innerPage {
     @include colorBackground(document);
-    font-family: Mrs Eaves;
+    font-family: $fontDocument;
     flex-shrink: 0;
     min-width: 0;
     transform-origin: top left;
@@ -265,10 +265,159 @@
     }
 }
 
-
-
 .spaceOutRolls {
     & > span:not(:last-child) {
         margin-right: 5px;
+    }
+}
+
+.attributeBox {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    flex: 1;
+    border: 2px solid;
+    border-radius: 10px;
+    padding: 5px 5px;
+    margin: 0 1px;
+
+    & > div {
+        position: relative;
+        width: 100%;
+        border-bottom: 1px solid;
+        margin: 5px 0;
+    }
+
+    & > span {
+        width: 100%;
+    }
+}
+
+.passive {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+
+    & > b {
+        @include colorDecoration(main);
+        @include centerFlex;
+        border: 2px solid;
+        pointer-events: none;
+        user-select: none;
+        border-radius: $iconLargeSize;
+        height: $iconSmallSize;
+        width: $iconSmallSize;
+    }
+}
+
+.pageSelector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 3px;
+
+    & > button {
+        height: $smallMenuItemHeight;
+
+        &:first-child {
+            border-top-left-radius: $smallMenuItemHeight / 2;
+            border-bottom-left-radius: $smallMenuItemHeight / 2;
+        }
+
+        &:last-child {
+            border-top-right-radius: $smallMenuItemHeight / 2;
+            border-bottom-right-radius: $smallMenuItemHeight / 2;
+        }
+    }
+}
+
+.pageItem {
+    &[data=hide] {
+        display: none;
+    }
+}
+
+.abilityGroupHeader {
+    position: relative;
+
+    & > button {
+        width: 100%;
+        margin: 5px 0;
+        border-radius: 10px;
+    }
+
+    &[data=open]::after {
+        position: absolute;
+        right: 10px;
+        top: 0.5ch;
+        border-color: transparent colorInGroup(interactive, text) transparent transparent;
+        border-width: 6px;
+        border-style: solid;
+        z-index: 10000;
+        content: " ";
+    }
+
+    &[data=closed]::after {
+        position: absolute;
+        right: 4px;
+        top: 0.5ch;
+        border-color: transparent transparent transparent colorInGroup(interactive, text);
+        border-width: 6px;
+        border-style: solid;
+        z-index: 10000;
+        content: " ";
+    }
+}
+
+.skillTable {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+    font-family: $fontNormal;
+    & > div {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 55px;
+        gap: 5px;
+        height: $iconSmallSize;
+
+        & > label {
+            font-family: $fontDocument;
+        }
+
+        & > *:last-child {
+            text-align: center;
+            justify-self: center;
+        }
+    }
+
+    & > div:first-child {
+        border-bottom: 2px solid;
+        margin-bottom: 2px;
+    }
+
+    & > div:not(:first-child,:last-child) {
+        border-bottom: 1px solid;
+    }
+}
+
+.modifierChoice {
+    @include colorDecoration(second);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) $labelLargeWidth;
+    grid-template-rows: $iconSmallSize;
+    font-family: $fontNormal;
+    gap: 5px;
+    padding: 3px;
+
+    & > b {
+        @include fontNoLineBreak;
+        text-indent: 5px;
+        border-radius: 10px;
+        padding-right: 10px;
+        align-self: center;
+    }
+
+    .dropdownItem {
+        font-size: small;
+        height: $iconSmallSize;
     }
 }

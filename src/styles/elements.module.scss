@@ -122,11 +122,13 @@
     white-space: nowrap;
     user-select: none;
     flex: 1;
+    font-family: $fontNormal;
     cursor: pointer;
 
     & > span {
         display: inline-flex;
         margin-left: 5px;
+        font-family: $fontDocument;
     }
 }
 

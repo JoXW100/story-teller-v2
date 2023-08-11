@@ -63,18 +63,18 @@ export enum Attribute {
 }
 
 export enum Alignment {
-    None,
-    Unaligned,
-    Any,
-    LawfulGood,
-    LawfulNeutral,
-    LawfulEvil,
-    NeutralGood,
-    TrueNeutral,
-    NeutralEvil,
-    ChaoticGood,
-    ChaoticNeutral,
-    ChaoticEvil
+    None = "none",
+    Unaligned = "unaligned",
+    Any = "any",
+    LawfulGood = "lg",
+    LawfulNeutral = "ln",
+    LawfulEvil = "le",
+    NeutralGood = "ng",
+    TrueNeutral = "nn",
+    NeutralEvil = "ne",
+    ChaoticGood = "cg",
+    ChaoticNeutral = "cn",
+    ChaoticEvil = "ce"
 }
 
 export enum DiceType {
@@ -89,24 +89,24 @@ export enum DiceType {
 }
 
 export enum Skill {
-    Acrobatics,
-    AnimalHandling,
-    Arcana,
-    Athletics,
-    Deception,
-    History,
-    Insight,
-    Intimidation,
-    Investigation,
-    Medicine,
-    Nature,
-    Perception, 
-    Performance,
-    Persuasion,
-    Religion,
-    SleightOfHand,
-    Stealth,
-    Survival
+    Acrobatics = "acrobatics",
+    AnimalHandling = "animalHandling",
+    Arcana = "arcana",
+    Athletics = "athletics",
+    Deception = "deception",
+    History = "history",
+    Insight = "insight",
+    Intimidation = "intimidation",
+    Investigation = "investigation",
+    Medicine = "medicine",
+    Nature = "nature",
+    Perception = "perception", 
+    Performance = "performance",
+    Persuasion = "persuasion",
+    Religion = "religion",
+    SleightOfHand = "sleightOfHand",
+    Stealth = "stealth",
+    Survival = "survival"
 }
 
 export enum DamageType {
@@ -200,29 +200,33 @@ export enum CastingTime {
     Custom = "custom",
 }
 
-export enum Proficiency {
-    ArmorAll = "armorAll",
-    ArmorLight = "armorLight",
-    ArmorMedium = "armorMedium",
-    ArmorHeavy = "armorHeavy",
+export enum ArmorType {
+    Light = "light",
+    Medium = "medium",
+    Heavy = "heavy",
     Shields = "shields"
 }
 
-export enum ModifierType {
-    Bonus = "bonus", // Adds/Removes a flat value
-    Set = "set", // Sets value
-    Add = "add", // Adds item to collection
-    Remove = "remove" // Removes item from collection
+export enum WeaponType {
+    Simple = "simple",
+    Martial = "martial",
 }
 
-export enum ModifierCondition {
-    None = "none",
+export enum Tool {
+    AlchemistsSupplies = "alchemistsSupplies",
+    HerbalismKit = "herbalismKit",
+    PoisonersKit = "poisonersKit"
 }
 
-export enum ModifierSetMethod {
-    Exact = "exact",
-    Max = "max",
-    Min = "min"
+export enum Language {
+    Common = "common",
+}
+
+export enum Sense {
+    BlindSight = "blindSight",
+    DarkVision = "darkVision",
+    TremorSense = "tremorSense",
+    TrueSight = "trueSight",
 }
 
 export enum ModifierBonusTypeProperty {
@@ -233,6 +237,15 @@ export enum ModifierBonusTypeProperty {
     Initiative = "initiative"
 }
 
-export enum ModifierAddTypeProperty {
+export enum ProficiencyType {
+    Armor = "armor",
+    Weapon = "weapon",
+    Tool = "tool",
+    Language = "language",
+    Save = "save",
+    Skill = "skill",
+}
+
+export enum ModifierAddRemoveTypeProperty {
     Proficiency = "proficiency"
 }

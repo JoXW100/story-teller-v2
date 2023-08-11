@@ -3,14 +3,14 @@ import EncounterCardData from "./encounterCardData";
 import FileData from "./file";
 
 
-type Dispatch<T extends IEncounterCardData> = React.Dispatch<React.SetStateAction<T[]>>
+type EncounterDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
 
-class EncounterData<T extends IEncounterCardData> extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
+class EncounterData extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
 {
-    protected readonly storage: T[];
-    protected readonly dispatch: Dispatch<T>;
+    protected readonly storage: IEncounterCardData[];
+    protected readonly dispatch: EncounterDispatch;
 
-    public constructor(metadata: EncounterMetadata, cards: T[], dispatch: Dispatch<T>) {
+    public constructor(metadata: EncounterMetadata, cards: IEncounterCardData[], dispatch: EncounterDispatch) {
         super(metadata);
         this.storage = cards ?? []
         this.dispatch = dispatch
@@ -25,7 +25,7 @@ class EncounterData<T extends IEncounterCardData> extends FileData<EncounterMeta
     }
 
     public get public(): boolean {
-        return this.metadata.publish ?? false
+        return this.metadata.public ?? false
     }
 
     public get creatures(): string[] {

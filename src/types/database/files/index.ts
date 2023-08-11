@@ -1,10 +1,12 @@
 import { ObjectId, Document } from 'mongodb'
 import { DateValue, UserId } from ".."
-import { ModifierAddTypeProperty, ModifierBonusTypeProperty, ModifierType, Proficiency } from '../dnd'
-
-type FileMetadata = Record<string, any>
-type FileStorage = Record<string, any>
-type FileContent = Record<string, any>
+import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from '../dnd'
+import { ModifierSelectType, ModifierType } from '../editor'
+import { ExtractOptionType, IOptionType, OptionTypeKey } from 'data/optionData'
+import { Enum } from 'types'
+type FileMetadata = {}
+type FileStorage = {}
+type FileContent = {}
 
 interface DBFile<T extends FileMetadata, K extends FileStorage = undefined> extends Document {
     _id?: ObjectId
@@ -41,21 +43,53 @@ interface FileMetadataQueryResult<T extends FileMetadata> {
 }
 
 interface Modifier extends FileMetadata {
+    $name: string
     type?: ModifierType
+    select?: ModifierSelectType
     bonusProperty?: ModifierBonusTypeProperty
-    addProperty?: ModifierAddTypeProperty
+    addRemoveProperty?: ModifierAddRemoveTypeProperty
+
+    proficiency?: ProficiencyType
+    label?: string
+
+    // Values
     value?: number
-    proficiency?: Proficiency
+    armor?: ArmorType
+    armors?: ArmorType[]
+    weapon?: WeaponType
+    weapons?: WeaponType[]
+    tool?: Tool
+    tools?: Tool[]
+    language?: Language
+    languages?: Language[]
+    save?: Attribute
+    saves?: Attribute[]
+    skill?: Skill
+    skills?: Skill[]
 }
 
+type ChoiceData = { 
+    type: string, 
+    label: string,
+    options: string[]  
+}
+ 
 interface ModifierCollection {
-    bonusAC?: number
-    bonusNumHealthDice?: number
-    bonusHealth?: number
-    bonusProficiency?: number
-    bonusInitiative?: number
+    bonusAC: number
+    bonusNumHealthDice: number
+    bonusHealth: number
+    bonusProficiency: number
+    bonusInitiative: number
+
+    modifyProficienciesArmor: (proficiencies: ArmorType[], onlyRemove?: boolean) => ArmorType[]
+    modifyProficienciesWeapon: (proficiencies: WeaponType[], onlyRemove?: boolean) => WeaponType[]
+    modifyProficienciesTool: (proficiencies: Tool[], onlyRemove?: boolean) => Tool[]
+    modifyProficienciesLanguage: (proficiencies: Language[], onlyRemove?: boolean) => Language[]
+    modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
+    modifyProficienciesSkill: (proficiencies: Skill[], onlyRemove?: boolean) => Skill[]
 
     join: (other: ModifierCollection) => ModifierCollection
+    getChoices: () => Record<string, ChoiceData>
 }
 
 export enum FileType {
@@ -105,6 +139,7 @@ export type {
     FileMetadataQueryResult,
     Modifier,
     ModifierCollection,
+    ChoiceData,
     FileMetadata,
     FileStorage,
     FileContent,

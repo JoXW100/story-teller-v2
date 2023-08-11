@@ -35,7 +35,7 @@ type CardSortData = {
 interface IEncounterCard extends IEncounterCardData {
     id: ObjectId
     num: number
-    creature: CreatureMetadata
+    creature: CreatureData
 }
 
 const cardsAreEqual = (a: IEncounterCardData[], b: IEncounterCardData[]): boolean => {
@@ -115,7 +115,7 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
 
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
     const [cards, setCards] = useEncounterCards(file)
-    const encounter = new EncounterData<IEncounterCard>(file.metadata, cards, setCards)
+    const encounter = new EncounterData(file.metadata, cards, setCards)
     const content = useParser(file.content.text, file.metadata, "$content")
     const description = useParser(encounter.description, file.metadata, "description")
 

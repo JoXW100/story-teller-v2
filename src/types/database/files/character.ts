@@ -1,10 +1,14 @@
-import { FileContent } from "."
+import { FileContent, FileStorage } from "."
 import { ObjectId } from ".."
 import { Gender } from "../dnd"
 import { CreatureMetadata } from "./creature"
 
 interface CharacterContent extends FileContent {
     text: string
+}
+
+interface CharacterStorage extends FileStorage {
+    classData?: Record<string, any>
 }
 
 interface CharacterMetadata extends CreatureMetadata {
@@ -15,7 +19,6 @@ interface CharacterMetadata extends CreatureMetadata {
     weight?: string
     raceText?: string
     occupation?: string
-    traits?: string[]
     // Texts
     appearance?: string
     description?: string
@@ -27,5 +30,6 @@ interface CharacterMetadata extends CreatureMetadata {
 
 export type {
     CharacterContent,
-    CharacterMetadata
+    CharacterMetadata,
+    CharacterStorage
 }

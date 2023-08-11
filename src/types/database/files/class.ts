@@ -1,19 +1,46 @@
-import { FileContent, FileMetadata, Modifier } from "."
+import { FileContent, FileMetadata, Modifier, ModifierCollection } from "."
 import { DiceType } from "../dnd"
 
 interface ClassContent extends FileContent {
     text: string
 }
 
-interface ClassMetadata extends FileMetadata {
+interface ClassLevelsMetadata {
+    1?: Modifier[]
+    2?: Modifier[]
+    3?: Modifier[]
+    4?: Modifier[]
+    5?: Modifier[]
+    6?: Modifier[]
+    7?: Modifier[]
+    8?: Modifier[]
+    9?: Modifier[]
+    10?: Modifier[]
+    11?: Modifier[]
+    12?: Modifier[]
+    13?: Modifier[]
+    14?: Modifier[]
+    15?: Modifier[]
+    16?: Modifier[]
+    17?: Modifier[]
+    18?: Modifier[]
+    19?: Modifier[]
+    20?: Modifier[]
+}
+
+interface ClassMetadataProperties extends FileMetadata {
     name?: string
     description?: string
-
     hitDice?: DiceType
-    modifiers?: Modifier[]
+
+    getModifiers?: (level: number) => ModifierCollection
 }
+
+interface ClassMetadata extends ClassMetadataProperties, ClassLevelsMetadata {}
 
 export type {
     ClassContent,
-    ClassMetadata
+    ClassLevelsMetadata,
+    ClassMetadataProperties,
+    ClassMetadata,
 }

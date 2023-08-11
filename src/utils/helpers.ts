@@ -1,5 +1,6 @@
 import { ItemListItem } from "components/common/controls/itemListMenu";
 import { ObjectId } from "mongodb";
+import { Collection, Enum } from "types";
 import { EditFilePage } from "types/context/fileContext";
 import { FileMetadata } from "types/database/files";
 
@@ -27,9 +28,6 @@ export const arrayUnique = <T extends string | number | symbol>(array: T[]): T[]
         }
     }, [] as T[])
 }
-
-type Enum = Record<string, string | number | symbol | boolean>
-type Collection = Record<string, any>
 
 export function isEnum<T extends Enum>(value: Enum[keyof Enum], type: T): value is T[keyof T] {
     return Object.values(type).includes(value)

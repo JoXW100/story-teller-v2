@@ -193,6 +193,11 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     flex-shrink: 0;
     font: inherit;
     font-size: small;
+
+    &[data=fill] {
+        height: auto;
+        flex: 1;
+    }
 }
 
 .editListItem {
