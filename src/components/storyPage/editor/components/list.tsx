@@ -15,7 +15,7 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
         dispatch.setMetadata(params.key, values)
     }
 
-    const handleValidate = (value: string | number): boolean => {
+    const handleValidate = (value: string | number): value is string | number => {
         return value && String(value).length > 0 && (params.type !== "number" || !isNaN(Number(value)))
     }
 

@@ -10,21 +10,21 @@ import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import ImportIcon from '@mui/icons-material/DownloadSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
-import { FileStructure } from 'types/database/files';
-import { ObjectId } from 'types/database';
 import { InputType } from 'types/context/fileSystemContext';
+import { IFileStructure } from 'types/database/files';
+import { ObjectId } from 'types/database';
 import styles from 'styles/pages/storyPage/file.module.scss';
 
-const hasSelectedChild = (file: FileStructure, fileId: ObjectId): boolean => {
+const hasSelectedChild = (file: IFileStructure, fileId: ObjectId): boolean => {
     return file.id === fileId || file.children?.some((x) => hasSelectedChild(x, fileId)) 
 }
 
-const containsFile = (file: FileStructure, holder: FileStructure): boolean => {
+const containsFile = (file: IFileStructure, holder: IFileStructure): boolean => {
     return file.id == holder.id || holder.children?.some((x) => containsFile(file, x));
 }
 
 type FolderProps = React.PropsWithChildren<{
-    file: FileStructure
+    file: IFileStructure
 }>
 
 const Folder = ({ file, children }: FolderProps): JSX.Element => {
@@ -115,7 +115,7 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
         if (window.dragData?.file) {
             e.preventDefault();
             e.stopPropagation();
-            let drag: FileStructure = window.dragData.file;
+            let drag: IFileStructure = window.dragData.file;
             if (drag && drag.holderId !== file.id && !containsFile(file, drag)) {
                 dispatch.moveFile(drag, file)
             }

@@ -1,8 +1,10 @@
-import { FileGetMetadataResult } from "./database/files"
+import { IFileMetadata } from "./database/files"
+import { FileGetMetadataResult } from "./database/responses"
 
-interface Variables {
-    [key: string]: any
-}
+export type Variables = Record<string, any>
+export type VariablesCollection = Record<string, Variables>
+export type Queries = Record<string, QueryType>
+export type QueryCollection = Record<string, FileGetMetadataResult>
 
 export enum QueryType {
     Title = 0,
@@ -21,55 +23,43 @@ export enum AlignDirection {
     Vertical = 'v'
 }
 
-interface Queries {
-    [key: string]: QueryType
+interface IParserMetadata extends IFileMetadata { 
+    $vars?: VariablesCollection
+    $queries?: QueryCollection
 }
 
-interface QueryResult {
-    [key: string]: FileGetMetadataResult
-}
-
-interface Metadata { 
-    $vars?: Record<string, Variables>
-    $queries?: QueryResult
-    [key: string]: any
-}
-
-interface ParserOption { 
+interface IParserOption { 
     key: string
     value: string 
 }
 
-interface ParserObject {
+interface IParserObject {
     type: string
-    content: ParserObject[]
-    options: ParserOption[]
+    content: IParserObject[]
+    options: IParserOption[]
     variables: Variables
 }
 
-type ElementParams<T extends Variables> = React.PropsWithChildren<{
-    options?: T,
-    content?: ParserObject[],
-    metadata?: Metadata,
-    variablesKey?: string
-}>;
-
-interface ElementObject {
+interface IElementObject {
     type: string
     defaultKey: string
     buildChildren: boolean
     validOptions: Set<string>
-    validate: (options: Variables, content: ParserObject[]) => Queries
-    toComponent: (params: ElementParams<any>) => JSX.Element
+    validate: (options: Variables, content: IParserObject[]) => Queries
+    toComponent: (params: ElementParams) => JSX.Element
 }
 
+type ElementParams<T extends Variables = Variables> = React.PropsWithChildren<{
+    options?: T,
+    content?: IParserObject[],
+    metadata?: IParserMetadata,
+    variablesKey?: string
+}>;
+
 export type {
-    Variables,
-    Queries,
-    QueryResult,
-    Metadata,
-    ParserOption,
-    ParserObject,
-    ElementObject,
+    IParserOption,
+    IParserObject,
+    IElementObject,
+    IParserMetadata,
     ElementParams
 }

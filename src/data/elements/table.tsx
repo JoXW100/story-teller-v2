@@ -2,7 +2,8 @@ import Parser, { ParseError } from 'utils/parser';
 import { element as cell } from './tableCell';
 import { element as header } from './tableHeader';
 import Logger from "utils/logger";
-import { Queries, ElementObject, ElementParams, Variables, ParserObject, Metadata } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables, IParserObject } from 'types/elements';
+import { IFileMetadata } from 'types/database/files';
 import styles from 'styles/elements.module.scss';
 
 interface TableOptions extends Variables {
@@ -50,7 +51,7 @@ const validOptions = new Set(['color', 'border', 'width', 'weight']);
 const validHeaders = new Set(Object.keys(header));
 const validCells = new Set(Object.keys(cell));
 const validContent = new Set([null, 'text', ...Object.keys(header), ...Object.keys(cell)]);
-const validate = (options: TableOptions, content: ParserObject[]): Queries => {
+const validate = (options: TableOptions, content: IParserObject[]): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
             throw new ParseError(`Unexpected box option: '${key}'`);
@@ -71,7 +72,7 @@ const validate = (options: TableOptions, content: ParserObject[]): Queries => {
     return {}
 }
 
-const GetTableItems = (content: ParserObject[], metadata: Metadata, key: string): TableItems => {
+const GetTableItems = (content: IParserObject[], metadata: IFileMetadata, key: string): TableItems => {
     return content.reduce((items, element, index) => {
         switch (true) {
             case validHeaders.has(element?.type):
@@ -136,6 +137,6 @@ export const element = {
         toComponent: TableElement,
         validate: validate
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default TableElement;

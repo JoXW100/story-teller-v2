@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Queries, Variables } from 'types/elements';
+import { IElementObject, ElementParams, Queries, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface LineOptions extends Variables {
@@ -46,6 +46,6 @@ export const element = {
         toComponent: LineElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default LineElement;

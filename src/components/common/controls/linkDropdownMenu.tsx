@@ -1,7 +1,8 @@
-import { useFiles } from "utils/handlers/files"
 import DropdownMenu from "./dropdownMenu"
+import { useFiles } from "utils/handlers/files"
+import { isObjectId } from "utils/helpers"
+import Logger from "utils/logger"
 import { ObjectId } from "types/database"
-import { FileGetMetadataResult, FileMetadata } from "types/database/files"
 
 type LinkDropdownMenuProps = React.PropsWithRef<{
     className?: string
@@ -20,11 +21,17 @@ const LinkDropdownMenu = ({ value, values, onChange, showButton, className, item
             className={className}
             itemClassName={itemClassName}
             value={String(value)}
+            showButton={showButton}
             values={values.reduce((prev, option) => (
                 { ...prev, [String(option)]: loading ? '...' : files.find(x => x.id === option) ?.metadata?.name ?? "error"}
             ), { null: "Unset" })}
-            onChange={onChange}
-            showButton={showButton}/>
+            onChange={(value) => {
+                if (isObjectId(value)) {
+                    onChange(value)
+                } else {
+                    Logger.throw("LinkDropdownMenu", value)
+                }
+            }}/>
     )
 }
 

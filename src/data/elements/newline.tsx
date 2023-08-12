@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Variables } from 'types/elements';
+import { IElementObject, ElementParams, Variables } from 'types/elements';
 
 const NewLineElement = ({}: ElementParams<{}>): JSX.Element => (
     <br/>
@@ -16,11 +16,11 @@ const _element = {
             throw new ParseError(`'newline' command does not accept any options`);
         return {}
     }
-} satisfies ElementObject
+} satisfies IElementObject
 
 export const element = {
     n: _element,
     newline: _element
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default NewLineElement;

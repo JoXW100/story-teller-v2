@@ -5,19 +5,19 @@ import { TemplateComponentProps } from '.';
 import { asEnum, getRelativeMetadata, isObjectId } from 'utils/helpers';
 import { FileType } from 'types/database/files';
 import { LinkListTemplateParams } from 'types/templates';
-import { ObjectId } from 'types/database';
+import { ObjectId, ObjectIdText } from 'types/database';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: string[] = (metadata && metadata[params.key]) ?? []
+    const values: ObjectId[] = (metadata && metadata[params.key]) ?? []
         
-    const handleChange = (values: string[]) => {
+    const handleChange = (values: ObjectId[]) => {
         dispatch.setMetadata(params.key, values)
     }
 
-    const handleValidate = (value: ObjectId): boolean => {
+    const handleValidate = (value: ObjectIdText): value is ObjectId => {
         return isObjectId(value)
     }
 

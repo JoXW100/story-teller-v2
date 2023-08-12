@@ -1,8 +1,9 @@
-import { ObjectId } from "types/database";
-import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { ModifierSelectType, ModifierType } from "types/database/editor";
-import { ChoiceData, FileType, Modifier, ModifierCollection } from "types/database/files";
-import { CharacterStorage } from "types/database/files/character";
+import { ObjectId, ObjectIdText } from "types/database";
+import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
+import { FileType } from "types/database/files";
+import { ICharacterStorage } from "types/database/files/character";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierType } from "types/database/files/modifier";
+import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
 
@@ -13,7 +14,7 @@ const ModifierMap = {
     [ProficiencyType.Language]: "language",
     [ProficiencyType.Skill]: "skill",
     [ProficiencyType.Save]: "save",
-} satisfies Record<ProficiencyType, keyof Modifier>
+} satisfies Record<ProficiencyType, keyof IModifier>
 
 const ModifierCollectionMap = {
     [ProficiencyType.Armor]: "armors",
@@ -22,19 +23,19 @@ const ModifierCollectionMap = {
     [ProficiencyType.Language]: "languages",
     [ProficiencyType.Skill]: "skills",
     [ProficiencyType.Save]: "saves",
-} satisfies Record<ProficiencyType, keyof Modifier>
+} satisfies Record<ProficiencyType, keyof IModifier>
 
-class ModifierCollectionData implements ModifierCollection
+class ModifierCollectionData implements IModifierCollection
 {
-    private readonly modifiers: Required<Modifier>[]
-    private readonly storage: CharacterStorage
+    private readonly modifiers: Required<IModifier>[]
+    private readonly storage: ICharacterStorage
     
-    constructor(modifiers: Required<Modifier>[], storage: CharacterStorage) {
+    constructor(modifiers: Required<IModifier>[], storage: ICharacterStorage) {
         this.modifiers = modifiers;
         this.storage = storage;
     }
 
-    public join(other: Required<ModifierCollection>): ModifierCollection {
+    public join(other: Required<IModifierCollection>): IModifierCollection {
         return other ? new CombinedModifierCollection(this, other, this.storage) : this;
     }
 
@@ -62,7 +63,7 @@ class ModifierCollectionData implements ModifierCollection
 
     public modifyProficiencies<T extends string>(proficiencies: T[], type: ProficiencyType, onlyRemove: boolean): T[] {
         let exclude: Set<T>
-        let proficiency: keyof Modifier = ModifierMap[type];
+        let proficiency: keyof IModifier = ModifierMap[type];
         if (onlyRemove) {
             let remove = this.modifiers.reduce<T[]>((prev, mod) => (
                 mod.type === ModifierType.Remove  
@@ -179,18 +180,18 @@ class ModifierCollectionData implements ModifierCollection
     }
 }
 
-class CombinedModifierCollection implements ModifierCollection {
-    private readonly c1: ModifierCollection
-    private readonly c2: ModifierCollection
-    private readonly storage: CharacterStorage
+class CombinedModifierCollection implements IModifierCollection {
+    private readonly c1: IModifierCollection
+    private readonly c2: IModifierCollection
+    private readonly storage: ICharacterStorage
 
-    public constructor(c1: ModifierCollection, c2: ModifierCollection, storage: CharacterStorage) {
+    public constructor(c1: IModifierCollection, c2: IModifierCollection, storage: ICharacterStorage) {
         this.c1 = c1;
         this.c2 = c2;
         this.storage = storage;
     }
 
-    public join(other: ModifierCollection): ModifierCollection {
+    public join(other: IModifierCollection): IModifierCollection {
         return other ? new CombinedModifierCollection(this, other, this.storage) : this;
     }
 
@@ -232,7 +233,7 @@ class CombinedModifierCollection implements ModifierCollection {
         return this.c1.modifyProficienciesSkill(proficiencies, true) // Remove those added by c2
     }
 
-    public modifyAbilities(abilities: ObjectId[]): ObjectId[] {
+    public modifyAbilities(abilities: ObjectIdText[]): ObjectIdText[] {
         abilities = this.c1.modifyAbilities(abilities)
         return this.c2.modifyAbilities(abilities)
     }

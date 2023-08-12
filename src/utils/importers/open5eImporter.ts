@@ -1,10 +1,10 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
 import { asEnum, isEnum } from "utils/helpers";
-import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionType, OptionalAttribute } from "types/database/editor";
-import { CreatureMetadata } from "types/database/files/creature";
-import { SpellMetadata } from "types/database/files/spell";
+import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, OptionalAttribute, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
+import { CalculationMode, OptionType } from "types/database/editor";
+import { ICreatureMetadata } from "types/database/files/creature";
+import { ISpellMetadata } from "types/database/files/spell";
 
 const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/
 const castTimeExpr = /([0-9]+)? *([A-z-]+)/
@@ -493,7 +493,7 @@ const estimateSpellAttribute = (monster: Open5eMonster): OptionalAttribute => {
     ), { val: -1, attr: OptionalAttribute.INT }).attr
 }
 
-export const open5eCreatureImporter = async (id: string): Promise<CreatureMetadata> => {
+export const open5eCreatureImporter = async (id: string): Promise<ICreatureMetadata> => {
     let res = await Communication.open5eFetchOne<Open5eMonster>("monsters", id);
     if (!res) { return null; }
     res.special_abilities = typeof res.special_abilities == typeof [] ? res.special_abilities : []
@@ -546,13 +546,13 @@ export const open5eCreatureImporter = async (id: string): Promise<CreatureMetada
 
         // spellSlots: 
         spells: res.spell_list ? res.spell_list : [],
-    } satisfies CreatureMetadata
+    } satisfies ICreatureMetadata
     
     Logger.log("toCreature", { file: res, result: metadata })
     return metadata
 }
 
-export const open5eSpellImporter = async (id: string): Promise<SpellMetadata> => {
+export const open5eSpellImporter = async (id: string): Promise<ISpellMetadata> => {
     let res = await Communication.open5eFetchOne<Open5eSpell>("spells", id);
     if (!res) { return null; }
     let { time, timeCustom, timeValue } = getCastingTime(res.casting_time)
@@ -589,7 +589,7 @@ export const open5eSpellImporter = async (id: string): Promise<SpellMetadata> =>
         conditionProficiency: true,
         effectDice: effectDice,
         effectDiceNum: effectDiceNum
-    } as SpellMetadata
+    } as ISpellMetadata
     
     Logger.log("toSpell", { file: res, result: metadata })
     return metadata

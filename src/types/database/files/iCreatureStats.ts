@@ -1,4 +1,4 @@
-import { OptionalAttribute } from "../editor"
+import type { OptionalAttribute } from "types/database/dnd"
 
 interface ICreatureStats {
     str?: number

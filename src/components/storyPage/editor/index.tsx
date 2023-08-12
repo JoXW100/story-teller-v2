@@ -4,22 +4,22 @@ import { Context } from 'components/contexts/fileContext';
 import Loading from 'components/common/loading';
 import Logger from 'utils/logger';
 import { EditInputType, RootTemplateComponent, ITemplateComponent, TemplateCondition, TemplateConditionType } from 'types/templates';
-import { FileMetadata } from 'types/database/files';
-import styles from 'styles/pages/storyPage/editor.module.scss'
+import { IFileMetadata } from 'types/database/files';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent
-    metadata: FileMetadata
+    metadata: IFileMetadata
 }>
 
 interface ConditionsData {
-    metadata: FileMetadata
+    metadata: IFileMetadata
     mode?: TemplateConditionType
     cmp?: string | number | boolean
 }
 
-const isValue = (value: any): value is string | boolean | null  => {
-    return typeof value === "string" || typeof value === "boolean" || value === null
+const isValue = (value: any): value is string | boolean | number | null   => {
+    return typeof value === "string" || typeof value === "boolean" || typeof value === "number" || value === null
 }
  
 const handleCondition = (condition: TemplateCondition, data: ConditionsData) => {
@@ -64,7 +64,7 @@ const handleCondition = (condition: TemplateCondition, data: ConditionsData) => 
     }
 }
 
-const checkConditions = (template: ITemplateComponent, metadata: FileMetadata): boolean => {
+const checkConditions = (template: ITemplateComponent, metadata: IFileMetadata): boolean => {
     const data: ConditionsData = { metadata: metadata }
     return template.conditions?.every((c) => handleCondition(c, data) ) ?? true
 }
@@ -90,7 +90,7 @@ const getComponent = (type: EditInputType): (props: TemplateComponentProps) => R
     }
 }
 
-export const buildEditor = (template: ITemplateComponent, metadata: FileMetadata = {}, key = 0): React.ReactNode => {
+export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadata = {}, key = 0): React.ReactNode => {
     if (!checkConditions(template, metadata)) return null;
     
     const content = template.content?.map((item, key) => buildEditor(item, metadata, key));

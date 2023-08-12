@@ -3,22 +3,22 @@ import CreatureData from "./creature";
 import ClassData from "./classData";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
-import { CharacterMetadata } from "types/database/files/character";
 import { Attribute, DiceType, Gender } from "types/database/dnd";
-import { ObjectId } from "types/database";
-import { ModifierCollection } from "types/database/files";
-import { CreatureMetadata } from "types/database/files/creature";
 import { CalculationMode } from "types/database/editor";
-import { ClassMetadataProperties } from "types/database/files/class";
+import { ICharacterMetadata } from "types/database/files/character";
+import { IClassMetadataProperties } from "types/database/files/class";
+import { ICreatureMetadata } from "types/database/files/creature";
+import { IModifierCollection } from "types/database/files/modifierCollection";
+import { ObjectId } from "types/database";
 
-class CharacterData extends CreatureData implements Required<CharacterMetadata>
+class CharacterData extends CreatureData implements Required<ICharacterMetadata>
 {
     $vars: never;
     $queries: never;
 
-    public readonly metadata: CharacterMetadata;
-    private readonly characterClass: ClassMetadataProperties 
-    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection, characterClass?: ClassMetadataProperties) {
+    public readonly metadata: ICharacterMetadata;
+    private readonly characterClass: IClassMetadataProperties 
+    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: IClassMetadataProperties) {
         if (characterClass) {
             let collection = characterClass.getModifiers(metadata?.level ?? 0);
             super(metadata, collection?.join(modifiers) ?? modifiers)

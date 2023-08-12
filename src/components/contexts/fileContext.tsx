@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useReducer } from 'react'
 import Head from 'next/head'
+import { ObjectId } from 'types/database'
 import RequestQueue from 'utils/data/requestQueue'
 import Communication from 'utils/communication'
 import Logger from 'utils/logger'
-import { ObjectId } from 'types/database'
-import { FileContextDispatch, FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
-import { FileGetResult } from 'types/database/files'
-import { FileMetadata } from 'types/database/files'
 import { getRelativeMetadata } from 'utils/helpers'
+import { FileContextDispatch, FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
+import { FileGetResult } from 'types/database/responses'
+import { IParserMetadata } from 'types/elements'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])
 
@@ -95,7 +95,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
         
         case 'setMetadata':
             if (state.file && action.data?.key) {
-                let data: FileMetadata = { ...state.file.metadata }
+                let data: IParserMetadata = { ...state.file.metadata }
                 getRelativeMetadata(data, state.editFilePages)[action.data.key] = action.data.value
                 let { $vars, $queries, ...rest} = data;
 

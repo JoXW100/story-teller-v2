@@ -62,6 +62,16 @@ export enum Attribute {
     CHA = "cha"
 }
 
+export enum OptionalAttribute {
+    None = "none",
+    STR = "str",
+    DEX = "dex",
+    CON = "con",
+    INT = "int",
+    WIS = "wis",
+    CHA = "cha"
+}
+
 export enum Alignment {
     None = "none",
     Unaligned = "unaligned",
@@ -229,14 +239,6 @@ export enum Sense {
     TrueSight = "trueSight",
 }
 
-export enum ModifierBonusTypeProperty {
-    AC = "ac",
-    NumHitDice = "numHitDice",
-    Health = "health",
-    Proficiency = "proficiency",
-    Initiative = "initiative"
-}
-
 export enum ProficiencyType {
     Armor = "armor",
     Weapon = "weapon",
@@ -244,9 +246,4 @@ export enum ProficiencyType {
     Language = "language",
     Save = "save",
     Skill = "skill",
-}
-
-export enum ModifierAddRemoveTypeProperty {
-    Proficiency = "proficiency",
-    Ability = "ability"
 }

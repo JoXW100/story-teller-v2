@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Variables } from 'types/elements';
+import { IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
@@ -10,7 +10,7 @@ const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
     )
 }
 
- export const element: Record<string, ElementObject> = {
+ export const element: Record<string, IElementObject> = {
     center: {
         type: 'center',
         defaultKey: null,
@@ -23,6 +23,6 @@ const CenterElement = ({ children }: ElementParams<{}>): JSX.Element => {
             return {}
         }
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default CenterElement;

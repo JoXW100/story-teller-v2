@@ -7,21 +7,22 @@ import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import CreatureData from 'data/structures/creature';
 import AbilityData from 'data/structures/ability';
-import { getOptionType } from 'data/optionData';
 import ModifierCollectionData from 'data/structures/modifierCollection';
-import { CreatureContent, CreatureMetadata } from 'types/database/files/creature';
-import { FileData, FileGetManyMetadataResult, IFileMetadataQueryResult, ModifierCollection } from 'types/database/files';
-import { Attribute, Skill } from 'types/database/dnd';
-import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { AbilityMetadata } from 'types/database/files/ability';
+import { getOptionType } from 'data/optionData';
+import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
+import { Attribute, OptionalAttribute, Skill } from 'types/database/dnd';
+import { RendererObject } from 'types/database/editor';
+import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
+import { IModifierCollection } from 'types/database/files/modifierCollection';
+import { IAbilityMetadata } from 'types/database/files/ability';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
-    file: FileData<CreatureContent,CreatureMetadata,undefined>
+    file: CreatureFile
 }>
 
 type CreatureLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<CreatureMetadata>
+    file: FileMetadataQueryResult<ICreatureMetadata>
 }>
 
 type CreatureProficienciesPageProps = React.PropsWithRef<{
@@ -31,7 +32,7 @@ type CreatureProficienciesPageProps = React.PropsWithRef<{
 const Pages = ["Actions", "Proficiencies"] as const
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
-    const [modifiers, setModifiers] = useState<ModifierCollection>(null)
+    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     let creature = new CreatureData(file.metadata, modifiers)
     let stats = creature.getStats()
@@ -40,7 +41,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const description = useParser(creature.description, file.metadata, "description")
     const abilities = useMemo(() => creature.abilities, [file.metadata, file?.storage])
 
-    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
+    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollectionData(modifiers, null)
         setModifiers(collection);
@@ -243,7 +244,7 @@ const CreatureLinkRenderer = ({ file }: CreatureLinkRendererProps): JSX.Element 
     )
 }
 
-const CreatureRenderer: RendererObject<CreatureContent,CreatureMetadata> = {
+const CreatureRenderer: RendererObject<CreatureFile> = {
     fileRenderer: CreatureFileRenderer,
     linkRenderer: CreatureLinkRenderer
 }

@@ -9,15 +9,15 @@ import EncounterRenderer from './encounter';
 import { ParseError } from 'utils/parser';
 import Logger from 'utils/logger';
 import { RendererObject } from 'types/database/editor';
-import { FileType, FileData, FileContent, FileMetadata } from 'types/database/files';
+import { FileType, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 
-const useRenderer = (template: FileRendererTemplate, file: FileData<any,any,any>): JSX.Element => {
+const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
     if (!file)
         throw Error("File was null in useRenderer: " + String(file?.id))
 
-    const Renderer = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
+    const Renderer = useMemo<RendererObject>(() => {
         switch (template?.type) {
             case FileType.Ability:
                 return AbilityRenderer

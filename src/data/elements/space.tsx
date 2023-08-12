@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Variables } from 'types/elements';
+import { IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 const spaceElement = ({}: ElementParams<{}>): JSX.Element => (
@@ -19,6 +19,6 @@ export const element = {
             return {}
         }
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default spaceElement;

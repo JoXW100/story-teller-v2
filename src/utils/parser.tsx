@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
-import { arrayUnique } from "./helpers";
+import { arrayUnique, isObjectId } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
-import type { Variables, Queries, QueryResult, Metadata, ParserOption, ParserObject } from "types/elements";
-import { FileGetManyMetadataResult } from "types/database/files";
+import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
 import styles from 'styles/renderer.module.scss';
+import { ObjectId } from "types/database";
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -19,9 +19,9 @@ abstract class Parser
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
     public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]\n\r]*\])?)/gi
     public static readonly matchFunctionExpr = /\\([0-9a-z]+)[\n\r]*(?: *\[[ \n\r]*([^\]\n\r]*)\])?/i
-    private static queries: QueryResult = {}
+    private static queries: QueryCollection = {}
 
-    static async parse(text: string, metadata: Metadata, variablesKey: string): Promise<JSX.Element> {
+    static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
         if (!text)
             return null
 
@@ -49,11 +49,11 @@ abstract class Parser
         return this.buildComponent(tree, variablesKey, 0, metadata)
     }
     
-    private static buildTree(splits: string[]): ParserObject {
+    private static buildTree(splits: string[]): IParserObject {
         try {
-            let command: ParserObject = null;
-            let stack: ParserObject[] = [];
-            let current: ParserObject = { type: 'root', content: [], options: [], variables: {} };
+            let command: IParserObject = null;
+            let stack: IParserObject[] = [];
+            let current: IParserObject = { type: 'root', content: [], options: [], variables: {} };
             splits.forEach((part) => {
                 switch (part) {
                     case '\{':
@@ -87,7 +87,7 @@ abstract class Parser
 
     private static parseVariables(splits: string[], data: Variables): Variables {
         let counter = 0;
-        let variable: ParserObject = null;
+        let variable: IParserObject = null;
         let content: string[] = [];
         splits.forEach((part) => {
             switch (part){
@@ -120,13 +120,13 @@ abstract class Parser
         return data;
     }
     
-    private static parseFunction(part: string, current: ParserObject | null): ParserObject {
-        if (current != null && current.type === 'text') {
+    private static parseFunction(part: string, current: IParserObject): IParserObject {
+        if (current && current.type === 'text') {
             current.options.push({ key: undefined, value: part.trim() })
             return current;
         }
 
-        let result: ParserObject = null;
+        let result: IParserObject = null;
         part.split(this.splitFunctionExpr).forEach((part) => {
             if (part) {
                 let hit = new RegExp(this.matchFunctionExpr).exec(part)
@@ -152,8 +152,8 @@ abstract class Parser
         return result ?? current;
     }
 
-    private static parseOptions(options: string): ParserOption[] {
-        let results: ParserOption[] = [];
+    private static parseOptions(options: string): IParserOption[] {
+        let results: IParserOption[] = [];
         if (options) {
             let expr = new RegExp(this.matchOptionsExpr)
             let hit: RegExpExecArray = null;
@@ -164,7 +164,7 @@ abstract class Parser
         return results;
     }
 
-    private static getQueries(tree: ParserObject): Queries {
+    private static getQueries(tree: IParserObject): Queries {
         if (tree.type === 'set')
             return {}
         if (!(tree.type in ElementDictionary))
@@ -185,22 +185,23 @@ abstract class Parser
         return queries
     }
 
-    private static async resolveQueries(tree: ParserObject): Promise<QueryResult> {
-        let queries: Queries = this.getQueries(tree)
+    private static async resolveQueries(tree: IParserObject): Promise<QueryCollection> {
+        let queries = this.getQueries(tree)
         let keys = Object.keys(queries)
-        let filtered = keys.filter((key) => !(key in this.queries))
+        let filtered = keys.filter((key) => isObjectId(key) && !(key in this.queries)) as unknown as ObjectId[]
         
         if (filtered.length > 0) {
             let response = await Communication.getManyMetadata(arrayUnique(filtered))
-            if (!response.success)
+            if (!response.success) {
                 throw new ParseError("Failed to load some file out of files with ids: " + JSON.stringify(filtered))
-                let result = response.result as FileGetManyMetadataResult
-            result.forEach((res) => {
-                this.queries[String(res.id)] = res
-            })
+            } else {
+                response.result.forEach((res) => {
+                    this.queries[String(res.id)] = res
+                })
+            }
         }
         
-        let res: QueryResult = {}
+        let res: QueryCollection = {}
         for (let key in queries) {
             res[key] = this.queries[key]
         }
@@ -208,7 +209,7 @@ abstract class Parser
         return res
     }
 
-    public static buildComponent(tree: ParserObject, variablesKey: string, key: number = 0, metadata: Metadata, parent?: ParserObject): JSX.Element {
+    public static buildComponent(tree: IParserObject, variablesKey: string, key: number = 0, metadata: IParserMetadata, parent?: IParserObject): JSX.Element {
         if (tree.type === 'set')
             return null
         if (tree.type === 'text' && tree.variables.text?.trim() == '')
@@ -233,7 +234,7 @@ abstract class Parser
     }
 }
 
-export const useParser = (text: string, metadata: Metadata, key: string): JSX.Element => {
+export const useParser = (text: string, metadata: IParserMetadata, key: string): JSX.Element => {
     const [state, setState] = useState(null)
     useEffect(() => {
         Parser.parse(text, metadata, key)
@@ -247,7 +248,7 @@ export const useParser = (text: string, metadata: Metadata, key: string): JSX.El
                     throw error;
             }
         })
-    }, [text, metadata])
+    }, [text, metadata, key])
     return state
 }
 

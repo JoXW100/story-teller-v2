@@ -1,14 +1,14 @@
 import Database, { failure, success }  from "utils/database/database";
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from "next";
-import { DBContent, FileMetadata, FileStorage, FileType } from "types/database/files";
+import { FileType, IFileData, IFileMetadata, IFolderData } from "types/database/files";
 import Logger from "utils/logger";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<void> => {
     const { user } = getSession(req, res);
     const { type, ...params } = req.query;
     const userId = user.sub;
-
+    
     try {
         if (!userId) {
             return res.status(404).json(failure("Could not parse user id"));
@@ -61,10 +61,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(200).json(await Database.stories.update(userId, body.storyId, body.update));
                     
                     case 'addFile':
-                        return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body)));
+                        return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, fileToContent(body)));
     
                     case 'addFileFromData':
-                        return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, body.type, fileToContent(body, body.data)));
+                        return res.status(200).json(await Database.files.add(userId, body.storyId, body.holderId, fileToContent(body, body.data)));
 
                     case 'addFileCopy':
                         return res.status(200).json(await Database.files.addCopy(userId, body.storyId, body.holderId, body.fileId, body.name));
@@ -113,8 +113,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}): DBContent<FileMetadata, FileStorage> => {
-    switch (data.type) {
+const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = {}): IFileData | IFolderData => {
+    let type: FileType = data.type;
+    switch (type) {
         case FileType.Ability:
         case FileType.Document:
         case FileType.Character:
@@ -122,11 +123,19 @@ const fileToContent = (data: Record<string, string>, metadata: FileMetadata = {}
         case FileType.Creature:
         case FileType.Spell:
         case FileType.Encounter:
-            return { name: data.name, text: "", metadata: metadata };
+            return {
+                type: type,
+                content: { name: data.name, public: false, text: "" }, 
+                metadata: metadata,
+                storage: {}
+            }
         case FileType.Folder:
-            return { name: data.name, open: false };
+            return {
+                type: type,
+                content: { name: data.name, open: false }
+            }
         default:
-            throw new Error("File type not recognized")
+            throw new Error("File type not supported")
     }
 }
 

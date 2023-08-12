@@ -17,11 +17,11 @@ import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { CreateFileOptions } from 'data/fileTemplates';
-import { FileStructure, FileType, RenderedFileTypes } from "types/database/files";
+import { FileType, RenderedFileTypes, IFileStructure } from "types/database/files";
 import styles from 'styles/pages/storyPage/file.module.scss';
 
 type FileProps = React.PropsWithRef<{
-    file: FileStructure
+    file: IFileStructure
 }>
 
 const File = ({ file }: FileProps): JSX.Element => {

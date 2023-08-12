@@ -3,15 +3,16 @@ import { useRouter } from 'next/router';
 import { openPopup } from 'components/common/popupHolder'
 import CreateFilePopup from 'components/storyPage/fileSystem/createFilePopup';
 import ConfirmationPopup from 'components/common/confirmationPopup';
+import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
 import { Context as StoryContext } from "./storyContext";
+import { CreateFileOptions } from 'data/fileTemplates';
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
-import { DBResponse, ObjectId } from 'types/database'
+import { ObjectId, DBResponse } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult, FileStructure, FileType, RenderedFileTypes } from 'types/database/files'
-import FileFilterMenu from 'components/storyPage/fileSystem/fileFilterMenu';
-import { CreateFileOptions } from 'data/fileTemplates';
+import { FileType, IFileStructure, RenderedFileTypes } from 'types/database/files'
+import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult } from 'types/database/responses';
 
 
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
@@ -45,7 +46,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         );
     }
 
-    const openRemoveFileMenu = (file: FileStructure) => {
+    const openRemoveFileMenu = (file: IFileStructure) => {
         const optionYes = Localization.toText('create-confirmationYes');
         const optionNo = Localization.toText('create-confirmationNo');
         const selected = context.fileId === file.id;
@@ -71,7 +72,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         )
     }
 
-    const openConvertFileMenu = (file: FileStructure, type: FileType) => {
+    const openConvertFileMenu = (file: IFileStructure, type: FileType) => {
         const optionYes = Localization.toText('create-confirmationYes');
         const optionNo = Localization.toText('create-confirmationNo');
         const selected = context.fileId === file.id;
@@ -97,7 +98,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         )
     }
 
-    const renameFile = (file: FileStructure, name: string, callback: Callback<FileRenameResult>) => {
+    const renameFile = (file: IFileStructure, name: string, callback: Callback<FileRenameResult>) => {
         Communication.renameFile(context.story.id, file.id, name)
         .then((res) => {
             if (!res.success) {
@@ -109,7 +110,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         })
     }
 
-    const moveFile = (file: FileStructure, target: FileStructure) => {
+    const moveFile = (file: IFileStructure, target: IFileStructure) => {
         Communication.moveFile(context.story.id, file.id, target?.id ?? context.story.root)
         .then((res) => {
             if (!res.success) {
@@ -119,7 +120,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         })
     }
 
-    const setFileState = (file: FileStructure, state: boolean, callback: Callback<FileSetPropertyResult>) => {
+    const setFileState = (file: IFileStructure, state: boolean, callback: Callback<FileSetPropertyResult>) => {
         Communication.setFileState(context.story.id, file.id, state)
         .then((res) => {
             if (!res.success) {
@@ -131,7 +132,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         })
     }
 
-    const createCopy = (file: FileStructure) => {
+    const createCopy = (file: IFileStructure) => {
         let num = 0;
         let name = file.name;
         try {

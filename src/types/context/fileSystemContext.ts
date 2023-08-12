@@ -1,6 +1,7 @@
-import type { DBResponse, ObjectId } from "types/database";
-import type { FileRenameResult, FileSetPropertyResult, FileStructure, FileType } from "types/database/files";
 import type { ContextDispatch, ContextState, ContextProvider } from ".";
+import type { DBResponse, ObjectId } from "types/database";
+import type { FileRenameResult, FileSetPropertyResult } from "types/database/responses";
+import type { FileType, IFileStructure } from "types/database/files";
 
 type FileFilter = Record<FileType, boolean> & {
     showEmptyFolders: boolean
@@ -12,17 +13,17 @@ interface FileSystemContextState extends ContextState {
     searchFilter: string
     fileFilter: FileFilter
     showFilterMenu: boolean
-    files: FileStructure[]
+    files: IFileStructure[]
 }
 
 interface FileSystemContextDispatch extends ContextDispatch {
     openCreateFileMenu: (type: InputType, holder?: ObjectId) => void
-    openRemoveFileMenu: (file: FileStructure) => void
-    renameFile: (file: FileStructure, name: string, callback?: Callback<FileRenameResult>) => void
-    moveFile: (file: FileStructure, target: FileStructure) => void
-    setFileState: (file: FileStructure, state: boolean, callback?: Callback<FileSetPropertyResult>) => void
-    createCopy: (file: FileStructure) => void,
-    convert: (file: FileStructure, type: FileType) => void,
+    openRemoveFileMenu: (file: IFileStructure) => void
+    renameFile: (file: IFileStructure, name: string, callback?: Callback<FileRenameResult>) => void
+    moveFile: (file: IFileStructure, target: IFileStructure) => void
+    setFileState: (file: IFileStructure, state: boolean, callback?: Callback<FileSetPropertyResult>) => void
+    createCopy: (file: IFileStructure) => void,
+    convert: (file: IFileStructure, type: FileType) => void,
     setSearchFilter: (filter: string) => void,
     setFileFilter: (filter: FileFilter) => void,
     setShowFilterMenuState: (isOpen: boolean) => void,

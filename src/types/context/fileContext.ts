@@ -1,9 +1,9 @@
-import type { FileContent, FileData, FileGetResult, FileMetadata, FileStorage } from "types/database/files";
 import type RequestQueue from "utils/data/requestQueue";
 import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
 import type { DBResponse, ObjectId } from "types/database";
-import { Variables } from "types/elements";
-import { FileTemplate } from "types/templates";
+import type { FileTemplate } from "types/templates";
+import type { FileGetResult } from "types/database/responses";
+import type { IFile } from "types/database/files";
 
 interface EditFilePage {
     template: keyof FileTemplate['editorSubTemplates']
@@ -17,7 +17,7 @@ interface FileContextState extends ContextState {
     fetching: boolean
     fileSelected: boolean
     viewMode: boolean
-    file: FileData<FileContent, FileMetadata, FileStorage>
+    file: IFile
     editFilePages: EditFilePage[]
     story: ObjectId
     queue: RequestQueue

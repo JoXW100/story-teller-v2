@@ -12,7 +12,7 @@ import Localization from "utils/localization";
 import Navigation from "utils/navigation";
 import Communication from "utils/communication";
 import Logger from "utils/logger";
-import { FileMetadata, FileType } from "types/database/files";
+import { IFileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
 import { ICompendiumMenuItem, Open5eItemInfo } from "types/open5eCompendium";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
@@ -69,7 +69,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
 
     const handleImportClick = () => {
         if (state.selected != null) {
-            let importer: Promise<FileMetadata>;
+            let importer: Promise<IFileMetadata>;
             if (state.menu.type == "monsters") {
                 importer = open5eCreatureImporter(state.selected.slug)
             } else {

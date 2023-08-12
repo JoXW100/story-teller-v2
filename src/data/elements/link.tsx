@@ -4,11 +4,12 @@ import { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
 import EncounterRenderer from 'components/renderer/encounter';
 import { AbilityRenderer, CharacterRenderer, CreatureRenderer, SpellRenderer, DocumentRenderer } from 'components/renderer';
-import { Queries, QueryType, ElementObject, ElementParams, Variables } from 'types/elements';
-import { FileContent, FileMetadata, FileType } from 'types/database/files';
+import { Queries, QueryType, IElementObject, ElementParams, Variables } from 'types/elements';
+import { IFileContent, IFileMetadata, FileType } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
 import Logger from 'utils/logger';
+import { isObjectId } from 'utils/helpers';
 
 type LinkParams = React.PropsWithChildren<{
     href?: URL,
@@ -51,7 +52,7 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
         try {
             if (this.href.includes('http'))
                 return new URL(this.href);
-            if (/^[0-9a-f]{24}$/i.test(this.href))
+            if (isObjectId(this.href))
                 return Navigation.fileURL(this.href)
             return undefined;
         } catch (error) {
@@ -62,7 +63,7 @@ class Options implements LinkOptions, LinkContentOptions, LinkTitleOptions {
 
     public get fileURL(): URL {
         try {
-            if (/^[0-9a-f]{24}$/i.test(this.fileId))
+            if (isObjectId(this.fileId))
                 return Navigation.fileURL(this.fileId)
             return undefined;
         } catch (error) {
@@ -132,7 +133,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
     const href = linkOptions.fileURL
     const file = metadata.$queries[linkOptions.fileId]
 
-    const Content = useMemo<RendererObject<FileContent,FileMetadata>>(() => {
+    const Content = useMemo<RendererObject>(() => {
         switch (file?.type) {
             case FileType.Ability:
                 return AbilityRenderer
@@ -220,4 +221,4 @@ export const element = {
         toComponent: LinkTitleElement,
         validate: validateOptions3
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>

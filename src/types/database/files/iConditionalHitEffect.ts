@@ -1,10 +1,7 @@
-import { DiceType, ScalingType, Attribute, DamageType, EffectCondition, TargetType } from "../dnd"
-import { IOptionType } from "../editor"
+import type { DiceType, ScalingType, Attribute, DamageType, EffectCondition, TargetType } from "../dnd"
+import type { IOptionType } from "../editor"
 
 interface ICreatureActionData {
-    name?: string
-    public?: boolean
-    description?: string
     notes?: string
     // Hit condition
     condition?: EffectCondition

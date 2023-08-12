@@ -8,15 +8,14 @@ import Renderer from './renderer';
 import { getTemplate } from 'data/fileTemplates';
 import Localization from 'utils/localization'
 import Logger from 'utils/logger';
+import { getRelativeMetadata } from 'utils/helpers';
 import { EditInputType, FileTemplate, RootTemplateComponent, TemplateComponent } from 'types/templates';
-import { FileMetadata } from 'types/database/files';
 import { ViewMode } from 'types/context/appContext';
-import styles from 'styles/pages/storyPage/main.module.scss'
 import { EditFilePage } from 'types/context/fileContext';
-import { getRelativeMetadata, isEnum } from 'utils/helpers';
-import { getOptionType } from 'data/optionData';
+import { IFileMetadata } from 'types/database/files';
+import styles from 'styles/pages/storyPage/main.module.scss'
 
-const setDefaults = (template: TemplateComponent, metadata: FileMetadata) => {
+const setDefaults = (template: TemplateComponent, metadata: IFileMetadata) => {
     switch (template.type) {
         case EditInputType.Root:
         case EditInputType.Group:

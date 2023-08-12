@@ -4,6 +4,7 @@ import TextEditor from 'components/common/controls/textEditor';
 import { TemplateComponentProps } from '.';
 import { getRelativeMetadata } from 'utils/helpers';
 import { TextareaTemplateParams } from 'types/templates';
+import { IParserMetadata } from 'types/elements';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const TextareaComponent = ({ params }: TemplateComponentProps<TextareaTemplateParams>): JSX.Element => {
@@ -15,7 +16,7 @@ const TextareaComponent = ({ params }: TemplateComponentProps<TextareaTemplatePa
         dispatch.setMetadata(params.key, value);
     }
 
-    const variables = (context.file?.metadata?.$vars ?? {})[params.key] ?? {}
+    const variables = ((context.file?.metadata as IParserMetadata)?.$vars ?? {})[params.key] ?? {}
 
     return (
         <div 

@@ -3,14 +3,14 @@ import { UsedFileTypes } from "./database/files"
 interface Palette {
     name: string
     colors: {
-        background: string
-        accents: string
+        "background": string
+        "accents": string
 
-        good: string
-        bad: string
-        neutral: string
-        warning: string
-        error: string
+        "good": string
+        "bad": string
+        "neutral": string
+        "warning": string
+        "error": string
 
         "syntax-function-name": string
         "syntax-function-option": string

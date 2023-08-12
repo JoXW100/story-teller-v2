@@ -10,9 +10,9 @@ import Localization from 'utils/localization';
 import EditStoryPopup from './editStoryPopup';
 import { DBResponse } from 'types/database';
 import { PageStatus, StoryCardData } from 'types/homePage';
-import { StoryDeleteResult, StoryUpdateResult } from 'types/database/stories';
 import styles from 'styles/pages/homePage/storyCard.module.scss'
 import Logger from 'utils/logger';
+import { StoryDeleteResult, StoryUpdateResult } from 'types/database/responses';
 
 type StoryCardProps = React.PropsWithRef<{
     data: StoryCardData

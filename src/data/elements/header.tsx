@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { ParseError } from 'utils/parser';
-import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface HeaderOptions extends Variables {
@@ -81,4 +81,4 @@ export const element = {
         toComponent: Header3,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>

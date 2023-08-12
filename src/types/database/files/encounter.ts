@@ -1,6 +1,6 @@
-import { FileContent, FileMetadata, FileStorage } from "."
+import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
 
-interface EncounterContent extends FileContent {
+interface IEncounterContent extends IFileContent {
     text: string
 }
 
@@ -11,21 +11,27 @@ interface IEncounterCardData {
     notes?: string
 }
 
-interface EncounterMetadata extends FileMetadata {
-    description?: string
-    public?: boolean
+interface IEncounterMetadata extends IFileMetadata {
     creatures?: string[]
     challenge?: number
     xp?: number
 }
 
-interface EncounterStorage extends FileStorage {
+interface IEncounterStorage extends IFileStorage {
     cards: IEncounterCardData[]
 }
 
+abstract class EncounterFile implements IFileData {
+    type: FileType.Encounter
+    content: IEncounterContent
+    metadata: IEncounterMetadata
+    storage: IEncounterStorage
+}
+
+export default EncounterFile
 export type {
-    EncounterContent,
-    EncounterMetadata,
-    EncounterStorage,
+    IEncounterContent,
+    IEncounterMetadata,
+    IEncounterStorage,
     IEncounterCardData
 }

@@ -1,3 +1,4 @@
+import { IElementObject } from 'types/elements';
 import * as Align from './align';
 import * as Block from './block';
 import * as Bold from './bold';
@@ -22,7 +23,6 @@ import * as TableCell from './tableCell';
 import * as TableHeader from './tableHeader';
 import * as Text from './text';
 import * as Toggle from './toggle';
-import { ElementObject } from 'types/elements';
 
 export const TableElementTypes = new Set([...Object.keys(TableCell.element), ...Object.keys(TableHeader.element) ]);
 
@@ -51,7 +51,7 @@ export const ElementDictionary = {
     ...TableHeader.element,
     ...Text.element,
     ...Toggle.element
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export const Elements = {
     Align: Align.default,
@@ -84,7 +84,7 @@ export const Elements = {
 
 type ExtractElementType<T> = T extends keyof typeof ElementDictionary
   ? typeof ElementDictionary[T]
-  : ElementObject;
+  : IElementObject;
 
 
 export function getElement<T extends string>(key: T): ExtractElementType<T>

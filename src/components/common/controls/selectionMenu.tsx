@@ -33,7 +33,7 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
                 }, {}) 
     ), [selection, alternate, values])
 
-    const handleValidateInput = (value: string): boolean => {
+    const handleValidateInput = (value: string): value is string => {
         return value != undefined;
     }
 

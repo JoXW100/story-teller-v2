@@ -1,22 +1,20 @@
-import { FileContent, FileMetadata } from "."
-import { ObjectId } from ".."
-import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
-import { IOptionType } from "../editor"
-import ICreatureStats from "./iCreatureStats"
+import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
+import type { ObjectIdText } from ".."
+import type{ Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
+import type { IOptionType } from "../editor"
+import type ICreatureStats from "./iCreatureStats"
 
-interface CreatureContent extends FileContent {
+interface ICreatureContent extends IFileContent {
     text: string
 }
 
-interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficiency"> {
-    public?: boolean
+interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "proficiency"> {
     type?: CreatureType
     size?: SizeType
     alignment?: Alignment
     portrait?: string
-    description?: string
 
-    abilities?: ObjectId[]
+    abilities?: ObjectIdText[]
     challenge?: number
     xp?: number
 
@@ -47,10 +45,23 @@ interface CreatureMetadata extends FileMetadata, Omit<ICreatureStats, "proficien
     
     // Spells
     spellSlots?: number[]
-    spells?: string[]
+    spells?: ObjectIdText[]
 }
 
+interface ICreatureStorage extends IFileStorage {
+    
+}
+
+abstract class CreatureFile implements IFileData {
+    type: FileType.Creature
+    content: ICreatureContent
+    metadata: ICreatureMetadata
+    storage: ICreatureStorage
+}
+
+export default CreatureFile
 export type {
-    CreatureContent,
-    CreatureMetadata
+    ICreatureContent,
+    ICreatureMetadata,
+    ICreatureStorage
 }

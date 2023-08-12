@@ -1,28 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Elements from 'data/elements';
 import { Context } from 'components/contexts/fileContext';
-import { useParser } from 'utils/parser';
-import Dice from 'utils/data/dice';
-import { useFiles } from 'utils/handlers/files';
+import Elements from 'data/elements';
 import CreatureData from 'data/structures/creature';
 import EncounterData from 'data/structures/encounter';
 import EncounterCard from './encounterCard';
-import { FileData, IFileMetadataQueryResult } from 'types/database/files';
+import { useParser } from 'utils/parser';
+import { useFiles } from 'utils/handlers/files';
+import Dice from 'utils/data/dice';
 import { CalculationMode, RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
-import { IEncounterCardData, EncounterContent, EncounterMetadata, EncounterStorage } from 'types/database/files/encounter';
-import { CreatureMetadata } from 'types/database/files/creature';
+import EncounterFile, { IEncounterCardData, IEncounterMetadata } from 'types/database/files/encounter';
 import { Attribute } from 'types/database/dnd';
+import { FileMetadataQueryResult } from 'types/database/responses';
+import { ICreatureMetadata } from 'types/database/files/creature';
+import { File } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import styles from 'styles/renderer.module.scss';
 
 type EncounterFileRendererProps = React.PropsWithRef<{
-    file: FileData<EncounterContent,EncounterMetadata,EncounterStorage>
+    file: File<EncounterFile>
     stats?: ICreatureStats
 }>
 
 type EncounterLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<EncounterMetadata>
+    file: FileMetadataQueryResult<IEncounterMetadata>
     stats?: ICreatureStats
 }>
 
@@ -55,9 +56,9 @@ const cardsAreEqual = (a: IEncounterCardData[], b: IEncounterCardData[]): boolea
     return true
 }
 
-const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,EncounterStorage>): [IEncounterCard[], CardDispatch] => {
+const useEncounterCards = (file: File<EncounterFile>): [IEncounterCard[], CardDispatch] => {
     const [_, dispatch] = useContext(Context)
-    const [creatures, loading] = useFiles<CreatureMetadata>(file?.metadata?.creatures)
+    const [creatures, loading] = useFiles<ICreatureMetadata>(file?.metadata?.creatures)
     const [state, setState] = useState<IEncounterCard[]>([])
     const cards = file?.storage?.cards ?? []
 
@@ -67,10 +68,10 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
             setState(creatures.map((cre) => {
                 let creature = new CreatureData(cre.metadata)
                 let health = creature.healthValue
-                let id = String(cre.id)
+                let key = String(cre.id)
                 return {
-                    id: id,
-                    num: counterMap[id] = 1 + (counterMap[id] ?? -1),
+                    id: cre.id,
+                    num: counterMap[key] = 1 + (counterMap[key] ?? -1),
                     creature: creature,
                     initiative: 0,
                     maxHealth: health,
@@ -86,16 +87,16 @@ const useEncounterCards = (file: FileData<EncounterContent,EncounterMetadata,Enc
                 let maxHealth = card?.maxHealth ?? health
                 let initiative = card?.initiative ?? 0
                 let notes = card?.notes ?? ""
-                let id = String(cre.id)
+                let key = String(cre.id)
                 return {
-                    id: id,
-                    num: counterMap[id] = 1 + (counterMap[id] ?? -1),
+                    id: cre.id,
+                    num: counterMap[key] = 1 + (counterMap[key] ?? -1),
                     creature: creature,
                     initiative: initiative,
                     maxHealth: maxHealth,
                     health: health,
                     notes: notes
-                }
+                } as IEncounterCard
             }))
         }
     }, [loading, creatures])
@@ -226,7 +227,7 @@ const EncounterLinkRenderer = ({ file }: EncounterLinkRendererProps): JSX.Elemen
     </>
 }
 
-const EncounterRenderer: RendererObject<EncounterContent,EncounterMetadata> = {
+const EncounterRenderer: RendererObject<EncounterFile> = {
     fileRenderer: EncounterFileRenderer,
     linkRenderer: EncounterLinkRenderer
 }

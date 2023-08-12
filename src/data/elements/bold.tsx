@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Variables } from 'types/elements';
+import { IElementObject, ElementParams } from 'types/elements';
 
 const BoldElement = ({ options, metadata, content, variablesKey, ...args }: ElementParams<{}>): JSX.Element => {
     return <b {...args}/>
@@ -16,11 +16,11 @@ const x = {
             throw new ParseError(`'bold' command does not accept any options`);
         return {}
     }
-} satisfies ElementObject
+} satisfies IElementObject
 
 export const element = {
     b: x,
     bold: x
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default BoldElement;

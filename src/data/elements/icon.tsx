@@ -1,7 +1,7 @@
 import { FunctionComponent, SVGAttributes }from 'react'
 import { ParseError } from 'utils/parser';
 import Icons from 'assets/icons';
-import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface IconOptions extends Variables {
@@ -57,6 +57,6 @@ export const element = {
         toComponent: IconElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default IconElement;

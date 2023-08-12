@@ -53,11 +53,11 @@ export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttrib
     [FileType.Class]: ClassIcon,
     [FileType.Creature]: DragonIcon,
     [FileType.Document]: DocumentIcon,
-    [FileType.Empty]: null,
     [FileType.Encounter]: CrossedSwords,
     [FileType.Folder]: FolderIcon,
-    [FileType.Root]: null,
     [FileType.Spell]: SpellIcon,
+    [FileType.Root]: null,
+    [FileType.Empty]: null
 }
 
 export const Icons: Record<string,React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {

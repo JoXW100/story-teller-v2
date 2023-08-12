@@ -3,6 +3,7 @@ import { Context } from 'components/contexts/fileContext';
 import TextEditor from 'components/common/controls/textEditor';
 import { TemplateComponentProps } from '.';
 import { IFileTemplateParams } from 'types/templates';
+import { IParserMetadata } from 'types/elements';
 
 const EditorComponent = ({}: TemplateComponentProps<IFileTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
@@ -11,7 +12,7 @@ const EditorComponent = ({}: TemplateComponentProps<IFileTemplateParams>): JSX.E
         dispatch.setText(value);
     }
 
-    const variables = (context.file?.metadata?.$vars ?? {}).$content ?? {}
+    const variables = ((context.file?.metadata as IParserMetadata)?.$vars ?? {}).$content ?? {}
 
     return (
         <TextEditor

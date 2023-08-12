@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { ElementObject, ElementParams, Queries, Variables } from 'types/elements';
+import { IElementObject, ElementParams, Queries, Variables } from 'types/elements';
 
 interface TableCellOptions extends Variables {
     color?: string
@@ -41,11 +41,11 @@ const _element = {
     validOptions: validOptions,
     toComponent: TableCellElement,
     validate: validateOptions
-} satisfies ElementObject
+} satisfies IElementObject
 
 export const element = {
     tableCell: _element,
     tc: _element
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default TableCellElement;

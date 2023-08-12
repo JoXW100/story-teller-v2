@@ -1,8 +1,8 @@
 import { ItemListItem } from "components/common/controls/itemListMenu";
-import { ObjectId } from "mongodb";
 import { Collection, Enum } from "types";
 import { EditFilePage } from "types/context/fileContext";
-import { FileMetadata } from "types/database/files";
+import { ObjectId, ObjectIdText } from "types/database";
+import { IFileMetadata } from "types/database/files";
 
 /** Compares two arrays and returns if they contain equivalent elements */
 export const arraysAreEqual = (a: any[], b: any[]): boolean => {
@@ -17,14 +17,14 @@ export const arraysAreEqual = (a: any[], b: any[]): boolean => {
     return true;
 }
 
-export const arrayUnique = <T extends string | number | symbol>(array: T[]): T[] => {
+export const arrayUnique = <T>(array: T[]): T[] => {
     let unique = new Set<T>()
     return array.reduce((prev, value) => {
-        if (!(value in unique)) {
+        if (unique.has(value)) {
+            return prev
+        } else {
             unique.add(value)
             return [...prev, value]
-        } else {
-            return prev
         }
     }, [] as T[])
 }
@@ -41,11 +41,11 @@ export function asKeyOf<T extends Collection>(value: keyof Collection, type: T):
     return Object.keys(type).includes(value) ? value as keyof Collection : undefined
 }
 
-export function isObjectId(value: string | ObjectId): value is ObjectId {
-    return /^[a-z0-9]{24}$/.test(String(value));
+export function isObjectId(value: ObjectIdText): value is ObjectId {
+    return value instanceof Object || /^[0-9a-fA-F]{24}$/.test(value)
 }
 
-export function getRelativeMetadata(metadata: FileMetadata, pages: EditFilePage[]): FileMetadata {
+export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage[]): IFileMetadata {
     if (metadata && pages.length > 0) {
         pages.forEach((page) => {
             let items: ItemListItem[] = metadata[page.rootKey]

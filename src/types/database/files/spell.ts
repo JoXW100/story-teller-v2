@@ -1,12 +1,12 @@
-import { FileContent, FileMetadata } from "."
-import { Duration, AreaType, CastingTime, MagicSchool } from "../dnd"
-import ICreatureActionData from "./iConditionalHitEffect"
+import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
+import type { Duration, AreaType, CastingTime, MagicSchool } from "../dnd"
+import type ICreatureActionData from "./iConditionalHitEffect"
 
-interface SpellContent extends FileContent {
+interface ISpellContent extends IFileContent {
     text: string
 }
 
-interface SpellMetadata extends FileMetadata, ICreatureActionData {
+interface ISpellMetadata extends IFileMetadata, ICreatureActionData {
     level?: number
     school?: MagicSchool
     time?: CastingTime
@@ -28,7 +28,20 @@ interface SpellMetadata extends FileMetadata, ICreatureActionData {
     areaHeight?: number
 }
 
+interface ISpellStorage extends IFileStorage {
+
+}
+
+abstract class SpellFile implements IFileData {
+    type: FileType.Spell
+    content: ISpellContent
+    metadata: ISpellMetadata
+    storage: ISpellStorage
+}
+
+export default SpellFile
 export type {
-    SpellContent,
-    SpellMetadata
+    ISpellContent,
+    ISpellMetadata,
+    ISpellStorage
 }

@@ -1,4 +1,4 @@
-import { ElementObject, Variables } from 'types/elements';
+import { IElementObject, Variables } from 'types/elements';
 
 export const element = {
     set: {
@@ -9,4 +9,4 @@ export const element = {
         toComponent: null,
         validate: () => ({})
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>

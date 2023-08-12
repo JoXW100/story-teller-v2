@@ -8,7 +8,7 @@ import { openContext } from 'components/common/contextMenu';
 import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'utils/localization';
 import { RollMethod } from 'types/dice';
-import { Queries, ElementObject, ElementParams, Variables, RollMode } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables, RollMode } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface RollOptions extends Variables {
@@ -201,7 +201,7 @@ export const element = {
         toComponent: RollElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default RollElement;
 export type {

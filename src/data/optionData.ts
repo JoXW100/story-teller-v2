@@ -1,6 +1,7 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, MovementType, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
-import { CalculationMode, ModifierCondition, ModifierSelectType, ModifierType, OptionalAttribute, RenderedFileType } from 'types/database/editor';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
+import { ModifierType, ModifierSelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty } from 'types/database/files/modifier';
+import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
 interface IOptionType<T extends Enum> {
     enum: T

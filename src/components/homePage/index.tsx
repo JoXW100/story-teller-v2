@@ -11,9 +11,9 @@ import SelectStoryMenu from './selectStoryMenu';
 import CreateStoryMenu from './createStoryMenu';
 import ReconnectMenu from './reconnectMenu';
 import { DBResponse } from 'types/database';
-import { StoryGetAllResult } from 'types/database/stories';
 import { CardType, PageStatus, StoryCardData } from 'types/homePage';
 import styles from 'styles/pages/homePage/main.module.scss'
+import { StoryGetAllResult } from 'types/database/responses';
 
 interface HomePageState {
     loading: boolean

@@ -1,8 +1,9 @@
-import { DBResponse, ObjectId } from "types/database"
-import { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMetadata, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileStorage, FileType } from "types/database/files"
-import { Story, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories"
-import { Open5eFetchType } from "types/open5eCompendium"
 import Logger from "./logger"
+import { DBResponse, ObjectId } from "types/database"
+import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses"
+import { Open5eFetchType } from "types/open5eCompendium"
+import { FileType, IFileData, IFileMetadata, IFileStorage } from "types/database/files"
+import { IStory } from "types/database/stories"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
@@ -46,7 +47,7 @@ abstract class Communication {
         })
     }
 
-    public static async updateStory(storyId: ObjectId, update: Partial<Story>): Promise<DBResponse<StoryUpdateResult>> {
+    public static async updateStory(storyId: ObjectId, update: Partial<IStory>): Promise<DBResponse<StoryUpdateResult>> {
         return await this.databaseFetch<StoryUpdateResult>('updateStory', 'PUT', {
             storyId: storyId,
             update: update
@@ -87,7 +88,7 @@ abstract class Communication {
         })
     }
 
-    public static async addFileFromData(storyId: ObjectId, holderId: ObjectId, name: string, type: FileType, data: FileMetadata): Promise<DBResponse<FileAddResult>> {
+    public static async addFileFromData<T extends FileType>(storyId: ObjectId, holderId: ObjectId, name: string, type: T, data: Extract<IFileData, { type: T }>["metadata"] ): Promise<DBResponse<FileAddResult>> {
         return await this.databaseFetch<FileAddResult>('addFileFromData', 'PUT', {
             storyId: storyId, 
             holderId: holderId,
@@ -153,7 +154,7 @@ abstract class Communication {
         })
     }
 
-    public static async setFileMetadata(storyId: ObjectId, fileId: ObjectId, metadata: FileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
+    public static async setFileMetadata(storyId: ObjectId, fileId: ObjectId, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
         return await this.databaseFetch<FileSetPropertyResult>('setFileMetadata', 'PUT', {
             storyId: storyId,
             fileId: fileId,
@@ -161,7 +162,7 @@ abstract class Communication {
         })
     }
 
-    public static async setFileStorage(storyId: ObjectId, fileId: ObjectId, storage: FileStorage): Promise<DBResponse<FileSetPropertyResult>> {
+    public static async setFileStorage(storyId: ObjectId, fileId: ObjectId, storage: IFileStorage): Promise<DBResponse<FileSetPropertyResult>> {
         return await this.databaseFetch<FileSetPropertyResult>('setFileStorage', 'PUT', {
             storyId: storyId,
             fileId: fileId,

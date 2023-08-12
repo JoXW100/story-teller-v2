@@ -9,21 +9,21 @@ type ListTemplateComponent<T> = React.PropsWithoutRef<{
     onUpdate: (value: T) => void
 }>
 
-type ListTemplateMenuProps<T> = React.PropsWithoutRef<{
+type ListTemplateMenuProps<E, T extends E> = React.PropsWithoutRef<{
     className: string
     onChange: (items: T[]) => void
-    validateInput?: (value: T, values: T[]) => boolean
+    validateInput?: (value: E, values: T[]) => value is T
     Component: (props: ListTemplateComponent<T>) => React.ReactNode
-    EditComponent: (props: ListTemplateComponent<T>) => React.ReactNode
-    defaultValue: T
+    EditComponent: (props: ListTemplateComponent<E>) => React.ReactNode
+    defaultValue: E
     values: T[]
     addLast?: boolean
 }>
 
-function ListTemplateMenu<T>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast }: ListTemplateMenuProps<T>): JSX.Element {
-    const [value, setValue] = useState<T>(defaultValue);
+const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast }: ListTemplateMenuProps<E, T>): JSX.Element => {
+    const [value, setValue] = useState<E>(defaultValue);
 
-    const handleEditChange = (value: T) => {
+    const handleEditChange = (value: E) => {
         setValue(value)
     }
 
@@ -34,8 +34,10 @@ function ListTemplateMenu<T>({ className, onChange, validateInput, Component, Ed
     }
 
     const handleAdd = () => {
-        onChange(addLast ? [...values, value] : [value, ...values]);
-        setValue(defaultValue)
+        if (validateInput(value, values)) {
+            onChange(addLast ? [...values, value] : [value, ...values]);
+            setValue(defaultValue)
+        }
     } 
 
     const handleRemove = (index: number) => {

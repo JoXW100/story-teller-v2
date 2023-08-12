@@ -1,43 +1,11 @@
-import React from "react"
-import { FileContent, FileData, FileMetadata, IFileMetadataQueryResult } from "./files"
-import ICreatureStats from "./files/iCreatureStats"
+import type { File, IFileData } from "types/database/files"
+import type ICreatureStats from "./files/iCreatureStats"
+import type { FileMetadataQueryResult } from "./responses"
 
 export enum CalculationMode {
     Auto,
     Override,
     Modify
-}
-
-export enum OptionalAttribute {
-    None = "none",
-    STR = "str",
-    DEX = "dex",
-    CON = "con",
-    INT = "int",
-    WIS = "wis",
-    CHA = "cha"
-}
-
-export enum ModifierType {
-    Bonus = "bonus", // Adds/Removes a flat value
-    Set = "set", // Sets value
-    Add = "add", // Adds item to collection
-    Remove = "remove" // Removes item from collection
-}
-
-export enum ModifierSelectType {
-    Value = "value",
-    Choice = "choice",
-}
-
-export enum ModifierCondition {
-    None = "none",
-}
-
-export enum ModifierSetMethod {
-    Exact = "exact",
-    Max = "max",
-    Min = "min"
 }
 
 export enum RenderedFileType {
@@ -55,15 +23,14 @@ interface IOptionType<T> {
     value: T 
 }
 
-type OptionType<T> = { type: CalculationMode.Auto } | IOptionType<T>
+export type OptionType<T> = { type: CalculationMode.Auto } | IOptionType<T>
 
-interface RendererObject<A extends FileContent,B extends FileMetadata> {
-    fileRenderer: (props: React.PropsWithRef<{ file: FileData<A, B, any>, stats?: ICreatureStats }>) => JSX.Element
-    linkRenderer: (props: React.PropsWithRef<{ file: IFileMetadataQueryResult<B>, stats?: ICreatureStats }>) => JSX.Element
+interface RendererObject<T extends IFileData = IFileData> {
+    fileRenderer: (props: React.PropsWithRef<{ file: File<T>, stats?: ICreatureStats }>) => JSX.Element
+    linkRenderer: (props: React.PropsWithRef<{ file: FileMetadataQueryResult<T["metadata"]>, stats?: ICreatureStats }>) => JSX.Element
 }
 
 export type {
-    OptionType,
     IOptionType,
     RendererObject
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParseError } from 'utils/parser';
-import { Queries, ElementObject, ElementParams, Variables, AlignDirection } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables, AlignDirection } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface AlignOptions extends Variables {
@@ -81,6 +81,6 @@ export const element = {
         toComponent: AlignElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default AlignElement;

@@ -1,45 +1,61 @@
-import { FileContent, FileMetadata, Modifier, ModifierCollection } from "."
-import { DiceType } from "../dnd"
+import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
+import type { DiceType } from "../dnd"
+import type { IModifier } from "./modifier"
+import type { IModifierCollection } from "./modifierCollection"
 
-interface ClassContent extends FileContent {
+interface IClassContent extends IFileContent {
     text: string
 }
 
-interface ClassLevelsMetadata {
-    1?: Modifier[]
-    2?: Modifier[]
-    3?: Modifier[]
-    4?: Modifier[]
-    5?: Modifier[]
-    6?: Modifier[]
-    7?: Modifier[]
-    8?: Modifier[]
-    9?: Modifier[]
-    10?: Modifier[]
-    11?: Modifier[]
-    12?: Modifier[]
-    13?: Modifier[]
-    14?: Modifier[]
-    15?: Modifier[]
-    16?: Modifier[]
-    17?: Modifier[]
-    18?: Modifier[]
-    19?: Modifier[]
-    20?: Modifier[]
+interface IClassLevels {
+    1?: IModifier[]
+    2?: IModifier[]
+    3?: IModifier[]
+    4?: IModifier[]
+    5?: IModifier[]
+    6?: IModifier[]
+    7?: IModifier[]
+    8?: IModifier[]
+    9?: IModifier[]
+    10?: IModifier[]
+    11?: IModifier[]
+    12?: IModifier[]
+    13?: IModifier[]
+    14?: IModifier[]
+    15?: IModifier[]
+    16?: IModifier[]
+    17?: IModifier[]
+    18?: IModifier[]
+    19?: IModifier[]
+    20?: IModifier[]
 }
 
-interface ClassMetadataProperties {
-    description?: string
+interface IClassMetadataProperties {
     hitDice?: DiceType
 
-    getModifiers?: (level: number) => ModifierCollection
+    getModifiers?: (level: number) => IModifierCollection
 }
 
-interface ClassMetadata extends ClassMetadataProperties, ClassLevelsMetadata, FileMetadata {}
+interface IClassMetadata extends IClassMetadataProperties, IClassLevels, IFileMetadata {
 
+}
+
+interface IClassStorage extends IFileStorage {
+    
+}
+
+abstract class ClassFile implements IFileData {
+    type: FileType.Class
+    content: IClassContent
+    metadata: IClassMetadata
+    storage: IClassStorage
+}
+
+export default ClassFile
 export type {
-    ClassContent,
-    ClassLevelsMetadata,
-    ClassMetadataProperties,
-    ClassMetadata,
+    IClassContent,
+    IClassLevels,
+    IClassMetadataProperties,
+    IClassMetadata,
+    IClassStorage
 }

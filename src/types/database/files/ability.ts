@@ -1,12 +1,13 @@
-import { FileContent, FileMetadata, Modifier } from "."
-import { AbilityType, ActionType, DiceType } from "../dnd"
-import ICreatureActionData from "./iConditionalHitEffect"
+import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
+import type { IModifier } from "./modifier"
+import type ICreatureActionData from "./iConditionalHitEffect"
+import type { AbilityType, ActionType, DiceType } from "../dnd"
 
-interface AbilityContent extends FileContent {
+interface IAbilityContent extends IFileContent {
     text: string
 }
 
-interface AbilityMetadata extends FileMetadata, ICreatureActionData {
+interface IAbilityMetadata extends IFileMetadata, ICreatureActionData {
     type?: AbilityType
     versatile?: boolean
     action?: ActionType
@@ -16,10 +17,23 @@ interface AbilityMetadata extends FileMetadata, ICreatureActionData {
     rangeThrown?: number
     effectVersatileDice?: DiceType
     // Modifiers
-    modifiers?: Modifier[]
+    modifiers?: IModifier[]
 }
 
+interface IAbilityStorage extends IFileStorage {
+
+}
+
+abstract class AbilityFile implements IFileData {
+    type: FileType.Ability
+    content: IAbilityContent
+    metadata: IAbilityMetadata
+    storage: IAbilityStorage
+}
+
+export default AbilityFile
 export type {
-    AbilityContent,
-    AbilityMetadata
+    IAbilityContent,
+    IAbilityMetadata,
+    IAbilityStorage
 }

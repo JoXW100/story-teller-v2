@@ -5,7 +5,7 @@ type ListMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string
     onChange: (selection: string[]) => void
-    validateInput?: (value: string | number, values: (string | number)[]) => boolean
+    validateInput?: (value: string | number, values: (string | number)[]) => value is (string | number)
     values: (string | number)[]
     type: "text" | "number"
     defaultValue: string | number, 

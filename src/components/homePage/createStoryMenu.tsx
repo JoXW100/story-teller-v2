@@ -2,9 +2,9 @@ import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
-import { StoryAddResult } from 'types/database/stories';
 import { DBResponse } from 'types/database';
 import { PageStatus } from 'types/homePage';
+import { StoryAddResult } from 'types/database/responses';
 import styles from 'styles/pages/homePage/menu.module.scss';
 
 type CreateStoryMenuProps = React.PropsWithRef<{

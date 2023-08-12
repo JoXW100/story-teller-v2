@@ -2,18 +2,18 @@ import React, { useContext } from 'react'
 import DropdownMenu from 'components/common/controls/dropdownMenu';
 import NumberInput from 'components/common/controls/numericInput';
 import { Context } from 'components/contexts/fileContext';
-import { CalculationMode } from 'types/database/editor';
 import { getOptionType } from 'data/optionData';
-import { TemplateComponentProps } from '.';
-import { OptionTemplateParams } from 'types/templates';
-import { FileMetadata } from 'types/database/files';
-import styles from 'styles/pages/storyPage/editor.module.scss';
 import Logger from 'utils/logger';
 import { getRelativeMetadata } from 'utils/helpers';
+import { TemplateComponentProps } from '.';
+import { OptionTemplateParams } from 'types/templates';
+import { CalculationMode } from 'types/database/editor';
+import { IFileMetadata } from 'types/database/files';
+import styles from 'styles/pages/storyPage/editor.module.scss';
 
 type OptionData = { type: string | number, value: number }
 
-const getData = (metadata: FileMetadata, key: string, defaultValue: number): OptionData => {
+const getData = (metadata: IFileMetadata, key: string, defaultValue: number): OptionData => {
     let data: OptionData = metadata ? metadata[key] : null
     if (!data || typeof data != typeof {}) {
         data = { type: getOptionType('calc').default, value: defaultValue }

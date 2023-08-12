@@ -1,6 +1,8 @@
-import { Story } from 'types/database/stories';
+import { IStory } from 'types/database/stories';
 
-interface StoryCardData extends Story { type: CardType }
+interface StoryCardData extends IStory { 
+    type: CardType
+}
 
 export enum PageStatus {
     Loading = "loading",

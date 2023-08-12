@@ -5,13 +5,14 @@ import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
 import Localization from 'utils/localization';
-import { FileData, FileGetManyMetadataResult, FileGetMetadataResult, IFileMetadataQueryResult, FileType } from 'types/database/files';
-import { AbilityContent, AbilityMetadata } from 'types/database/files/ability';
-import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
+import AbilityFile, { IAbilityMetadata } from 'types/database/files/ability';
+import ICreatureStats from 'types/database/files/iCreatureStats';
 import { RendererObject } from 'types/database/editor';
 import { RollMode } from 'types/elements';
-import ICreatureStats from 'types/database/files/iCreatureStats';
-import { ObjectId } from 'types/database';
+import { FileType } from 'types/database/files';
+import { ObjectIdText } from 'types/database';
+import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
+import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
 
 interface AbilityCategory { 
@@ -20,9 +21,9 @@ interface AbilityCategory {
 }
 
 type AbilityGroupsProps = React.PropsWithRef<{
-    abilityIds: ObjectId[]
+    abilityIds: ObjectIdText[]
     stats?: ICreatureStats
-    onLoaded?: (abilities: FileGetManyMetadataResult<AbilityMetadata>) => void 
+    onLoaded?: (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => void 
 }>
 
 type AbilityGroupProps = React.PropsWithChildren<{
@@ -30,24 +31,24 @@ type AbilityGroupProps = React.PropsWithChildren<{
 }>
 
 type AbilityFileRendererProps = React.PropsWithRef<{
-    file: FileData<AbilityContent,AbilityMetadata,undefined>
+    file: AbilityFile
     stats?: ICreatureStats
 }>
 
 type AbilityLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<AbilityMetadata>
+    file: FileMetadataQueryResult<IAbilityMetadata>
     stats?: ICreatureStats
 }>
 
 type AbilityToggleRendererProps = React.PropsWithRef<{
-    metadata: AbilityMetadata
+    metadata: IAbilityMetadata
     stats: ICreatureStats
     isOpen?: boolean
 }>
 
 
 type AbilityProps = React.PropsWithRef<{ 
-    metadata: AbilityMetadata, 
+    metadata: IAbilityMetadata, 
     stats: ICreatureStats
     open: boolean
     variablesKey: string
@@ -206,11 +207,6 @@ const AbilityLinkRenderer = ({ file, stats = {} }: AbilityLinkRendererProps): JS
     return <Ability metadata={file.metadata} stats={stats} open={true} variablesKey={`$${file.id}.description`}/>
 }
 
-const AbilityRenderer: RendererObject<AbilityContent,AbilityMetadata> = {
-    fileRenderer: AbilityFileRenderer,
-    linkRenderer: AbilityLinkRenderer
-}
-
 const parseText = async (value: string): Promise<FileGetMetadataResult> => {
     let res = await toAbility(value)
     if (res) {
@@ -223,7 +219,7 @@ const parseText = async (value: string): Promise<FileGetMetadataResult> => {
     return null
 }
 
-const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
+const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
     return (await Promise.all(ids.map((id) => parseText(String(id)))))
     .reduce((prev, ability, index) => (
         ability ? { ...prev, results: [...prev.results, ability] }
@@ -232,7 +228,7 @@ const processFunction: ProcessFunction<AbilityMetadata> = async (ids) => {
 } 
 
 export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProps): React.ReactNode => {
-    const [abilities, loading] = useFiles<AbilityMetadata>(abilityIds, processFunction)
+    const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
 
     useEffect(() => {
@@ -244,7 +240,7 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
             [ActionType.Special]: { header: "Special", content: [] },
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
         } satisfies Record<ActionType, AbilityCategory>
-        abilities.forEach((file: IFileMetadataQueryResult<AbilityMetadata>, index) => {
+        abilities.forEach((file: FileMetadataQueryResult<IAbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.None].content.push(
                 <AbilityToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
             )
@@ -284,6 +280,11 @@ const AbilityGroup = ({ header, children }: AbilityGroupProps): JSX.Element => {
         )}
         { open && children }
     </>
+}
+
+const AbilityRenderer: RendererObject<AbilityFile> = {
+    fileRenderer: AbilityFileRenderer,
+    linkRenderer: AbilityLinkRenderer
 }
 
 export default AbilityRenderer;

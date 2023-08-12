@@ -3,14 +3,18 @@ import FileData from "./file";
 import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
 import { getAttributeModifier } from "utils/calculations";
-import { Attribute, DamageType, DiceType, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionalAttribute, IOptionType } from "types/database/editor";
+import { asEnum } from "utils/helpers";
+import { Attribute, DamageType, DiceType, EffectCondition, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
+import { CalculationMode, IOptionType } from "types/database/editor";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
-import { asEnum } from "utils/helpers";
+import { IFileMetadata } from "types/database/files";
 
-abstract class CreatureActionData<T extends ICreatureActionData> extends FileData<T> implements Required<ICreatureActionData> 
+abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata> extends FileData<T> implements Required<ICreatureActionData & IFileMetadata>
 {
+    $vars: never;
+    $queries: never;
+
     public readonly stats: CreatureStats
 
     constructor(metadata: T, stats: ICreatureStats = null) {
@@ -20,10 +24,6 @@ abstract class CreatureActionData<T extends ICreatureActionData> extends FileDat
 
     public get name(): string {
         return this.metadata.name ?? ""
-    }
-
-    public get public(): boolean {
-        return this.metadata.public ?? false
     }
 
     public get description(): string {

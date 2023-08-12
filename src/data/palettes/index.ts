@@ -11,7 +11,7 @@ const Palettes = {
     "dark": Dark,
     "neon": Neon,
     "cloud": Cloud
-} satisfies Record<string, Palette>
+} as Record<string, Palette>
 
 export default Palettes
 

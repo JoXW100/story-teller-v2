@@ -4,9 +4,10 @@ import HelpMenu from 'components/storyPage/helpMenu';
 import Queue from 'utils/data/queue';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
-import { StoryData, StoryContextProvider, StoryContextState, StoryContextDispatchAction } from 'types/context/storyContext';
+import { StoryContextProvider, StoryContextState, StoryContextDispatchAction } from 'types/context/storyContext';
 import { DBResponse, ObjectId } from 'types/database';
 import { RollEvent, RollMethod } from 'types/dice';
+import { IStoryData } from 'types/database/stories';;
 
 export const Context: React.Context<StoryContextProvider> = React.createContext([null, null])
 
@@ -28,7 +29,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                     return { ...state, loading: false, story: {} }
                 if (storyId && !state.story) {
                     Communication.getStory(storyId)
-                    .then((res: DBResponse<StoryData>) => {
+                    .then((res: DBResponse<IStoryData>) => {
                         if (!res.success) {
                             throw new Error(res.result as string)
                         }

@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import type { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import type { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 interface BlockOptions extends Variables {
@@ -65,6 +65,6 @@ export const element = {
         toComponent: BlockElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default BlockElement;

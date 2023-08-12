@@ -11,7 +11,7 @@ import CreateFolderContent from "./createFolderContent";
 import CreateImportContent from "./createImportContent";
 import CreateImportOldContent from "./createImportOldContent";
 import Localization from "utils/localization";
-import { FileMetadata, FileType } from "types/database/files";
+import { IFileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
@@ -32,7 +32,7 @@ export interface CreateFilePopupResult {
 export interface CreateFilePopupData {
     type: FileType
     name: string
-    data?: FileMetadata
+    data?: IFileMetadata
 }
 
 interface PageData {

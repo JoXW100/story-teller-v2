@@ -1,12 +1,12 @@
 import { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
+import LinkInput from 'components/common/controls/linkInput';
 import { TemplateComponentProps } from '.';
 import { asEnum, getRelativeMetadata } from 'utils/helpers';
 import { LinkInputTemplateParams } from 'types/templates';
-import { ObjectId } from 'types/database';
 import { FileType } from 'types/database/files';
+import { ObjectId } from 'types/database';
 import styles from 'styles/pages/storyPage/editor.module.scss';
-import LinkInput from 'components/common/controls/linkInput';
 
 const LinkInputComponent = ({ params }: TemplateComponentProps<LinkInputTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)

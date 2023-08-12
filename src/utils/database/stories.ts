@@ -2,9 +2,9 @@ import { ObjectId, Collection, Db } from "mongodb";
 import Database, { failure, success } from "./database";
 import Logger from "utils/logger";
 import { DBResponse } from "types/database";
-import { DBStory, DBStoryUpdate, StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult } from "types/database/stories";
-import { FileType } from "types/database/files";
-
+import { DBStory, DBStoryUpdate } from "types/database/stories";
+import { FileType, IRootData } from "types/database/files";
+import { StoryAddResult, StoryGetResult, StoryDeleteResult, StoryUpdateResult, StoryGetAllResult } from "types/database/responses";
 
 class StoriesInterface
 {
@@ -27,10 +27,9 @@ class StoriesInterface
 
             let result = await this.collection.insertOne(request);
             try {
-                let response = await Database.files.add(userId, String(result.insertedId), null, FileType.Root, {
-                    name: "",
-                    metadata: {}
-                })
+                let response = await Database.files.add(userId, String(result.insertedId), null, {
+                    type: FileType.Root
+                } satisfies IRootData)
                 Logger.log('stories.add', response.success ? result.insertedId : 'Null');
                 if (response.success)
                     return success(result.insertedId)

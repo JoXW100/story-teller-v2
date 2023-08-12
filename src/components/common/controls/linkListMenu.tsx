@@ -3,21 +3,23 @@ import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import { useFiles } from "utils/handlers/files";
 import { isObjectId } from "utils/helpers";
 import { FileType } from "types/database/files";
-import { ObjectId } from "types/database";
+import { ObjectId, ObjectIdText } from "types/database";
 import styles from 'styles/components/listMenu.module.scss';
 
-type ListMenuProps = React.PropsWithRef<{
+type ListMenuPropsType<T, A extends boolean> = {
     className?: string
     itemClassName?: string
-    onChange: (selection: ObjectId[]) => void
-    validateInput?: (value: ObjectId, values: ObjectId[]) => boolean
-    values: ObjectId[]
+    onChange: (selection: T[]) => void
+    validateInput?: (value: T, values: T[]) => value is T
+    values: T[]
     fileTypes: FileType[]
-    allowText: boolean
+    allowText: A
     placeholder?: string
-}>
+}
 
-type IdCollection = { results: ObjectId[], rest: ObjectId[] } 
+type ListMenuProps = React.PropsWithRef<ListMenuPropsType<ObjectId, false> | ListMenuPropsType<ObjectIdText, true>>
+
+type IDCollection = { results: string[], rest: ObjectId[] } 
 
 const LinkListMenu = ({ className, itemClassName, onChange, validateInput, values = [], fileTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
     if (fileTypes == undefined || fileTypes.length === 0) {
@@ -27,11 +29,14 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
     const allowedFiles = new Set(fileTypes)
     const [files, loading] = useFiles(values, (values) => (
         new Promise((resolve) => {
-            let ids = values.reduce<IdCollection>((prev, value) => (
-                isObjectId(value)
-                ? { ...prev, rest: [...prev.rest, value] }
-                : { ...prev, results: [...prev.results, value] }
-            ), { results: [] as ObjectId[], rest: [] as ObjectId[]})
+            let ids = values.reduce<IDCollection>((prev, value) => {
+                if (isObjectId(value)) {
+                    return { ...prev, rest: [...prev.rest, value] }
+                } else {
+                    return { ...prev, results: [...prev.results, value] }
+                }
+
+            }, { results: [], rest: []})
             resolve(ids as any)
         })
     ))
@@ -51,7 +56,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
         )
     }
 
-    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<ObjectId>): JSX.Element => {
+    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>): JSX.Element => {
         const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
         const [highlight, setHighlight] = useState<boolean>(false)
 
@@ -104,7 +109,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
     }
     
     return (
-        <ListTemplateMenu<ObjectId>
+        <ListTemplateMenu<ObjectIdText>
             className={className}
             onChange={onChange}
             validateInput={validateInput}
@@ -114,5 +119,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
             values={loading ? [] : values}/>
     )
 }
+
+
 
 export default LinkListMenu;

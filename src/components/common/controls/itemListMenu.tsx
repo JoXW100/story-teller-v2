@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { FileMetadata } from "types/database/files";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
+import { IFileMetadata } from "types/database/files";
 import styles from 'styles/components/listMenu.module.scss';
 
-interface ItemListItem extends FileMetadata {
+interface ItemListItem extends IFileMetadata {
     $name: string
 }
 
@@ -43,12 +43,16 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
             </div>
         )
     }, [EditComponent, itemClassName, prompt, onClick])
+
+    const handleValidate = (value: T): value is T => {
+        return validateInput(value.$name, values)
+    }
     
     return (
         <ListTemplateMenu<T>
             className={className}
             onChange={onChange}
-            validateInput={(value) => validateInput(value.$name, values)}
+            validateInput={handleValidate}
             Component={Component}
             EditComponent={EditComponent}
             defaultValue={{ $name: defaultValue } as T}

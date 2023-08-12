@@ -2,9 +2,9 @@ import Logger from "utils/logger";
 import { asEnum, isEnum } from "utils/helpers";
 import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
 import { CalculationMode, IOptionType } from "types/database/editor"
-import { FileMetadata, FileType } from "types/database/files"
-import { CreatureMetadata } from "types/database/files/creature"
-import { SpellMetadata } from "types/database/files/spell"
+import { FileType, IFileMetadata } from "types/database/files";
+import { ICreatureMetadata } from "types/database/files/creature";
+import { ISpellMetadata } from "types/database/files/spell";
 
 const hpSplitExpr = /([0-9]+) *\(([0-9]+)d([0-9]+)([\+\-][0-9]+)?\)/
 const areaMatchExpr = /([0-9]+)[- ]*(?:foot|feet)[- ]*([A-z]+)[- ]*(sphere|centered|cylinder)?/g
@@ -288,7 +288,7 @@ const roll20Expr = /<div *(?:class="([^"]*)")?[^>]*>\n?([^\n\t<>][^<>]*)/g
 const roll20ContentExpr = /<div *id="pagecontent"[^>]+>[ \t\n]+([\S\s]+?)<\/div>/m
 const roll20NameExpr = /<h1 *class="page-title" *>[ \n\t]*([A-z0-9 \-()]+)/
 
-const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: FileMetadata }> => {
+const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: IFileMetadata }> => {
     if (!url.includes("roll20.net/compendium/dnd5e"))
         return null
 
@@ -340,11 +340,11 @@ const roll20Importer = async (url: string): Promise<{ type: FileType, metadata: 
     }
 }
 
-const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
+const toCreature = (results: {[key: string]: string}): ICreatureMetadata => {
     var ac = Number(results['ac'] ? (/(-?[0-9]+)/.exec(results['ac']) ?? [])[1] : undefined)
     var { hp, num, dice } = splitHP(results['hp'])
     var passive = `passive perception ${results['passive perception'] ?? "10"}`
-    var senses = results['senses'] ? [passive , results['senses']] : [passive]
+    // var senses = results['senses'] ? [passive , results['senses']] : [passive]
     var fileContent = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
@@ -373,12 +373,12 @@ const toCreature = (results: {[key: string]: string}): CreatureMetadata => {
         // languages: results['languages'] ?? "",
         // senses: senses.join(', '),
         challenge: getChallenge(results['challenge rating'])
-    } satisfies CreatureMetadata
+    } satisfies ICreatureMetadata
 
     return fileContent
 }
 
-const toSpell = (results: {[key: string]: string}): SpellMetadata => {
+const toSpell = (results: {[key: string]: string}): ISpellMetadata => {
     var level = Number(results['level'])
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
@@ -389,7 +389,7 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
         var { area, areaSize, areaHeight } = getArea(results['content'] ?? "")
     }
 
-    var fileContent: SpellMetadata = {
+    var fileContent: ISpellMetadata = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
         level: isNaN(level) ? 0 : Number(results['level']),
@@ -417,7 +417,7 @@ const toSpell = (results: {[key: string]: string}): SpellMetadata => {
         conditionProficiency: true,
         effectDice: effectDice,
         effectDiceNum: effectDiceNum
-    }
+    } satisfies ISpellMetadata
 
     if (fileContent.damageType === DamageType.None) {
         fileContent.effectText = results["title"]

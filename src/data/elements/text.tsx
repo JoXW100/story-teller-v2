@@ -1,5 +1,5 @@
 import { ParseError } from "utils/parser";
-import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 
 interface TextOptions extends Variables {
     text: string
@@ -28,6 +28,6 @@ export const element = {
         toComponent: TextElement,
         validate: validateOptions
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default TextElement;

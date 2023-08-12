@@ -1,9 +1,9 @@
 import { getOptionType } from "data/optionData";
 import { AreaType, CastingTime, Duration, MagicSchool } from "types/database/dnd";
-import { SpellMetadata } from "types/database/files/spell";
+import { ISpellMetadata } from "types/database/files/spell";
 import CreatureActionData from "./creatureActionData";
 
-class SpellData extends CreatureActionData<SpellMetadata> implements Required<SpellMetadata>
+class SpellData extends CreatureActionData<ISpellMetadata> implements Required<ISpellMetadata>
 {
     $vars: never;
     $queries: never;

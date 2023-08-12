@@ -1,11 +1,11 @@
-import { IEncounterCardData, EncounterMetadata } from "types/database/files/encounter";
+import { IEncounterCardData, IEncounterMetadata } from "types/database/files/encounter";
 import EncounterCardData from "./encounterCardData";
 import FileData from "./file";
 
 
 type EncounterDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
 
-class EncounterData extends FileData<EncounterMetadata> implements Required<EncounterMetadata>
+class EncounterData extends FileData<IEncounterMetadata> implements Required<IEncounterMetadata>
 {
     $vars: never;
     $queries: never;
@@ -13,7 +13,7 @@ class EncounterData extends FileData<EncounterMetadata> implements Required<Enco
     protected readonly storage: IEncounterCardData[];
     protected readonly dispatch: EncounterDispatch;
 
-    public constructor(metadata: EncounterMetadata, cards: IEncounterCardData[], dispatch: EncounterDispatch) {
+    public constructor(metadata: IEncounterMetadata, cards: IEncounterCardData[], dispatch: EncounterDispatch) {
         super(metadata);
         this.storage = cards ?? []
         this.dispatch = dispatch
@@ -25,10 +25,6 @@ class EncounterData extends FileData<EncounterMetadata> implements Required<Enco
 
     public get description(): string {
         return this.metadata.description ?? ""
-    }
-
-    public get public(): boolean {
-        return this.metadata.public ?? false
     }
 
     public get creatures(): string[] {

@@ -1,15 +1,14 @@
 import { getOptionType } from "data/optionData"
 import FileData from "./file"
-import { ArmorType, Attribute, Language, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { Modifier } from "types/database/files"
-import { ModifierSelectType, ModifierType } from "types/database/editor"
-import { ObjectId } from "types/database"
+import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierType } from "types/database/files/modifier";
+import { ObjectId } from "types/database";
 
-class ModifierData extends FileData<Modifier> implements Required<Modifier> 
+class ModifierData extends FileData<IModifier> implements Required<IModifier> 
 {
     private readonly id?: string
 
-    public constructor(metadata: Modifier, id: string) {
+    public constructor(metadata: IModifier, id: string) {
         super(metadata);
         this.id = id;
     }

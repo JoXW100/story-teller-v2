@@ -1,5 +1,5 @@
 import { ParseError } from "utils/parser";
-import { ElementParams, ElementObject, Variables } from 'types/elements'
+import { ElementParams, IElementObject, Variables } from 'types/elements'
 
 const RootElement = ({ children }: ElementParams<{}>): JSX.Element => (
     <div> { children } </div>
@@ -18,6 +18,6 @@ export const element = {
             return {}
         }
     }
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default RootElement;

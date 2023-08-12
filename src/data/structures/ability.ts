@@ -2,17 +2,17 @@ import { getOptionType } from "data/optionData";
 import CreatureActionData from "./creatureActionData";
 import ModifierData from "./modifier";
 import { AbilityType, ActionType, DiceType } from "types/database/dnd";
-import { AbilityMetadata } from "types/database/files/ability";
-import { Modifier } from "types/database/files";
+import { IAbilityMetadata } from "types/database/files/ability";
+import { IModifier } from "types/database/files/modifier";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
-class AbilityData extends CreatureActionData<AbilityMetadata> implements Required<AbilityMetadata>
+class AbilityData extends CreatureActionData<IAbilityMetadata> implements Required<IAbilityMetadata>
 {
     $vars: never;
     $queries: never;
 
     private readonly id?: string;
-    constructor(metadata: AbilityMetadata, stats?: ICreatureStats, id?: string) {
+    constructor(metadata: IAbilityMetadata, stats?: ICreatureStats, id?: string) {
         super(metadata, stats)
         this.id = id;
     }
@@ -55,7 +55,7 @@ class AbilityData extends CreatureActionData<AbilityMetadata> implements Require
 
     // Modifiers
 
-    public get modifiers(): Required<Modifier>[] {
+    public get modifiers(): Required<IModifier>[] {
         return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id))
     }
 }

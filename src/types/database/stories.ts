@@ -1,7 +1,6 @@
-import { ObjectId, Document } from 'mongodb'
-import { UserId, DateValue } from "."
+import type { UserId, DateValue, ObjectId, DBDocument } from "."
 
-interface Story {
+interface IStory {
     id: ObjectId
     name: string
     desc: string
@@ -9,7 +8,11 @@ interface Story {
     dateUpdated: DateValue
 }
 
-interface DBStory extends Document {
+interface IStoryData extends IStory {
+    root: ObjectId
+}
+
+interface DBStory extends DBDocument {
     _id?: ObjectId
     _userId: UserId
     name: string
@@ -23,24 +26,9 @@ interface DBStoryUpdate {
     desc?: string
 }
 
-interface StoryData extends Story {
-    root: ObjectId
-}
-
-type StoryAddResult = ObjectId
-type StoryGetResult = StoryData
-type StoryGetAllResult = Story[]
-type StoryDeleteResult = boolean
-type StoryUpdateResult = boolean
-
 export type {
-    Story,
+    IStory,
+    IStoryData,
     DBStory,
     DBStoryUpdate,
-    StoryData,
-    StoryAddResult,
-    StoryGetResult,
-    StoryDeleteResult,
-    StoryUpdateResult,
-    StoryGetAllResult
 }

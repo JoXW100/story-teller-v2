@@ -1,9 +1,9 @@
 import Elements from 'data/elements';
 import Dice from './data/dice';
-import { AreaType, Attribute, ScalingType, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionalAttribute } from "types/database/editor";
-import { CharacterMetadata } from "types/database/files/character";
-import { CreatureMetadata } from "types/database/files/creature";
+import { AreaType, Attribute, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
+import { CalculationMode } from "types/database/editor";
+import { ICharacterMetadata } from "types/database/files/character";
+import { ICreatureMetadata } from "types/database/files/creature";
 import { getOptionType } from 'data/optionData';
 import IConditionalHitEffect from 'types/database/files/iConditionalHitEffect';
 import CreatureData from 'data/structures/creature';
@@ -73,7 +73,7 @@ export const getSpellRange = (spell: SpellData): string => {
     }
 }
 
-export const getProficiency = (data: CharacterMetadata | CreatureMetadata = {}): number => {
+export const getProficiency = (data: ICreatureMetadata = {}): number => {
     switch (data.proficiency?.type) {
         case CalculationMode.Override:
             return data.proficiency.value ?? 0
@@ -85,7 +85,7 @@ export const getProficiency = (data: CharacterMetadata | CreatureMetadata = {}):
     }
 }
 
-export const getStats = (metadata: CharacterMetadata | CreatureMetadata = {}): ICreatureStats => {
+export const getStats = (metadata: ICreatureMetadata = {}): ICreatureStats => {
     return {
         str: metadata.str ?? 10,
         dex: metadata.dex ?? 10,
@@ -98,7 +98,7 @@ export const getStats = (metadata: CharacterMetadata | CreatureMetadata = {}): I
     }
 }
 
-export const getHealth = (metadata: CharacterMetadata | CreatureMetadata = {}): { value: number, element: JSX.Element } => {
+export const getHealth = (metadata: ICreatureMetadata = {}): { value: number, element: JSX.Element } => {
     let stats = getStats(metadata)
     let dice = 0
     let mod = 0
@@ -142,7 +142,7 @@ export const getHealth = (metadata: CharacterMetadata | CreatureMetadata = {}): 
     }
 }
 
-export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number => {
+export const getAC = (metadata: ICreatureMetadata): number => {
     let stats = getStats(metadata)
     switch (metadata.ac?.type) {
         case CalculationMode.Override:
@@ -156,7 +156,7 @@ export const getAC = (metadata: CharacterMetadata | CreatureMetadata): number =>
     }
 }
 
-export const getInitiative = (metadata: CharacterMetadata | CreatureMetadata): number => {
+export const getInitiative = (metadata: ICreatureMetadata): number => {
     let stats = getStats(metadata)
     switch (metadata.initiative?.type) {
         case CalculationMode.Override:

@@ -1,7 +1,7 @@
 import Logger from "utils/logger";
 import { DiceType, AbilityType, ActionType, EffectCondition, TargetType, DamageType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
-import { AbilityMetadata } from "types/database/files/ability";
+import { IAbilityMetadata } from "types/database/files/ability";
 import { asEnum } from "utils/helpers";
 
 const getAbilityType = (ability: string): AbilityType => {
@@ -73,12 +73,12 @@ const getAction = (action: string, type: AbilityType): ActionType => {
 }
 
 const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,?.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
-const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
+const toAbility = async (text: string): Promise<Partial<IAbilityMetadata>> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])
         return null
     var type = getAbilityType(res[3])
-    var result: Partial<AbilityMetadata>
+    var result: Partial<IAbilityMetadata>
     switch (type) {
         case AbilityType.Feature:
             result = {
@@ -103,7 +103,6 @@ const toAbility = async (text: string): Promise<Partial<AbilityMetadata>> => {
                 damageType: asEnum(res[10], DamageType) ?? DamageType.None,
                 ...getRange(res[5]),
                 target: getTargetType(res[6]),
-                
             }
             break
     }

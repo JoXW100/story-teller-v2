@@ -1,5 +1,5 @@
 import { getOptionType } from "data/optionData"
-import { OptionalAttribute } from "types/database/editor"
+import { OptionalAttribute } from "types/database/dnd"
 import ICreatureStats from "types/database/files/iCreatureStats"
 
 class CreatureStats implements Required<ICreatureStats>

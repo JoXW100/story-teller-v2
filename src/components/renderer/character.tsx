@@ -1,11 +1,14 @@
 import React, { useContext, useMemo, useState } from 'react';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
+import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
+import LinkInput from 'components/common/controls/linkInput';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import { useFile } from 'utils/handlers/files';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
+import { CharacterProficienciesPage } from './creature';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import CharacterData from 'data/structures/character';
@@ -13,24 +16,22 @@ import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
 import { getOptionType } from 'data/optionData';
-import { OptionalAttribute, RendererObject } from 'types/database/editor';
-import { EnumChoiceData, FileData, FileGetManyMetadataResult, FileGetMetadataResult, IFileMetadataQueryResult, ModifierCollection } from 'types/database/files';
-import { CharacterContent, CharacterMetadata, CharacterStorage } from 'types/database/files/character';
-import { Attribute } from 'types/database/dnd';
-import { AbilityMetadata } from 'types/database/files/ability';
-import { ClassMetadata } from 'types/database/files/class';
+import CharacterFile, { ICharacterMetadata } from 'types/database/files/character';
+import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
+import { IClassMetadata } from 'types/database/files/class';
+import { Attribute, OptionalAttribute } from 'types/database/dnd';
+import { RendererObject } from 'types/database/editor';
+import { EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
+import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
-import { CharacterProficienciesPage } from './creature';
-import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
-import LinkInput from 'components/common/controls/linkInput';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
-    file: FileData<CharacterContent, CharacterMetadata, CharacterStorage>
-    classFile?: FileGetMetadataResult<ClassMetadata>
+    file: CharacterFile
+    classFile?: FileGetMetadataResult<IClassMetadata>
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<CharacterMetadata>
+    file: FileMetadataQueryResult<ICharacterMetadata>
 }>
 
 type CharacterBackgroundPageProps = React.PropsWithRef<{
@@ -49,7 +50,7 @@ type CharacterClassPageProps = React.PropsWithRef<{
 const Pages = ["Background", "Proficiencies", "Class"] as const
 
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
-    const [file] = useFile<ClassMetadata>(props.file?.metadata?.classFile)
+    const [file] = useFile<IClassMetadata>(props.file?.metadata?.classFile)
     const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
@@ -99,7 +100,7 @@ const SimpleCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps
 } 
 
 const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps): JSX.Element => {
-    const [modifiers, setModifiers] = useState<ModifierCollection>(null)
+    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
     const character = new CharacterData(file.metadata, modifiers, classData)
@@ -112,7 +113,7 @@ const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererPro
 
     const abilities = useMemo(() => character.abilities, [file.metadata, file?.storage, classFile])
 
-    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<AbilityMetadata>) => {
+    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollectionData(modifiers, file?.storage)
         setModifiers(collection);
@@ -335,7 +336,7 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
                                 values={reduceEnumOptions(value)}
                                 onChange={(value) => handleChange(value, key)}/>
                         }
-                        { value.type === "file" && !value.allowAny &&
+                        { value.type === "file" && value.allowAny === false &&
                             <LinkDropdownMenu
                                 value={storage[key] ?? null}
                                 itemClassName={styles.dropdownItem}
@@ -371,7 +372,7 @@ const CharacterLinkRenderer = ({ file }: CharacterLinkRendererProps): JSX.Elemen
     )
 }
 
-const CharacterRenderer: RendererObject<CharacterContent,CharacterMetadata> = {
+const CharacterRenderer: RendererObject<CharacterFile> = {
     fileRenderer: CharacterFileRenderer,
     linkRenderer: CharacterLinkRenderer
 }

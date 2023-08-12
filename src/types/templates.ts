@@ -1,4 +1,4 @@
-import { FileMetadata, FileType } from "./database/files"
+import { IFileMetadata, FileType } from "./database/files"
 
 interface FileRendererTemplate {
     type: FileType | string
@@ -42,12 +42,12 @@ class AllTemplateCondition implements ITemplateCondition {
 
 class ValueTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Value
-    value: string | boolean | null
+    value: string | boolean | number | null
 }
 
 class MetadataTemplateCondition implements ITemplateCondition {
     type: TemplateConditionType.Metadata
-    value: keyof FileMetadata
+    value: keyof IFileMetadata
 }
 
 type TemplateCondition = 
@@ -58,6 +58,7 @@ type TemplateCondition =
     | ValueTemplateCondition
     | MetadataTemplateCondition
     | string
+    | number
     | boolean
     | null
 

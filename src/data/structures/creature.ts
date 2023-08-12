@@ -1,29 +1,28 @@
 import { getOptionType } from "data/optionData";
 import Dice from "utils/data/dice";
+import { isEnum } from "utils/helpers";
 import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
-import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
-import { CalculationMode, OptionalAttribute, IOptionType } from "types/database/editor";
-import { CreatureMetadata } from "types/database/files/creature";
+import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
+import { CalculationMode, IOptionType } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
-import { ModifierCollection } from "types/database/files";
-import { isEnum } from "utils/helpers";
-import { ObjectId } from "types/database";
+import { ICreatureMetadata } from "types/database/files/creature";
+import { IModifierCollection } from "types/database/files/modifierCollection";
+import { ObjectIdText } from "types/database";
 
 const OptionTypeAuto: IOptionType<number> = {
     type: CalculationMode.Auto,
     value: 0
 }
 
-class CreatureData extends FileData<CreatureMetadata> implements Required<CreatureMetadata>
-{
+class CreatureData extends FileData<ICreatureMetadata> implements Required<ICreatureMetadata> {
     $vars: never;
     $queries: never;
 
-    public readonly modifiers: ModifierCollection
-    public constructor(metadata: CreatureMetadata, modifiers?: ModifierCollection) {
+    public readonly modifiers: IModifierCollection
+    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection) {
         super(metadata)
         this.modifiers = modifiers ?? new ModifierCollectionData([], {});
     }
@@ -118,10 +117,6 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.name ?? ""
     }
 
-    public get public(): boolean {
-        return this.metadata.public ?? false
-    }
-
     public get type(): CreatureType {
         return this.metadata.type ?? getOptionType("creatureType").default
     }
@@ -172,7 +167,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.xp ?? 0
     }
 
-    public get abilities(): ObjectId[] {
+    public get abilities(): ObjectIdText[] {
         return this.modifiers.modifyAbilities(this.metadata.abilities ?? [])
     }
 
@@ -426,7 +421,7 @@ class CreatureData extends FileData<CreatureMetadata> implements Required<Creatu
         return this.metadata.spellSlots ?? []
     }
 
-    public get spells(): string[] {
+    public get spells(): ObjectIdText[] {
         return this.metadata.spells ?? []
     }
 

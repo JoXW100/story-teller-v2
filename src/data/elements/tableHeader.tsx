@@ -1,5 +1,5 @@
 import { ParseError } from 'utils/parser';
-import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 
 interface TableHeaderOptions extends Variables {
     width?: string
@@ -45,11 +45,11 @@ const _element = {
     validOptions: validOptions,
     toComponent: TableHeaderElement,
     validate: validateOptions
-} satisfies ElementObject
+} satisfies IElementObject
 
 export const element = {
     tableHeader: _element,
     th: _element
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default TableHeaderElement;

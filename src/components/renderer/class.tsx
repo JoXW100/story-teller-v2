@@ -1,14 +1,14 @@
 import Elements from 'data/elements';
 import { RendererObject } from 'types/database/editor';
-import { FileData, IFileMetadataQueryResult } from 'types/database/files';
-import { ClassContent, ClassMetadata } from 'types/database/files/class';
+import ClassFile, { IClassMetadata } from 'types/database/files/class';
+import { FileMetadataQueryResult } from 'types/database/responses';
 
 type ClassFileRendererProps = React.PropsWithRef<{
-    file: FileData<ClassContent,ClassMetadata,undefined>
+    file: ClassFile
 }>
 
 type ClassLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<ClassMetadata>
+    file: FileMetadataQueryResult<IClassMetadata>
 }>
 
 const ClassFileRenderer = ({ file }: ClassFileRendererProps): JSX.Element => {
@@ -27,7 +27,7 @@ const ClassLinkRenderer = ({ file }: ClassLinkRendererProps): JSX.Element => {
     </>
 }
 
-const CharacterRenderer: RendererObject<ClassContent,ClassMetadata> = {
+const CharacterRenderer: RendererObject<ClassFile> = {
     fileRenderer: ClassFileRenderer,
     linkRenderer: ClassLinkRenderer
 }

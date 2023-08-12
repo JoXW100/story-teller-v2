@@ -10,7 +10,7 @@ import Folder from "./folder";
 import File from "./file";
 import Localization from "utils/localization";
 import { InputType } from "types/context/fileSystemContext";
-import { FileStructure, FileType } from "types/database/files";
+import { IFileStructure, FileType } from "types/database/files";
 import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileMenu = (): JSX.Element => {
@@ -74,7 +74,7 @@ const FileMenu = (): JSX.Element => {
         }
     }
 
-    const buildFileStructure = (file: FileStructure): JSX.Element => {
+    const buildFileStructure = (file: IFileStructure): JSX.Element => {
         if (file.type === FileType.Folder) {
             return (
                 <Folder key={String(file.id)} file={file}>
@@ -88,15 +88,15 @@ const FileMenu = (): JSX.Element => {
         }
     }
 
-    const matchSearch = (file: FileStructure): boolean => {
+    const matchSearch = (file: IFileStructure): boolean => {
         return file.name.toLowerCase().includes(context.searchFilter.toLowerCase())
     }
 
-    const filterFileStructure = (structure: FileStructure[]): FileStructure[] => {
-        let { files, folders } = structure.reduce((prev, val) => {
+    const filterFileStructure = (structure: IFileStructure[]): IFileStructure[] => {
+        let { files, folders } = structure.reduce<{ files: IFileStructure[], folders: IFileStructure[]}>((prev, val) => {
             if (val.type === FileType.Folder) {
                 // Don't modify the structure children directly
-                let folder = { ...val, children: filterFileStructure(val.children ?? []) } satisfies FileStructure
+                let folder = { ...val, children: filterFileStructure(val.children ?? []) } satisfies IFileStructure
                 if (!context.fileFilter.showEmptyFolders && folder.children.length == 0) {
                     return prev
                 }
@@ -107,7 +107,7 @@ const FileMenu = (): JSX.Element => {
                 return { ...prev, files: [...prev.files, val] }
             }
             return prev
-        }, { files: [], folders: []} as { files: FileStructure[], folders: FileStructure[]})
+        }, { files: [], folders: []})
 
         return [
             ...folders.sort((a,b) => a.name.localeCompare(b.name)), 

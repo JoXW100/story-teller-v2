@@ -1,6 +1,6 @@
 import styles from 'styles/elements.module.scss';
-import { OptionalAttribute } from 'types/database/editor';
-import { Queries, ElementObject, ElementParams, Variables } from 'types/elements';
+import { OptionalAttribute } from 'types/database/dnd';
+import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 import { ParseError } from 'utils/parser';
 
 interface SaveOptions extends Variables {
@@ -80,11 +80,11 @@ const _element = {
     validOptions: validOptions,
     toComponent: SaveElement,
     validate: validateOptions
-} satisfies ElementObject
+} satisfies IElementObject
 
 export const element = {
     save: _element,
     check: _element
-} satisfies Record<string, ElementObject>
+} satisfies Record<string, IElementObject>
 
 export default SaveElement;

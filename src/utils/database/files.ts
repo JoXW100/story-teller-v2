@@ -1,18 +1,20 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import { failure, success } from "./database";
 import Logger from 'utils/logger';
-import { FileStructure, FileType, DBContent, FileMetadata, DBFile, FileAddResult, FileGetResult, FileGetMetadataResult, FileGetManyMetadataResult, FileDeleteResult, FileDeleteFromResult, FileRenameResult, FileMoveResult, FileSetPropertyResult, FileGetStructureResult, FileStorage, FileAddCopyResult, FileConvertResult } from "types/database/files";
-import { DBResponse } from "types/database";
-import { asEnum, isEnum } from "utils/helpers";
+import { isEnum } from "utils/helpers";
+import { FileType } from "types/database/files";
+import type { DBData, DBFile, DBFolder, DBItem, DBItemData, DBResponse, DBRoot } from "types/database";
+import type { IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
+import type { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileDeleteResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses";
 
 interface StructureCollection {
-    root: FileStructure
-    files: Record<string, FileStructure>
+    root: IFileStructure
+    files: Record<string, IFileStructure>
 }
 
 class FilesInterface
 {
-    private collection: Collection<DBFile<FileMetadata, FileStorage>>;
+    private collection: Collection<DBItem>;
 
     /** Creates a new DBRequestInterface */
     constructor(database: Db) {
@@ -20,19 +22,41 @@ class FilesInterface
     }
 
     /** Adds a file to the database */
-    async add(userId: string, storyId: string, holderId: string | null, type: FileType, content: DBContent<any, any>): Promise<DBResponse<FileAddResult>> {
-        if (type !== FileType.Folder)
-            content.metadata = content.metadata ?? {}
+    async add(userId: string, storyId: string, holderId: string | null, data: DBItemData): Promise<DBResponse<FileAddResult>> {
         try {
             let date = Date.now();
-            let file: DBFile<FileMetadata> = {
-                _userId: userId,
-                _storyId: new ObjectId(storyId),
-                _holderId: holderId && new ObjectId(holderId),
-                type: type,
-                content: content,
-                dateCreated: date,
-                dateUpdated: date
+            let file: DBItem
+            if (data.type === FileType.Folder) {
+                file = {
+                    _userId: userId,
+                    _storyId: new ObjectId(storyId),
+                    _holderId: holderId && new ObjectId(holderId),
+                    type: data.type,
+                    content: data.content,
+                    dateCreated: date,
+                    dateUpdated: date,
+                } satisfies DBFolder
+            } else if (data.type === FileType.Root) {
+                file = {
+                    _userId: userId,
+                    _storyId: new ObjectId(storyId),
+                    _holderId: holderId && new ObjectId(holderId),
+                    type: data.type,
+                    dateCreated: date,
+                    dateUpdated: date,
+                } satisfies DBRoot
+            } else {
+                file = {
+                    _userId: userId,
+                    _storyId: new ObjectId(storyId),
+                    _holderId: holderId && new ObjectId(holderId),
+                    type: data.type,
+                    content: data.content,
+                    metadata: data.metadata,
+                    storage: data.storage,
+                    dateCreated: date,
+                    dateUpdated: date,
+                } satisfies DBFile
             }
             let result = await this.collection.insertOne(file)
             return success(result.insertedId);
@@ -92,7 +116,7 @@ class FilesInterface
                 { $limit: 1 },
                 { $project: { 'content.metadata': 0 }},
             ]).toArray())[0] as FileGetResult;
-            Logger.log('files.get', `${result?.name}${result ? '.' + result.type : ''}`);
+            Logger.log('files.get', `${result?.content.name}${result ? '.' + result.type : ''}`);
             return result 
                 ? success(result) 
                 : failure("Could not find any matching file");
@@ -234,7 +258,7 @@ class FilesInterface
                     _userId: userId, 
                     _storyId: new ObjectId(storyId),
                     _id: new ObjectId(fileId) 
-                } as Partial<DBFile<any>>},
+                } as Partial<DBData>},
                 { $lookup: {
                     from: 'files',
                     pipeline: [
@@ -242,7 +266,7 @@ class FilesInterface
                             _userId: userId,
                             _storyId: new ObjectId(storyId),
                             _id: new ObjectId(targetId)
-                        } as Partial<DBFile<any>>},
+                        } as Partial<DBData>},
                         { $limit: 1 }
                     ],
                     as: 'holder' 
@@ -265,26 +289,19 @@ class FilesInterface
     }
 
     /** Changes a property of a folder in the database */
-    private async setProperty(userId: string, storyId: string, fileId: string, property: string, value: any, fileType?: Record<string, any> | FileType, updateDate: boolean = true): Promise<DBResponse<FileSetPropertyResult>> {
+    private async setDataValue(userId: string, storyId: string, fileId: string, property: string, value: any, onFolders: boolean = false): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            let set: Partial<DBFile<any>> = { 
-                [`content.${property}`]: value,
-                dateUpdated: Date.now()
-            };
-            if (updateDate) 
-                set.dateUpdated = Date.now()
-
-                let query: Record<string, any> = { 
+            let result = await this.collection.updateOne({ 
                 _userId: userId, 
                 _storyId: new ObjectId(storyId),
-                _id: new ObjectId(fileId)
-            }
-            
-            if (fileType) {
-                query.type = fileType
-            }
-
-            let result = await this.collection.updateOne(query, { $set: set })
+                _id: new ObjectId(fileId),
+                type: onFolders ? FileType.Folder : { $ne: FileType.Folder }
+            }, { 
+                $set: {
+                    [property]: value,
+                    dateUpdated: Date.now()
+                } 
+            })
             let x = result.modifiedCount === 1;
             Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 20 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");
@@ -295,26 +312,26 @@ class FilesInterface
 
     /** Changes the open state of a folder in the database */
     async setOpenState(userId: string, storyId: string, fileId: string, state: boolean): Promise<DBResponse<FileSetPropertyResult>> {
-        return this.setProperty(userId, storyId, fileId, 'open', Boolean(state), FileType.Folder, false);
+        return this.setDataValue(userId, storyId, fileId, 'content.open', Boolean(state), true);
     }
 
     /** Changes the text content of a file in the database */
     async setText(userId: string, storyId: string, fileId: string, text: string): Promise<DBResponse<FileSetPropertyResult>> {
-        return this.setProperty(userId, storyId, fileId, 'text', String(text), { $ne: FileType.Folder});
+        return this.setDataValue(userId, storyId, fileId, 'content.text', String(text));
     }
 
     /** Changes the metadata of a file in the database */
-    async setMetadata(userId: string, storyId: string, fileId: string, metadata: FileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
+    async setMetadata(userId: string, storyId: string, fileId: string, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
         if (typeof metadata !== typeof {})
             return failure('Expected type of metadata, object');
-        return this.setProperty(userId, storyId, fileId, 'metadata', metadata);
+        return this.setDataValue(userId, storyId, fileId, 'metadata', metadata);
     }
 
     /** Changes the metadata of a file in the database */
-    async setStorage(userId: string, storyId: string, fileId: string, storage: FileStorage): Promise<DBResponse<FileSetPropertyResult>> {
+    async setStorage(userId: string, storyId: string, fileId: string, storage: IFileStorage): Promise<DBResponse<FileSetPropertyResult>> {
         if (typeof storage !== typeof {})
             return failure('Expected type of storage, object');
-        return this.setProperty(userId, storyId, fileId, 'storage', storage);
+        return this.setDataValue(userId, storyId, fileId, 'storage', storage);
     }
     
     /** Gets the file structure of story in the database */
@@ -333,10 +350,10 @@ class FilesInterface
                     name: '$content.name',
                     open: '$content.open'
                 }}
-            ]).toArray()) as FileStructure[]
+            ]).toArray()) as IFileStructure[]
 
             let data = result.reduce((acc, value) => (
-                value.type === 'root' 
+                value.type === FileType.Root
                     ? { root: value, files: acc.files }
                     : { root: acc.root, files: { [String(value.id)]: value, ...acc.files } }
             ), { root: null, files: {} }) as StructureCollection;

@@ -1,17 +1,13 @@
-import { FileContent, FileStorage } from "."
-import { ObjectId } from ".."
-import { Gender } from "../dnd"
-import { CreatureMetadata } from "./creature"
+import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
+import type { ICreatureMetadata } from "./creature"
+import type { Gender } from "../dnd"
+import type { ObjectId } from ".."
 
-interface CharacterContent extends FileContent {
+interface ICharacterContent extends IFileContent {
     text: string
 }
 
-interface CharacterStorage extends FileStorage {
-    classData?: Record<string, any>
-}
-
-interface CharacterMetadata extends CreatureMetadata {
+interface ICharacterMetadata extends IFileMetadata, ICreatureMetadata {
     simple?: boolean
     gender?: Gender
     age?: string
@@ -28,8 +24,20 @@ interface CharacterMetadata extends CreatureMetadata {
     classFile?: ObjectId
 }
 
+interface ICharacterStorage extends IFileStorage {
+    classData?: Record<string, any>
+}
+
+abstract class CharacterFile implements IFileData {
+    type: FileType.Character
+    content: ICharacterContent
+    metadata: ICharacterMetadata
+    storage: ICharacterStorage
+}
+
+export default CharacterFile
 export type {
-    CharacterContent,
-    CharacterMetadata,
-    CharacterStorage
+    ICharacterContent,
+    ICharacterMetadata,
+    ICharacterStorage
 }

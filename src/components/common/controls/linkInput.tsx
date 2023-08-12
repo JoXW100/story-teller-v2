@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import RemoveIcon from '@mui/icons-material/Remove';
 import { isObjectId } from 'utils/helpers';
 import { useFile } from 'utils/handlers/files';
-import { ObjectId } from 'types/database';
 import { FileType } from 'types/database/files';
+import { ObjectId } from 'types/database';
 import styles from 'styles/components/linkInput.module.scss';
 
 type EditLinkInputComponentProps = React.PropsWithRef<{
@@ -15,13 +15,13 @@ type EditLinkInputComponentProps = React.PropsWithRef<{
 }>
 
 interface EditLinkInputState {
-    text: ObjectId
+    text: string
     error: boolean
     highlight: boolean
 }
 
 const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
-    const [state, setState] = useState<EditLinkInputState>({ text: value, error: false, highlight: false })
+    const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
     const [file, loading] = useFile(value)
     const style = className ? `${styles.holder} ${className}` : styles.holder;
     const valid: boolean = value && !loading && file !== null;
@@ -76,7 +76,7 @@ const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditL
     }
 
     useEffect(() => {
-        setState({ ...state, text: value, error: false, highlight: false })
+        setState({ ...state, text: value ? String(value) : "", error: false, highlight: false })
     }, [value])
 
     return (

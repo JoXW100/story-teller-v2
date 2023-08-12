@@ -1,50 +1,51 @@
-import Elements from 'data/elements';
 import React, { useEffect, useState } from 'react';
-import SpellSlotToggle from 'components/common/controls/spellSlotToggle';
 import { useParser } from 'utils/parser';
 import { getComponents, getSpellRange } from 'utils/calculations';
 import Communication from 'utils/communication';
 import Localization from 'utils/localization';
+import Logger from 'utils/logger';
 import SpellData from 'data/structures/spell';
+import Elements from 'data/elements';
+import SpellSlotToggle from 'components/common/controls/spellSlotToggle';
 import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
-import { FileData, FileGetManyMetadataResult, IFileMetadataQueryResult } from 'types/database/files';
-import { SpellContent, SpellMetadata } from 'types/database/files/spell';
 import { RendererObject } from 'types/database/editor';
-import { DBResponse } from 'types/database';
+import { DBResponse, ObjectId, ObjectIdText } from 'types/database';
 import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
+import SpellFile, { ISpellMetadata } from 'types/database/files/spell';
+import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
-import Logger from 'utils/logger';
+import { isObjectId } from 'utils/helpers';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
 }
 
 type SpellGroupsProps = React.PropsWithRef<{
-    spellIds: string[]
+    spellIds: ObjectIdText[]
     spellSlots: number[]
     data?: ICreatureStats
 }>
 
 type SpellProps = React.PropsWithRef<{
-    metadata: SpellMetadata
+    metadata: ISpellMetadata
     stats?: ICreatureStats
     variablesKey: string
     open: boolean
 }>
 
 type SpellFileRendererProps = React.PropsWithRef<{
-    file: FileData<SpellContent,SpellMetadata,undefined>
+    file: SpellFile
     stats?: ICreatureStats
 }>
 
 type SpellLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<SpellMetadata>
+    file: FileMetadataQueryResult<ISpellMetadata>
     stats?: ICreatureStats
 }>
 
 type SpellToggleRendererProps = React.PropsWithRef<{
-    metadata: SpellMetadata, 
+    metadata: ISpellMetadata, 
     stats: ICreatureStats,
     isOpen?: boolean
 }>
@@ -211,15 +212,16 @@ const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element
 }
 
 export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): JSX.Element => {
-    const [spells, setSpells] = useState<FileGetManyMetadataResult<SpellMetadata>>([])
+    const [spells, setSpells] = useState<FileGetManyMetadataResult<ISpellMetadata>>([])
     const [categories, setCategories] = useState<SpellCategory>({})
     
     useEffect(() => {
         if (spellIds && spellIds.length > 0) {
-            Communication.getManyMetadata(spellIds)
+            let ids = spellIds.filter(spell => isObjectId(spell)) as ObjectId[]
+            Communication.getManyMetadata(ids)
             .then((res: DBResponse<FileGetManyMetadataResult>) => {
                 if (res.success) {
-                    setSpells(res.result as FileGetManyMetadataResult)
+                    setSpells(res.result)
                 } else {
                     Logger.warn("SpellGroups.getManyMetadata", res.result);
                     setSpells([])
@@ -263,7 +265,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
     )
 }
 
-const SpellRenderer: RendererObject<SpellContent,SpellMetadata> = {
+const SpellRenderer: RendererObject<SpellFile> = {
     fileRenderer: SpellFileRenderer,
     linkRenderer: SpellLinkRenderer
 }

@@ -1,18 +1,18 @@
 import React from 'react';
 import Elements from 'data/elements';
 import { useParser } from 'utils/parser';
-import { DocumentContent, DocumentMetadata } from 'types/database/files/document';
-import { FileData, IFileMetadataQueryResult } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
+import DocumentFile, { IDocumentMetadata } from 'types/database/files/document';
+import { FileMetadataQueryResult } from 'types/database/responses';
 
 type DocumentFileRendererProps = React.PropsWithRef<{
-    file: FileData<DocumentContent,DocumentMetadata,undefined>
+    file: DocumentFile
     stats?: ICreatureStats
 }>
 
 type DocumentLinkRendererProps = React.PropsWithRef<{
-    file: IFileMetadataQueryResult<DocumentMetadata>
+    file: FileMetadataQueryResult<IDocumentMetadata>
     stats?: ICreatureStats
 }>
 
@@ -29,11 +29,11 @@ const DocumentFileRenderer = ({ file }: DocumentFileRendererProps): JSX.Element 
 const DocumentLinkRenderer = ({ file }: DocumentLinkRendererProps): JSX.Element => {
     return <>
         <Elements.Header3> {file.metadata?.name} </Elements.Header3>
-        { file.metadata?.content }
+        { file.metadata?.description }
     </>
 }
 
-const DocumentRenderer: RendererObject<DocumentContent,DocumentMetadata> = {
+const DocumentRenderer: RendererObject<DocumentFile> = {
     fileRenderer: DocumentFileRenderer,
     linkRenderer: DocumentLinkRenderer
 }
