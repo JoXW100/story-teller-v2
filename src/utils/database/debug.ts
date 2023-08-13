@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Collection, Db } from "mongodb";
 import Logger from "utils/logger";
 import { failure, success } from "./database";
@@ -519,6 +520,7 @@ class DebugInterface
                 int: addIfExists('$content.metadata.int'),
                 wis: addIfExists('$content.metadata.wis'),
                 cha: addIfExists('$content.metadata.cha'),
+                critRange: addIfExists('$content.metadata.critRange'),
                 resistances: addIfExists('$content.metadata.resistances'),
                 vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
                 advantages: addIfExists('$content.metadata.advantages'),
@@ -578,6 +580,7 @@ class DebugInterface
                 int: addIfExists('$content.metadata.int'),
                 wis: addIfExists('$content.metadata.wis'),
                 cha: addIfExists('$content.metadata.cha'),
+                critRange: addIfExists('$content.metadata.critRange'),
                 resistances: addIfExists('$content.metadata.resistances'),
                 vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
                 advantages: addIfExists('$content.metadata.advantages'),
@@ -720,6 +723,9 @@ class DebugInterface
                 name: { $ifNull: ['$content.metadata.name', ""] },
                 description: { $ifNull: ['$content.metadata.description', ""] },
                 hitDice: addIfExists('$content.metadata.hitDice'),
+                isSubclass: addIfExists('$content.metadata.isSubclass'),
+                subclassLevel: addIfExists('$content.metadata.subclassLevel'),
+                subclasses: addIfExists('$content.metadata.subclasses'),
                 1: addIfExists('$content.metadata.1'),
                 2: addIfExists('$content.metadata.2'),
                 3: addIfExists('$content.metadata.3'),
