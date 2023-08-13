@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import { ParseError } from 'utils/parser';
@@ -9,6 +9,8 @@ import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'utils/localization';
 import { RollMethod } from 'types/dice';
 import { Queries, IElementObject, ElementParams, Variables, RollMode } from 'types/elements';
+import { IFileMetadata } from 'types/database/files';
+import CreatureData from 'data/structures/creature';
 import styles from 'styles/elements.module.scss';
 
 interface RollOptions extends Variables {
@@ -17,12 +19,12 @@ interface RollOptions extends Variables {
     mod?: string
     mode?: RollMode
     desc?: string
+    critRange?: string
     tooltips?: string
 }
 
-class Options implements RollOptions {
-    protected readonly options: RollOptions;
-    [key: string]: any
+class Options implements Required<RollOptions> {
+    protected readonly options: RollOptions
 
     constructor(options: RollOptions) {
         this.options =  options ?? {}
@@ -53,6 +55,16 @@ class Options implements RollOptions {
     public get modValue(): number {
         let value = parseInt(this.mod)
         return isNaN(value) ? 0 : value
+    }
+
+    public get critRange(): string {
+        let val = "20";
+        return this.options.critRange ?? val
+    }
+
+    public get critRangeValue(): number {
+        let value = parseInt(this.critRange)
+        return isNaN(value) || value < 1 ? 20 : value
     }
 
     public get mode(): RollMode {
@@ -98,7 +110,7 @@ class Options implements RollOptions {
 }
 
 const validModes = new Set(Object.values(RollMode));
-const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'desc', 'tooltips']);
+const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'desc', 'tooltips', 'critRange']);
 const validateOptions = (options: RollOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))
@@ -127,6 +139,12 @@ const validateOptions = (options: RollOptions): Queries => {
         if (!validModes.has(options.mode as RollMode))
             throw new ParseError(`Invalid roll option value. mode: '${options.mode}', valid values: ${Array(validModes).join(', ')}`);
     }
+
+    if (options.critRange) {
+        let num = parseInt(options.critRange)
+        if (isNaN(num) || num < 1)
+            throw new ParseError(`Invalid roll option value. critRange: '${options.critRange}', must be an integer equal or greater to 1`);
+    }
     return {}
 }
 
@@ -137,7 +155,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const roll = (method: RollMethod) => {
         let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
-        dispatch.roll(collection, method);
+        dispatch.roll(collection, method, rollOptions.critRangeValue);
     }
 
     const handleContext: React.MouseEventHandler<HTMLSpanElement> = (e) => {

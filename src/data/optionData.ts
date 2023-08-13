@@ -1,6 +1,6 @@
 import { Enum } from 'types';
 import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
-import { ModifierType, ModifierSelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty } from 'types/database/files/modifier';
+import { ModifierType, ModifierSelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
 interface IOptionType<T extends Enum> {
@@ -387,6 +387,13 @@ const OptionTypes = {
             [ModifierAddRemoveTypeProperty.Ability]: "Ability"
         }
     } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>,
+    "modifierSetTypeProperty": {
+        enum: ModifierSetTypeProperty,
+        default: ModifierSetTypeProperty.CritRange,
+        options: {
+            [ModifierSetTypeProperty.CritRange]: "Critical Range"
+        }
+    } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,

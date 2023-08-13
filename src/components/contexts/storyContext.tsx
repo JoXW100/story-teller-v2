@@ -93,10 +93,10 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
 
     return (
         <Context.Provider value={[state, { 
-            roll: (collection, method = RollMethod.Normal) => {
-                let event: RollEvent = { result: collection.roll(method), time: Date.now() }
+            roll: (collection, method = RollMethod.Normal, criticalRange: number = 20) => {
+                let event: RollEvent = { result: collection.roll(method, criticalRange), time: Date.now() }
                 state.rollHistory.add(event)
-                dispatch({ type: 'roll', data: null });
+                dispatch({ type: 'roll', data: event });
             },
             clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
             collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),

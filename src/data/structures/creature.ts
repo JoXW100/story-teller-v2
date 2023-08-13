@@ -33,7 +33,8 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
             wis: this.wis,
             cha: this.cha,
             proficiency: this.proficiencyValue,
-            spellAttribute: this.spellAttribute
+            spellAttribute: this.spellAttribute,
+            critRange: this.critRange
         } as ICreatureStats)
     }
 
@@ -281,6 +282,10 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
             default:
                 return this.getAttributeModifier(Attribute.DEX) + this.modifiers.bonusInitiative;
         }
+    }
+
+    public get critRange(): number {
+        return this.modifiers.critRange ?? this.metadata.critRange ?? 20
     }
 
     public get resistances(): string {

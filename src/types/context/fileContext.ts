@@ -1,12 +1,11 @@
 import type RequestQueue from "utils/data/requestQueue";
 import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
 import type { DBResponse, ObjectId } from "types/database";
-import type { FileTemplate } from "types/templates";
 import type { FileGetResult } from "types/database/responses";
 import type { IFile } from "types/database/files";
 
 interface EditFilePage {
-    template: keyof FileTemplate['editorSubTemplates']
+    template: string
     rootKey: string
     name: string
     index: number

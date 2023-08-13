@@ -5,7 +5,7 @@ import { Context as AppContext } from 'components/contexts/appContext';
 import Divider from 'components/common/controls/divider';
 import Editor from './editor';
 import Renderer from './renderer';
-import { getTemplate } from 'data/fileTemplates';
+import { getSubTemplate, getTemplate } from 'data/fileTemplates';
 import Localization from 'utils/localization'
 import Logger from 'utils/logger';
 import { getRelativeMetadata } from 'utils/helpers';
@@ -22,7 +22,7 @@ const setDefaults = (template: TemplateComponent, metadata: IFileMetadata) => {
             template.content?.forEach((x) => setDefaults(x, metadata));
             break;
         default:
-            if (template.params?.key && metadata[template.params.key] === undefined && template.params?.default)
+            if (template.params?.key && metadata[template.params.key] === undefined && template.params?.default !== undefined)
                 metadata[template.params.key] = template.params.default;
             break;
     }
@@ -38,9 +38,9 @@ const FileView = (): JSX.Element => {
 }
 
 const getFileEditorRoot = (template: FileTemplate, pages: EditFilePage[]): RootTemplateComponent => {
-    if (pages.length > 0 && template.editorSubTemplates) {
+    if (pages.length > 0) {
         let subTemplateKey = pages[pages.length - 1].template;
-        return template.editorSubTemplates[subTemplateKey]
+        return getSubTemplate(subTemplateKey)
     }
     return template.editor
 }

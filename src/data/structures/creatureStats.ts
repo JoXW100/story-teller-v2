@@ -16,6 +16,10 @@ class CreatureStats implements Required<ICreatureStats> {
         return this.data.spellAttribute ?? getOptionType("optionalAttr").default
     }
 
+    public get critRange(): number {
+        return this.data.critRange ?? 20
+    }
+
     public get str(): number {
         return this.data.str ?? 10
     }

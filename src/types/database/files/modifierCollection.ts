@@ -9,15 +9,20 @@ export type FileChoiceData = { type: "file", label: string, allowAny: false, opt
 export type ChoiceData = EnumChoiceData | AnyFileChoiceData | FileChoiceData
  
 interface IModifierCollection {
+    join: (other: IModifierCollection) => IModifierCollection
+    getChoices: () => Record<string, ChoiceData>
+
+    // Bonus
     bonusAC: number
     bonusNumHealthDice: number
     bonusHealth: number
     bonusProficiency: number
     bonusInitiative: number
 
-    join: (other: IModifierCollection) => IModifierCollection
-    getChoices: () => Record<string, ChoiceData>
+    // Set
+    critRange: number
 
+    // Add / Remove
     modifyProficienciesArmor: (proficiencies: ArmorType[], onlyRemove?: boolean) => ArmorType[]
     modifyProficienciesWeapon: (proficiencies: WeaponType[], onlyRemove?: boolean) => WeaponType[]
     modifyProficienciesTool: (proficiencies: Tool[], onlyRemove?: boolean) => Tool[]

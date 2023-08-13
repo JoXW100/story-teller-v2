@@ -103,7 +103,9 @@ const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererPro
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
-    const character = new CharacterData(file.metadata, modifiers, classData)
+    const [subclassFile] = useFile<IClassMetadata>(file?.storage?.classData?.$subclass);
+    const subclassData = new ClassData(subclassFile?.metadata, file?.storage, subclassFile?.id ? String(subclassFile?.id) : undefined);
+    const character = new CharacterData(file.metadata, modifiers, classData, subclassData)
     const content = useParser(file.content.text, file.metadata, "$content");
     const appearance = useParser(character.appearance, file.metadata, "appearance")
     const description = useParser(character.description, file.metadata, "description")
@@ -111,7 +113,7 @@ const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererPro
     const notes = useParser(character.notes, file.metadata, "notes")
     const stats = character.getStats()
 
-    const abilities = useMemo(() => character.abilities, [file.metadata, file?.storage, classFile])
+    const abilities = useMemo(() => character.abilities, [file.metadata, file?.storage, subclassFile, classFile])
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
@@ -324,6 +326,17 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
 
     return (
         <>
+            { character.level >= classData.subclassLevel &&
+                <div className={styles.modifierChoice}>
+                    <Elements.Bold>{`Subclass:`} </Elements.Bold>
+                    <LinkDropdownMenu
+                        value={storage.$subclass ?? null}
+                        itemClassName={styles.dropdownItem}
+                        values={classData.subclasses}
+                        allowNull={true}
+                        onChange={(value) => handleChange(value, "$subclass")}/>
+                </div>
+            }
             { Object.keys(choices).map(key => {
                 let value = choices[key]
                 return (
@@ -341,6 +354,7 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
                                 value={storage[key] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={value.options}
+                                allowNull={true}
                                 onChange={(value) => handleChange(value, key)}/>
                         }
                         { value.type === "file" && value.allowAny &&

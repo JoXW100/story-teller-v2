@@ -1,7 +1,7 @@
 import { getOptionType } from "data/optionData"
 import FileData from "./file"
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierType } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 
 class ModifierData extends FileData<IModifier> implements Required<IModifier>  {
@@ -38,6 +38,10 @@ class ModifierData extends FileData<IModifier> implements Required<IModifier>  {
 
     public get addRemoveProperty(): ModifierAddRemoveTypeProperty {
         return this.metadata.addRemoveProperty ?? getOptionType('modifierAddRemoveTypeProperty').default
+    }
+
+    public get setProperty(): ModifierSetTypeProperty {
+        return this.metadata.setProperty ?? getOptionType('modifierSetTypeProperty').default
     }
 
     public get proficiency(): ProficiencyType {

@@ -1,4 +1,5 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
+import { ObjectId } from ".."
 import type { DiceType } from "../dnd"
 import type { IModifier } from "./modifier"
 import type { IModifierCollection } from "./modifierCollection"
@@ -31,7 +32,10 @@ interface IClassLevels {
 }
 
 interface IClassMetadataProperties {
+    isSubclass?: boolean
     hitDice?: DiceType
+    subclassLevel: number
+    subclasses?: ObjectId[]
 }
 
 interface IClassMetadata extends IClassMetadataProperties, IClassLevels, IFileMetadata {

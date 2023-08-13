@@ -7,7 +7,6 @@ interface FileRendererTemplate {
 interface FileTemplate {
     editor: RootTemplateComponent
     renderer: FileRendererTemplate
-    editorSubTemplates?: Record<string, RootTemplateComponent>
 }
 
 // ------------------
@@ -95,7 +94,7 @@ interface ListTemplateParams extends IFileTemplateParams {
     fill?: boolean
 }
 interface ItemListTemplateParams extends IFileTemplateParams {
-    template: keyof FileTemplate['editorSubTemplates']
+    template: string
     default?: string
     prompt?: string
     placeholder?: string
@@ -180,91 +179,91 @@ type TemplateComponent =
     | TextareaTemplateComponent
     | NavigationTemplateComponent
 
-class RootTemplateComponent implements ITemplateComponent {
+abstract class RootTemplateComponent implements ITemplateComponent {
     type: EditInputType.Root
     content: TemplateComponent[]
 }
 
-class BooleanTemplateComponent implements ITemplateComponent {
+abstract class BooleanTemplateComponent implements ITemplateComponent {
     type: EditInputType.Boolean
     conditions?: TemplateCondition[]
     params?: BooleanTemplateParams;
 }
 
-class EnumTemplateComponent implements ITemplateComponent {
+abstract class EnumTemplateComponent implements ITemplateComponent {
     type: EditInputType.Enum
     conditions?: TemplateCondition[]
     params?: EnumTemplateParams;
 }
 
-class GroupTemplateComponent implements ITemplateComponent {
+abstract class GroupTemplateComponent implements ITemplateComponent {
     type: EditInputType.Group
     conditions?: TemplateCondition[]
     content?: TemplateComponent[];
     params?: GroupTemplateParams;
 }
 
-class ListTemplateComponent implements ITemplateComponent {
+abstract class ListTemplateComponent implements ITemplateComponent {
     type: EditInputType.List
     conditions?: TemplateCondition[]
     params?: ListTemplateParams;
 }
 
-class ItemListTemplateComponent implements ITemplateComponent {
+abstract class ItemListTemplateComponent implements ITemplateComponent {
     type: EditInputType.ItemList
     conditions?: TemplateCondition[]
     params?: ItemListTemplateParams;
 }
 
-class LinkListTemplateComponent implements ITemplateComponent {
+abstract class LinkListTemplateComponent implements ITemplateComponent {
     type: EditInputType.LinkList
     conditions?: TemplateCondition[]
     params?: LinkListTemplateParams;
 }
 
-class LinkInputTemplateComponent implements ITemplateComponent {
+abstract class LinkInputTemplateComponent implements ITemplateComponent {
     type: EditInputType.LinkInput
     conditions?: TemplateCondition[]
     params?: LinkInputTemplateParams;
 }
 
-class NumberTemplateComponent implements ITemplateComponent {
+abstract class NumberTemplateComponent implements ITemplateComponent {
     type: EditInputType.Number
     conditions?: TemplateCondition[]
     params?: NumberTemplateParams;
 }
 
-class OptionTemplateComponent implements ITemplateComponent {
+abstract class OptionTemplateComponent implements ITemplateComponent {
     type: EditInputType.Option
     conditions?: TemplateCondition[]
     params?: OptionTemplateParams;
 }
 
-class SelectionTemplateComponent implements ITemplateComponent {
+abstract class SelectionTemplateComponent implements ITemplateComponent {
     type: EditInputType.Selection
     conditions?: TemplateCondition[]
     params?: SelectionTemplateParams;
 }
 
-class SelectionInputTemplateComponent implements ITemplateComponent {
+abstract class SelectionInputTemplateComponent implements ITemplateComponent {
     type: EditInputType.SelectionInput
     conditions?: TemplateCondition[]
     params?: SelectionInputTemplateParams;
 }
 
-class TextTemplateComponent implements ITemplateComponent {
+abstract class TextTemplateComponent implements ITemplateComponent {
     type: EditInputType.Text
     conditions?: TemplateCondition[]
     params?: TextTemplateParams;
 }
 
-class TextareaTemplateComponent implements ITemplateComponent {
+abstract class TextareaTemplateComponent implements ITemplateComponent {
     type: EditInputType.Textarea
     conditions?: TemplateCondition[]
     params?: TextareaTemplateParams;
 }
 
-class NavigationTemplateComponent implements ITemplateComponent {
+abstract class NavigationTemplateComponent implements ITemplateComponent {
     type: EditInputType.Navigation
     params?: NavigationTemplateParams;
 }

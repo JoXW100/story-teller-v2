@@ -22,6 +22,7 @@ abstract class Parser
     private static queries: QueryCollection = {}
 
     static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
+        console.log("parse", metadata)
         if (!text)
             return null
 
@@ -234,7 +235,7 @@ abstract class Parser
     }
 }
 
-export const useParser = (text: string, metadata: IParserMetadata, key: string): JSX.Element => {
+export const useParser = (text: string, metadata: IParserMetadata, key: string, dependency?: object): JSX.Element => {
     const [state, setState] = useState(null)
     useEffect(() => {
         Parser.parse(text, metadata, key)
@@ -248,7 +249,7 @@ export const useParser = (text: string, metadata: IParserMetadata, key: string):
                     throw error;
             }
         })
-    }, [text, metadata, key])
+    }, [text, dependency ? dependency : metadata, key])
     return state
 }
 

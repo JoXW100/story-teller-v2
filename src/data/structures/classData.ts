@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import FileData from "./file";
 import ModifierData from "./modifier";
 import ModifierCollectionData from "./modifierCollection";
@@ -26,12 +27,29 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
         return this.metadata.description ?? ""
     }
 
+    public get isSubclass(): boolean {
+        return this.metadata.isSubclass ?? false;
+    }
+
     public get hitDice(): DiceType {
         return this.metadata.hitDice ?? getOptionType("dice").default
     }
 
-    public getModifiers(level: number): IModifierCollection {
+    public get subclassLevel(): number {
+        return this.metadata.subclassLevel ?? 1;
+    }
+
+    public get subclasses(): ObjectId[] {
+        return this.metadata.subclasses ?? [];
+    }
+
+    public getModifiers(level: number, subclass?: ClassData): IModifierCollection {
         let collection: IModifierCollection = null
+        
+        if (level >= this.subclassLevel) {
+            collection = subclass?.getModifiers(level);
+        }
+
         for (let index = 1; index < level; index++) {
             let modifiers: IModifier[] = this.metadata[index] ?? []
             if (modifiers.length > 0) {

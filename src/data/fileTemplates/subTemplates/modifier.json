@@ -1,0 +1,218 @@
+{
+    "type": "root",
+    "content": [
+        { "type": "navigation" },
+        {
+            "type": "group",
+            "params": { "label": "Modifiers", "open": true },
+            "content": [
+                { 
+                    "type": "enum", 
+                    "params": { "label": "Type", "key": "type", "type": "modifierType", "default": "bonus" }
+                },
+                { 
+                    "type": "enum", 
+                    "params": { "label": "Condition", "key": "condition", "type": "modifierCondition", "default": "none" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                    "params": { "label": "Property", "key": "bonusProperty", "type": "modifierBonusTypeProperty", "default": "ac" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] }],
+                    "params": { "label": "Property", "key": "addRemoveProperty", "type": "modifierAddRemoveTypeProperty", "default": "proficiency" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] }],
+                    "params": { "label": "Property", "key": "setProperty", "type": "modifierSetTypeProperty", "default": "critRange" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
+                    ],
+                    "params": { "label": "Proficiency Type", "key": "proficiency", "type": "proficiencyType", "default": "armor" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] }],
+                    "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
+                },
+                { 
+                    "type": "text", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
+                },
+                { 
+                    "type": "boolean", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Allow Any", "key": "allowAny" }
+                },
+                { 
+                    "type": "number", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                    "params": { "label": "Value", "key": "value" }
+                },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "armor"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Armor", "key": "armor", "type": "armor" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "armor"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "armors", "enum": "armor", "fill": true }
+                },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "weapon"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Weapon", "key": "weapon", "type": "weapon" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "weapon"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "weapons", "enum": "weapon", "fill": true }
+                },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "tool"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Tool", "key": "tool", "type": "tool" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "tool"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "tools", "enum": "tool", "fill": true }
+                },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "language"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Language", "key": "language", "type": "language" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "language"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "languages", "enum": "language", "fill": true }
+                },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "save"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Save", "key": "save", "type": "attr" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "save"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "saves", "enum": "attr", "fill": true }
+                },
+                
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "skill"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Skill", "key": "skill", "type": "skill" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "proficiency" }, "skill"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "skills", "enum": "skill", "fill": true }
+                },
+                
+                { 
+                    "type": "linkInput", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Ability", "key": "file", "placeholder": "Ability id...", "fileTypes": ["abi"] }
+                }, { 
+                    "type": "linkList", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "allowAny" }, false] }
+                    ],
+                    "params": { "label": "Options", "key": "files", "fill": true, "fileTypes": ["abi"], "placeholder": "Ability file ID ..." }
+                }, 
+                
+                { 
+                    "type": "number", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "critRange"] }
+                    ],
+                    "params": { "label": "Critical Range", "key": "value" }
+                }
+            ]
+        }
+    ]
+}

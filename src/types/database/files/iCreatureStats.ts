@@ -8,7 +8,8 @@ interface ICreatureStats {
     wis?: number
     cha?: number
     spellAttribute?: OptionalAttribute,
-    proficiency?: number
+    proficiency?: number,
+    critRange?: number
 }
 
 export default ICreatureStats

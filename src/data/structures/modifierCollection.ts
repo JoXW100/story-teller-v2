@@ -2,7 +2,7 @@ import { ObjectId, ObjectIdText } from "types/database";
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierType } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
@@ -140,7 +140,7 @@ class ModifierCollectionData implements IModifierCollection {
 
     public get bonusAC(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty == ModifierBonusTypeProperty.AC 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.AC 
                 ? prev + modifier.value 
                 : prev
         , 0)
@@ -148,7 +148,7 @@ class ModifierCollectionData implements IModifierCollection {
 
     public get bonusNumHealthDice(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty == ModifierBonusTypeProperty.NumHitDice 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.NumHitDice 
                 ? prev + modifier.value 
                 : prev
         , 0)
@@ -156,7 +156,7 @@ class ModifierCollectionData implements IModifierCollection {
 
     public get bonusHealth(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty == ModifierBonusTypeProperty.Health 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Health 
                 ? prev + modifier.value 
                 : prev
         , 0)
@@ -164,7 +164,7 @@ class ModifierCollectionData implements IModifierCollection {
 
     public get bonusProficiency(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty == ModifierBonusTypeProperty.Proficiency 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Proficiency 
                 ? prev + modifier.value 
                 : prev
         , 0)
@@ -172,10 +172,18 @@ class ModifierCollectionData implements IModifierCollection {
 
     public get bonusInitiative(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty == ModifierBonusTypeProperty.Initiative 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Initiative
                 ? prev + modifier.value 
                 : prev
         , 0)
+    }
+
+    public get critRange(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type == ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.CritRange && modifier.value !== null
+                ? modifier.value 
+                : prev
+        , null)
     }
 }
 
@@ -255,6 +263,10 @@ class CombinedModifierCollection implements IModifierCollection {
 
     public get bonusInitiative(): number {
         return this.c1.bonusInitiative + this.c2.bonusInitiative
+    }
+
+    public get critRange(): number {
+        return this.c1.critRange ?? this.c2.critRange 
     }
 }
 

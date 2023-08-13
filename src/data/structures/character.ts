@@ -14,9 +14,9 @@ import { ObjectId } from "types/database";
 class CharacterData extends CreatureData implements Required<ICharacterMetadata> {
     public readonly metadata: ICharacterMetadata;
     private readonly characterClass: IClassMetadataProperties 
-    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData) {
+    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
         if (characterClass) {
-            let collection = characterClass.getModifiers(metadata?.level ?? 0);
+            let collection = characterClass.getModifiers(metadata?.level ?? 0, characterSubclass);
             super(metadata, collection?.join(modifiers) ?? modifiers)
         } else {
             characterClass = new ClassData()

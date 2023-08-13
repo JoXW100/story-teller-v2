@@ -17,7 +17,7 @@ interface StoryContextState extends ContextState {
 }
 
 interface StoryContextDispatch extends ContextDispatch {
-    roll: (collection: DiceCollection, method?: RollMethod) => void
+    roll: (collection: DiceCollection, method?: RollMethod, criticalRange?: number) => void
     clearRolls: () => void
     collapseSidePanel: () => void
     expandSidePanel: () => void
@@ -28,7 +28,7 @@ type StoryContextDispatchAction =
     | DispatchAction<"initSet", DBResponse<IStoryData>, StoryContextDispatchAction>
     | DispatchAction<"setFile", ObjectId, StoryContextDispatchAction>
     | DispatchAction<"setEditMode", boolean, StoryContextDispatchAction>
-    | DispatchAction<"roll", undefined, StoryContextDispatchAction>
+    | DispatchAction<"roll", RollEvent, StoryContextDispatchAction>
     | DispatchAction<"clearRolls", undefined, StoryContextDispatchAction>
     | DispatchAction<"setSidePanelExpanded", boolean, StoryContextDispatchAction>
 

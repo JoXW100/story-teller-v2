@@ -14,6 +14,10 @@ export enum ModifierAddRemoveTypeProperty {
     Ability = "ability"
 }
 
+export enum ModifierSetTypeProperty {
+    CritRange = "critRange"
+}
+
 export enum ModifierType {
     Bonus = "bonus", // Adds/Removes a flat value
     Set = "set", // Sets value
@@ -43,6 +47,7 @@ interface IModifier {
     select?: ModifierSelectType
     bonusProperty?: ModifierBonusTypeProperty
     addRemoveProperty?: ModifierAddRemoveTypeProperty
+    setProperty?: ModifierSetTypeProperty
 
     label?: string
     allowAny?: boolean
