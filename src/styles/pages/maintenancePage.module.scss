@@ -1,0 +1,19 @@
+@import 'styles/colors.scss';
+@import 'styles/constants.scss';
+@import 'styles/prefabs.scss';
+@import 'styles/fonts.scss';
+
+.main {
+    display: grid;
+    grid-template-rows: $menuHeaderHeight;
+    grid-template-columns: calc(100% - 30px);
+    height: 100%;
+    justify-content: center;
+    align-content: center;
+    padding: 20px;
+}
+
+.header {
+    @include centerFlex;
+    padding: 10px 5px;
+}

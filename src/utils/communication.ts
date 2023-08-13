@@ -7,6 +7,7 @@ import { IStory } from "types/database/stories"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
+export type ServerMode = "maintenance"|"running"|"failed"
 
 export interface Open5eResponse<T> {
     readonly count: number
@@ -16,7 +17,8 @@ export interface Open5eResponse<T> {
 }
 
 abstract class Communication {
-    private static readonly root = "/api/database/";
+    private static readonly _databaseRootURL = "/api/database/";
+    private static readonly _serverRootURL = "/api/server";
     private static readonly open5eRoot = "https://api.open5e.com/"
 
     public static async isConnected(): Promise<boolean> {
@@ -26,6 +28,23 @@ abstract class Communication {
 
     public static async debug(): Promise<DBResponse<any>> {
         return await this.databaseFetch<any>('debug', 'PUT')
+    }
+
+    public static async getServerMode(): Promise<ServerMode> {
+        try {
+            let res = await fetch(`${this._serverRootURL}?query=mode`, { method: 'GET' })
+            let message = await res.text()
+            if (res.status === 200) {
+                Logger.log("getServerMode", message)
+                return message as ServerMode
+            } else {
+                Logger.error("getServerMode", message)
+                return "failed"
+            }
+        } catch (error: unknown) {
+            Logger.throw("getServerMode", error)
+            return "failed"
+        }
     }
 
     public static async getStory(storyId: ObjectId): Promise<DBResponse<StoryGetResult>> {
@@ -134,6 +153,14 @@ abstract class Communication {
         })
     }
 
+    public static async setFilePublicState(storyId: ObjectId, fileId: ObjectId, state: boolean): Promise<DBResponse<FileSetPropertyResult>> {
+        return await this.databaseFetch<FileSetPropertyResult>('setFilePublicState', 'PUT', {
+            storyId: storyId,
+            fileId: fileId,
+            state: state
+        })
+    }
+
     public static async renameFile(storyId: ObjectId, fileId: ObjectId, name: string): Promise<DBResponse<FileRenameResult>> {
         return await this.databaseFetch<FileRenameResult>('renameFile', 'PUT', {
             storyId: storyId,
@@ -179,7 +206,7 @@ abstract class Communication {
             let data: Response = null;
             switch (method) {
                 case 'PUT':
-                    data = await fetch(this.root + type, { 
+                    data = await fetch(this._databaseRootURL + type, { 
                         method: method, 
                         body: JSON.stringify(params) 
                     })
@@ -189,7 +216,7 @@ abstract class Communication {
                 default:
                     let url: string = Object.keys(params ?? []).reduce((prev, key, index) => (
                         prev + `${index == 0 ? '?' : '&'}${key}=${params[key]}`
-                    ), this.root + type)
+                    ), this._databaseRootURL + type)
                     data = await fetch(url, { method: method })
                     break
             }

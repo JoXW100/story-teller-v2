@@ -11,7 +11,7 @@ type LoginPageProps = React.PropsWithRef<{
 const LoginPage = ({ returnURL }: LoginPageProps): JSX.Element => {
     return (
         <div className={styles.main}>
-            <div className={styles.header}> Login Required </div>
+            <div className={styles.header}>{Localization.toText('loginPage-header')}</div>
             <Link className={styles.loginButton} href={Navigation.loginAPI()} passHref>
                 <button>
                     <label>{ Localization.toText('loginPage-prompt') }</label>

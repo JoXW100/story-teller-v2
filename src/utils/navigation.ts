@@ -31,6 +31,14 @@ abstract class Navigation
         return new URL(location.origin);
     }
 
+    public static loginURL(returnURL?: string): string {
+        return `/login?return=${returnURL}`
+    }
+
+    public static maintenanceURL(): string {
+        return `/maintenance`
+    }
+
     public static loginAPI(): string {
         return "/api/auth/login"
     }

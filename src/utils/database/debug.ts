@@ -167,14 +167,14 @@ class DebugInterface
     async debug(): Promise<DBResponse<any>> {
         let responses: DBResponse<any>[] = []
         //responses.push(await this.transfer());
-        responses.push(await this.clearTmp());
+        //responses.push(await this.clearTmp());
         //responses.push(await this.transferFixedRoots());
         //responses.push(await this.transferFixedFolders());
         //responses.push(await this.transferFixedAbilities());
         //responses.push(await this.transferFixedCharacters());
         //responses.push(await this.transferFixedClasses());
         //responses.push(await this.transferFixedCreatures());
-        responses.push(await this.transferFixedDocuments());
+        //responses.push(await this.transferFixedDocuments());
         //responses.push(await this.transferFixedEncounters());
         //responses.push(await this.transferFixedSpells());
         return success(responses);

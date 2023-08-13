@@ -15,8 +15,8 @@
                         "params": { "label": "Title", "key": "title" }
                     },
                     { 
-                        "type": "boolean", 
-                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                        "type": "publish", 
+                        "params": { "label": "Publish" }
                     },
                     { 
                         "type": "text", 

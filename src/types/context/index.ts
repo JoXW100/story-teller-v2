@@ -13,7 +13,8 @@ interface ContextDispatch {
 }
 
 type ContextProvider<A extends ContextState, B extends ContextDispatch> = [
-    data: A, dispatch: B
+    data: A, 
+    dispatch: B
 ]
 
 export type {

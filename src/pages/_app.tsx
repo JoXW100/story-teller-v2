@@ -5,10 +5,11 @@ import AppContext from 'components/contexts/appContext'
 import { UserProvider } from '@auth0/nextjs-auth0';
 import 'styles/globals.scss'
 import 'styles/language.scss';
+import Navigation from 'utils/navigation';
 
 function MyApp({ Component, pageProps, router }) {
     return (
-        <UserProvider>
+        <UserProvider loginUrl={Navigation.loginAPI()}>
             <Head>
                 <title key="title">Story Teller 2</title>
                 <link rel="icon" href="/storyteller.ico" />

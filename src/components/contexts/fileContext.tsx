@@ -92,6 +92,25 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                 };
             }
             return state;
+
+        case 'setPublicState':
+            if (state.file) {
+                state.queue.addRequest(() => {
+                    Communication.setFilePublicState(state.story, state.file.id, action.data).then((res) => {
+                        if (!res.success) {
+                            Logger.error("fileContext.setText", res.result);
+                        }
+                    })
+                }, "public");
+                return  { 
+                    ...state,
+                    file: {
+                        ...state.file,
+                        content: { ...state.file.content, public: action.data },
+                    }
+                };
+            }
+            return state;
         
         case 'setMetadata':
             if (state.file && action.data?.key) {
@@ -173,6 +192,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
     
     const memoizedDispatch = useMemo<FileContextDispatch>(() => ({
         setText: (text) => dispatch({ type: 'setText', data: text }),
+        setPublic: (value) => dispatch({ type: 'setPublicState', data: value }),
         setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
         setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
         openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),

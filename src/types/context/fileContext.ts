@@ -29,6 +29,7 @@ type FileContextDispatchAction =
       DispatchAction<"init", { story: ObjectId, file: ObjectId }, FileContextDispatchAction> 
     | DispatchAction<"initSet", DBResponse<FileGetResult>, FileContextDispatchAction>
     | DispatchAction<"setText", string, FileContextDispatchAction>
+    | DispatchAction<"setPublicState", boolean, FileContextDispatchAction>
     | DispatchAction<"setMetadata", KeyValuePair, FileContextDispatchAction>
     | DispatchAction<"setStorage", KeyValuePair, FileContextDispatchAction>
     | DispatchAction<"setViewMode", boolean, FileContextDispatchAction>
@@ -37,6 +38,7 @@ type FileContextDispatchAction =
 
 interface FileContextDispatch extends ContextDispatch {
     setText: (text: string) => void
+    setPublic: (value: boolean) => void
     setMetadata: (key: string, value: any) => void
     setStorage: (key: string, value: any) => void
     openTemplatePage: (page: EditFilePage) => void

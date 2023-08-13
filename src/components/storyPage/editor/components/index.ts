@@ -10,6 +10,7 @@ import LinkInput from './linkInput'
 import List from './list'
 import Number from './number'
 import Option from './option';
+import Publish from './publish';
 import Selection from './selection';
 import SelectionInput from './selectionInput';
 import Navigation from './navigation';
@@ -33,6 +34,7 @@ const Components = {
     List,
     Number,
     Option,
+    Publish,
     Selection,
     SelectionInput,
     Navigation

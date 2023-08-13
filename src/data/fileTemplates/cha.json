@@ -11,12 +11,12 @@
                         "params": { "label": "Name", "key": "name", "default": "Character name" }
                     },
                     { 
-                        "type": "boolean", 
-                        "params": { "label": "Publish", "key": "public", "viewURL": true }
+                        "type": "publish", 
+                        "params": { "label": "Publish" }
                     },
                     { 
                         "type": "boolean", 
-                        "params": { "label": "Simple", "key": "simple" }
+                        "params": { "label": "Simple", "key": "simple", "default": false }
                     },
                     { 
                         "type": "enum", 

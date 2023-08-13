@@ -73,7 +73,6 @@ interface IFileTemplateParams {
 
 interface BooleanTemplateParams extends IFileTemplateParams {
     default?: boolean
-    viewURL?: boolean
 }
 
 interface EnumTemplateParams extends IFileTemplateParams {
@@ -295,6 +294,7 @@ export enum EditInputType {
     LinkList = 'linkList',
     LinkInput = 'linkInput',
     TemplateList = 'templateList',
+    Publish = 'publish',
     Selection = 'selection',
     SelectionInput = 'selectionInput',
     Option = 'option',

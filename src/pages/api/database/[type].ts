@@ -52,7 +52,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                 let body: Record<string, any> = JSON.parse(req.body)
                 switch (type) {
                     case 'connect':
-                        return res.status(200).json(await success(Database.isConnected));
+                        return res.status(200).json(success(Database.isConnected));
     
                     case 'addStory':
                         return res.status(200).json(await Database.stories.add(userId, body.name, body.desc));
@@ -83,6 +83,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     
                     case 'setFileText':
                         return res.status(200).json(await Database.files.setText(userId, body.storyId, body.fileId, body.text));
+                    
+                    case 'setFilePublicState':
+                        return res.status(200).json(await Database.files.setPublicState(userId, body.storyId, body.fileId, body.state));
     
                     case 'setFileMetadata':
                         return res.status(200).json(await Database.files.setMetadata(userId, body.storyId, body.fileId, body.metadata));
@@ -112,9 +115,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
             default:
                 return res.status(400).json(failure("Missing"));
         }
-    } catch (error) {
-        Logger.throw("database.handler", error)
-        return res.status(400).json(failure(error.message));
+    } catch (error: unknown) {
+        Logger.error("database.handler", error)
+        if (error instanceof Error) {
+            return res.status(400).json(failure(error.message));
+        } else {
+            return res.status(400).json(failure(error));
+        }
     }
 }
 
