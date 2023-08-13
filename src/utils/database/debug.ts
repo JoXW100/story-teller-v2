@@ -166,8 +166,10 @@ class DebugInterface
 
     async debug(): Promise<DBResponse<any>> {
         let responses: DBResponse<any>[] = []
-        //responses.push(await this.transfer());
-        //responses.push(await this.clearTmp());
+        //responses.push(await this.clearBackup()); // Not necessary
+        //responses.push(await this.transferToBackup());
+        //responses.push(await this.clearTmp()); // Not necessary
+        responses.push(await this.convert());
         //responses.push(await this.transferFixedRoots());
         //responses.push(await this.transferFixedFolders());
         //responses.push(await this.transferFixedAbilities());
@@ -177,6 +179,8 @@ class DebugInterface
         //responses.push(await this.transferFixedDocuments());
         //responses.push(await this.transferFixedEncounters());
         //responses.push(await this.transferFixedSpells());
+        //responses.push(await this.clearFiles()); // Not necessary
+        //responses.push(await this.transferToFiles());
         return success(responses);
     }
 
@@ -186,7 +190,19 @@ class DebugInterface
         return success(res.deletedCount)
     }
 
-    async transfer(): Promise<DBResponse<number>> {
+    async clearBackup(): Promise<DBResponse<number>> {
+        let res = await this.backupCollection.deleteMany({})
+        Logger.log('debug.clearBackup', res)
+        return success(res.deletedCount)
+    }
+    
+    async clearFiles(): Promise<DBResponse<number>> {
+        let res = await this.filesCollection.deleteMany({})
+        Logger.log('debug.clearBackup', res)
+        return success(res.deletedCount)
+    }
+
+    async transferToBackup(): Promise<DBResponse<number>> {
         let res = await this.filesCollection.aggregate([
             { $match: {} },
             { $out: 'dev_files_backup' },
@@ -196,20 +212,85 @@ class DebugInterface
         return success(res.length)
     }
 
+    async transferToFiles(): Promise<DBResponse<number>> {
+        let res = await this.tmpCollection.aggregate([
+            { $match: { 
+                type: { $ne: FileType.Empty } 
+            } satisfies Partial<KeysOf<DBItem>>},
+            { $out: 'files' },
+        ]).toArray()
+
+        Logger.log('debug.transfer', res)
+        return success(res.length)
+    }
+
+    async convert(): Promise<DBResponse<number>> {
+        let res = await this.backupCollection.aggregate([
+            { $match: {}},
+            { $project: {
+                result: {
+                    $switch: {
+                        branches: [
+                            {
+                                case: { $eq: ['$type', FileType.Root]},
+                                then: this.rootProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Folder]},
+                                then: this.foldersProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Ability]},
+                                then: this.abilityProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Character]},
+                                then: this.characterProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Creature]},
+                                then: this.creatureProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Document]},
+                                then: this.documentProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Encounter]},
+                                then: this.encounterProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Spell]},
+                                then: this.spellProjection
+                            }, 
+                            {
+                                case: { $eq: ['$type', FileType.Class]},
+                                then: this.classProjection
+                            }
+                        ],
+                        default: {
+                            type: FileType.Empty,
+                            was: '$type'
+                        }
+                    }
+                }
+            } },
+            { $replaceRoot: { 
+                newRoot: '$result'
+            }},
+            { $out: 'dev_files_tmp' },
+        ]).toArray()
+
+        Logger.log('debug.convert', res)
+        return success(res.length)
+    }
+
     async transferFixedRoots(): Promise<DBResponse<number>> {
         let res = await this.backupCollection.aggregate([
             { $match: { 
                 type: FileType.Root 
             } satisfies Partial<KeysOf<DBFile>> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: { $ifNull: ['$_holderId', null] },
-                type: FileType.Root,
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBRoot> },
+            { $project: this.rootProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
@@ -222,19 +303,7 @@ class DebugInterface
             { $match: { 
                 type: FileType.Folder 
             } satisfies Partial<KeysOf<DBFile>> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: FileType.Folder,
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    open: { $ifNull: ['$content.open', false] }
-                } satisfies KeysOf<DBFolder["content"]>,
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBFolder> },
+            { $project: this.foldersProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
@@ -247,51 +316,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Ability
             } satisfies Partial<KeysOf<DBAbility>> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<Required<DBAbility["content"]>>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    type: addIfExists('$content.metadata.type'),
-                    versatile: addIfExists('$content.metadata.versatile'),
-                    action: addIfExists('$content.metadata.action'),
-                    notes: addIfExists('$content.metadata.notes'),
-                    condition: addIfExists('$content.metadata.condition'),
-                    saveAttr: addIfExists('$content.metadata.saveAttr'),
-                    damageType: addIfExists('$content.metadata.damageType'),
-                    target: addIfExists('$content.metadata.target'),
-                    range: addIfExists('$content.metadata.range'),
-                    rangeLong: addIfExists('$content.metadata.rangeLong'),
-                    rangeThrown: addIfExists('$content.metadata.rangeThrown'),
-                    effectVersatileDice: addIfExists('$content.metadata.effectVersatileDice'),
-                    conditionScaling: addIfExists('$content.metadata.conditionScaling'),
-                    conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
-                    conditionModifier: addIfExists('$content.metadata.conditionModifier'),
-                    effectText: addIfExists('$content.metadata.effectText'),
-                    effectScaling: addIfExists('$content.metadata.effectScaling'),
-                    effectProficiency: addIfExists('$content.metadata.effectProficiency'),
-                    effectModifier: addIfExists('$content.metadata.effectModifier'),
-                    effectDice: addIfExists('$content.metadata.effectDice'),
-                    effectDiceNum: addIfExists('$content.metadata.effectDiceNum'),
-                    modifiers: addIfExists('$content.metadata.modifiers')
-                } satisfies KeysOf<Required<DBAbility["metadata"]>>,
-                storage: { $ifNull: ['$content.storage', {} satisfies Required<DBAbility["storage"]> ] },
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBAbility> },
+            { $project: this.abilityProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedAbilities', res)
         return success(res.length)
     }
 
@@ -300,77 +329,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Character
             } satisfies Partial<KeysOf<DBCharacter>> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<Required<DBCharacter["content"]>>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    simple: addIfExists('$content.metadata.simple'),
-                    gender: addIfExists('$content.metadata.gender'),
-                    age: addIfExists('$content.metadata.age'),
-                    height: addIfExists('$content.metadata.height'),
-                    weight: addIfExists('$content.metadata.weight'),
-                    raceText: addIfExists('$content.metadata.raceText'),
-                    occupation: addIfExists('$content.metadata.occupation'),
-                    appearance: addIfExists('$content.metadata.appearance'),
-                    history: addIfExists('$content.metadata.history'),
-                    notes: addIfExists('$content.metadata.notes'),
-                    type: addIfExists('$content.metadata.type'),
-                    size: addIfExists('$content.metadata.size'),
-                    alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
-                    portrait: addIfExists('$content.metadata.portrait'),
-                    abilities: addIfExists('$content.metadata.abilities'),
-                    challenge: addIfExists('$content.metadata.challenge'),
-                    xp: addIfExists('$content.metadata.xp'),
-                    level: addIfExists('$content.metadata.level'),
-                    classFile: addIfExists('$content.metadata.classFile'),
-                    hitDice: addIfExists('$content.metadata.hitDice'),
-                    health: addIfExists('$content.metadata.health'),
-                    ac: addIfExists('$content.metadata.ac'),
-                    proficiency: addIfExists('$content.metadata.proficiency'),
-                    initiative: addIfExists('$content.metadata.initiative'),
-                    str: addIfExists('$content.metadata.str'),
-                    dex: addIfExists('$content.metadata.dex'),
-                    con: addIfExists('$content.metadata.con'),
-                    int: addIfExists('$content.metadata.int'),
-                    wis: addIfExists('$content.metadata.wis'),
-                    cha: addIfExists('$content.metadata.cha'),
-                    resistances: addIfExists('$content.metadata.resistances'),
-                    vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
-                    advantages: addIfExists('$content.metadata.advantages'),
-                    dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
-                    conImmunities: addIfExists('$content.metadata.conImmunities'),
-                    speed: addIfExists('$content.metadata.speed'),
-                    senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
-                    proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
-                    proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
-                    proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
-                    proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
-                    proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
-                    proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
-                    spellAttribute: addIfExists('$content.metadata.spellAttribute'),
-                    spellSlots: addIfExists('$content.metadata.spellSlots'),
-                    spells: addIfExists('$content.metadata.spells'),
-                } satisfies KeysOf<Required<DBCharacter["metadata"]>>,
-                storage: { 
-                    classData: { $ifNull: ['$content.storage.classData', {} satisfies Required<DBCharacter["storage"]["classData"]> ] }
-                } satisfies KeysOf<Required<DBCharacter["storage"]>>,
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBDocument> },
+            { $project: this.characterProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedCharacters', res)
         return success(res.length)
     }
 
@@ -379,64 +342,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Creature
             } satisfies Partial<DBCreature> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] }
-                } satisfies KeysOf<Required<DBCreature["content"]>>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    type: addIfExists('$content.metadata.type'),
-                    size: addIfExists('$content.metadata.size'),
-                    alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
-                    portrait: addIfExists('$content.metadata.portrait'),
-                    abilities: addIfExists('$content.metadata.abilities'),
-                    challenge: addIfExists('$content.metadata.challenge'),
-                    xp: addIfExists('$content.metadata.xp'),
-                    level: addIfExists('$content.metadata.level'),
-                    hitDice: addIfExists('$content.metadata.hitDice'),
-                    health: addIfExists('$content.metadata.health'),
-                    ac: addIfExists('$content.metadata.ac'),
-                    proficiency: addIfExists('$content.metadata.proficiency'),
-                    initiative: addIfExists('$content.metadata.initiative'),
-                    str: addIfExists('$content.metadata.str'),
-                    dex: addIfExists('$content.metadata.dex'),
-                    con: addIfExists('$content.metadata.con'),
-                    int: addIfExists('$content.metadata.int'),
-                    wis: addIfExists('$content.metadata.wis'),
-                    cha: addIfExists('$content.metadata.cha'),
-                    resistances: addIfExists('$content.metadata.resistances'),
-                    vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
-                    advantages: addIfExists('$content.metadata.advantages'),
-                    dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
-                    conImmunities: addIfExists('$content.metadata.conImmunities'),
-                    speed: addIfExists('$content.metadata.speed'),
-                    senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
-                    proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
-                    proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
-                    proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
-                    proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
-                    proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
-                    proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
-                    spellAttribute: addIfExists('$content.metadata.spellAttribute'),
-                    spellSlots: addIfExists('$content.metadata.spellSlots'),
-                    spells: addIfExists('$content.metadata.spells'),
-                } satisfies KeysOf<Required<DBCreature["metadata"]>>,
-                storage: { $ifNull: ['$content.storage', {} satisfies Required<DBCreature["storage"]> ] },
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBCreature> },
+            { $project: this.creatureProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedCreatures', res)
         return success(res.length)
     }
 
@@ -445,29 +355,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Document 
             } satisfies Partial<DBDocument> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<Required<DBDocument["content"]>>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', { $ifNull: ['$content.metadata.title', ""] }] },
-                    description: { $ifNull: ['$content.metadata.description', { $ifNull: ['$content.metadata.content', ""] }] },
-                } satisfies KeysOf<Required<DBDocument["metadata"]>>,
-                storage: { $ifNull: ['$content.storage', {} satisfies Required<DBDocument["storage"]> ] },
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBDocument> },
+            { $project: this.documentProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedDocuments', res)
         return success(res.length)
     }
 
@@ -476,34 +368,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Encounter
             } satisfies Partial<DBEncounter> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<DBEncounter["content"]>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    creatures: addIfExists('$content.metadata.creatures'),
-                    challenge: addIfExists('$content.metadata.challenge'),
-                    xp: addIfExists('$content.metadata.xp')
-                } satisfies KeysOf<Required<DBEncounter["metadata"]>>,
-                storage: { 
-                    cards: { $ifNull: ['$content.storage.cards', [] satisfies KeysOf<Required<DBEncounter["storage"]["cards"]>> ] }
-                } satisfies KeysOf<Required<DBEncounter["storage"]>>,
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBEncounter> },
+            { $project: this.encounterProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedEncounters', res)
         return success(res.length)
     }
 
@@ -512,61 +381,11 @@ class DebugInterface
             { $match: { 
                 type: FileType.Spell
             } satisfies Partial<DBSpell> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<DBSpell["content"]>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    level: addIfExists('$content.metadata.level'),
-                    school: addIfExists('$content.metadata.school'),
-                    time: addIfExists('$content.metadata.time'),
-                    timeCustom: addIfExists('$content.metadata.timeCustom'),
-                    timeValue: addIfExists('$content.metadata.timeValue'),
-                    duration: addIfExists('$content.metadata.duration'),
-                    durationValue: addIfExists('$content.metadata.durationValue'),
-                    ritual: addIfExists('$content.metadata.ritual'),
-                    concentration: addIfExists('$content.metadata.concentration'),
-                    componentVerbal: addIfExists('$content.metadata.componentVerbal'),
-                    componentSomatic: addIfExists('$content.metadata.componentSomatic'),
-                    componentMaterial: addIfExists('$content.metadata.componentMaterial'),
-                    materials: addIfExists('$content.metadata.materials'),
-                    notes: addIfExists('$content.metadata.notes'),
-                    condition: addIfExists('$content.metadata.condition'),
-                    saveAttr: addIfExists('$content.metadata.saveAttr'),
-                    damageType: addIfExists('$content.metadata.damageType'),
-                    target: addIfExists('$content.metadata.target'),
-                    range: addIfExists('$content.metadata.range'),
-                    rangeLong: addIfExists('$content.metadata.rangeLong'),
-                    area: addIfExists('$content.metadata.area'),
-                    areaSize: addIfExists('$content.metadata.areaSize'),
-                    areaHeight: addIfExists('$content.metadata.areaHeight'),
-                    conditionScaling: addIfExists('$content.metadata.conditionScaling'),
-                    conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
-                    conditionModifier: addIfExists('$content.metadata.conditionModifier'),
-                    effectText: addIfExists('$content.metadata.effectText'),
-                    effectScaling: addIfExists('$content.metadata.effectScaling'),
-                    effectProficiency: addIfExists('$content.metadata.effectProficiency'),
-                    effectModifier: addIfExists('$content.metadata.effectModifier'),
-                    effectDice: addIfExists('$content.metadata.effectDice'),
-                    effectDiceNum: addIfExists('$content.metadata.effectDiceNum')
-                } satisfies KeysOf<Required<DBSpell["metadata"]>>,
-                storage: { $ifNull: ['$content.storage.cards', {} satisfies Required<DBSpell["storage"]> ] },
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBSpell> },
+            { $project: this.spellProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedSpells', res)
         return success(res.length)
     }
 
@@ -575,51 +394,357 @@ class DebugInterface
             { $match: { 
                 type: FileType.Class
             } satisfies Partial<DBClass> },
-            { $project: {
-                _id: '$_id',
-                _userId: '$_userId',
-                _storyId: '$_storyId',
-                _holderId: '$_holderId',
-                type: '$type',
-                content: {
-                    name: { $ifNull: ['$content.name', ""] },
-                    public: { $ifNull: ['$content.metadata.public', false] },
-                    text: { $ifNull: ['$content.text', ""] },
-                } satisfies KeysOf<DBClass["content"]>,
-                metadata: {
-                    name: { $ifNull: ['$content.metadata.name', ""] },
-                    description: { $ifNull: ['$content.metadata.description', ""] },
-                    hitDice: addIfExists('$content.metadata.hitDice'),
-                    1: addIfExists('$content.metadata.1'),
-                    2: addIfExists('$content.metadata.2'),
-                    3: addIfExists('$content.metadata.3'),
-                    4: addIfExists('$content.metadata.4'),
-                    5: addIfExists('$content.metadata.5'),
-                    6: addIfExists('$content.metadata.6'),
-                    7: addIfExists('$content.metadata.7'),
-                    8: addIfExists('$content.metadata.8'),
-                    9: addIfExists('$content.metadata.9'),
-                    10: addIfExists('$content.metadata.10'),
-                    11: addIfExists('$content.metadata.11'),
-                    12: addIfExists('$content.metadata.12'),
-                    13: addIfExists('$content.metadata.13'),
-                    14: addIfExists('$content.metadata.14'),
-                    15: addIfExists('$content.metadata.15'),
-                    16: addIfExists('$content.metadata.16'),
-                    17: addIfExists('$content.metadata.17'),
-                    18: addIfExists('$content.metadata.18'),
-                    19: addIfExists('$content.metadata.19'),
-                    20: addIfExists('$content.metadata.20'),
-                } satisfies KeysOf<Required<DBClass["metadata"]>>,
-                storage: { $ifNull: ['$storage', {} satisfies Required<DBClass["storage"]> ] },
-                dateCreated: '$dateCreated',
-                dateUpdated: '$dateUpdated'
-            } satisfies KeysOf<DBClass> },
+            { $project: this.classProjection },
             { $out: 'dev_files_tmp' },
         ]).toArray()
 
-        Logger.log('debug.transferFixedFiles', res)
+        Logger.log('debug.transferFixedClasses', res)
         return success(res.length)
+    }
+
+    private get rootProjection(): KeysOf<DBRoot> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: { $ifNull: ['$_holderId', null] },
+            type: FileType.Root,
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBRoot>
+    }
+
+    private get foldersProjection(): KeysOf<DBFolder> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: FileType.Folder,
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                open: { $ifNull: ['$content.open', false] }
+            } satisfies KeysOf<DBFolder["content"]>,
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBFolder>
+    }
+
+    private get abilityProjection(): KeysOf<DBAbility> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<Required<DBAbility["content"]>>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                type: addIfExists('$content.metadata.type'),
+                versatile: addIfExists('$content.metadata.versatile'),
+                action: addIfExists('$content.metadata.action'),
+                notes: addIfExists('$content.metadata.notes'),
+                condition: addIfExists('$content.metadata.condition'),
+                saveAttr: addIfExists('$content.metadata.saveAttr'),
+                damageType: addIfExists('$content.metadata.damageType'),
+                target: addIfExists('$content.metadata.target'),
+                range: addIfExists('$content.metadata.range'),
+                rangeLong: addIfExists('$content.metadata.rangeLong'),
+                rangeThrown: addIfExists('$content.metadata.rangeThrown'),
+                effectVersatileDice: addIfExists('$content.metadata.effectVersatileDice'),
+                conditionScaling: addIfExists('$content.metadata.conditionScaling'),
+                conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
+                conditionModifier: addIfExists('$content.metadata.conditionModifier'),
+                effectText: addIfExists('$content.metadata.effectText'),
+                effectScaling: addIfExists('$content.metadata.effectScaling'),
+                effectProficiency: addIfExists('$content.metadata.effectProficiency'),
+                effectModifier: addIfExists('$content.metadata.effectModifier'),
+                effectDice: addIfExists('$content.metadata.effectDice'),
+                effectDiceNum: addIfExists('$content.metadata.effectDiceNum'),
+                modifiers: addIfExists('$content.metadata.modifiers')
+            } satisfies KeysOf<Required<DBAbility["metadata"]>>,
+            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBAbility["storage"]> ] },
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBAbility>
+    }
+
+    private get characterProjection(): KeysOf<DBCharacter> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<Required<DBCharacter["content"]>>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                simple: addIfExists('$content.metadata.simple'),
+                gender: addIfExists('$content.metadata.gender'),
+                age: addIfExists('$content.metadata.age'),
+                height: addIfExists('$content.metadata.height'),
+                weight: addIfExists('$content.metadata.weight'),
+                raceText: addIfExists('$content.metadata.raceText'),
+                occupation: addIfExists('$content.metadata.occupation'),
+                appearance: addIfExists('$content.metadata.appearance'),
+                history: addIfExists('$content.metadata.history'),
+                notes: addIfExists('$content.metadata.notes'),
+                type: addIfExists('$content.metadata.type'),
+                size: addIfExists('$content.metadata.size'),
+                alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
+                portrait: addIfExists('$content.metadata.portrait'),
+                abilities: addIfExists('$content.metadata.abilities'),
+                challenge: addIfExists('$content.metadata.challenge'),
+                xp: addIfExists('$content.metadata.xp'),
+                level: addIfExists('$content.metadata.level'),
+                classFile: addIfExists('$content.metadata.classFile'),
+                hitDice: addIfExists('$content.metadata.hitDice'),
+                health: addIfExists('$content.metadata.health'),
+                ac: addIfExists('$content.metadata.ac'),
+                proficiency: addIfExists('$content.metadata.proficiency'),
+                initiative: addIfExists('$content.metadata.initiative'),
+                str: addIfExists('$content.metadata.str'),
+                dex: addIfExists('$content.metadata.dex'),
+                con: addIfExists('$content.metadata.con'),
+                int: addIfExists('$content.metadata.int'),
+                wis: addIfExists('$content.metadata.wis'),
+                cha: addIfExists('$content.metadata.cha'),
+                resistances: addIfExists('$content.metadata.resistances'),
+                vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
+                advantages: addIfExists('$content.metadata.advantages'),
+                dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
+                conImmunities: addIfExists('$content.metadata.conImmunities'),
+                speed: addIfExists('$content.metadata.speed'),
+                senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
+                proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
+                proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
+                proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
+                proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
+                proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
+                proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
+                spellAttribute: addIfExists('$content.metadata.spellAttribute'),
+                spellSlots: addIfExists('$content.metadata.spellSlots'),
+                spells: addIfExists('$content.metadata.spells'),
+            } satisfies KeysOf<Required<DBCharacter["metadata"]>>,
+            storage: { 
+                classData: { $ifNull: ['$content.storage.classData', {} satisfies Required<DBCharacter["storage"]["classData"]> ] }
+            } satisfies KeysOf<Required<DBCharacter["storage"]>>,
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBCharacter>
+    }
+
+    private get creatureProjection(): KeysOf<DBCreature> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] }
+            } satisfies KeysOf<Required<DBCreature["content"]>>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                type: addIfExists('$content.metadata.type'),
+                size: addIfExists('$content.metadata.size'),
+                alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
+                portrait: addIfExists('$content.metadata.portrait'),
+                abilities: addIfExists('$content.metadata.abilities'),
+                challenge: addIfExists('$content.metadata.challenge'),
+                xp: addIfExists('$content.metadata.xp'),
+                level: addIfExists('$content.metadata.level'),
+                hitDice: addIfExists('$content.metadata.hitDice'),
+                health: addIfExists('$content.metadata.health'),
+                ac: addIfExists('$content.metadata.ac'),
+                proficiency: addIfExists('$content.metadata.proficiency'),
+                initiative: addIfExists('$content.metadata.initiative'),
+                str: addIfExists('$content.metadata.str'),
+                dex: addIfExists('$content.metadata.dex'),
+                con: addIfExists('$content.metadata.con'),
+                int: addIfExists('$content.metadata.int'),
+                wis: addIfExists('$content.metadata.wis'),
+                cha: addIfExists('$content.metadata.cha'),
+                resistances: addIfExists('$content.metadata.resistances'),
+                vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
+                advantages: addIfExists('$content.metadata.advantages'),
+                dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
+                conImmunities: addIfExists('$content.metadata.conImmunities'),
+                speed: addIfExists('$content.metadata.speed'),
+                senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
+                proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
+                proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
+                proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
+                proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
+                proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
+                proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
+                spellAttribute: addIfExists('$content.metadata.spellAttribute'),
+                spellSlots: addIfExists('$content.metadata.spellSlots'),
+                spells: addIfExists('$content.metadata.spells'),
+            } satisfies KeysOf<Required<DBCreature["metadata"]>>,
+            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBCreature["storage"]> ] },
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBCreature>
+    }
+
+    private get documentProjection(): KeysOf<DBDocument> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<Required<DBDocument["content"]>>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', { $ifNull: ['$content.metadata.title', ""] }] },
+                description: { $ifNull: ['$content.metadata.description', { $ifNull: ['$content.metadata.content', ""] }] },
+            } satisfies KeysOf<Required<DBDocument["metadata"]>>,
+            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBDocument["storage"]> ] },
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBDocument>
+    }
+
+    private get encounterProjection(): KeysOf<DBEncounter> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<DBEncounter["content"]>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                creatures: addIfExists('$content.metadata.creatures'),
+                challenge: addIfExists('$content.metadata.challenge'),
+                xp: addIfExists('$content.metadata.xp')
+            } satisfies KeysOf<Required<DBEncounter["metadata"]>>,
+            storage: { 
+                cards: { $ifNull: ['$content.storage.cards', [] satisfies KeysOf<Required<DBEncounter["storage"]["cards"]>> ] }
+            } satisfies KeysOf<Required<DBEncounter["storage"]>>,
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBEncounter>
+    }
+
+    private get spellProjection(): KeysOf<DBSpell> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<DBSpell["content"]>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                level: addIfExists('$content.metadata.level'),
+                school: addIfExists('$content.metadata.school'),
+                time: addIfExists('$content.metadata.time'),
+                timeCustom: addIfExists('$content.metadata.timeCustom'),
+                timeValue: addIfExists('$content.metadata.timeValue'),
+                duration: addIfExists('$content.metadata.duration'),
+                durationValue: addIfExists('$content.metadata.durationValue'),
+                ritual: addIfExists('$content.metadata.ritual'),
+                concentration: addIfExists('$content.metadata.concentration'),
+                componentVerbal: addIfExists('$content.metadata.componentVerbal'),
+                componentSomatic: addIfExists('$content.metadata.componentSomatic'),
+                componentMaterial: addIfExists('$content.metadata.componentMaterial'),
+                materials: addIfExists('$content.metadata.materials'),
+                notes: addIfExists('$content.metadata.notes'),
+                condition: addIfExists('$content.metadata.condition'),
+                saveAttr: addIfExists('$content.metadata.saveAttr'),
+                damageType: addIfExists('$content.metadata.damageType'),
+                target: addIfExists('$content.metadata.target'),
+                range: addIfExists('$content.metadata.range'),
+                rangeLong: addIfExists('$content.metadata.rangeLong'),
+                area: addIfExists('$content.metadata.area'),
+                areaSize: addIfExists('$content.metadata.areaSize'),
+                areaHeight: addIfExists('$content.metadata.areaHeight'),
+                conditionScaling: addIfExists('$content.metadata.conditionScaling'),
+                conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
+                conditionModifier: addIfExists('$content.metadata.conditionModifier'),
+                effectText: addIfExists('$content.metadata.effectText'),
+                effectScaling: addIfExists('$content.metadata.effectScaling'),
+                effectProficiency: addIfExists('$content.metadata.effectProficiency'),
+                effectModifier: addIfExists('$content.metadata.effectModifier'),
+                effectDice: addIfExists('$content.metadata.effectDice'),
+                effectDiceNum: addIfExists('$content.metadata.effectDiceNum')
+            } satisfies KeysOf<Required<DBSpell["metadata"]>>,
+            storage: { $ifNull: ['$content.storage.cards', {} satisfies Required<DBSpell["storage"]> ] },
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBSpell>
+    }
+
+    private get classProjection(): KeysOf<DBClass> {
+        return {
+            _id: '$_id',
+            _userId: '$_userId',
+            _storyId: '$_storyId',
+            _holderId: '$_holderId',
+            type: '$type',
+            content: {
+                name: { $ifNull: ['$content.name', ""] },
+                public: { $ifNull: ['$content.metadata.public', false] },
+                text: { $ifNull: ['$content.text', ""] },
+            } satisfies KeysOf<DBClass["content"]>,
+            metadata: {
+                name: { $ifNull: ['$content.metadata.name', ""] },
+                description: { $ifNull: ['$content.metadata.description', ""] },
+                hitDice: addIfExists('$content.metadata.hitDice'),
+                1: addIfExists('$content.metadata.1'),
+                2: addIfExists('$content.metadata.2'),
+                3: addIfExists('$content.metadata.3'),
+                4: addIfExists('$content.metadata.4'),
+                5: addIfExists('$content.metadata.5'),
+                6: addIfExists('$content.metadata.6'),
+                7: addIfExists('$content.metadata.7'),
+                8: addIfExists('$content.metadata.8'),
+                9: addIfExists('$content.metadata.9'),
+                10: addIfExists('$content.metadata.10'),
+                11: addIfExists('$content.metadata.11'),
+                12: addIfExists('$content.metadata.12'),
+                13: addIfExists('$content.metadata.13'),
+                14: addIfExists('$content.metadata.14'),
+                15: addIfExists('$content.metadata.15'),
+                16: addIfExists('$content.metadata.16'),
+                17: addIfExists('$content.metadata.17'),
+                18: addIfExists('$content.metadata.18'),
+                19: addIfExists('$content.metadata.19'),
+                20: addIfExists('$content.metadata.20'),
+            } satisfies KeysOf<Required<DBClass["metadata"]>>,
+            storage: { $ifNull: ['$storage', {} satisfies Required<DBClass["storage"]> ] },
+            dateCreated: '$dateCreated',
+            dateUpdated: '$dateUpdated'
+        } satisfies KeysOf<DBClass>
     }
 }
 
