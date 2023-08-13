@@ -12,8 +12,8 @@ interface IFolderContent {
 }
 
 interface IFileMetadata {
-    name?: string
-    description?: string
+    name: string
+    description: string
 }
 
 interface IFileStorage {

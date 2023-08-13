@@ -18,12 +18,12 @@ class CharacterData extends CreatureData implements Required<ICharacterMetadata>
 
     public readonly metadata: ICharacterMetadata;
     private readonly characterClass: IClassMetadataProperties 
-    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: IClassMetadataProperties) {
+    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData) {
         if (characterClass) {
             let collection = characterClass.getModifiers(metadata?.level ?? 0);
             super(metadata, collection?.join(modifiers) ?? modifiers)
         } else {
-            characterClass = new ClassData({}, {})
+            characterClass = new ClassData()
             super(metadata, modifiers)
         }
         this.characterClass = characterClass;

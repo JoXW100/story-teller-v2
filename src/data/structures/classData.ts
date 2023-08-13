@@ -13,7 +13,7 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
     public readonly storage: ICharacterStorage
     private readonly id: string
 
-    public constructor(metadata: IClassMetadata, storage: ICharacterStorage, id?: string) {
+    public constructor(metadata: Partial<IClassMetadata> = {}, storage: ICharacterStorage = {}, id?: string) {
         super(metadata);
         this.storage = storage ?? {};
         this.id = id;

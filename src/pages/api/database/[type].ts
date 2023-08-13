@@ -89,7 +89,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                     
                     case 'setFileStorage':
                         return res.status(200).json(await Database.files.setStorage(userId, body.storyId, body.fileId, body.storage));
-                    
+
+                    case 'debug':
+                        if (process.env.NODE_ENV === "development") {
+                            return res.status(200).json(await Database.debug.debug());
+                        }
+
                     default:
                         return res.status(400).json(failure("Missing"));
                 }
@@ -113,7 +118,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
     }
 }
 
-const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = {}): IFileData | IFolderData => {
+const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = null): IFileData | IFolderData => {
     let type: FileType = data.type;
     switch (type) {
         case FileType.Ability:
@@ -126,14 +131,14 @@ const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = {}):
             return {
                 type: type,
                 content: { name: data.name, public: false, text: "" }, 
-                metadata: metadata,
+                metadata: metadata ?? { name: "", description: "" },
                 storage: {}
-            }
+            } satisfies IFileData
         case FileType.Folder:
             return {
                 type: type,
                 content: { name: data.name, open: false }
-            }
+            } satisfies IFolderData
         default:
             throw new Error("File type not supported")
     }

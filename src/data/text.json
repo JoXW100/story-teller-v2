@@ -3,6 +3,7 @@
         "language": "English",
         "icon": "eng",
         "content": {
+            "debug": "Debug",
             "home-title": "Story Teller 2.0",
             "home-logout": "Logout @0",
             "common-expand": "Expand",

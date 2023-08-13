@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 import LogoutIcon from '@mui/icons-material/LogoutSharp';
 import SettingsIcon from '@mui/icons-material/SettingsSharp';
+import DebugIcon from '@mui/icons-material/BugReportSharp';
 import Link from 'next/link';
 import Communication from 'utils/communication';
 import Navigation from 'utils/navigation';
@@ -11,9 +12,10 @@ import SelectStoryMenu from './selectStoryMenu';
 import CreateStoryMenu from './createStoryMenu';
 import ReconnectMenu from './reconnectMenu';
 import { DBResponse } from 'types/database';
+import { StoryGetAllResult } from 'types/database/responses';
 import { CardType, PageStatus, StoryCardData } from 'types/homePage';
 import styles from 'styles/pages/homePage/main.module.scss'
-import { StoryGetAllResult } from 'types/database/responses';
+import Logger from 'utils/logger';
 
 interface HomePageState {
     loading: boolean
@@ -71,6 +73,13 @@ const HomePage = (): JSX.Element => {
     const handleSetStatus = (status: PageStatus) => { 
         setState({ ...state, status: status }) 
     }
+
+    const handleDebugClick = () => {
+        Communication.debug()
+        .then((res) => res.success 
+            ? Logger.log("debug.response", res.result)
+            : Logger.error("debug.response", res.result))
+    }
     
     const Content = useMemo<HomePageMenu>(() => {
         switch (state.status) {
@@ -115,6 +124,14 @@ const HomePage = (): JSX.Element => {
                         <SettingsIcon/>
                     </button>
                 </Link>
+                { process.env.NODE_ENV === "development" &&
+                    <button 
+                        className={styles.settingsButton} 
+                        tooltips={Localization.toText('debug')}
+                        onClick={handleDebugClick}>
+                        <DebugIcon/>
+                    </button>
+                }
             </div>
             <div className={styles.mainContainer}>
                 <div className={styles.mainHeader}>

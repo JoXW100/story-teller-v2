@@ -2,7 +2,7 @@ abstract class FileData<T>
 {
     public readonly metadata: T;
 
-    constructor(metadata: T) {
+    constructor(metadata: Partial<T>) {
         this.metadata = metadata ?? {} as any;
     }
 }

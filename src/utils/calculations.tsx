@@ -2,13 +2,13 @@ import Elements from 'data/elements';
 import Dice from './data/dice';
 import { AreaType, Attribute, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
-import { ICharacterMetadata } from "types/database/files/character";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { getOptionType } from 'data/optionData';
 import IConditionalHitEffect from 'types/database/files/iConditionalHitEffect';
 import CreatureData from 'data/structures/creature';
 import SpellData from 'data/structures/spell';
 import ICreatureStats from 'types/database/files/iCreatureStats';
+import { ISpellMetadata } from 'types/database/files/spell';
 
 export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
     return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
@@ -43,7 +43,7 @@ export const getEffectModifier = (metadata: IConditionalHitEffect = {}, data: IC
     }
 }
 
-export const getSpellRange = (spell: SpellData): string => {
+export const getSpellRange = (spell: ISpellMetadata): string => {
     let area = null;
     switch (spell.area) {
         case AreaType.Cone:
@@ -51,10 +51,10 @@ export const getSpellRange = (spell: SpellData): string => {
         case AreaType.Square:
         case AreaType.Sphere:
         case AreaType.Line:
-            area = `${spell.areaSize}ft`;
+            area = `${spell.areaSize ?? 0}ft`;
             break;
         case AreaType.Cylinder:
-            area = `${spell.areaSize}x${spell.areaHeight}ft`;
+            area = `${spell.areaSize ?? 0}x${spell.areaHeight ?? 0}ft`;
             break;
         default:
             break;
@@ -63,58 +63,54 @@ export const getSpellRange = (spell: SpellData): string => {
         case TargetType.Self:
             return area ? `Self/${area}` : "Self"
         case TargetType.Point:
-            return area ? `${spell.range}ft/${area}` : `${spell.range}ft`
+            return area ? `${spell.range ?? 0}ft/${area}` : `${spell.range ?? 0}ft`
         case TargetType.Touch:
             return 'Touch'
         default:
         case TargetType.Single:
         case TargetType.Multiple:
-            return `${spell.range}ft`
+            return `${spell.range ?? 0}ft`
     }
 }
 
-export const getProficiency = (data: ICreatureMetadata = {}): number => {
-    switch (data.proficiency?.type) {
+export const getProficiency = (data: ICreatureMetadata): number => {
+    switch (data?.proficiency?.type) {
         case CalculationMode.Override:
             return data.proficiency.value ?? 0
         case CalculationMode.Modify:
             return Math.floor((data.level ?? 0) / 4) + 2 + (data.proficiency.value ?? 0);
         case CalculationMode.Auto:
         default:
-            return Math.floor((data.level ?? 0) / 4) + 2
+            return Math.floor((data?.level ?? 0) / 4) + 2
     }
 }
 
-export const getStats = (metadata: ICreatureMetadata = {}): ICreatureStats => {
+export const getStats = (metadata: ICreatureMetadata): ICreatureStats => {
     return {
-        str: metadata.str ?? 10,
-        dex: metadata.dex ?? 10,
-        con: metadata.con ?? 10,
-        int: metadata.int ?? 10,
-        wis: metadata.wis ?? 10,
-        cha: metadata.cha ?? 10,
+        str: metadata?.str ?? 10,
+        dex: metadata?.dex ?? 10,
+        con: metadata?.con ?? 10,
+        int: metadata?.int ?? 10,
+        wis: metadata?.wis ?? 10,
+        cha: metadata?.cha ?? 10,
         proficiency: getProficiency(metadata),
-        spellAttribute: metadata.spellAttribute ?? OptionalAttribute.None
+        spellAttribute: metadata?.spellAttribute ?? OptionalAttribute.None
     }
 }
 
-export const getHealth = (metadata: ICreatureMetadata = {}): { value: number, element: JSX.Element } => {
+export const getHealth = (metadata: ICreatureMetadata): { value: number, element: JSX.Element } => {
     let stats = getStats(metadata)
-    let dice = 0
-    let mod = 0
-    let lv = 0
-    let total = 0
-    switch (metadata.health?.type) {
+    switch (metadata?.health?.type) {
         case CalculationMode.Override:
             return {
                 value: metadata.health.value ?? 0,
                 element: null
             }
         case CalculationMode.Modify:
-            dice = metadata.hitDice ?? 0;
-            mod = getAttributeModifier(stats, Attribute.CON);
-            lv = metadata.level ?? 0;
-            total = mod * lv + (metadata.health?.value ?? 0);
+            var dice = metadata.hitDice ?? 0;
+            var mod = getAttributeModifier(stats, Attribute.CON);
+            var lv = metadata.level ?? 0;
+            var total = mod * lv + (metadata.health?.value ?? 0);
             return {
                 value: Dice.average(dice, lv) + total,
                 element: <Elements.Roll options={{
@@ -126,10 +122,10 @@ export const getHealth = (metadata: ICreatureMetadata = {}): { value: number, el
             }
         case CalculationMode.Auto:
         default:
-            dice = metadata.hitDice ?? 0;
-            mod = getAttributeModifier(stats, Attribute.CON);
-            lv = metadata.level ?? 0;
-            total = mod * lv;
+            var dice = metadata?.hitDice ?? 0;
+            var mod = getAttributeModifier(stats, Attribute.CON);
+            var lv = metadata?.level ?? 0;
+            var total = mod * lv;
             return {
                 value: Dice.average(dice, lv) + total,
                 element: <Elements.Roll options={{

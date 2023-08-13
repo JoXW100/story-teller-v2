@@ -186,7 +186,7 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
     <AbilityToggleRenderer metadata={file.metadata} stats={stats} isOpen={true}/>
 )
 
-const AbilityToggleRenderer = ({ metadata = {}, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
+const AbilityToggleRenderer = ({ metadata = { name: "", description: "" }, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
     const canClose = metadata?.type !== AbilityType.Feature
     const [open, setOpen] = useState(isOpen);
     const data = canClose && metadata.description
@@ -197,8 +197,15 @@ const AbilityToggleRenderer = ({ metadata = {}, stats = {}, isOpen = false }: Ab
     }
 
     return (
-        <div className={styles.ability} data={data} onClick={canClose ? handleClick : undefined}>
-            <Ability metadata={metadata} stats={stats} open={open} variablesKey='description'/>
+        <div 
+            className={styles.ability} 
+            data={data} 
+            onClick={canClose ? handleClick : undefined}>
+            <Ability 
+                metadata={metadata} 
+                stats={stats} 
+                open={open} 
+                variablesKey='description'/>
         </div>
     )
 }
@@ -214,7 +221,7 @@ const parseText = async (value: string): Promise<FileGetMetadataResult> => {
             id: null,
             type: FileType.Ability,
             metadata: res
-        }
+        } satisfies FileGetMetadataResult
     }
     return null
 }

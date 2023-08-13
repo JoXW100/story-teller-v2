@@ -24,6 +24,10 @@ abstract class Communication {
         return res.success && res.result
     }
 
+    public static async debug(): Promise<DBResponse<any>> {
+        return await this.databaseFetch<any>('debug', 'PUT')
+    }
+
     public static async getStory(storyId: ObjectId): Promise<DBResponse<StoryGetResult>> {
         return await this.databaseFetch<StoryGetResult>('getStory', 'GET', {
             storyId: storyId

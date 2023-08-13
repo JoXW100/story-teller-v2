@@ -17,6 +17,12 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
     display: flex;
     flex-direction: row-reverse;
     height: 100%;
+
+    button {
+        display: grid;
+        border-radius: 50%;
+        user-select: none;
+    }
 }
 
 .logoutButton {
@@ -57,11 +63,6 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
     display: grid;
     margin: 3px;
     aspect-ratio: 1;
-    & > button {
-        display: grid;
-        border-radius: 50%;
-        user-select: none;
-    }
 }
 
 .mainContainer {

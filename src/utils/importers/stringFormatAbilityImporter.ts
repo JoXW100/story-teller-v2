@@ -73,12 +73,12 @@ const getAction = (action: string, type: AbilityType): ActionType => {
 }
 
 const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,?.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
-const toAbility = async (text: string): Promise<Partial<IAbilityMetadata>> => {
+const toAbility = async (text: string): Promise<IAbilityMetadata> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])
         return null
     var type = getAbilityType(res[3])
-    var result: Partial<IAbilityMetadata>
+    var result: IAbilityMetadata
     switch (type) {
         case AbilityType.Feature:
             result = {
@@ -86,7 +86,7 @@ const toAbility = async (text: string): Promise<Partial<IAbilityMetadata>> => {
                 description: res[11] ?? "",
                 type: type,
                 action: getAction(res[1], type)
-            }
+            } satisfies IAbilityMetadata
             break;
         default:
             var dmgNumDice = Number(res[7] ?? "1")
@@ -103,7 +103,7 @@ const toAbility = async (text: string): Promise<Partial<IAbilityMetadata>> => {
                 damageType: asEnum(res[10], DamageType) ?? DamageType.None,
                 ...getRange(res[5]),
                 target: getTargetType(res[6]),
-            }
+            } satisfies IAbilityMetadata
             break
     }
     Logger.log("toAbility", { file: result, result: res })

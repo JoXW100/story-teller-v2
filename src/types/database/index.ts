@@ -1,4 +1,4 @@
-import type { ObjectId as MongoDBObjectId, Document as DBDocument } from 'mongodb'
+import type { ObjectId as MongoDBObjectId } from 'mongodb'
 import { IFileData, IFolderData, IRootData } from './files'
 
 export type UserId = string
@@ -15,11 +15,11 @@ export type DBResponse<T> = {
     result: ErrorMessage
 }
 
-interface DBData extends DBDocument {
+interface DBData {
     _id?: ObjectId
     _userId: UserId
     _storyId: ObjectId
-    _holderId?: ObjectId
+    _holderId?: ObjectId // FolderId
     dateCreated: DateValue
     dateUpdated: DateValue
 }
@@ -31,6 +31,5 @@ export type DBItemData = IFileData | IFolderData | IRootData
 export type DBItem = DBData & DBItemData
 
 export type {
-    DBData,
-    DBDocument
+    DBData
 }

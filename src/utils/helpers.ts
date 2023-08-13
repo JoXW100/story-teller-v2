@@ -50,7 +50,7 @@ export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage
         pages.forEach((page) => {
             let items: ItemListItem[] = metadata[page.rootKey]
             if (items) {
-                metadata = items[page.index]
+                metadata = items[page.index] ?? metadata
             }
         })
     } 

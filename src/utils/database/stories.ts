@@ -1,10 +1,11 @@
 import { ObjectId, Collection, Db } from "mongodb";
 import Database, { failure, success } from "./database";
 import Logger from "utils/logger";
-import { DBResponse } from "types/database";
-import { DBStory, DBStoryUpdate } from "types/database/stories";
+import { DBResponse, DBRoot } from "types/database";
+import { DBStory, DBStoryUpdate, IStory, IStoryData } from "types/database/stories";
 import { FileType, IRootData } from "types/database/files";
 import { StoryAddResult, StoryGetResult, StoryDeleteResult, StoryUpdateResult, StoryGetAllResult } from "types/database/responses";
+import { KeysOf, KeysOfTwo } from "types";
 
 class StoriesInterface
 {
@@ -17,7 +18,7 @@ class StoriesInterface
     /** Adds a story to the database */
     async add(userId: string, name: string, desc: string): Promise<DBResponse<StoryAddResult>> {
         try {
-            let request: DBStory = {
+            let request: Omit<DBStory, '_id'> = {
                 _userId: userId,
                 name: name,
                 desc: desc,
@@ -55,7 +56,7 @@ class StoriesInterface
                             _userId: userId,
                             _storyId: new ObjectId(storyId),
                             type: FileType.Root
-                        }},
+                        } satisfies Partial<DBRoot>},
                         { $limit: 1 }
                     ],
                     as: 'root' 
@@ -68,7 +69,7 @@ class StoriesInterface
                     desc: '$desc', 
                     dateCreated: '$dateCreated',
                     dateUpdated: '$dateUpdated'
-                }},
+                } satisfies KeysOfTwo<IStoryData, DBStory> },
                 { $limit: 1 }
             ]).toArray())[0] as StoryGetResult
             Logger.log('stories.get', result ? result.name : 'Null');
@@ -82,14 +83,17 @@ class StoriesInterface
     /** Deletes a story from the database */
     async delete(userId: string, storyId: string): Promise<DBResponse<StoryDeleteResult>> {
         try {
-            let filter = { _userId: userId, _id: new ObjectId(storyId) }
+            let filter = { 
+                _userId: userId, 
+                _id: new ObjectId(storyId) 
+            } satisfies Partial<DBStory>
             let result = await this.collection.deleteOne(filter)
             let removed = result.deletedCount === 1
             Logger.log('stories.delete', removed ? storyId : 'Null');
             if (removed) {
                 let res = await Database.files.deleteFrom(userId, storyId)
                 if (!res.success)
-                Logger.log('stories.delete', "Failed removing files of removed story: " + storyId)
+                Logger.error('stories.delete', "Failed removing files of removed story: " + storyId)
             }
             return success(removed as StoryDeleteResult);
         } catch (error) {
@@ -100,13 +104,18 @@ class StoriesInterface
     /** Updates a story */
     async update(userId: string, storyId: string, update: DBStoryUpdate): Promise<DBResponse<StoryUpdateResult>> {
         try {
-            let filter = { _userId: userId, _id: new ObjectId(storyId) }
-            let values: any = { $set: { dateUpdated: Date.now()} }
-            if (update.name)
-                values.$set.name = update.name
-            if (update.desc)
-                values.$set.desc = update.desc
-            let result = await this.collection.updateOne(filter, values)
+            let filter = { 
+                _userId: userId, 
+                _id: new ObjectId(storyId) 
+            } satisfies Partial<DBStory>
+            let value = { 
+                $set: { 
+                    name: { $isNull: [update.name, '$name'] },
+                    desc: { $isNull: [update.desc, '$desc'] },
+                    dateUpdated: Date.now()
+                } satisfies Partial<KeysOf<DBStory>>
+            }
+            let result = await this.collection.updateOne(filter, value)
             let updated = result.upsertedCount > 0
             Logger.log('stories.update', updated ? storyId : 'Null');
             return updated
@@ -121,15 +130,17 @@ class StoriesInterface
     async getAll(userId: string): Promise<DBResponse<StoryGetAllResult>> {
         try {
             let result = (await this.collection.aggregate([
-                { $match: { _userId: userId }},
+                { $match: { 
+                    _userId: userId 
+                } satisfies Partial<DBStory>},
                 { $project: { 
-                    _id: 0, 
+                    _id: 0,
                     id: '$_id',
                     name: '$name',
                     desc: '$desc', 
                     dateCreated: '$dateCreated',
                     dateUpdated: '$dateUpdated'
-                }}
+                } satisfies KeysOfTwo<IStory, DBStory>}
             ]).toArray()) as StoryGetAllResult
             Logger.log('stories.getAll', result.length);
             return success(result);

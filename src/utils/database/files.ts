@@ -3,9 +3,10 @@ import { failure, success } from "./database";
 import Logger from 'utils/logger';
 import { isEnum } from "utils/helpers";
 import { FileType } from "types/database/files";
-import type { DBData, DBFile, DBFolder, DBItem, DBItemData, DBResponse, DBRoot } from "types/database";
-import type { IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
+import type { DBFile, DBFolder, DBItem, DBItemData, DBResponse, DBRoot } from "types/database";
+import type { IFile, IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
 import type { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileDeleteResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses";
+import { KeysOf, KeysOfTwo } from "types";
 
 interface StructureCollection {
     root: IFileStructure
@@ -69,19 +70,29 @@ class FilesInterface
     async addCopy(userId: string, storyId: string, holderId: string | null, fileId: string, name: string): Promise<DBResponse<FileAddCopyResult>> {
         try {
             let date = Date.now();
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<DBFile>([
                 { $match: {
                     _userId: userId,
                     _id: new ObjectId(fileId),
-                    _storyId: new ObjectId(storyId)
-                }},
-                { $addFields: {
+                    _storyId: new ObjectId(storyId),
+                    type: { $nin: [FileType.Folder, FileType.Root] }
+                } satisfies Partial<KeysOf<DBItem>>},
+                { $project: { 
+                    _id: 0, 
+                    _userId: userId,
+                    _storyId: new ObjectId(storyId),
                     _holderId: new ObjectId(holderId),
-                    'content.name': name,
+                    type: '$type',
+                    content: {
+                        name: name,
+                        public: '$content.public',
+                        text: '$content.text'
+                    } satisfies KeysOf<DBFile["content"]>,
+                    metadata: '$metadata',
+                    storage: '$storage',
                     dateCreated: date,
                     dateUpdated: date
-                }},
-                { $project: { _id: 0 }},
+                } satisfies KeysOf<DBFile>},
                 { $merge: {
                     into: 'files',
                     whenMatched: 'fail',
@@ -98,24 +109,22 @@ class FilesInterface
     /** Gets a file from the database */
     async get(userId: string, fileId: string): Promise<DBResponse<FileGetResult>> {
         try {
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<FileGetResult>([
                 { $match: {
-                    $or: [{ _userId: userId }, { 'content.metadata.public': true }],
+                    $or: [{ _userId: userId }, { 'content.public': true }],
                     _id: new ObjectId(fileId)
-                }},
+                } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
                     _id: 0,
                     id: '$_id',
-                    name: '$content.name',
                     type: '$type',
                     isOwner: { $eq: ['$_userId', userId] },
-                    content: '$content',
-                    metadata: { $ifNull: ['$content.metadata', {}] },
-                    storage: { $ifNull: ['$content.storage', {}] }
-                }},
+                    content: { $ifNull: ['$content', {}] },
+                    metadata: { $ifNull: ['$metadata', {}] },
+                    storage: { $ifNull: ['$storage', {}] }
+                } satisfies KeysOfTwo<IFile, DBFile> },
                 { $limit: 1 },
-                { $project: { 'content.metadata': 0 }},
-            ]).toArray())[0] as FileGetResult;
+            ]).toArray())[0];
             Logger.log('files.get', `${result?.content.name}${result ? '.' + result.type : ''}`);
             return result 
                 ? success(result) 
@@ -128,19 +137,20 @@ class FilesInterface
     /** Gets the metadata from a file in the database */
     async getMetadata(userId: string, fileId: string): Promise<DBResponse<FileGetMetadataResult>> {
         try {
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
-                    $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
-                    _id: new ObjectId(fileId)
-                }},
+                    _id: new ObjectId(fileId),
+                    type: { $nin: [FileType.Folder, FileType.Root] },
+                    $or: [ { _userId: userId}, { 'content.public': true } ],
+                } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
                     _id: 0,
                     id: '$_id',
                     type: '$type',
-                    metadata: '$content.metadata'
-                }},
+                    metadata: '$metadata'
+                } satisfies KeysOfTwo<FileGetMetadataResult, DBFile> },
                 { $limit: 1 }
-            ]).toArray())[0] as FileGetMetadataResult;
+            ]).toArray())[0];
             Logger.log('files.getMetadata', fileId);
             return result ? success(result) : failure("Could not find any matching file");
         } catch (error) {
@@ -154,18 +164,19 @@ class FilesInterface
             let ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
             if (ids.length < 1)
                 return failure("No fileId's provided");
-            let result = await this.collection.aggregate([
+            let result = await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
-                    $or: [ { _userId: userId}, { 'content.metadata.public': true } ],
-                    _id: { $in: ids }
-                }},
+                    _id: { $in: ids },
+                    type: { $nin: [FileType.Folder, FileType.Root] },
+                    $or: [ { _userId: userId}, { 'content.public': true } ],
+                } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
                     _id: 0,
                     id: '$_id',
                     type: '$type',
                     metadata: '$content.metadata'
-                }}
-            ]).toArray() as FileGetManyMetadataResult;
+                } satisfies KeysOfTwo<FileGetMetadataResult, DBFile>}
+            ]).toArray();
             Logger.log('files.getManyMetadata', result?.length ?? 0);
             return result
                 ? success(result)
@@ -182,7 +193,7 @@ class FilesInterface
                 _id: new ObjectId(fileId),
                 _userId: userId,
                 _storyId: new ObjectId(storyId)
-            })
+            } satisfies Partial<DBItem>)
             let x = result.deletedCount === 1;
             Logger.log('files.delete', x ? fileId : 'Null');
             return x ? success(x) : failure("Could not find file to delete");
@@ -197,31 +208,38 @@ class FilesInterface
             let result = await this.collection.deleteMany({
                 _userId: userId,
                 _storyId: new ObjectId(storyId)
-            })
+            } satisfies Partial<DBItem>)
             return success(result.deletedCount > 0);
         } catch (error) {
             return failure(error.message);
         }
     }
 
-    /** Changes the filename of a file in the database */
+    /** Changes the type of a file in the database */
     async convert(userId: string, storyId: string, fileId: string, type: FileType): Promise<DBResponse<FileConvertResult>> {
         try {
-            if (!isEnum(type, FileType)) {
+            if (!isEnum(type, FileType) && type !== FileType.Folder && type !== FileType.Root) {
                 Logger.error('files.convert', type);
                 return failure(`${type} is not a valid type`);
             }
-            let result = await this.collection.updateOne({
+
+            let filter = {
                 _id: new ObjectId(fileId),
                 _userId: userId,
-                _storyId: new ObjectId(storyId)       
-            }, { 
+                _storyId: new ObjectId(storyId),
+                type: { $nin: [FileType.Folder, FileType.Root] },
+            } satisfies Partial<KeysOf<DBItem>>
+
+            let value = { 
                 $set: {
                     type: type,
                     dateUpdated: Date.now()
-                }
-            })
+                } satisfies Partial<DBItem>
+            }
+
+            let result = await this.collection.updateOne(filter, value)
             let x = result.modifiedCount === 1;
+
             Logger.log('files.convert', x ? type : 'Null');
             return x ? success(x) : failure("Could not find file to rename");
         } catch (error) {
@@ -232,16 +250,20 @@ class FilesInterface
     /** Changes the filename of a file in the database */
     async rename(userId: string, storyId: string, fileId: string, name: string): Promise<DBResponse<FileRenameResult>> {
         try {
-            let result = await this.collection.updateOne({
+            let filter = {
                 _id: new ObjectId(fileId),
                 _userId: userId,
                 _storyId: new ObjectId(storyId)       
-            }, { 
+            } satisfies Partial<DBItem>
+            
+            let value = { 
                 $set: {
                     'content.name': name,
                     dateUpdated: Date.now()
-                }
-            })
+                } satisfies Partial<DBItem | { 'content.name': string }>
+            }
+
+            let result = await this.collection.updateOne(filter, value)
             let x = result.modifiedCount === 1;
             Logger.log('files.rename', x ? name : 'Null');
             return x ? success(x) : failure("Could not find file to rename");
@@ -258,7 +280,7 @@ class FilesInterface
                     _userId: userId, 
                     _storyId: new ObjectId(storyId),
                     _id: new ObjectId(fileId) 
-                } as Partial<DBData>},
+                } satisfies Partial<DBItem>},
                 { $lookup: {
                     from: 'files',
                     pipeline: [
@@ -266,14 +288,14 @@ class FilesInterface
                             _userId: userId,
                             _storyId: new ObjectId(storyId),
                             _id: new ObjectId(targetId)
-                        } as Partial<DBData>},
+                        } satisfies Partial<DBItem>},
                         { $limit: 1 }
                     ],
                     as: 'holder' 
                 }},
                 { $addFields: {
                     _holderId: { $ifNull: [{ $first: '$holder._id' }, '$_holderId']}
-                }},
+                } satisfies Partial<KeysOf<DBItem>>},
                 { $project: { holder: 0 }},
                 { $merge: {
                     into: 'files',
@@ -291,19 +313,23 @@ class FilesInterface
     /** Changes a property of a folder in the database */
     private async setDataValue(userId: string, storyId: string, fileId: string, property: string, value: any, onFolders: boolean = false): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            let result = await this.collection.updateOne({ 
+            let filter = { 
                 _userId: userId, 
                 _storyId: new ObjectId(storyId),
                 _id: new ObjectId(fileId),
                 type: onFolders ? FileType.Folder : { $ne: FileType.Folder }
-            }, { 
+            } satisfies Partial<KeysOf<DBItem>>
+
+            let update = { 
                 $set: {
                     [property]: value,
                     dateUpdated: Date.now()
                 } 
-            })
+            }
+
+            let result = await this.collection.updateOne(filter, update)
             let x = result.modifiedCount === 1;
-            Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 20 ? '...' : value}` : 'Null');
+            Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 30 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");
         } catch (error) {
             return failure(error.message);
@@ -315,6 +341,11 @@ class FilesInterface
         return this.setDataValue(userId, storyId, fileId, 'content.open', Boolean(state), true);
     }
 
+    /** Changes the open state of a folder in the database */
+    async setPublicState(userId: string, storyId: string, fileId: string, state: boolean): Promise<DBResponse<FileSetPropertyResult>> {
+        return this.setDataValue(userId, storyId, fileId, 'content.public', Boolean(state));
+    }
+
     /** Changes the text content of a file in the database */
     async setText(userId: string, storyId: string, fileId: string, text: string): Promise<DBResponse<FileSetPropertyResult>> {
         return this.setDataValue(userId, storyId, fileId, 'content.text', String(text));
@@ -322,16 +353,12 @@ class FilesInterface
 
     /** Changes the metadata of a file in the database */
     async setMetadata(userId: string, storyId: string, fileId: string, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
-        if (typeof metadata !== typeof {})
-            return failure('Expected type of metadata, object');
-        return this.setDataValue(userId, storyId, fileId, 'metadata', metadata);
+        return this.setDataValue(userId, storyId, fileId, 'metadata', { $ifNull: [metadata, {}]});
     }
 
     /** Changes the metadata of a file in the database */
     async setStorage(userId: string, storyId: string, fileId: string, storage: IFileStorage): Promise<DBResponse<FileSetPropertyResult>> {
-        if (typeof storage !== typeof {})
-            return failure('Expected type of storage, object');
-        return this.setDataValue(userId, storyId, fileId, 'storage', storage);
+        return this.setDataValue(userId, storyId, fileId, 'storage', { $ifNull: [storage, {}]});
     }
     
     /** Gets the file structure of story in the database */
@@ -341,30 +368,31 @@ class FilesInterface
                 { $match: { 
                     _userId: userId,
                     _storyId: new ObjectId(storyId) 
-                }},
+                } satisfies Partial<DBItem> },
                 { $project: {
                     _id: 0,
                     id: '$_id',
                     holderId: '$_holderId',
                     type: '$type',
                     name: '$content.name',
-                    open: '$content.open'
-                }}
+                    open: '$content.open',
+                    children: []
+                }  satisfies KeysOfTwo<IFileStructure, DBItem> }
             ]).toArray()) as IFileStructure[]
 
-            let data = result.reduce((acc, value) => (
+            let data = result.reduce<StructureCollection>((acc, value) => (
                 value.type === FileType.Root
                     ? { root: value, files: acc.files }
                     : { root: acc.root, files: { [String(value.id)]: value, ...acc.files } }
-            ), { root: null, files: {} }) as StructureCollection;
+            ), { root: null, files: {} });
 
             Object.values(data.files).forEach((file) => {
                 let holder = data.files[String(file.holderId)] ?? data.root;
-                holder.children = [file, ...holder.children ?? []]
+                holder.children = [file, ...holder.children]
             })
             
             Logger.log("files.getStructure", result.length)
-            return success(data.root.children ?? []);
+            return success(data.root.children);
         } catch (error) {
             Logger.throw("FilesInterface.getStructure", error)
             return failure(error.message);

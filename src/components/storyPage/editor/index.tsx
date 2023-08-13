@@ -90,7 +90,7 @@ const getComponent = (type: EditInputType): (props: TemplateComponentProps) => R
     }
 }
 
-export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadata = {}, key = 0): React.ReactNode => {
+export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadata = { name: "", description: "" }, key = 0): React.ReactNode => {
     if (!checkConditions(template, metadata)) return null;
     
     const content = template.content?.map((item, key) => buildEditor(item, metadata, key));

@@ -17,7 +17,6 @@ interface ICharacterMetadata extends IFileMetadata, ICreatureMetadata {
     occupation?: string
     // Texts
     appearance?: string
-    description?: string
     history?: string
     notes?: string
     // Class

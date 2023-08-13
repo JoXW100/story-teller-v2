@@ -55,8 +55,8 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
         case 'initSet':
             if (action.data.success) {
                 let file = action.data.result
-                if (file) {
-                    file.metadata = file.metadata ? file.metadata : {}
+                if (file && !file.metadata) {
+                    file.metadata = { name: "", description: "" }
                 }
                 return {
                     ...state,

@@ -1,4 +1,4 @@
-import type { UserId, DateValue, ObjectId, DBDocument } from "."
+import type { UserId, DateValue, ObjectId } from "."
 
 interface IStory {
     id: ObjectId
@@ -12,8 +12,8 @@ interface IStoryData extends IStory {
     root: ObjectId
 }
 
-interface DBStory extends DBDocument {
-    _id?: ObjectId
+interface DBStory {
+    _id: ObjectId
     _userId: UserId
     name: string
     desc: string

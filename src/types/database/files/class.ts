@@ -32,8 +32,6 @@ interface IClassLevels {
 
 interface IClassMetadataProperties {
     hitDice?: DiceType
-
-    getModifiers?: (level: number) => IModifierCollection
 }
 
 interface IClassMetadata extends IClassMetadataProperties, IClassLevels, IFileMetadata {
