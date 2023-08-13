@@ -4,8 +4,7 @@ import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponTyp
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierType } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 
-class ModifierData extends FileData<IModifier> implements Required<IModifier> 
-{
+class ModifierData extends FileData<IModifier> implements Required<IModifier>  {
     private readonly id?: string
 
     public constructor(metadata: IModifier, id: string) {

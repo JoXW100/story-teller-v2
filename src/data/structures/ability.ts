@@ -6,11 +6,7 @@ import { IAbilityMetadata } from "types/database/files/ability";
 import { IModifier } from "types/database/files/modifier";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
-class AbilityData extends CreatureActionData<IAbilityMetadata> implements Required<IAbilityMetadata>
-{
-    $vars: never;
-    $queries: never;
-
+class AbilityData extends CreatureActionData<IAbilityMetadata> implements Required<IAbilityMetadata> {
     private readonly id?: string;
     constructor(metadata: IAbilityMetadata, stats?: ICreatureStats, id?: string) {
         super(metadata, stats)

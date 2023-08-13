@@ -5,11 +5,7 @@ import FileData from "./file";
 
 type EncounterDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
 
-class EncounterData extends FileData<IEncounterMetadata> implements Required<IEncounterMetadata>
-{
-    $vars: never;
-    $queries: never;
-
+class EncounterData extends FileData<IEncounterMetadata> implements Required<IEncounterMetadata> {
     protected readonly storage: IEncounterCardData[];
     protected readonly dispatch: EncounterDispatch;
 

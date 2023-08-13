@@ -11,11 +11,7 @@ import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId } from "types/database";
 
-class CharacterData extends CreatureData implements Required<ICharacterMetadata>
-{
-    $vars: never;
-    $queries: never;
-
+class CharacterData extends CreatureData implements Required<ICharacterMetadata> {
     public readonly metadata: ICharacterMetadata;
     private readonly characterClass: IClassMetadataProperties 
     public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData) {

@@ -10,11 +10,7 @@ import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { IFileMetadata } from "types/database/files";
 
-abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata> extends FileData<T> implements Required<ICreatureActionData & IFileMetadata>
-{
-    $vars: never;
-    $queries: never;
-
+abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata> extends FileData<T> implements Required<ICreatureActionData & IFileMetadata> {
     public readonly stats: CreatureStats
 
     constructor(metadata: T, stats: ICreatureStats = null) {

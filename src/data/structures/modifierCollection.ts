@@ -25,8 +25,7 @@ const ModifierCollectionMap = {
     [ProficiencyType.Save]: "saves",
 } satisfies Record<ProficiencyType, keyof IModifier>
 
-class ModifierCollectionData implements IModifierCollection
-{
+class ModifierCollectionData implements IModifierCollection {
     private readonly modifiers: Required<IModifier>[]
     private readonly storage: ICharacterStorage
     

@@ -3,11 +3,7 @@ import { AreaType, CastingTime, Duration, MagicSchool } from "types/database/dnd
 import { ISpellMetadata } from "types/database/files/spell";
 import CreatureActionData from "./creatureActionData";
 
-class SpellData extends CreatureActionData<ISpellMetadata> implements Required<ISpellMetadata>
-{
-    $vars: never;
-    $queries: never;
-
+class SpellData extends CreatureActionData<ISpellMetadata> implements Required<ISpellMetadata> {
     public get level(): number {
         return this.metadata.level ?? 0
     }

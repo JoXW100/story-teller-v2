@@ -18,9 +18,6 @@ const OptionTypeAuto: IOptionType<number> = {
 }
 
 class CreatureData extends FileData<ICreatureMetadata> implements Required<ICreatureMetadata> {
-    $vars: never;
-    $queries: never;
-
     public readonly modifiers: IModifierCollection
     public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection) {
         super(metadata)

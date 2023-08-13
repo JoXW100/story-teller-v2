@@ -8,8 +8,7 @@ import { IClassMetadata, IClassMetadataProperties } from "types/database/files/c
 import { IModifier } from "types/database/files/modifier";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 
-class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata
-{
+class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage
     private readonly id: string
 

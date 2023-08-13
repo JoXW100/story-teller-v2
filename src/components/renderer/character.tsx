@@ -126,9 +126,9 @@ const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererPro
                     <Elements.Header1> {character.name} </Elements.Header1>
                     <Elements.Line/>
                     <div className={styles.pageSelector}>
-                        { Object.values(Pages).map((p, index) => (
+                        { Object.values(Pages).filter(x => x !== "Class" || character.classFile).map((p, index) => (
                             <button key={index} disabled={page === p} onClick={() => setPage(p)}>
-                                { p }
+                                {p}
                             </button>
                         ))}
                     </div>

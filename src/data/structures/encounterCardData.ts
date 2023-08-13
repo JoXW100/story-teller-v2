@@ -3,11 +3,7 @@ import { IEncounterCardData } from "types/database/files/encounter"
 
 type EncounterCardDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData>>
 
-class EncounterCardData implements Required<IEncounterCardData>
-{
-    $vars: never;
-    $queries: never;
-
+class EncounterCardData implements Required<IEncounterCardData> {
     public readonly data: IEncounterCardData;
     private readonly dispatch: EncounterCardDispatch;
     public constructor(data: IEncounterCardData, dispatch: EncounterCardDispatch) {

@@ -2,8 +2,7 @@ import { getOptionType } from "data/optionData"
 import { OptionalAttribute } from "types/database/dnd"
 import ICreatureStats from "types/database/files/iCreatureStats"
 
-class CreatureStats implements Required<ICreatureStats>
-{
+class CreatureStats implements Required<ICreatureStats> {
     public readonly data: ICreatureStats
     public constructor(stats: ICreatureStats = {}) {
         this.data = stats ?? {}
