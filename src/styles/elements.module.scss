@@ -98,7 +98,7 @@
         flex-direction: column; 
     }
 
-    &[data=h], &[data=hc], &[data=ch] {
+    &[data=h], &[data=hc], &[data=ch], &[data=c] {
         flex-direction: row;
         & > .line { @extend .line-vertical; }
         & > .space { @extend .space-vertical; }

@@ -174,7 +174,7 @@ class FilesInterface
                     _id: 0,
                     id: '$_id',
                     type: '$type',
-                    metadata: '$content.metadata'
+                    metadata: '$metadata'
                 } satisfies KeysOfTwo<FileGetMetadataResult, DBFile>}
             ]).toArray();
             Logger.log('files.getManyMetadata', result?.length ?? 0);
@@ -314,9 +314,9 @@ class FilesInterface
     private async setDataValue(userId: string, storyId: string, fileId: string, property: string, value: any, onFolders: boolean = false): Promise<DBResponse<FileSetPropertyResult>> {
         try {
             let filter = { 
-                _userId: userId, 
-                _storyId: new ObjectId(storyId),
                 _id: new ObjectId(fileId),
+                _storyId: new ObjectId(storyId),
+                _userId: userId, 
                 type: onFolders ? FileType.Folder : { $ne: FileType.Folder }
             } satisfies Partial<KeysOf<DBItem>>
 
@@ -353,12 +353,18 @@ class FilesInterface
 
     /** Changes the metadata of a file in the database */
     async setMetadata(userId: string, storyId: string, fileId: string, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
-        return this.setDataValue(userId, storyId, fileId, 'metadata', { $ifNull: [metadata, {}]});
+        if (typeof metadata !== typeof {}) {
+            return failure("Expected typeof object");
+        }
+        return this.setDataValue(userId, storyId, fileId, 'metadata', metadata);
     }
 
     /** Changes the metadata of a file in the database */
     async setStorage(userId: string, storyId: string, fileId: string, storage: IFileStorage): Promise<DBResponse<FileSetPropertyResult>> {
-        return this.setDataValue(userId, storyId, fileId, 'storage', { $ifNull: [storage, {}]});
+        if (typeof storage !== typeof {}) {
+            return failure("Expected typeof object");
+        }
+        return this.setDataValue(userId, storyId, fileId, 'storage', storage);
     }
     
     /** Gets the file structure of story in the database */

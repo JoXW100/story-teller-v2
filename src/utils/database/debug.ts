@@ -169,7 +169,7 @@ class DebugInterface
         //responses.push(await this.clearBackup()); // Not necessary
         //responses.push(await this.transferToBackup());
         //responses.push(await this.clearTmp()); // Not necessary
-        responses.push(await this.convert());
+        //responses.push(await this.convert());
         //responses.push(await this.transferFixedRoots());
         //responses.push(await this.transferFixedFolders());
         //responses.push(await this.transferFixedAbilities());

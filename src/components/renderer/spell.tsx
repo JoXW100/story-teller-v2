@@ -16,6 +16,7 @@ import SpellFile, { ISpellMetadata } from 'types/database/files/spell';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
 import { isObjectId } from 'utils/helpers';
+import { FileType } from 'types/database/files';
 
 interface SpellCategory {
     [type: number]: JSX.Element[]
@@ -235,8 +236,8 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
     useEffect(() => {
         let categories: Record<number, JSX.Element[]> = []
         spells.forEach((file, index) => {
-            if (file.type === 'spe') {
-                let level = file.metadata.level as number ?? 1
+            if (file.type === FileType.Spell) {
+                let level = file.metadata?.level as number ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 
                     <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>

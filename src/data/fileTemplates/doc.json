@@ -12,7 +12,7 @@
                 "content": [
                     { 
                         "type": "text", 
-                        "params": { "label": "Title", "key": "title" }
+                        "params": { "label": "Title", "key": "name" }
                     },
                     { 
                         "type": "publish", 
@@ -20,7 +20,7 @@
                     },
                     { 
                         "type": "textarea", 
-                        "params": { "label": "Content", "key": "content", "useSyntaxEditor": false }
+                        "params": { "label": "Description", "key": "description", "useSyntaxEditor": false }
                     }
                 ]
             },

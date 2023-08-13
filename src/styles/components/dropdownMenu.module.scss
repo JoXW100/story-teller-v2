@@ -78,7 +78,6 @@
 .dropdownItem {
     @include colorBackground(input);
     justify-content: start;
-    font: inherit;
     padding: 0 5px;
     height: 100%;
     min-height: 100%;
