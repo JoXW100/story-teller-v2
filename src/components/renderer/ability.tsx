@@ -54,7 +54,7 @@ type AbilityProps = React.PropsWithRef<{
     variablesKey: string
 }>
 
-const Ability = ({ metadata, stats, open }: AbilityProps, variablesKey): JSX.Element => {
+const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Element => {
     let ability = new AbilityData(metadata, stats)
     let description = useParser(ability.description, metadata, variablesKey)
 
@@ -186,10 +186,10 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
     <AbilityToggleRenderer metadata={file.metadata} stats={stats} isOpen={true}/>
 )
 
-const AbilityToggleRenderer = ({ metadata = { name: "", description: "" }, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
-    const canClose = metadata?.type !== AbilityType.Feature
+const AbilityToggleRenderer = ({ metadata, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
     const [open, setOpen] = useState(isOpen);
-    const data = canClose && metadata.description
+    const canClose = metadata?.type !== AbilityType.Feature
+    const data = canClose && metadata?.description
         ? open ? "open" : "closed"
         : "none"
     const handleClick = () => {
