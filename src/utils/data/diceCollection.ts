@@ -21,7 +21,7 @@ class DiceCollection {
     }
 
     /** Rolls the dice in the collection */
-    roll(method: RollMethod | null = RollMethod.Normal): RollResult {
+    roll(method: RollMethod = RollMethod.Normal, criticalRange: number = 20): RollResult {
         let results: RollValue[] = [];
         let selectedIndex = 0;
         switch (method) {
@@ -64,7 +64,8 @@ class DiceCollection {
             results: results,
             selectedIndex: selectedIndex,
             desc: this.desc,
-            modifier: this.modifier
+            modifier: this.modifier,
+            criticalRange: criticalRange
         }
     }
 

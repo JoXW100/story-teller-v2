@@ -15,6 +15,7 @@ interface RollValue {
 interface RollResult {
     method: RollMethod
     results: RollValue[]
+    criticalRange: number
     selectedIndex: number
     desc: string
     modifier: number

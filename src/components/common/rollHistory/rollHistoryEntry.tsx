@@ -7,7 +7,7 @@ export type HistoryRollEntryProps = React.PropsWithRef<{
 }>
 
 type HistoryRollNoticeProps = React.PropsWithRef<{
-    result: RollResult
+    roll: RollResult
 }>
 
 const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
@@ -39,7 +39,7 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
             <>
                 <div className={styles.entryHeader}>
                     <b>{result.desc}: </b>
-                    <HistoryRollNotice result={result}/>
+                    <HistoryRollNotice roll={result}/>
                 </div>
                 <div className={styles.entryContent}>
                     { content }
@@ -60,16 +60,26 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
     )
 }
 
-const HistoryRollNotice = ({ result }: HistoryRollNoticeProps): JSX.Element => {
-    let rollWasFail = result.method !== RollMethod.Crit 
-        && result.results.length === 1 
-        && result.results[0].sum === 1
-        && result.results[0].values.length === 1
-        && result.results[0].values[0].dice.num === 20
-    if (rollWasFail) return <b data='fail'>-FAIL</b>
-    switch (result.method) {
+const HistoryRollNotice = ({ roll }: HistoryRollNoticeProps): JSX.Element => {
+    if (roll.method !== RollMethod.Crit 
+     && roll.results.every(res => res.sum === 1 && res.values.length === 1 && res.values[0].dice.num === 20)) {
+        return <b data='fail'>-FAIL</b>
+    }
+
+    if ((roll.method === RollMethod.Advantage || roll.method === RollMethod.Normal) 
+     && roll.results.every(res => res.values.length === 1 && res.values[0].dice.num === 20)
+     && roll.results.some(res => res.sum >= roll.criticalRange)) {
+        return <b data='crit'>+CRIT</b>;
+    }
+
+    switch (roll.method) {
+        case RollMethod.Disadvantage:
+            if (roll.results.every(res => res.sum >= roll.criticalRange && res.values.length === 1 && res.values[0].dice.num === 20)) {
+                return <b data='crit'>+CRIT</b>;
+            } else {
+                return <b data='dis'>-DIS</b>
+            }
         case RollMethod.Advantage: return <b data='adv'>+ADV</b>
-        case RollMethod.Disadvantage: return <b data='dis'>-DIS</b>
         case RollMethod.Crit: return <b data='crit'>+CRIT</b>;
         default: return null;
     }
