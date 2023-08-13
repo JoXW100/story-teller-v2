@@ -10,10 +10,11 @@ type LinkDropdownMenuProps = React.PropsWithRef<{
     values: ObjectId[]
     value: ObjectId, 
     showButton?: boolean,
+    allowNull?: boolean
     onChange: (value: ObjectId) => void
 }>
 
-const LinkDropdownMenu = ({ value, values, onChange, showButton, className, itemClassName }: LinkDropdownMenuProps) => {
+const LinkDropdownMenu = ({ value, values, onChange, allowNull, showButton, className, itemClassName }: LinkDropdownMenuProps) => {
     const [files, loading] = useFiles(values)
 
     return (
@@ -24,10 +25,14 @@ const LinkDropdownMenu = ({ value, values, onChange, showButton, className, item
             showButton={showButton}
             values={values.reduce((prev, option) => (
                 { ...prev, [String(option)]: loading ? '...' : files.find(x => x.id === option) ?.metadata?.name ?? "error"}
-            ), { null: "Unset" })}
+            ), allowNull ? { null: "Unset" } : {})}
             onChange={(value) => {
-                if (isObjectId(value)) {
-                    onChange(value)
+                if (isObjectId(value) || (allowNull && value === "null")) {
+                    if (value == "null"){
+                        onChange(null)
+                    } else {
+                        onChange(value)
+                    }
                 } else {
                     Logger.throw("LinkDropdownMenu", value)
                 }
