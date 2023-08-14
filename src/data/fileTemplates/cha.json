@@ -109,7 +109,7 @@
                             { 
                                 "type": "enum", 
                                 "params": { "label": "Hit Dice", "key": "hitDice", "type": "dice", "default": 0 },
-                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "class" }, { "type": "any", "value": ["", null] }] }]
+                                "conditions": [ { "type": "equals", "value": [{ "type": "metadata", "value": "classFile" }, { "type": "any", "value": ["", null] }] }]
                             },
                             { 
                                 "type": "option", 

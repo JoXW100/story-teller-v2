@@ -410,9 +410,8 @@
 
     & > b {
         @include fontNoLineBreak;
-        text-indent: 5px;
-        border-radius: 10px;
-        padding-right: 10px;
+        font-size: smaller;
+        text-indent: 4px;
         align-self: center;
     }
 

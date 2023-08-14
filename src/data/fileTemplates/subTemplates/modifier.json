@@ -17,7 +17,7 @@
                 { 
                     "type": "enum", 
                     "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
-                    "params": { "label": "Property", "key": "bonusProperty", "type": "modifierBonusTypeProperty", "default": "ac" }
+                    "params": { "label": "Property", "key": "bonusProperty", "type": "modifierBonusTypeProperty", "default": "attribute" }
                 },
                 { 
                     "type": "enum", 
@@ -29,6 +29,34 @@
                     "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] }],
                     "params": { "label": "Property", "key": "setProperty", "type": "modifierSetTypeProperty", "default": "critRange" }
                 },
+
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "any", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                            { "type": "all", "value": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] }
+                            ]}
+                        ]}
+                    ],
+                    "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
+                }, { 
+                    "type": "text", 
+                    "conditions": [
+                        { "type": "any", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                            { "type": "all", "value": [
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] }
+                            ]}
+                        ]},
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
+                },
+                
                 { 
                     "type": "enum", 
                     "conditions": [
@@ -36,19 +64,6 @@
                         { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
                     ],
                     "params": { "label": "Proficiency Type", "key": "proficiency", "type": "proficiencyType", "default": "armor" }
-                },
-                { 
-                    "type": "enum", 
-                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] }],
-                    "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
-                },
-                { 
-                    "type": "text", 
-                    "conditions": [
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
-                    ],
-                    "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
                 },
                 { 
                     "type": "boolean", 
@@ -59,10 +74,23 @@
                     ],
                     "params": { "label": "Allow Any", "key": "allowAny" }
                 },
-                { 
-                    "type": "number", 
-                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
-                    "params": { "label": "Value", "key": "value" }
+
+                {
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Attribute", "key": "attribute", "type": "attr", "default": "str" }
+                }, { 
+                    "type": "selection", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "attributes", "enum": "attr", "fill": true }
                 },
 
                 { 
@@ -211,6 +239,12 @@
                         { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "critRange"] }
                     ],
                     "params": { "label": "Critical Range", "key": "value" }
+                },
+                
+                { 
+                    "type": "number", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
+                    "params": { "label": "Value", "key": "value" }
                 }
             ]
         }

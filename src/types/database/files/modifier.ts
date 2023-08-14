@@ -3,6 +3,7 @@ import type { ObjectId } from ".."
 
 export enum ModifierBonusTypeProperty {
     AC = "ac",
+    Attribute = "attribute",
     NumHitDice = "numHitDice",
     Health = "health",
     Proficiency = "proficiency",
@@ -25,7 +26,7 @@ export enum ModifierType {
     Remove = "remove" // Removes item from collection
 }
 
-export enum ModifierSelectType {
+export enum SelectType {
     Value = "value",
     Choice = "choice",
 }
@@ -44,7 +45,7 @@ interface IModifier {
     $name: string
     
     type?: ModifierType
-    select?: ModifierSelectType
+    select?: SelectType
     bonusProperty?: ModifierBonusTypeProperty
     addRemoveProperty?: ModifierAddRemoveTypeProperty
     setProperty?: ModifierSetTypeProperty
@@ -58,6 +59,8 @@ interface IModifier {
     value?: number
     file?: ObjectId
     files?: ObjectId[]
+    attribute?: Attribute
+    attributes?: Attribute[]
     armor?: ArmorType
     armors?: ArmorType[]
     weapon?: WeaponType

@@ -19,6 +19,8 @@ interface IModifierCollection {
     bonusProficiency: number
     bonusInitiative: number
 
+    getAttributeBonus: (attribute: Attribute) => number
+
     // Set
     critRange: number
 

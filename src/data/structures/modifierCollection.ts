@@ -2,7 +2,7 @@ import { ObjectId, ObjectIdText } from "types/database";
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
@@ -42,25 +42,96 @@ class ModifierCollectionData implements IModifierCollection {
         return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
             if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                && mod.select === ModifierSelectType.Choice ) {
+                && mod.select === SelectType.Choice ) {
                 return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === ModifierSelectType.Choice
+                && mod.select === SelectType.Choice
                 && mod.allowAny) {
                 return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies ChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === ModifierSelectType.Choice
+                && mod.select === SelectType.Choice
                 && !mod.allowAny) {
                 return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies ChoiceData}
+            } else if (mod.type === ModifierType.Bonus 
+                && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
+                && mod.select === SelectType.Choice) {
+                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies ChoiceData}
             }
 
             return prev
         }, {})
     }
 
-    public modifyProficiencies<T extends string>(proficiencies: T[], type: ProficiencyType, onlyRemove: boolean): T[] {
+    public get bonusAC(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.AC 
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
+    public get bonusNumHealthDice(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.NumHitDice 
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
+    public get bonusHealth(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Health 
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
+    public get bonusProficiency(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Proficiency 
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
+    public get bonusInitiative(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Initiative
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
+    public get critRange(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.CritRange && modifier.value !== null
+                ? modifier.value 
+                : prev
+        , null)
+    }
+
+    public getAttributeBonus(attribute: Attribute): number {
+        return this.modifiers.reduce<number>((prev, mod) => {
+            if (mod.type === ModifierType.Bonus 
+             && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
+             && mod.select === SelectType.Value
+             && mod.attribute === attribute) {
+                return prev + mod.value
+            } else if (mod.type === ModifierType.Bonus 
+             && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
+             && mod.select === SelectType.Choice
+             && this.storage?.classData
+             && this.storage.classData[mod.$name] === attribute) {
+                return prev + mod.value
+            } else {
+                return prev
+            }
+        }, 0)
+    } 
+
+    private modifyProficiencies<T extends string>(proficiencies: T[], type: ProficiencyType, onlyRemove: boolean): T[] {
         let exclude: Set<T>
         let proficiency: keyof IModifier = ModifierMap[type];
         if (onlyRemove) {
@@ -76,12 +147,12 @@ class ModifierCollectionData implements IModifierCollection {
                 if (mod.type === ModifierType.Add 
                     && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                     && mod.proficiency === type
-                    && mod.select === ModifierSelectType.Value) {
+                    && mod.select === SelectType.Value) {
                     return { ...prev, add: [...prev.add, mod[proficiency] ]}
                 } else if (mod.type === ModifierType.Add 
                     && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                     && mod.proficiency === type
-                    && mod.select === ModifierSelectType.Choice
+                    && mod.select === SelectType.Choice
                     && this.storage?.classData
                     && this.storage.classData[mod.$name]) {
                         return { ...prev, add: [...prev.add, this.storage.classData[mod.$name] ] }
@@ -125,65 +196,17 @@ class ModifierCollectionData implements IModifierCollection {
         return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
             if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === ModifierSelectType.Value) {
+                && mod.select === SelectType.Value) {
                 return [...prev, mod.file]
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === ModifierSelectType.Choice
+                && mod.select === SelectType.Choice
                 && this.storage?.classData
                 && this.storage.classData[mod.$name]) {
                 return [...prev, this.storage.classData[mod.$name]]
             }
             return prev
         }, abilities)
-    }
-
-    public get bonusAC(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.AC 
-                ? prev + modifier.value 
-                : prev
-        , 0)
-    }
-
-    public get bonusNumHealthDice(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.NumHitDice 
-                ? prev + modifier.value 
-                : prev
-        , 0)
-    }
-
-    public get bonusHealth(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Health 
-                ? prev + modifier.value 
-                : prev
-        , 0)
-    }
-
-    public get bonusProficiency(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Proficiency 
-                ? prev + modifier.value 
-                : prev
-        , 0)
-    }
-
-    public get bonusInitiative(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Initiative
-                ? prev + modifier.value 
-                : prev
-        , 0)
-    }
-
-    public get critRange(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.CritRange && modifier.value !== null
-                ? modifier.value 
-                : prev
-        , null)
     }
 }
 
@@ -206,6 +229,34 @@ class CombinedModifierCollection implements IModifierCollection {
         let choices1 = this.c1.getChoices();
         let choices2 = this.c2.getChoices();
         return {...choices1, ...choices2}
+    }
+
+    public get bonusAC(): number {
+        return this.c1.bonusAC + this.c2.bonusAC
+    }
+
+    public get bonusNumHealthDice(): number {
+        return this.c1.bonusNumHealthDice + this.c2.bonusNumHealthDice
+    }
+
+    public get bonusHealth(): number {
+        return this.c1.bonusHealth + this.c2.bonusHealth
+    }
+
+    public get bonusProficiency(): number {
+        return this.c1.bonusProficiency + this.c2.bonusProficiency
+    }
+
+    public get bonusInitiative(): number {
+        return this.c1.bonusInitiative + this.c2.bonusInitiative
+    }
+
+    public get critRange(): number {
+        return this.c1.critRange ?? this.c2.critRange 
+    }
+
+    public getAttributeBonus(attribute: Attribute): number {
+        return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
     }
     
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove?: boolean): ArmorType[] {
@@ -243,30 +294,6 @@ class CombinedModifierCollection implements IModifierCollection {
     public modifyAbilities(abilities: ObjectIdText[]): ObjectIdText[] {
         abilities = this.c1.modifyAbilities(abilities)
         return this.c2.modifyAbilities(abilities)
-    }
-
-    public get bonusAC(): number {
-        return this.c1.bonusAC + this.c2.bonusAC
-    }
-
-    public get bonusNumHealthDice(): number {
-        return this.c1.bonusNumHealthDice + this.c2.bonusNumHealthDice
-    }
-
-    public get bonusHealth(): number {
-        return this.c1.bonusHealth + this.c2.bonusHealth
-    }
-
-    public get bonusProficiency(): number {
-        return this.c1.bonusProficiency + this.c2.bonusProficiency
-    }
-
-    public get bonusInitiative(): number {
-        return this.c1.bonusInitiative + this.c2.bonusInitiative
-    }
-
-    public get critRange(): number {
-        return this.c1.critRange ?? this.c2.critRange 
     }
 }
 

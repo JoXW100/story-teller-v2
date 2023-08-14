@@ -1,6 +1,6 @@
 import { getOptionType } from "data/optionData"
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 
 class ModifierData implements Required<IModifier>  {
@@ -28,7 +28,7 @@ class ModifierData implements Required<IModifier>  {
         return this.metadata.type ?? getOptionType('modifierType').default
     }
 
-    public get select(): ModifierSelectType {
+    public get select(): SelectType {
         return this.metadata.select ?? getOptionType('modifierSelect').default
     }
 
@@ -60,6 +60,14 @@ class ModifierData implements Required<IModifier>  {
 
     public get files(): ObjectId[] {
         return this.metadata.files ?? []
+    }
+    
+    public get attribute(): Attribute {
+        return this.metadata.attribute ?? getOptionType('attr').default
+    }
+
+    public get attributes(): Attribute[] {
+        return this.metadata.attributes ?? []
     }
 
     public get armor(): ArmorType {

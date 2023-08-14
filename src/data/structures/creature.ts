@@ -336,27 +336,27 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
     // Attributes
 
     public get str(): number {
-        return this.metadata.str ?? 10
+        return (this.metadata.str ?? 10) + this.modifiers.getAttributeBonus(Attribute.STR)
     }
 
     public get dex(): number {
-        return this.metadata.dex ?? 10
+        return (this.metadata.dex ?? 10) + this.modifiers.getAttributeBonus(Attribute.DEX)
     }
 
     public get con(): number {
-        return this.metadata.con ?? 10
+        return (this.metadata.con ?? 10) + this.modifiers.getAttributeBonus(Attribute.CON)
     }
 
     public get int(): number {
-        return this.metadata.int ?? 10
+        return (this.metadata.int ?? 10) + this.modifiers.getAttributeBonus(Attribute.INT)
     }
 
     public get wis(): number {
-        return this.metadata.wis ?? 10
+        return (this.metadata.wis ?? 10) + this.modifiers.getAttributeBonus(Attribute.WIS)
     }
 
     public get cha(): number {
-        return this.metadata.cha ?? 10
+        return (this.metadata.cha ?? 10) + this.modifiers.getAttributeBonus(Attribute.CHA)
     }
 
     // Proficiencies

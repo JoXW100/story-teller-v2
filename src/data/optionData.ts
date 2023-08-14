@@ -1,6 +1,6 @@
 import { Enum } from 'types';
 import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
-import { ModifierType, ModifierSelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
+import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
 interface IOptionType<T extends Enum> {
@@ -354,13 +354,13 @@ const OptionTypes = {
         }
     } satisfies IOptionType<typeof ModifierType>,
     "modifierSelect": {
-        enum: ModifierSelectType,
-        default: ModifierSelectType.Value,
+        enum: SelectType,
+        default: SelectType.Value,
         options: {
-            [ModifierSelectType.Value]: "Value",
-            [ModifierSelectType.Choice]: "Choice",
+            [SelectType.Value]: "Value",
+            [SelectType.Choice]: "Choice",
         }
-    } satisfies IOptionType<typeof ModifierSelectType>,
+    } satisfies IOptionType<typeof SelectType>,
     "modifierCondition": {
         enum: ModifierCondition,
         default: ModifierCondition.None,
@@ -370,9 +370,10 @@ const OptionTypes = {
     } satisfies IOptionType<typeof ModifierCondition>,
     "modifierBonusTypeProperty": {
         enum: ModifierBonusTypeProperty,
-        default: ModifierBonusTypeProperty.AC,
+        default: ModifierBonusTypeProperty.Attribute,
         options: {
             [ModifierBonusTypeProperty.AC]: "AC",
+            [ModifierBonusTypeProperty.Attribute]: "Attribute",
             [ModifierBonusTypeProperty.NumHitDice]: "Number of hit dice",
             [ModifierBonusTypeProperty.Health]: "Health",
             [ModifierBonusTypeProperty.Proficiency]: "Proficiency",
