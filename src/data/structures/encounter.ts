@@ -15,14 +15,6 @@ class EncounterData extends FileData<IEncounterMetadata> implements Required<IEn
         this.dispatch = dispatch
     }
 
-    public get name(): string {
-        return this.metadata.name ?? ""
-    }
-
-    public get description(): string {
-        return this.metadata.description ?? ""
-    }
-
     public get creatures(): string[] {
         return this.metadata.creatures
     }

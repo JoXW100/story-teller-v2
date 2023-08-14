@@ -18,14 +18,6 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata>
         this.stats = new CreatureStats(stats)
     }
 
-    public get name(): string {
-        return this.metadata.name ?? ""
-    }
-
-    public get description(): string {
-        return this.metadata.description
-    }
-
     public get notes(): string {
         return this.metadata.notes ?? ""
     }

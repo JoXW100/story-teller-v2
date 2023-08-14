@@ -111,10 +111,6 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
         return this.getAttributeModifier(attr) + mod
     }
 
-    public get name(): string {
-        return this.metadata.name ?? ""
-    }
-
     public get type(): CreatureType {
         return this.metadata.type ?? getOptionType("creatureType").default
     }
@@ -142,10 +138,6 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
 
     public get portrait(): string {
         return this.metadata.portrait ?? ""
-    }
-
-    public get description(): string {
-        return this.metadata.description ?? ""
     }
 
     public get challenge(): number {

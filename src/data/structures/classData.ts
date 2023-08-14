@@ -19,14 +19,6 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
         this.id = id;
     }
 
-    public get name(): string {
-        return this.metadata.name ?? ""
-    }
-
-    public get description(): string {
-        return this.metadata.description ?? ""
-    }
-
     public get isSubclass(): boolean {
         return this.metadata.isSubclass ?? false;
     }

@@ -5,6 +5,7 @@ import { ElementDictionary, TableElementTypes, getElement } from "data/elements"
 import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
 import styles from 'styles/renderer.module.scss';
 import { ObjectId } from "types/database";
+import FileData from "data/structures/file";
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -24,6 +25,10 @@ abstract class Parser
     static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
         if (!text)
             return null
+
+        if (metadata instanceof FileData) {
+            metadata = metadata.metadata
+        }
 
         let splits = text.split(this.matchBodyExpr);
         let variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }

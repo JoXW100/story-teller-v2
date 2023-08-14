@@ -1,14 +1,14 @@
 import { getOptionType } from "data/optionData"
-import FileData from "./file"
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierSelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 
-class ModifierData extends FileData<IModifier> implements Required<IModifier>  {
+class ModifierData implements Required<IModifier>  {
+    private readonly metadata: IModifier;
     private readonly id?: string
 
-    public constructor(metadata: IModifier, id: string) {
-        super(metadata);
+    public constructor(metadata: IModifier, id?: string) {
+        this.metadata = metadata ?? { $name: "" }
         this.id = id;
     }
 
