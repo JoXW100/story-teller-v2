@@ -34,17 +34,19 @@ const Pages = ["Actions", "Proficiencies"] as const
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
-    let creature = new CreatureData(file.metadata, modifiers)
-    let stats = creature.getStats()
+    const creature = useMemo(() => new CreatureData(file.metadata, modifiers), [file.metadata, modifiers])
+    const abilities = useMemo(() => creature.abilities, [creature])
+    const stats = useMemo(() => creature.getStats(), [creature])
 
-    const content = useParser(file.content.text, file.metadata, "$content");
-    const description = useParser(creature.description, file.metadata, "description")
-    const abilities = useMemo(() => creature.abilities, [file.metadata, file?.storage])
+    const content = useParser(file.content.text, creature, "$content");
+    const description = useParser(creature.description, creature, "description")
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-        let collection = new ModifierCollectionData(modifiers, null)
-        setModifiers(collection);
+        if (!abilities.every(ability => abilities.some(x => x.id === ability.id))) {
+            let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+            let collection = new ModifierCollectionData(modifiers, null)
+            setModifiers(collection);
+        }
     }
 
     return (

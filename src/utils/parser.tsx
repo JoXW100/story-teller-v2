@@ -22,7 +22,6 @@ abstract class Parser
     private static queries: QueryCollection = {}
 
     static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
-        console.log("parse", metadata)
         if (!text)
             return null
 

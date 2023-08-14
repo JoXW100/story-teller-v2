@@ -34,7 +34,7 @@ abstract class Logger
         let milliseconds = now.getMilliseconds();
         let msText = milliseconds.toString();
         let timeText = now.toLocaleString("sv-Se");
-        return `${timeText}.${msText}`;
+        return `${timeText}.${msText}${'0'.repeat(3 - msText.length)}`;
     }
 }
 

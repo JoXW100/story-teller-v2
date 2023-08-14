@@ -17,17 +17,17 @@ import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
 import { getOptionType } from 'data/optionData';
 import CharacterFile, { ICharacterMetadata } from 'types/database/files/character';
-import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
+import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
 import { Attribute, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
+import Logger from 'utils/logger';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
-    classFile?: FileGetMetadataResult<IClassMetadata>
 }>
 
 type CharacterLinkRendererProps = React.PropsWithRef<{
@@ -50,20 +50,19 @@ type CharacterClassPageProps = React.PropsWithRef<{
 const Pages = ["Background", "Proficiencies", "Class"] as const
 
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
-    const [file] = useFile<IClassMetadata>(props.file?.metadata?.classFile)
     const Renderer = props.file?.metadata?.simple ?? false
         ? SimpleCharacterRenderer
         : DetailedCharacterRenderer
 
-    return <Renderer {...props} classFile={file}/>
+    return <Renderer {...props}/>
 }
 
-const SimpleCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps): JSX.Element => {
-    const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
-    const character = new CharacterData(file.metadata, null, classData)
-    const content = useParser(file.content.text, file.metadata, "$content");
-    const appearance = useParser(character.appearance, file.metadata, "appearance")
-    const description = useParser(character.description, file.metadata, "description")
+const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
+    const character = useMemo(() => new CharacterData(file.metadata, null), [file.metadata])
+    const content = useParser(file.content.text, character, "$content");
+    const appearance = useParser(character.appearance, character, "appearance")
+    const description = useParser(character.description, character, "description")
+    Logger.log("Character", "SimpleCharacterRenderer")
     return (
         <>
             <Elements.Align>
@@ -99,27 +98,33 @@ const SimpleCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps
     )
 } 
 
-const DetailedCharacterRenderer = ({ file, classFile }: CharacterFileRendererProps): JSX.Element => {
+const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
-    const classData = new ClassData(classFile?.metadata, file?.storage, classFile?.id ? String(classFile?.id) : undefined);
-    const [subclassFile] = useFile<IClassMetadata>(file?.storage?.classData?.$subclass);
-    const subclassData = new ClassData(subclassFile?.metadata, file?.storage, subclassFile?.id ? String(subclassFile?.id) : undefined);
-    const character = new CharacterData(file.metadata, modifiers, classData, subclassData)
-    const content = useParser(file.content.text, file.metadata, "$content");
-    const appearance = useParser(character.appearance, file.metadata, "appearance")
-    const description = useParser(character.description, file.metadata, "description")
-    const history = useParser(character.history, file.metadata, "history")
-    const notes = useParser(character.notes, file.metadata, "notes")
-    const stats = character.getStats()
+    const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
+    const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
 
-    const abilities = useMemo(() => character.abilities, [file.metadata, file?.storage, subclassFile, classFile])
+    const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
+    const subclassData = useMemo(() => new ClassData(subclassFile?.metadata, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile])
+    const character =  useMemo(() => new CharacterData(file.metadata, modifiers, classData, subclassData), [file.metadata, modifiers, classData, subclassData])
+    const abilities = useMemo(() => character.abilities, [character])
+    const stats = useMemo(() => character.getStats(), [character])
+
+    const content = useParser(file.content.text, character, "$content");
+    const appearance = useParser(character.appearance, character, "appearance")
+    const description = useParser(character.description, character, "description")
+    const history = useParser(character.history, character, "history")
+    const notes = useParser(character.notes, character, "notes")
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-        let collection = new ModifierCollectionData(modifiers, file?.storage)
-        setModifiers(collection);
+        if (!abilities.every(ability => abilities.some(x => x.id === ability.id))) {
+            let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+            let collection = new ModifierCollectionData(modifiers, file.storage)
+            setModifiers(collection);
+        }
     }
+
+    Logger.log("Character", "DetailedCharacterRenderer")
 
     return (
         <>
@@ -311,8 +316,8 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
 
 const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
-    const choices = character.modifiers.getChoices()
-    const storage = { ...(classData.storage?.classData ?? {}) }
+    const choices = useMemo(() => character.modifiers.getChoices(), [character])
+    const storage = classData.storage?.classData ?? {}
 
     const handleChange = (value: any, key: string) => {
         dispatch.setStorage("classData", { ...storage, [key]: value });

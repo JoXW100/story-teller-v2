@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import Elements from 'data/elements';
 import CreatureData from 'data/structures/creature';
@@ -16,6 +16,7 @@ import { ICreatureMetadata } from 'types/database/files/creature';
 import { File } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import styles from 'styles/renderer.module.scss';
+import Logger from 'utils/logger';
 
 type EncounterFileRendererProps = React.PropsWithRef<{
     file: File<EncounterFile>
@@ -99,7 +100,7 @@ const useEncounterCards = (file: File<EncounterFile>): [IEncounterCard[], CardDi
                 } as IEncounterCard
             }))
         }
-    }, [loading, creatures])
+    }, [creatures])
 
     useEffect(() => {
         if (file.isOwner && !loading && !cardsAreEqual(state, cards)) {
@@ -116,9 +117,9 @@ const useEncounterCards = (file: File<EncounterFile>): [IEncounterCard[], CardDi
 
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
     const [cards, setCards] = useEncounterCards(file)
-    const encounter = new EncounterData(file.metadata, cards, setCards)
-    const content = useParser(file.content.text, file.metadata, "$content")
-    const description = useParser(encounter.description, file.metadata, "description")
+    const encounter = useMemo(() => new EncounterData(file.metadata, cards, setCards), [cards, setCards])
+    const content = useParser(file.content.text, encounter, "$content")
+    const description = useParser(encounter.description, encounter, "description")
 
     const onRollInitiative = () => {
         encounter.cards.forEach((card, index) => {
@@ -169,6 +170,8 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
             ? delta 
             : cards[b.index].creature.initiativeValue - cards[a.index].creature.initiativeValue
     }
+
+    Logger.log("Encounter", "EncounterFileRenderer")
 
     return <>
         <Elements.Header1 options={{ underline: 'true' }}>{encounter.name}</Elements.Header1>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Elements from 'data/elements';
 import AbilityData from 'data/structures/ability';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
@@ -14,6 +14,7 @@ import { ObjectIdText } from 'types/database';
 import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
+import Logger from 'utils/logger';
 
 interface AbilityCategory { 
     header: string, 
@@ -55,8 +56,9 @@ type AbilityProps = React.PropsWithRef<{
 }>
 
 const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Element => {
-    let ability = new AbilityData(metadata, stats)
-    let description = useParser(ability.description, metadata, variablesKey)
+    const ability = useMemo(() => new AbilityData(metadata, stats), [metadata, stats])
+    const description = useParser(ability.description, ability, variablesKey)
+    Logger.log("Ability", "Ability")
 
     switch(ability.type) {
         case AbilityType.Feature:
@@ -238,6 +240,7 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
 export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProps): React.ReactNode => {
     const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
+    Logger.log("Ability", "AbilityGroups")
 
     useEffect(() => {
         const categories = {
@@ -257,7 +260,7 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
         if (!loading && onLoaded) {
             onLoaded(abilities)
         }
-    }, [abilities, loading])
+    }, [abilities, loading, stats])
     
     return !loading && Object.keys(categories)
         .filter((type: ActionType) => categories[type].content.length > 0)

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParser } from 'utils/parser';
 import { getComponents, getSpellRange } from 'utils/calculations';
 import Communication from 'utils/communication';
@@ -32,7 +32,6 @@ type SpellProps = React.PropsWithRef<{
     metadata: ISpellMetadata
     stats?: ICreatureStats
     variablesKey: string
-    open: boolean
 }>
 
 type SpellFileRendererProps = React.PropsWithRef<{
@@ -51,56 +50,13 @@ type SpellToggleRendererProps = React.PropsWithRef<{
     isOpen?: boolean
 }>
 
-const Spell = ({ metadata, stats, open, variablesKey }: SpellProps) => {
-    let spell = new SpellData(metadata, stats)
-    let description = useParser(spell.description, spell.metadata, variablesKey)
+const Spell = ({ metadata, stats, variablesKey }: SpellProps) => {
+    let spell = useMemo(() => new SpellData(metadata, stats), [metadata, stats])
+    let description = useParser(spell.description, spell, variablesKey)
     let range = getSpellRange(spell)
-    let components = getComponents(spell).map((x, i) => (
-        <span key={i}
-            className={styles.spellComponent} 
-            tooltips={Localization.toText(`spell-component-${x}`)}
-        >{x}</span>
-    ))
-    if (!open) {
-        return <Elements.Align>
-            <Elements.Block options={{ weight: "1.5" }}>
-                <div className={styles.iconRow}>
-                    <Elements.Bold>{spell.name}</Elements.Bold>
-                    {spell.concentration &&
-                        <Elements.Icon options={{
-                            icon: 'concentration',
-                            tooltips: Localization.toText('spell-concentration')  
-                        }}/>
-                    }
-                    {spell.ritual && 
-                        <Elements.Icon options={{
-                            icon: 'ritual',
-                            tooltips: Localization.toText('spell-ritual')  
-                        }}/>
-                    }
-                </div>
-            </Elements.Block>
-            <Elements.Block options={{ weight: "0.8" }}>
-                {spell.timeText}
-            </Elements.Block>
-            <Elements.Block options={{ weight: "0.8" }}>
-                {spell.durationText}
-            </Elements.Block>
-            <Elements.Block options={{ weight: "0.8" }}>
-                <div className={styles.iconRow}>
-                    {spell.target != TargetType.None ? range : '-'}
-                    {spell.target != TargetType.None &&
-                        <Elements.Icon options={{ 
-                            icon: spell.area, tooltips: spell.areaName 
-                        }}/>
-                    }
-                </div>
-            </Elements.Block>
-            <Elements.Block options={{ weight: "0.6" }}>
-                {components}
-            </Elements.Block>
-        </Elements.Align>
-    }
+    let components = getComponents(spell)
+
+    Logger.log("Spell", "Spell")
 
     return <>
         <Elements.Align>
@@ -109,7 +65,15 @@ const Spell = ({ metadata, stats, open, variablesKey }: SpellProps) => {
                 {Localization.toText('spell-level-school', spell.level, spell.schoolName)}
             </Elements.Align>
             <Elements.Align options={{ direction: "v" }}>
-                <div><Elements.Bold>Casting</Elements.Bold>{components}</div>
+                <div><Elements.Bold>Casting</Elements.Bold>
+                    {components.map((x, i) => (
+                        <span key={i}
+                            className={styles.spellComponent} 
+                            tooltips={Localization.toText(`spell-component-${x}`)}>
+                            {x}
+                        </span>
+                    ))}
+                </div>
                 <div className={styles.iconRow}>
                     {spell.timeText} 
                     {spell.ritual && 
@@ -182,12 +146,65 @@ const Spell = ({ metadata, stats, open, variablesKey }: SpellProps) => {
         </Elements.Align>
         { (description || components) && <>
             <Elements.Line/>
-            { components && spell.componentMaterial && <> 
+            { components.length > 0 && spell.componentMaterial && <> 
                 <b>Materials: </b> {spell.materials}<br/><Elements.Line/>
             </>}
             { description }
         </>}
     </>
+}
+
+const CollapsedSpell =({ metadata, stats }: SpellProps) => {
+    const spell = useMemo(() => new SpellData(metadata, stats), [metadata, stats])
+    const range = getSpellRange(spell)
+    const components = getComponents(spell)
+    
+    Logger.log("Spell", "CollapsedSpell")
+
+    return <Elements.Align>
+        <Elements.Block options={{ weight: "1.5" }}>
+            <div className={styles.iconRow}>
+                <Elements.Bold>{spell.name}</Elements.Bold>
+                {spell.concentration &&
+                    <Elements.Icon options={{
+                        icon: 'concentration',
+                        tooltips: Localization.toText('spell-concentration')  
+                    }}/>
+                }
+                {spell.ritual && 
+                    <Elements.Icon options={{
+                        icon: 'ritual',
+                        tooltips: Localization.toText('spell-ritual')  
+                    }}/>
+                }
+            </div>
+        </Elements.Block>
+        <Elements.Block options={{ weight: "0.8" }}>
+            {spell.timeText}
+        </Elements.Block>
+        <Elements.Block options={{ weight: "0.8" }}>
+            {spell.durationText}
+        </Elements.Block>
+        <Elements.Block options={{ weight: "0.8" }}>
+            <div className={styles.iconRow}>
+                {spell.target != TargetType.None ? range : '-'}
+                {spell.target != TargetType.None &&
+                    <Elements.Icon options={{ 
+                        icon: spell.area, tooltips: spell.areaName 
+                    }}/>
+                }
+            </div>
+        </Elements.Block>
+        <Elements.Block options={{ weight: "0.6" }}>
+            {components.map((x, i) => (
+                <span key={i}
+                    className={styles.spellComponent} 
+                    tooltips={Localization.toText(`spell-component-${x}`)}>
+                    {x}
+                </span>
+            ))}
+        </Elements.Block>
+    </Elements.Align>
 }
 
 const SpellFileRenderer = ({ file, stats = {} }: SpellFileRendererProps): JSX.Element => (
@@ -201,20 +218,36 @@ const SpellToggleRenderer = ({ metadata, stats, isOpen = false }: SpellToggleRen
         setOpen(!open);
     }
 
+    const SpellRenderer = open 
+        ? Spell
+        : CollapsedSpell
+
     return (
         <div className={styles.spell} onClick={handleClick}>
-            <Spell metadata={metadata} stats={stats} open={open} variablesKey="description"/>
+            <SpellRenderer metadata={metadata} stats={stats} variablesKey="description"/>
         </div>
     )
 }
 
 const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element => {
-    return <Spell metadata={file.metadata} stats={stats} open={true} variablesKey={`$${file.id}.description`}/>
+    return <Spell metadata={file.metadata} stats={stats} variablesKey={`$${file.id}.description`}/>
 }
 
 export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): JSX.Element => {
     const [spells, setSpells] = useState<FileGetManyMetadataResult<ISpellMetadata>>([])
-    const [categories, setCategories] = useState<SpellCategory>({})
+    const categories = useMemo(() => {
+        let categories: Record<number, JSX.Element[]> = []
+        spells.forEach((file, index) => {
+            if (file.type === FileType.Spell) {
+                let level = file.metadata?.level as number ?? 1
+                categories[level] = [
+                    ...categories[level] ?? [], 
+                    <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>
+                ]
+            }
+        })
+        return categories
+    }, [spells])
     
     useEffect(() => {
         if (spellIds && spellIds.length > 0) {
@@ -233,19 +266,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
         }
     }, [spellIds])
 
-    useEffect(() => {
-        let categories: Record<number, JSX.Element[]> = []
-        spells.forEach((file, index) => {
-            if (file.type === FileType.Spell) {
-                let level = file.metadata?.level as number ?? 1
-                categories[level] = [
-                    ...categories[level] ?? [], 
-                    <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>
-                ]
-            }
-        })
-        setCategories(categories)
-    }, [spells])
+    Logger.log("Spell", "SpellGroups")
     
     return (
         <>
