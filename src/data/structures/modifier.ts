@@ -1,7 +1,8 @@
 import { getOptionType } from "data/optionData"
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
+import ChoiceData from "./choice";
 
 class ModifierData implements Required<IModifier>  {
     private readonly metadata: IModifier;
@@ -17,7 +18,7 @@ class ModifierData implements Required<IModifier>  {
     }
 
     public get label(): string {
-        return this.metadata.label
+        return this.metadata.label ?? ""
     }
 
     public get allowAny(): boolean {
@@ -116,6 +117,12 @@ class ModifierData implements Required<IModifier>  {
 
     public get skills(): Skill[] {
         return this.metadata.skills ?? []
+    }
+
+    // Choices
+
+    public get choices(): ChoiceData[] {
+        return (this.metadata.choices ?? []).map((choice) => new ChoiceData(choice, this.id))
     }
 }
 

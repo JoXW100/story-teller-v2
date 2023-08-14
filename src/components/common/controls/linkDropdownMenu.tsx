@@ -28,11 +28,7 @@ const LinkDropdownMenu = ({ value, values, onChange, allowNull, showButton, clas
             ), allowNull ? { null: "Unset" } : {})}
             onChange={(value) => {
                 if (isObjectId(value) || (allowNull && value === "null")) {
-                    if (value == "null"){
-                        onChange(null)
-                    } else {
-                        onChange(value)
-                    }
+                    onChange(value == "null" ? null: value)
                 } else {
                     Logger.throw("LinkDropdownMenu", value)
                 }

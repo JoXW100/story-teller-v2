@@ -23,7 +23,8 @@ export enum ModifierType {
     Bonus = "bonus", // Adds/Removes a flat value
     Set = "set", // Sets value
     Add = "add", // Adds item to collection
-    Remove = "remove" // Removes item from collection
+    Remove = "remove", // Removes item from collection
+    Choice = "choice" // Chose between different modifiers
 }
 
 export enum SelectType {
@@ -73,8 +74,17 @@ interface IModifier {
     saves?: Attribute[]
     skill?: Skill
     skills?: Skill[]
+    choices?: IChoice[]
+}
+
+interface IChoice {
+    $name: string
+
+    label?: string
+    modifiers?: IModifier[]
 }
 
 export type {
-    IModifier
+    IModifier,
+    IChoice
 }

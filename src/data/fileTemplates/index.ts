@@ -6,7 +6,8 @@ import DocumentTemplate from './doc.json';
 import EncounterTemplate from './enc.json';
 import SpellTemplate from './spe.json';
 import StoryTemplate from './sto.json';
-import ModifierSubTemplate from './subTemplates/modifier.json';
+import SubTemplates from './subTemplates';
+import rSubTemplates from './subTemplates';
 import { FileType, RenderedFileTypes } from "types/database/files";
 import { FileTemplate, RootTemplateComponent } from 'types/templates';
 
@@ -51,10 +52,7 @@ export function getTemplate<T extends keyof typeof Templates>(key: T): ExtractTe
 }
 
 export function getSubTemplate(key: string): RootTemplateComponent {
-    switch (key) {
-        case 'modifier': return ModifierSubTemplate as RootTemplateComponent;
-        default: return null;
-    } 
+    return SubTemplates[key] ?? null
 }
 
 export default Templates;

@@ -42,9 +42,9 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const description = useParser(creature.description, creature, "description")
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        if (!abilities.every(ability => abilities.some(x => x.id === ability.id))) {
-            let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-            let collection = new ModifierCollectionData(modifiers, null)
+        let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let collection = new ModifierCollectionData(modifiersList, null)
+        if (!collection.equals(modifiers)) {
             setModifiers(collection);
         }
     }

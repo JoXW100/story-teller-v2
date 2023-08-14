@@ -46,13 +46,18 @@
                     "type": "text", 
                     "conditions": [
                         { "type": "any", "value": [
-                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "choice"] },
                             { "type": "all", "value": [
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
-                                { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] }
+                                { "type": "any", "value": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                                    { "type": "all", "value": [
+                                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] }
+                                    ]}
+                                ]},
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                             ]}
-                        ]},
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                        ]}
                     ],
                     "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
                 },
@@ -72,7 +77,7 @@
                         { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
                         { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                     ],
-                    "params": { "label": "Allow Any", "key": "allowAny" }
+                    "params": { "label": "Allow Any", "key": "allowAny", "default": false }
                 },
 
                 {
@@ -245,6 +250,20 @@
                     "type": "number", 
                     "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] }],
                     "params": { "label": "Value", "key": "value" }
+                },
+
+                {
+                    "type": "itemList",
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "choice"] }],
+                    "params": { 
+                        "label": "Options", 
+                        "key": "choices", 
+                        "prompt": "Edit", 
+                        "placeholder": "Enter Name" ,
+                        "default": [], 
+                        "template": "choice", 
+                        "fill": true
+                    }
                 }
             ]
         }

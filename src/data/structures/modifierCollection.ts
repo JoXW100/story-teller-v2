@@ -3,7 +3,7 @@ import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponTyp
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
-import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
+import { IModifierCollection, ChoiceData, EnumChoiceData, AnyFileChoiceData, FileChoiceData, ChoiceChoiceData } from "types/database/files/modifierCollection";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
 
@@ -26,21 +26,38 @@ const ModifierCollectionMap = {
 } satisfies Record<ProficiencyType, keyof IModifier>
 
 class ModifierCollectionData implements IModifierCollection {
-    private readonly modifiers: Required<IModifier>[]
-    private readonly storage: ICharacterStorage
+    protected readonly modifiers: IModifier[]
+    protected readonly storage: ICharacterStorage
     
-    constructor(modifiers: Required<IModifier>[], storage: ICharacterStorage) {
-        this.modifiers = modifiers;
+    constructor(modifiers: IModifier[], storage: ICharacterStorage) {
+        this.modifiers = modifiers.reduce<IModifier[]>((prev, mod) => {
+            if (mod.type === ModifierType.Choice 
+             && storage?.classData 
+             && storage.classData[mod.$name]) {
+                let value = mod.choices.find(choice => choice.$name === storage.classData[mod.$name])
+                return [...prev, mod, ...(value?.modifiers ?? [])]
+            }
+            return [...prev, mod]
+        }, []);
         this.storage = storage;
     }
 
-    public join(other: Required<IModifierCollection>): IModifierCollection {
+    public equals(other: IModifierCollection): boolean {
+        if (other instanceof ModifierCollectionData) {
+            return this.modifiers.every(mod => other.modifiers.some(x => mod.$name === x.$name))
+        }
+        return false
+    }
+
+    public join(other: IModifierCollection): IModifierCollection {
         return other ? new CombinedModifierCollection(this, other, this.storage) : this;
     }
 
     public getChoices(): Record<string, ChoiceData> {
         return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
-            if (mod.type === ModifierType.Add 
+            if (mod.type === ModifierType.Choice) {
+                return {  ...prev,  [mod.$name]: { type: "choice", label: mod.label, options: mod.choices } satisfies ChoiceChoiceData}
+            } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                 && mod.select === SelectType.Choice ) {
                 return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
@@ -48,16 +65,16 @@ class ModifierCollectionData implements IModifierCollection {
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && mod.allowAny) {
-                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies ChoiceData}
+                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && !mod.allowAny) {
-                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies ChoiceData}
+                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
             } else if (mod.type === ModifierType.Bonus 
                 && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
                 && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies ChoiceData}
+                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies EnumChoiceData}
             }
 
             return prev
@@ -221,7 +238,14 @@ class CombinedModifierCollection implements IModifierCollection {
         this.storage = storage;
     }
 
-    public join(other: IModifierCollection): IModifierCollection {
+    public equals(other: IModifierCollection): boolean {
+        if (other instanceof CombinedModifierCollection) {
+            return this.c1.equals(other.c1) && this.c2.equals(other.c2)
+        }
+        return false
+    }
+
+    public join(other: IModifierCollection): CombinedModifierCollection {
         return other ? new CombinedModifierCollection(this, other, this.storage) : this;
     }
 

@@ -2,7 +2,6 @@ import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } f
 import { ObjectId } from ".."
 import type { DiceType } from "../dnd"
 import type { IModifier } from "./modifier"
-import type { IModifierCollection } from "./modifierCollection"
 
 interface IClassContent extends IFileContent {
     text: string

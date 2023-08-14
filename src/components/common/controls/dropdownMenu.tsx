@@ -57,7 +57,7 @@ const DropdownMenu = ({ className, itemClassName, values, value, showButton = tr
                     ))}
                 </div>
             </div>
-            <button className={styles.button} onClick={openHandler}>
+            <button onClick={openHandler}>
                 { open ? <DropUpIcon/> : <DropDownIcon/> }
             </button>
         </div>

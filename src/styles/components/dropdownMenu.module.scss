@@ -16,16 +16,16 @@
         opacity: 0.6;
         pointer-events: none;
     }
-}
 
-.button {
-    display: flex;
-    height: 100%;
-    aspect-ratio: 1;
-
-    & > svg {
+    & > button {
+        display: flex;
         height: 100%;
-        width: 100%;
+        aspect-ratio: 1;
+    
+        & > svg {
+            height: 100%;
+            width: 100%;
+        }
     }
 }
 

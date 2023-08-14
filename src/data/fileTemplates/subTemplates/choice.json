@@ -1,0 +1,28 @@
+{
+    "type": "root",
+    "content": [
+        { "type": "navigation" },
+        {
+            "type": "group",
+            "params": { "label": "Choice", "open": true },
+            "content": [
+                { 
+                    "type": "text", 
+                    "params": { "label": "Label", "key": "label", "placeholder": "Label..." }
+                },
+                {
+                    "type": "itemList",
+                    "params": { 
+                        "label": "Modifiers", 
+                        "key": "modifiers", 
+                        "prompt": "Edit", 
+                        "placeholder": "Enter Name" ,
+                        "default": [], 
+                        "template": "modifier", 
+                        "fill": true
+                    }
+                }
+            ]
+        }
+    ]
+}

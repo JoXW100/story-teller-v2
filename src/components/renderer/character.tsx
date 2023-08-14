@@ -21,7 +21,7 @@ import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/databa
 import { IClassMetadata } from 'types/database/files/class';
 import { Attribute, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
-import { EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
+import { ChoiceChoiceData, EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
 import Logger from 'utils/logger';
@@ -117,9 +117,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const notes = useParser(character.notes, character, "notes")
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        if (!abilities.every(ability => abilities.some(x => x.id === ability.id))) {
-            let modifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-            let collection = new ModifierCollectionData(modifiers, file.storage)
+        let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let collection = new ModifierCollectionData(modifiersList, file.storage)
+        if (!collection.equals(modifiers)) {
             setModifiers(collection);
         }
     }
@@ -314,6 +314,18 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
     )
 }
 
+const reduceEnumOptions = (value: EnumChoiceData) => (
+    value.options.reduce((prev, option) => (
+        { ...prev, [option]: getOptionType(value.enum).options[option] }
+    ), { null: "Unset" })
+)
+
+const reduceChoiceOptions = (value: ChoiceChoiceData) => (
+    value.options.reduce((prev, option) => (
+        { ...prev, [option.$name]: option.label }
+    ), { null: "Unset" })
+)
+
 const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
@@ -322,12 +334,6 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
     const handleChange = (value: any, key: string) => {
         dispatch.setStorage("classData", { ...storage, [key]: value });
     }
-
-    const reduceEnumOptions = (value: EnumChoiceData) => (
-        value.options.reduce((prev, option) => (
-            { ...prev, [option]: getOptionType(value.enum).options[option] }
-        ), { null: "Unset" })
-    )
 
     return (
         <>
@@ -347,6 +353,13 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
                 return (
                     <div className={styles.modifierChoice} key={key}>
                         <Elements.Bold>{`${value.label}:`} </Elements.Bold>
+                        { value.type === "choice" &&
+                            <DropdownMenu
+                                value={storage[key] ?? null}
+                                itemClassName={styles.dropdownItem}
+                                values={reduceChoiceOptions(value)}
+                                onChange={(value) => handleChange(value, key)}/>
+                        }
                         { value.type === "enum" &&
                             <DropdownMenu
                                 value={storage[key] ?? null}
@@ -366,6 +379,7 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
                             <LinkInput
                                 value={storage[key] ?? null}
                                 fileTypes={value.options}
+                                placeholder="File ID..."
                                 onChange={(value) => handleChange(value, key)}/>
                         }
                     </div>

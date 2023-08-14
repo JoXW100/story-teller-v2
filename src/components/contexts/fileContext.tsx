@@ -166,7 +166,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
             
         case 'closeTemplatePage':
             if (action.data > 0 && state.editFilePages.length - action.data >= 0) {
-                return { ...state, editFilePages: state.editFilePages.slice(0, - action.data - 1)}
+                return { ...state, editFilePages: state.editFilePages.slice(0, - action.data)}
             }
             return state;
 

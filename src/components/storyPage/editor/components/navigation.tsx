@@ -8,7 +8,7 @@ import Localization from 'utils/localization';
 
 const NavigationComponent = ({ params }: TemplateComponentProps<NavigationTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
-    const page = context.editFilePages[context.editFilePages.length - 1]
+    const page = context.editFilePages.map(page => page.name).join(' -> ')
 
     const handleClick = () => {
         dispatch.closeTemplatePage()
@@ -16,7 +16,7 @@ const NavigationComponent = ({ params }: TemplateComponentProps<NavigationTempla
 
     return (
         <div className={styles.navigation}>
-            <label> {page.name ?? "Missing page name"}</label>
+            <label> {page ?? "Missing page name"}</label>
             <button 
                 className={styles.navigationButton} 
                 onClick={handleClick}

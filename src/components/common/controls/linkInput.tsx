@@ -23,7 +23,7 @@ interface EditLinkInputState {
 const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
     const [file, loading] = useFile(value)
-    const style = className ? `${styles.holder} ${className}` : styles.holder;
+    const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
     const valid: boolean = value && !loading && file !== null;
     const name: string = file?.metadata?.name
     const allowedFiles = new Set<FileType>(fileTypes ?? Object.values(FileType))
@@ -93,7 +93,10 @@ const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditL
                 data={state.highlight ? "highlight" : undefined}
                 disabled={valid}
                 error={String(state.error)}/>
-            <button onClick={handleRemove} disabled={!valid}>
+            <button 
+                className={styles.button} 
+                onClick={handleRemove} 
+                disabled={!valid}>
                 <RemoveIcon sx={{ width: '100%' }}/>
             </button>
         </div>

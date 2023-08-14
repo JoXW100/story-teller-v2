@@ -20,7 +20,7 @@ type ListTemplateMenuProps<E, T extends E> = React.PropsWithoutRef<{
     addLast?: boolean
 }>
 
-const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast }: ListTemplateMenuProps<E, T>): JSX.Element => {
+const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast = true }: ListTemplateMenuProps<E, T>): JSX.Element => {
     const [value, setValue] = useState<E>(defaultValue);
 
     const handleEditChange = (value: E) => {

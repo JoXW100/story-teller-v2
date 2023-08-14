@@ -350,7 +350,8 @@ const OptionTypes = {
             [ModifierType.Bonus]: "Bonus",
             [ModifierType.Set]: "Set",
             [ModifierType.Add]: "Add",
-            [ModifierType.Remove]: "Remove"
+            [ModifierType.Remove]: "Remove",
+            [ModifierType.Choice]: "Choice"
         }
     } satisfies IOptionType<typeof ModifierType>,
     "modifierSelect": {
