@@ -60,7 +60,7 @@ const FileContent = (): JSX.Element => {
         if (template) {
             let pages = context.editFilePages ?? []
             let editorRoot = getFileEditorRoot(template, pages)
-            let metadata = getRelativeMetadata(context.file?.metadata, pages)
+            let metadata = { ...getRelativeMetadata(context.file?.metadata, pages) }
             setDefaults(editorRoot, metadata)
             return appContext.viewMode === ViewMode.SplitView ? (
                 <Divider

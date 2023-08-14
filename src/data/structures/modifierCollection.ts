@@ -44,7 +44,8 @@ class ModifierCollectionData implements IModifierCollection {
 
     public equals(other: IModifierCollection): boolean {
         if (other instanceof ModifierCollectionData) {
-            return this.modifiers.every(mod => other.modifiers.some(x => mod.$name === x.$name))
+            return this.modifiers.length === other.modifiers.length 
+                && this.modifiers.every(mod => other.modifiers.some(x => mod.$name === x.$name))
         }
         return false
     }

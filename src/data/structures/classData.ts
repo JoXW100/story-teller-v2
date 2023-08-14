@@ -42,7 +42,7 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
             collection = subclass?.getModifiers(level);
         }
 
-        for (let index = 1; index < level; index++) {
+        for (let index = 1; index <= Math.min(20, level); index++) {
             let modifiers: IModifier[] = this.metadata[index] ?? []
             if (modifiers.length > 0) {
                 let newCollection = new ModifierCollectionData(modifiers.map((modifier) => new ModifierData(modifier, this.id)), this.storage)
