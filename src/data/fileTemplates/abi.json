@@ -157,7 +157,6 @@
                                     "key": "modifiers", 
                                     "prompt": "Edit", 
                                     "placeholder": "Enter Name" ,
-                                    "default": [], 
                                     "template": "modifier"
                                 }
                             }

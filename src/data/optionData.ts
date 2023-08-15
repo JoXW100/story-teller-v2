@@ -137,7 +137,7 @@ const OptionTypes = {
     } satisfies IOptionType<typeof AbilityType>,
     "effectCondition": {
         enum: EffectCondition,
-        default: EffectCondition.None,
+        default: EffectCondition.Hit,
         options: {
             [EffectCondition.None]: "None",
             [EffectCondition.Hit]: "Hit",
@@ -182,7 +182,7 @@ const OptionTypes = {
     } satisfies IOptionType<typeof DamageType>,
     "action": {
         enum: ActionType,
-        default: ActionType.None,
+        default: ActionType.Action,
         options: {
             [ActionType.None]: "None",
             [ActionType.Action]: "Action",

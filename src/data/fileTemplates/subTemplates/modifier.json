@@ -260,7 +260,6 @@
                         "key": "choices", 
                         "prompt": "Edit", 
                         "placeholder": "Enter Name" ,
-                        "default": [], 
                         "template": "choice", 
                         "fill": true
                     }

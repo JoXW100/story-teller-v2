@@ -93,8 +93,8 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
 
     return (
         <Context.Provider value={[state, { 
-            roll: (collection, method = RollMethod.Normal, criticalRange: number = 20) => {
-                let event: RollEvent = { result: collection.roll(method, criticalRange), time: Date.now() }
+            roll: (collection, method = RollMethod.Normal, canCritAndFail = false, critRange = 20) => {
+                let event: RollEvent = { result: collection.roll(method, canCritAndFail, critRange), time: Date.now() }
                 state.rollHistory.add(event)
                 dispatch({ type: 'roll', data: event });
             },

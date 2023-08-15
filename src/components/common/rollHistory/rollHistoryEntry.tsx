@@ -61,20 +61,23 @@ const HistoryRollEntry = ({ entry }: HistoryRollEntryProps): JSX.Element => {
 }
 
 const HistoryRollNotice = ({ roll }: HistoryRollNoticeProps): JSX.Element => {
-    if (roll.method !== RollMethod.Crit 
+    if (roll.canCritAndFail 
+     && roll.method !== RollMethod.Crit 
      && roll.results.every(res => res.sum === 1 && res.values.length === 1 && res.values[0].dice.num === 20)) {
         return <b data='fail'>-FAIL</b>
     }
 
-    if ((roll.method === RollMethod.Advantage || roll.method === RollMethod.Normal) 
+    if (roll.canCritAndFail 
+     && (roll.method === RollMethod.Advantage || roll.method === RollMethod.Normal) 
      && roll.results.every(res => res.values.length === 1 && res.values[0].dice.num === 20)
-     && roll.results.some(res => res.sum >= roll.criticalRange)) {
+     && roll.results.some(res => res.sum >= roll.critRange)) {
         return <b data='crit'>+CRIT</b>;
     }
 
     switch (roll.method) {
         case RollMethod.Disadvantage:
-            if (roll.results.every(res => res.sum >= roll.criticalRange && res.values.length === 1 && res.values[0].dice.num === 20)) {
+            if (roll.canCritAndFail  
+             && roll.results.every(res => res.sum >= roll.critRange && res.values.length === 1 && res.values[0].dice.num === 20)) {
                 return <b data='crit'>+CRIT</b>;
             } else {
                 return <b data='dis'>-DIS</b>

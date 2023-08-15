@@ -17,7 +17,7 @@ interface StoryContextState extends ContextState {
 }
 
 interface StoryContextDispatch extends ContextDispatch {
-    roll: (collection: DiceCollection, method?: RollMethod, criticalRange?: number) => void
+    roll: (collection: DiceCollection, method?: RollMethod, canCritAndFail?: boolean, critRange?: number) => void
     clearRolls: () => void
     collapseSidePanel: () => void
     expandSidePanel: () => void

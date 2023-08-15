@@ -330,9 +330,11 @@ const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): 
     const [_, dispatch] = useContext(Context)
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
     const storage = classData.storage?.classData ?? {}
-
     const handleChange = (value: any, key: string) => {
-        dispatch.setStorage("classData", { ...storage, [key]: value });
+        let validStorage = Object.keys(storage).reduce((prev, key) => (
+            Object.keys(choices).includes(key) ? { ...prev, [key]: storage[key] } : prev
+        ), {})
+        dispatch.setStorage("classData", { ...validStorage, [key]: value });
     }
 
     return (

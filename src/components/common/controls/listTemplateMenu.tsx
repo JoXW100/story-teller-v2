@@ -5,6 +5,7 @@ import styles from 'styles/components/listMenu.module.scss';
 
 type ListTemplateComponent<T> = React.PropsWithoutRef<{
     value: T
+    values: T[]
     index: number
     onUpdate: (value: T) => void
 }>
@@ -52,7 +53,7 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             <div className={styles.addRow}>
                 <div className={styles.collection}>
-                    <EditComponent value={value} index={-1} onUpdate={(value) => handleEditChange(value)}/>
+                    <EditComponent value={value} values={values} index={-1} onUpdate={(value) => handleEditChange(value)}/>
                 </div>
                 <button className={styles.button} onClick={handleAdd} disabled={validateInput && !validateInput(value, values ?? [])}>
                     <AddIcon sx={{ width: '100%' }}/>
@@ -61,10 +62,7 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
             <div className={styles.content}>
                 { values?.map((value, index) => (
                     <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
-                        <Component 
-                            value={value} 
-                            index={index} 
-                            onUpdate={(value) => handleChange(value, index)}/>
+                        <Component value={value}  values={values} index={index} onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 ))}
             </div>

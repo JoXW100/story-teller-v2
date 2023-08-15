@@ -9,8 +9,6 @@ import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Localization from 'utils/localization';
 import { RollMethod } from 'types/dice';
 import { Queries, IElementObject, ElementParams, Variables, RollMode } from 'types/elements';
-import { IFileMetadata } from 'types/database/files';
-import CreatureData from 'data/structures/creature';
 import styles from 'styles/elements.module.scss';
 
 interface RollOptions extends Variables {
@@ -155,7 +153,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const roll = (method: RollMethod) => {
         let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
-        dispatch.roll(collection, method, rollOptions.critRangeValue);
+        dispatch.roll(collection, method, rollOptions.mode === RollMode.Attack, rollOptions.critRangeValue);
     }
 
     const handleContext: React.MouseEventHandler<HTMLSpanElement> = (e) => {

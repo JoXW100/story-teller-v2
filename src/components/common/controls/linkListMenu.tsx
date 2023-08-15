@@ -89,7 +89,8 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
                 let id = window.dragData.file.id;
                 window.dragData.target = null;
                 window.dragData.file = null;
-                onUpdate(id)
+                onUpdate('')
+                onChange([...values, id])
             }
         }
 

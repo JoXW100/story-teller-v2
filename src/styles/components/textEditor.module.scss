@@ -66,21 +66,6 @@ $indent: calc(6ch - 15px);
     counter-set: line;
 }
 
-#dialog {
-    @include colorWithShadow(input);
-    left: 0;
-    top: 0;
-    outline: none;
-    border: none;
-    padding: 2px;
-    margin-left: 0;
-    z-index: 10;
-
-    &[data=show] {
-        margin-left: $indent;
-    }
-}
-
 .area {
     @include colorBackground(document);
     @include scroll;
@@ -97,28 +82,8 @@ $indent: calc(6ch - 15px);
     padding-bottom: 50px !important;
 }
 
-.dialogContentHolder {
-    @include scrollSmall;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: block;
-    max-height: 5 * $smallMenuItemHeight;
-}
-
-.dialogOption {
-    @include colorBackground(input);
-    @include colorInteractiveControl;
-    @include fontNormal;
-    display: flex;
-    align-items: center;
-    padding: 0 5px;
-    height: $smallMenuItemHeight;
-
-    &:not(:last-child) {
-        border-bottom: 1px solid colorInGroup(input, border);
-    }
-
-    &[data=selected] {
-        @include colorDecoration(input);
+.dialog {
+    &[data=show] {
+        margin-left: $indent;
     }
 }

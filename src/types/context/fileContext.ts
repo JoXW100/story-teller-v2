@@ -30,6 +30,7 @@ type FileContextDispatchAction =
     | DispatchAction<"setText", string, FileContextDispatchAction>
     | DispatchAction<"setPublicState", boolean, FileContextDispatchAction>
     | DispatchAction<"setMetadata", KeyValuePair, FileContextDispatchAction>
+    | DispatchAction<"removeMetadata", string, FileContextDispatchAction>
     | DispatchAction<"setStorage", KeyValuePair, FileContextDispatchAction>
     | DispatchAction<"setViewMode", boolean, FileContextDispatchAction>
     | DispatchAction<"openTemplatePage", EditFilePage, FileContextDispatchAction>
@@ -39,6 +40,7 @@ interface FileContextDispatch extends ContextDispatch {
     setText: (text: string) => void
     setPublic: (value: boolean) => void
     setMetadata: (key: string, value: any) => void
+    removeMetadata: (key: string) => void
     setStorage: (key: string, value: any) => void
     openTemplatePage: (page: EditFilePage) => void
     closeTemplatePage: (num?: number) => void

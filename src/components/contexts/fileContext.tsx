@@ -125,10 +125,15 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                         }
                     })
                 }, "metadata");
-                return { 
-                    ...state, 
-                    file: { ...state.file, metadata: data } 
-                }
+                return { ...state, file: { ...state.file, metadata: data } }
+            }
+            return state
+        
+        case 'removeMetadata':
+            if (state.file && action.data) {
+                let relative = getRelativeMetadata(state.file.metadata, state.editFilePages)
+                Logger.warn("fileContext.removeMetadata", action.data)
+                delete relative[action.data]
             }
             return state
 
@@ -194,6 +199,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
         setText: (text) => dispatch({ type: 'setText', data: text }),
         setPublic: (value) => dispatch({ type: 'setPublicState', data: value }),
         setMetadata: (key, value) => dispatch({ type: 'setMetadata', data: { key: key, value: value } }),
+        removeMetadata: (key) => dispatch({ type: 'removeMetadata', data: key }),
         setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
         openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),
         closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num })

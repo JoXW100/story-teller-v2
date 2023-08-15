@@ -6,6 +6,7 @@ import Logger from 'utils/logger';
 import { EditInputType, RootTemplateComponent, ITemplateComponent, TemplateCondition, TemplateConditionType } from 'types/templates';
 import { IFileMetadata } from 'types/database/files';
 import styles from 'styles/pages/storyPage/editor.module.scss';
+import { getRelativeMetadata } from 'utils/helpers';
 
 type EditorProps = React.PropsWithRef<{
     template: RootTemplateComponent
@@ -91,10 +92,14 @@ const getComponent = (type: EditInputType): (props: TemplateComponentProps) => R
     }
 }
 
-export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadata = { name: "", description: "" }, key = 0): React.ReactNode => {
-    if (!checkConditions(template, metadata)) return null;
+export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadata, matchSet: Set<string>, key = 0): React.ReactNode => {
+    if (!checkConditions(template, metadata)) {
+        return null;
+    } else if (template?.params?.key && metadata[template.params.key] !== template.params.default) {
+        matchSet.add(template.params.key)
+    }
     
-    const content = template.content?.map((item, key) => buildEditor(item, metadata, key));
+    const content = template.content?.map((item, key) => buildEditor(item, metadata, matchSet, key));
     if (template.type === EditInputType.Root) return content;
     
     const Component = getComponent(template.type);
@@ -106,7 +111,7 @@ export const buildEditor = (template: ITemplateComponent, metadata: IFileMetadat
 }
 
 const Editor = ({ template, metadata }: EditorProps): JSX.Element => {
-    const [context] = useContext(Context)
+    const [context, dispatch] = useContext(Context)
 
     // Prevent leaving page with unsaved changes
     useEffect(() => {
@@ -121,16 +126,29 @@ const Editor = ({ template, metadata }: EditorProps): JSX.Element => {
         return () => window && (window.onbeforeunload = null);
     }, [])
     
-    const content = useMemo<React.ReactNode>(() => {
+    const [content, matchSet] = useMemo<[React.ReactNode, Set<string>]>(() => {
         try {
-            return context.file
-                ? buildEditor(template, { ...metadata })
-                : null
+            if (metadata) {
+                let matchSet = new Set<string>()
+                let result = buildEditor(template, metadata, matchSet)
+                return [result, matchSet]
+            }
+            return [null, null]
         } catch (error: unknown) {
             Logger.throw("editor.content", error)
-            return null
+            return [null, null]
         }
-    }, [context.file, context.editFilePages, template, metadata])
+    }, [context.editFilePages, template, metadata])
+
+    useEffect(() => {
+        if (matchSet) {
+            for (var key in getRelativeMetadata(context.file.metadata, context.editFilePages)) {
+                if (!key.startsWith('$') && !matchSet.has(key)) {
+                    dispatch.removeMetadata(key)
+                }
+            }
+        }
+    }, [matchSet])
 
     return  (
         <div className={styles.main}>

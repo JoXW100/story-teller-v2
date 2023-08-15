@@ -15,10 +15,11 @@ interface RollValue {
 interface RollResult {
     method: RollMethod
     results: RollValue[]
-    criticalRange: number
     selectedIndex: number
     desc: string
     modifier: number
+    canCritAndFail: boolean
+    critRange: number
 }
 
 interface RollEvent {

@@ -101,9 +101,10 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
                                 <Elements.Bold>HIT/DC </Elements.Bold>
                                 <Elements.Roll 
                                     options={{ 
+                                        mode: RollMode.Attack,
                                         mod: ability.conditionModifierValue as any, 
                                         desc: `${ability.name} Attack`,
-                                        critRange: String(ability.stats.critRange)
+                                        critRange: String(ability.stats.critRange),
                                     }}
                                 />
                             </div>
