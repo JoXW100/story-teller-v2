@@ -5,7 +5,7 @@ import Navigation from 'utils/navigation';
 import EncounterRenderer from 'components/renderer/encounter';
 import { AbilityRenderer, CharacterRenderer, CreatureRenderer, SpellRenderer, DocumentRenderer } from 'components/renderer';
 import { Queries, QueryType, IElementObject, ElementParams, Variables } from 'types/elements';
-import { IFileContent, IFileMetadata, FileType } from 'types/database/files';
+import { FileType } from 'types/database/files';
 import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
 import Logger from 'utils/logger';

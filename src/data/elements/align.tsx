@@ -10,7 +10,6 @@ interface AlignOptions extends Variables {
 
 class Options implements AlignOptions {
     protected readonly options: AlignOptions;
-    [key: string]: any
 
     constructor(options: AlignOptions) {
         this.options =  options ?? {}

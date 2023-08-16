@@ -13,7 +13,6 @@ interface SaveOptions extends Variables {
 
 class Options implements SaveOptions {
     protected readonly options: SaveOptions;
-    [key: string]: any
 
     constructor(options: SaveOptions) {
         this.options =  options ?? {}

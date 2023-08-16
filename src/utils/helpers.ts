@@ -48,7 +48,7 @@ export function isObjectId(value: ObjectIdText): value is ObjectId {
 export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage[]): IFileMetadata {
     if (metadata && pages.length > 0) {
         pages.forEach((page) => {
-            let items: ItemListItem[] = metadata[page.rootKey]
+            let items: IFileMetadata[] = metadata[page.rootKey]
             if (items) {
                 metadata = items[page.index] ?? metadata
             }

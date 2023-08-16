@@ -7,7 +7,6 @@ interface TableCellOptions extends Variables {
 
 class Options implements TableCellOptions {
     protected readonly options: TableCellOptions;
-    [key: string]: any
 
     constructor(options: TableCellOptions) {
         this.options =  options ?? {}

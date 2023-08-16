@@ -1,4 +1,4 @@
-import { IElementObject, Variables } from 'types/elements';
+import { IElementObject } from 'types/elements';
 
 export const element = {
     set: {

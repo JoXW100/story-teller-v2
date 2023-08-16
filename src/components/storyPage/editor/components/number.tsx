@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
+import { getRelativeMetadata } from 'utils/helpers';
 import { NumberTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss'
-import { getRelativeMetadata } from 'utils/helpers';
 
 const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)

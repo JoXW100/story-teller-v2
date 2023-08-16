@@ -8,6 +8,7 @@ import * as Fill from './fill';
 import * as Header from './header';
 import * as Icon from './icon';
 import * as Image from './image';
+import * as Item from './item';
 import * as Line from './line';
 import * as Link from './link';
 import * as Margin from './margin';
@@ -36,6 +37,7 @@ export const ElementDictionary = {
     ...Header.element,
     ...Icon.element,
     ...Image.element,
+    ...Item.element,
     ...Line.element,
     ...Link.element,
     ...Margin.element,

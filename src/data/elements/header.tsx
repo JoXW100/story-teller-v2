@@ -9,7 +9,6 @@ interface HeaderOptions extends Variables {
 
 class Options implements HeaderOptions {
     protected readonly options: HeaderOptions;
-    [key: string]: any
 
     constructor(options: HeaderOptions) {
         this.options =  options ?? {}

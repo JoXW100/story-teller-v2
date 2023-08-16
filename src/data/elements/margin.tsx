@@ -8,7 +8,6 @@ interface MarginOptions extends Variables {
 
 class Options implements MarginOptions {
     protected readonly options: MarginOptions;
-    [key: string]: any
 
     constructor(options: MarginOptions) {
         this.options =  options ?? {}

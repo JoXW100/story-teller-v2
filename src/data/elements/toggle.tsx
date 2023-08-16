@@ -11,7 +11,6 @@ interface ToggleOptions extends Variables {
 
 class Options implements ToggleOptions {
     protected readonly options: ToggleOptions;
-    [key: string]: any
 
     constructor(options: ToggleOptions) {
         this.options =  options ?? {}

@@ -58,6 +58,7 @@ const useAutoCompleteDialog = <T extends HTMLElement>(handleApply: (e: React.Key
                 return false
             case "ArrowRight":
             case "ArrowLeft":
+            case "Escape":
             case "Delete":
             case "Tab":
                 handleHide();

@@ -11,7 +11,6 @@ interface BoxOptions extends Variables {
 
 class Options implements BoxOptions {
     protected readonly options: BoxOptions;
-    [key: string]: any
 
     constructor(options: BoxOptions) {
         this.options =  options ?? {}

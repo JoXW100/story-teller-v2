@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from "react";
-import useAutoCompleteDialog from "./autoCompleteDialog";
+import React, { useCallback, useMemo } from "react";
+import useAutoCompleteDialog from "../autoCompleteDialog";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
@@ -23,20 +23,12 @@ type ItemListMenuProps<T extends ItemListItem> = React.PropsWithRef<{
 
 const dialogShowExpression = /^\$([a-z0-9]*)$/i
 
-const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast }: ItemListMenuProps<T>): JSX.Element => {
-    const EditInputComponent = useCallback(({ value, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
-        const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
-        return (
-            <input 
-                className={style} 
-                value={value.$name}
-                type="text"
-                placeholder={placeholder}
-                onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
-        )
-    }, [itemClassName, placeholder])
+const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast }: ItemListMenuProps<T>): JSX.Element => { 
+    const handleValidate = (value: T): value is T => {
+        return validateInput(value.$name, values)
+    }
     
-    const EditComponent = useCallback(({ value, values, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
+    const EditComponent = ({ value, values, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
         const style = itemClassName ? `${itemClassName} ${styles.input}` : styles.input;
         const [show, hide, onKeyPressed, AutoCompleteDialog] = useAutoCompleteDialog<HTMLInputElement>((e, option: string) => {
             let template = templates[option]
@@ -82,23 +74,32 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
                 <AutoCompleteDialog className={styles.dialog}/>
             </div>
         )
-    }, [itemClassName, placeholder, templates])
+    }
 
     const Component = useCallback(({ value, values, index, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
         const style = itemClassName ? `${itemClassName} ${styles.itemComponent}` : styles.itemComponent;
+
+        const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+            let input = e.target.value;
+            if (validateInput(input, values)) {
+                onUpdate({ ...value, $name: input })
+            }
+        }
+
         return (
             <div className={style}> 
-                <EditInputComponent value={value} values={values} index={index} onUpdate={onUpdate}/>
+                <input 
+                    className={style} 
+                    value={value.$name}
+                    type="text"
+                    placeholder={placeholder}
+                    onChange={handleInput}/>
                 <button onClick={() => onClick(value, index)}>
                     {prompt}
                 </button>
             </div>
         )
-    }, [EditInputComponent, itemClassName, prompt])
-
-    const handleValidate = (value: T): value is T => {
-        return validateInput(value.$name, values)
-    }
+    }, [itemClassName, placeholder])
 
     const defaultItem = useMemo<T>(() => ({ $name: defaultValue } as T), [defaultValue]);
     

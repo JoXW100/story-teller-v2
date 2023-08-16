@@ -41,6 +41,11 @@
             "text": "`\\icon` [`icon`, `tooltips`]\n ### Options\n - `icon` =\n   - The name of the icon to use\n   - Available icons: `advantage`, `disadvantage`, `crit`, `dragon`, `hand`, `cone`, `sphere`, `acid`, `bludgeoning`, `fire`, `piercing`, `poison`, `slashing`\n - `tooltips` =\n   - Text displayed when hovering over the icon\n ### Usage\n - `\\icon` [`sphere`] Draws a sphere icon in line with text, allowing it to be used within a text"
         },
         {
+            "title": "Item",
+            "keyWords": ["item", "\\item", "dot"],
+            "text": "`\\item` [`dot`] { }\n ### Options\n - `dot` = \n   - `*` (default), `-`, or `0`\n ### Usage\n - `\\dot`[`-`] { some text... } Draws a dash (-) before the text inside the content"
+        },
+        {
             "title": "Line",
             "keyWords": ["line", "\\line", "border", "width", "vertical", "horizontal", "separator"],
             "text": "`\\line` [`width`]\n ### Options\n - `width` = \n   - CSS units (`px`, `%`, `cm` etc), `2px` (default)\n ### Usage\n - `\\line`[`1px`] Draws a `1px` wide line separator, the direction depends on the current element alignment"

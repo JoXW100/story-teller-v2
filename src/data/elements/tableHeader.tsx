@@ -7,7 +7,6 @@ interface TableHeaderOptions extends Variables {
 
 class Options implements TableHeaderOptions {
     protected readonly options: TableHeaderOptions;
-    [key: string]: any
 
     constructor(options: TableHeaderOptions) {
         this.options =  options ?? {}

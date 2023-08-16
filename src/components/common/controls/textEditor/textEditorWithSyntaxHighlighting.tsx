@@ -3,7 +3,7 @@ import Prism from "prismjs"
 import { Context } from 'components/contexts/appContext';
 import { TextEditorProps } from '.';
 import openTextEditorContext from './contextMenu';
-import useAutoCompleteDialog from '../autoCompleteDialog';
+import useAutoCompleteDialog from '../../autoCompleteDialog';
 import { ElementDictionary, getElement } from 'data/elements';
 import useTextHandling from 'utils/handlers/textHandler';
 import Parser from 'utils/parser';

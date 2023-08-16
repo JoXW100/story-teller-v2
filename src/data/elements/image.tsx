@@ -11,7 +11,6 @@ interface ImageOptions extends Variables {
 
 class Options implements ImageOptions {
     protected readonly options: ImageOptions;
-    [key: string]: any
 
     constructor(options: ImageOptions) {
         this.options =  options ?? {}

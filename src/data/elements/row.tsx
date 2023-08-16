@@ -3,7 +3,11 @@ import { IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
 const RowElement = ({ children }: ElementParams<{}>): JSX.Element => {
-    return <div className={styles.row}> { children } </div>
+    return (
+        <div className={styles.row}> 
+            { children } 
+        </div>
+    )
 }
 
 export const element = {

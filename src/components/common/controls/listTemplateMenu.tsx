@@ -62,7 +62,7 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
             <div className={styles.content}>
                 { values?.map((value, index) => (
                     <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
-                        <Component value={value}  values={values} index={index} onUpdate={(value) => handleChange(value, index)}/>
+                        <Component value={value} values={values} index={index} onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 ))}
             </div>

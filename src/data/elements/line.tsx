@@ -8,7 +8,6 @@ interface LineOptions extends Variables {
 
 class Options implements LineOptions {
     protected readonly options: LineOptions;
-    [key: string]: any
 
     constructor(options: LineOptions) {
         this.options =  options ?? {}

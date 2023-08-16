@@ -9,7 +9,6 @@ interface BlockOptions extends Variables {
 
 class Options implements BlockOptions {
     protected readonly options: BlockOptions;
-    [key: string]: any
 
     constructor(options: BlockOptions) {
         this.options =  options ?? {}

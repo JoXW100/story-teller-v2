@@ -258,3 +258,46 @@
         @include colorShadow(second);
     }
 }
+
+.item {
+    position: relative;
+    padding-left: 2ch;
+    min-width: 3ch;
+    min-height: 2.5ch;
+
+    &[data=\-]::before {
+        position: absolute;
+        width: 1ch;
+        height: 0.4ch;
+        left: 0;
+        top: 0.9ch;
+        background: colorInGroup(document, text);
+        content: " ";
+    }
+    &[data=\*]::before {
+        position: absolute;
+        width: 0.8ch;
+        height: 0.8ch;
+        left: 0;
+        top: 0.7ch;
+        border-radius: 100%;
+        background: colorInGroup(document, text);
+        content: " ";
+    }
+    &[data='0'] {
+        counter-increment: itemNum;
+        &::before {
+            @include fontNormalBold;
+            font-size: small;
+            position: absolute;
+            left: 0;
+            top: 0.1ch;
+            content: counter(itemNum);
+        }
+    }
+}
+
+:not(.item) + .item,
+.item + :not(.item) {
+    counter-reset: (itemNum);
+}
