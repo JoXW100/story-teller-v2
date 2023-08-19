@@ -143,8 +143,8 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
 
 const AbilityToggleRenderer = ({ metadata, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
     const [open, setOpen] = useState(isOpen);
-    const canClose = metadata?.type !== AbilityType.Feature
-    const data = canClose && metadata?.description
+    const canClose =  metadata?.type && metadata?.type !== AbilityType.Feature
+    const data = canClose && metadata?.description?.length > 0
         ? open ? "open" : "closed"
         : "none"
     const handleClick = () => {
@@ -204,7 +204,7 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
         } satisfies Record<ActionType, AbilityCategory>
         abilities.forEach((file: FileMetadataQueryResult<IAbilityMetadata>, index) => {
-            categories[file.metadata?.action ?? ActionType.None].content.push(
+            categories[file.metadata?.action ?? ActionType.Action].content.push(
                 <AbilityToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
             )
         })
