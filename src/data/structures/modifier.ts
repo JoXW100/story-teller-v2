@@ -1,20 +1,24 @@
 import { getOptionType } from "data/optionData"
 import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice } from "types/database/files/modifier";
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice, ModifierCondition } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 import ChoiceData from "./choice";
 
 class ModifierData implements Required<IModifier>  {
     private readonly metadata: IModifier;
-    private readonly id?: string
+    private readonly _id?: string
 
     public constructor(metadata: IModifier, id?: string) {
-        this.metadata = metadata ?? { $name: "" }
-        this.id = id;
+        this.metadata = metadata ?? { id: "" }
+        this._id = id;
     }
 
-    public get $name(): string {
-        return this.id ? `${this.id}-${this.metadata.$name}` : this.metadata.$name
+    public get id(): string {
+        return this._id ? `${this._id}-${this.metadata.id}` : this.metadata.id
+    }
+
+    public get condition(): ModifierCondition {
+        return this.metadata.condition ?? getOptionType('modifierCondition').default
     }
 
     public get label(): string {

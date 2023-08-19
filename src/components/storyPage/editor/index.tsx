@@ -143,7 +143,7 @@ const Editor = ({ template, metadata }: EditorProps): JSX.Element => {
     useEffect(() => {
         if (matchSet) {
             for (var key in getRelativeMetadata(context.file.metadata, context.editFilePages)) {
-                if (!key.startsWith('$') && !matchSet.has(key)) {
+                if (!key.startsWith('$') && key !== "id" && !matchSet.has(key)) {
                     dispatch.removeMetadata(key)
                 }
             }

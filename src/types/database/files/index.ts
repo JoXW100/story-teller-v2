@@ -16,6 +16,10 @@ interface IFileMetadata {
     description: string
 }
 
+interface IItemMetadata {
+    id: string
+}
+
 interface IFileStorage {
 
 }
@@ -68,6 +72,7 @@ export type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root|F
 export type File<T extends IFileData> = IFile & T
 
 export type {
+    IItemMetadata,
     IFolderContent,
     IFileContent,
     IFileMetadata,

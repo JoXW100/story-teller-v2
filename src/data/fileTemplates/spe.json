@@ -23,10 +23,6 @@
                         "params": { "label": "School", "key": "school", "type": "magicSchool", "default": "abjuration" }
                     },
                     { 
-                        "type": "text", 
-                        "params": { "label": "Notes", "key": "notes", "default": "" }
-                    },
-                    { 
                         "type": "enum", 
                         "params": { "label": "Casting Time", "key": "time", "type": "castingTime", "default": "action" }
                     },
@@ -36,11 +32,6 @@
                         "params": { "label": "Time", "key": "timeCustom" }
                     },
                     { 
-                        "type": "number", 
-                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "time" }, "custom"] }],
-                        "params": { "label": "Time Value", "key": "timeValue", "default": 1 }
-                    },
-                    { 
                         "type": "enum", 
                         "params": { "label": "Duration", "key": "duration", "type": "duration", "default": "instantaneous" }
                     },
@@ -48,6 +39,10 @@
                         "type": "number", 
                         "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "duration" }, "instantaneous"] }],
                         "params": { "label": "Duration Value", "key": "durationValue", "default": 1 }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Notes", "key": "notes", "default": "" }
                     },
                     { 
                         "type": "boolean", 
@@ -75,9 +70,14 @@
                         "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "componentMaterial" }, true] }],
                         "params": { "label": "Materials", "key": "materials" }
                     },
+                    { 
+                        "type": "number", 
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "time" }, "custom"] }],
+                        "params": { "label": "Time Value", "key": "timeValue", "default": 1 }
+                    },
                     {
                         "type": "group",
-                        "params": { "label": "Effect", "open": true },
+                        "params": { "label": "Condition", "open": true },
                         "content": [
                             { 
                                 "type": "enum", 
@@ -90,8 +90,25 @@
                             },
                             { 
                                 "type": "enum", 
-                                "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
                             },
+                            { 
+                                "type": "boolean", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Add Proficiency", "key": "conditionProficiency", "default": false }
+                            },
+                            { 
+                                "type": "option", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Effect", "open": true },
+                        "content": [
                             {
                                 "type": "enum",
                                 "params": { "label": "Target", "key": "target", "type": "target", "default": "none" }
@@ -149,57 +166,15 @@
                                 ],
                                 "params": { "label": "Range (Long)", "key": "rangeLong" }
                             },
-                            { 
-                                "type": "text", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
-                                "params": { "label": "Effect", "key": "effectText" }
-                            },
                             {
-                                "type": "group",
-                                "params": { "label": "Condition Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
-                                "content": [
-                                    { 
-                                        "type": "enum", 
-                                        "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "spellMod" }
-                                    },
-                                    { 
-                                        "type": "boolean", 
-                                        "params": { "label": "Proficiency", "key": "conditionProficiency", "default": true }
-                                    },
-                                    { 
-                                        "type": "option", 
-                                        "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "group",
-                                "params": { "label": "Effect Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "all", "value": ["none", "null"] }] }],
-                                "content": [
-                                    { 
-                                        "type": "enum", 
-                                        "params": { "label": "Scaling", "key": "effectScaling", "type": "scaling", "default": "none" }
-                                    },
-                                    { 
-                                        "type": "boolean", 
-                                        "params": { "label": "Proficiency", "key": "effectProficiency", "default": false }
-                                    },
-                                    { 
-                                        "type": "option", 
-                                        "params": { "label": "Modifier", "key": "effectModifier", "type": "number" }
-                                    },
-                                    { 
-                                        "type": "enum", 
-                                        "params": { "label": "Dice", "key": "effectDice", "type": "dice", "default": 0 }
-                                    },
-                                    { 
-                                        "type": "number", 
-                                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "effectDice" }, { "type": "all", "value": [0, "0", null] }] }],
-                                        "params": { "label": "Num Dice", "key": "effectDiceNum" }
-                                    }
-                                ]
+                                "type": "itemList",
+                                "params": { 
+                                    "label": "Effects", 
+                                    "key": "effects", 
+                                    "prompt": "Edit",
+                                    "placeholder": "Name...", 
+                                    "template": "effect" 
+                                }  
                             }
                         ]
                     }

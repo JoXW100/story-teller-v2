@@ -6,16 +6,11 @@ import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
 import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
-import { CalculationMode, IOptionType } from "types/database/editor";
+import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
-
-const OptionTypeAuto: IOptionType<number> = {
-    type: CalculationMode.Auto,
-    value: 0
-}
 
 class CreatureData extends FileData<ICreatureMetadata> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection

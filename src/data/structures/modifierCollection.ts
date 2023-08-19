@@ -33,8 +33,8 @@ class ModifierCollectionData implements IModifierCollection {
         this.modifiers = modifiers.reduce<IModifier[]>((prev, mod) => {
             if (mod.type === ModifierType.Choice 
              && storage?.classData 
-             && storage.classData[mod.$name]) {
-                let value = mod.choices.find(choice => choice.$name === storage.classData[mod.$name])
+             && storage.classData[mod.id]) {
+                let value = mod.choices.find(choice => choice.id === storage.classData[mod.id])
                 return [...prev, mod, ...(value?.modifiers ?? [])]
             }
             return [...prev, mod]
@@ -45,7 +45,7 @@ class ModifierCollectionData implements IModifierCollection {
     public equals(other: IModifierCollection): boolean {
         if (other instanceof ModifierCollectionData) {
             return this.modifiers.length === other.modifiers.length 
-                && this.modifiers.every(mod => other.modifiers.some(x => mod.$name === x.$name))
+                && this.modifiers.every(mod => other.modifiers.some(x => mod.id === x.id))
         }
         return false
     }
@@ -57,25 +57,25 @@ class ModifierCollectionData implements IModifierCollection {
     public getChoices(): Record<string, ChoiceData> {
         return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
             if (mod.type === ModifierType.Choice) {
-                return {  ...prev,  [mod.$name]: { type: "choice", label: mod.label, options: mod.choices } satisfies ChoiceChoiceData}
+                return {  ...prev,  [mod.id]: { type: "choice", label: mod.label, options: mod.choices } satisfies ChoiceChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                 && mod.select === SelectType.Choice ) {
-                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
+                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && mod.allowAny) {
-                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies AnyFileChoiceData}
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && !mod.allowAny) {
-                return {  ...prev,  [mod.$name]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
             } else if (mod.type === ModifierType.Bonus 
                 && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
                 && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.$name]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies EnumChoiceData}
+                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies EnumChoiceData}
             }
 
             return prev
@@ -141,7 +141,7 @@ class ModifierCollectionData implements IModifierCollection {
              && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
              && mod.select === SelectType.Choice
              && this.storage?.classData
-             && this.storage.classData[mod.$name] === attribute) {
+             && this.storage.classData[mod.id] === attribute) {
                 return prev + mod.value
             } else {
                 return prev
@@ -172,8 +172,8 @@ class ModifierCollectionData implements IModifierCollection {
                     && mod.proficiency === type
                     && mod.select === SelectType.Choice
                     && this.storage?.classData
-                    && this.storage.classData[mod.$name]) {
-                        return { ...prev, add: [...prev.add, this.storage.classData[mod.$name] ] }
+                    && this.storage.classData[mod.id]) {
+                        return { ...prev, add: [...prev.add, this.storage.classData[mod.id] ] }
                 } else if (mod.type === ModifierType.Remove 
                     && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                     && mod.proficiency === type) {
@@ -220,8 +220,8 @@ class ModifierCollectionData implements IModifierCollection {
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && this.storage?.classData
-                && this.storage.classData[mod.$name]) {
-                return [...prev, this.storage.classData[mod.$name]]
+                && this.storage.classData[mod.id]) {
+                return [...prev, this.storage.classData[mod.id]]
             }
             return prev
         }, abilities)

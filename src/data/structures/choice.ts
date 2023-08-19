@@ -3,15 +3,15 @@ import { IChoice } from "types/database/files/modifier";
 
 class ChoiceData implements Required<IChoice>  {
     private readonly metadata: IChoice;
-    private readonly id?: string
+    private readonly _id?: string
 
     public constructor(metadata: IChoice, id?: string) {
-        this.metadata = metadata ?? { $name: "" }
-        this.id = id;
+        this.metadata = metadata ?? { id: "" }
+        this._id = id;
     }
 
-    public get $name(): string {
-        return this.id ? `${this.id}-${this.metadata.$name}` : this.metadata.$name
+    public get id(): string {
+        return this._id ? `${this._id}-${this.metadata.id}` : this.metadata.id
     }
 
     public get label(): string {

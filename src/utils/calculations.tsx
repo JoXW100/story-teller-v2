@@ -1,14 +1,15 @@
 import Elements from 'data/elements';
 import Dice from './data/dice';
+import { getOptionType } from 'data/optionData';
+import CreatureData from 'data/structures/creature';
+import SpellData from 'data/structures/spell';
+import { asEnum } from './helpers';
+import ICreatureStats from 'types/database/files/iCreatureStats';
+import IEffect from 'types/database/files/effect';
+import { ISpellMetadata } from 'types/database/files/spell';
 import { AreaType, Attribute, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { ICreatureMetadata } from "types/database/files/creature";
-import { getOptionType } from 'data/optionData';
-import IConditionalHitEffect from 'types/database/files/iConditionalHitEffect';
-import CreatureData from 'data/structures/creature';
-import SpellData from 'data/structures/spell';
-import ICreatureStats from 'types/database/files/iCreatureStats';
-import { ISpellMetadata } from 'types/database/files/spell';
 
 export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
     return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
@@ -27,19 +28,33 @@ export const getScaling = (stats: ICreatureStats = {}, scaling: ScalingType): nu
     }
 }
 
-export const getEffectModifier = (metadata: IConditionalHitEffect = {}, data: ICreatureStats = {}) => {
-    let mod = metadata.effectModifier?.value ?? 0
-    let useProf = metadata.effectProficiency ?? false
+export const getEffectModifier = (metadata: IEffect, data: ICreatureStats = {}) => {
+    let mod = metadata?.modifier?.value ?? 0
+    let useProf = metadata?.proficiency ?? false
     let prof = useProf ? data.proficiency ?? 0 : 0;
-    switch (metadata.effectModifier?.type) {
+    switch (metadata?.modifier?.type) {
         case CalculationMode.Modify:
-            return getScaling(data, metadata.effectScaling) + mod + prof
+            return getScaling(data, metadata.scaling) + mod + prof
         case CalculationMode.Override:
             return mod + prof
         case CalculationMode.Auto:
         default:
-            return getScaling(data, metadata.effectScaling) + prof
+            return getScaling(data, metadata.scaling) + prof
         
+    }
+}
+
+export const getScalingValue = (scaling: ScalingType | Attribute | OptionalAttribute, stats: ICreatureStats): number => {
+    switch (scaling) {
+        case ScalingType.Finesse:
+            return Math.max(getScalingValue(ScalingType.DEX, stats), getScalingValue(ScalingType.STR, stats));
+        case ScalingType.SpellModifier:
+            return getScalingValue(stats.spellAttribute, stats)
+        case ScalingType.None:
+            return 0;
+        default:
+            let attribute = asEnum(scaling, Attribute);
+            return attribute ? getAttributeModifier(stats, attribute) : 0
     }
 }
 

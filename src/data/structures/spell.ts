@@ -5,7 +5,7 @@ import CreatureActionData from "./creatureActionData";
 
 class SpellData extends CreatureActionData<ISpellMetadata> implements Required<ISpellMetadata> {
     public get level(): number {
-        return this.metadata.level ?? 0
+        return this.metadata.level ?? 1
     }
 
     public get school(): MagicSchool {
@@ -29,7 +29,7 @@ class SpellData extends CreatureActionData<ISpellMetadata> implements Required<I
     }
 
     public get timeValue(): number {
-        return this.metadata.timeValue ?? 0
+        return this.metadata.timeValue ?? 1
     }
 
     public get timeText(): string {
@@ -49,7 +49,7 @@ class SpellData extends CreatureActionData<ISpellMetadata> implements Required<I
     }
 
     public get durationValue(): number {
-        return this.metadata.durationValue ?? 0
+        return this.metadata.durationValue ?? 1
     }
 
     public get durationText(): string {

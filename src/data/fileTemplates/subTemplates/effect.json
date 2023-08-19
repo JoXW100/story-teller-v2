@@ -1,0 +1,53 @@
+{
+    "type": "root",
+    "content": [
+        { "type": "navigation" },
+        {
+            "type": "group",
+            "params": { "label": "Effect", "open": true },
+            "content": [
+                { 
+                    "type": "text", 
+                    "params": { "label": "Label", "key": "label", "placeholder": "Label...", "default": "Effect" }
+                },
+                { 
+                    "type": "enum", 
+                    "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
+                },
+                { 
+                    "type": "text", 
+                    "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                    "params": { "label": "Effect", "key": "text" }
+                },
+                { 
+                    "type": "enum", 
+                    "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                    "params": { "label": "Scaling", "key": "scaling", "type": "scaling", "default": "none" }
+                },
+                { 
+                    "type": "boolean", 
+                    "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                    "params": { "label": "Add Proficiency", "key": "proficiency", "default": false }
+                },
+                { 
+                    "type": "option", 
+                    "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                    "params": { "label": "Modifier", "key": "modifier", "type": "number" }
+                },
+                {
+                    "type": "enum", 
+                    "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
+                    "params": { "label": "Dice", "key": "dice", "type": "dice", "default": 0 }
+                },
+                { 
+                    "type": "number", 
+                    "conditions": [
+                        { "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  "none"] },
+                        { "type": "notEquals", "value": [{ "type": "metadata", "value": "dice" }, { "type": "all", "value": [0, "0"] }] }
+                    ],
+                    "params": { "label": "Number of Dice", "key": "diceNum", "default": 1 }
+                }
+            ]
+        }
+    ]
+}

@@ -5,6 +5,7 @@ import { CalculationMode, IOptionType } from "types/database/editor"
 import { FileType, IFileMetadata } from "types/database/files";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
+import { KeysOf } from "types";
 
 const hpSplitExpr = /([0-9]+) *\(([0-9]+)d([0-9]+)([\+\-][0-9]+)?\)/
 const areaMatchExpr = /([0-9]+)[- ]*(?:foot|feet)[- ]*([A-z]+)[- ]*(sphere|centered|cylinder)?/g
@@ -407,7 +408,6 @@ const toSpell = (results: {[key: string]: string}): ISpellMetadata => {
         componentVerbal: Boolean(results['components']?.includes('v')),
         condition: cond,
         saveAttr: attr,
-        damageType: damageType,
         target: getTarget(results['target']),
         range: range,
         area: area,
@@ -415,13 +415,17 @@ const toSpell = (results: {[key: string]: string}): ISpellMetadata => {
         areaHeight: areaHeight,
         conditionScaling: ScalingType.SpellModifier,
         conditionProficiency: true,
-        effectDice: effectDice,
-        effectDiceNum: effectDiceNum
-    } satisfies ISpellMetadata
-
-    if (fileContent.damageType === DamageType.None) {
-        fileContent.effectText = results["title"]
-    }
+        effects: [
+            {
+                id: "main",
+                label: damageType === DamageType.None ? "Effect" : damageType,
+                text: damageType === DamageType.None ? results["title"] : "",
+                damageType: damageType,
+                dice: effectDice,
+                diceNum: effectDiceNum
+            }
+        ]
+    } satisfies KeysOf<ISpellMetadata>
     
     Logger.log("toSpell", { file: fileContent, result: results })
     return fileContent

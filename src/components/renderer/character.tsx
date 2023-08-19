@@ -16,6 +16,7 @@ import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
 import { getOptionType } from 'data/optionData';
+import Logger from 'utils/logger';
 import CharacterFile, { ICharacterMetadata } from 'types/database/files/character';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
@@ -24,7 +25,6 @@ import { RendererObject } from 'types/database/editor';
 import { ChoiceChoiceData, EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
-import Logger from 'utils/logger';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -322,7 +322,7 @@ const reduceEnumOptions = (value: EnumChoiceData) => (
 
 const reduceChoiceOptions = (value: ChoiceChoiceData) => (
     value.options.reduce((prev, option) => (
-        { ...prev, [option.$name]: option.label }
+        { ...prev, [option.id]: option.label }
     ), { null: "Unset" })
 )
 

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Elements from 'data/elements';
 import AbilityData from 'data/structures/ability';
+import EffectRenderer from './effect';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
 import Localization from 'utils/localization';
+import Logger from 'utils/logger';
 import AbilityFile, { IAbilityMetadata } from 'types/database/files/ability';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { RendererObject } from 'types/database/editor';
@@ -12,9 +14,8 @@ import { RollMode } from 'types/elements';
 import { FileType } from 'types/database/files';
 import { ObjectIdText } from 'types/database';
 import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
-import { AbilityType, ActionType, Attribute, DamageType, DiceType, EffectCondition } from 'types/database/dnd';
+import { AbilityType, ActionType, Attribute, EffectCondition } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
-import Logger from 'utils/logger';
 
 interface AbilityCategory { 
     header: string, 
@@ -102,7 +103,7 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
                                 <Elements.Roll 
                                     options={{ 
                                         mode: RollMode.Attack,
-                                        mod: ability.conditionModifierValue as any, 
+                                        mod: String(ability.conditionModifierValue), 
                                         desc: `${ability.name} Attack`,
                                         critRange: String(ability.stats.critRange),
                                     }}
@@ -114,63 +115,13 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
                                 <Elements.Save
                                     options={{
                                         attr: ability.saveAttr ?? Attribute.STR,
-                                        value: ability.conditionSaveValue as any
+                                        value: String(ability.conditionSaveValue)
                                     }}
                                 />
                             </div>
-                        }{ ability.damageType == DamageType.None ?
-                            <div>
-                                <Elements.Bold>Effect </Elements.Bold>
-                                {ability.effectText}
-                            </div>
-                            :
-                            <>
-                                <div className={styles.iconRow}>
-                                    <Elements.Bold>Damage</Elements.Bold>
-                                    <Elements.Roll 
-                                        options={{ 
-                                            dice: ability.effectDice as any, 
-                                            num: ability.effectDiceNum as any, 
-                                            mod: ability.effectModifierValue as any,
-                                            mode: ability.effectDice == DiceType.None 
-                                                ? RollMode.Mod 
-                                                : RollMode.DMG,
-                                            desc: `${ability.name} Damage`
-                                        }}
-                                    >
-                                        <Elements.Icon 
-                                            options={{ 
-                                                icon: ability.damageType,
-                                                tooltips: ability.damageTypeName
-                                            }}
-                                        />
-                                    </Elements.Roll>
-                                </div>
-                                { ability.versatile && 
-                                    <div className={styles.iconRow}>
-                                        <Elements.Bold>2-Hand </Elements.Bold>
-                                        <Elements.Roll 
-                                            options={{ 
-                                                dice: ability.effectVersatileDice as any, 
-                                                num: ability.effectDiceNum as any, 
-                                                mod: ability.effectModifierValue as any,
-                                                mode: ability.effectVersatileDice == DiceType.None 
-                                                    ? RollMode.Mod 
-                                                    : RollMode.DMG,
-                                                desc: `${ability.name} 2H Damage`
-                                            }}
-                                        >
-                                            <Elements.Icon 
-                                                options={{ 
-                                                    icon: ability.metadata.damageType,
-                                                    tooltips: ability.damageTypeName 
-                                                }}
-                                            />
-                                        </Elements.Roll>
-                                    </div>
-                                }
-                            </>
-                        }{ ability.notes.length > 0 && 
+                        }{ ability.effects.map((effect) => (
+                            <EffectRenderer key={effect.id} data={effect} stats={stats} id={variablesKey} />
+                        ))}{ ability.notes.length > 0 && 
                             <div> 
                                 <Elements.Bold>Notes </Elements.Bold> 
                                 {ability.notes} 

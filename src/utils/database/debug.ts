@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { Collection, Db } from "mongodb";
 import Logger from "utils/logger";
-import { failure, success } from "./database";
-import { DBData, DBFile, DBFolder, DBItem, DBResponse, DBRoot } from "types/database";
+import { success } from "./database";
+import { DBData, DBFolder, DBItem, DBResponse, DBRoot } from "types/database";
 import { FileType } from "types/database/files";
-import { KeysOf } from "types";
+import { KeysOf, ValueOf } from "types";
 import AbilityFile from "types/database/files/ability";
 import CreatureFile from "types/database/files/creature";
 import CharacterFile from "types/database/files/character";
@@ -22,6 +22,16 @@ type DBEncounter = DBData & EncounterFile
 type DBSpell = DBData & SpellFile
 type DBClass = DBData & ClassFile
 
+function addIfNotExists(property: string, value: any): {} {
+    return { 
+        $cond: {
+            if: { $eq: [{ $type: property }, 'missing'] }, // Value does not exist
+            then: value,
+            else: '$$REMOVE'
+        }
+    }
+}
+
 function addIfExists(property: string): {} {
     return { 
         $cond: {
@@ -30,7 +40,7 @@ function addIfExists(property: string): {} {
             else: property
         }
     }
-} 
+}
 
 function addIfExistsAndMap(property: string, map: Record<any, any>): {} {
     return { 
@@ -170,18 +180,9 @@ class DebugInterface
         //responses.push(await this.clearBackup()); // Not necessary
         //responses.push(await this.transferToBackup());
         //responses.push(await this.clearTmp()); // Not necessary
-        //responses.push(await this.convert());
-        //responses.push(await this.transferFixedRoots());
-        //responses.push(await this.transferFixedFolders());
-        //responses.push(await this.transferFixedAbilities());
-        //responses.push(await this.transferFixedCharacters());
-        //responses.push(await this.transferFixedClasses());
-        //responses.push(await this.transferFixedCreatures());
-        //responses.push(await this.transferFixedDocuments());
-        //responses.push(await this.transferFixedEncounters());
-        //responses.push(await this.transferFixedSpells());
+        responses.push(await this.convert(this.backupCollection));
         //responses.push(await this.clearFiles()); // Not necessary
-        //responses.push(await this.transferToFiles());
+        responses.push(await this.transferToFiles());
         return success(responses);
     }
 
@@ -225,9 +226,9 @@ class DebugInterface
         return success(res.length)
     }
 
-    async convert(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: {}},
+    async convert(collection: Collection<DBItem>, match: any = {}): Promise<DBResponse<number>> {
+        let res = await collection.aggregate([
+            { $match: match},
             { $project: {
                 result: {
                     $switch: {
@@ -286,123 +287,6 @@ class DebugInterface
         return success(res.length)
     }
 
-    async transferFixedRoots(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Root 
-            } satisfies Partial<KeysOf<DBFile>> },
-            { $project: this.rootProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedRoots', res)
-        return success(res.length)
-    }
-
-    async transferFixedFolders(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Folder 
-            } satisfies Partial<KeysOf<DBFile>> },
-            { $project: this.foldersProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedFolders', res)
-        return success(res.length)
-    }
-
-    async transferFixedAbilities(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Ability
-            } satisfies Partial<KeysOf<DBAbility>> },
-            { $project: this.abilityProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedAbilities', res)
-        return success(res.length)
-    }
-
-    async transferFixedCharacters(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Character
-            } satisfies Partial<KeysOf<DBCharacter>> },
-            { $project: this.characterProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedCharacters', res)
-        return success(res.length)
-    }
-
-    async transferFixedCreatures(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Creature
-            } satisfies Partial<DBCreature> },
-            { $project: this.creatureProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedCreatures', res)
-        return success(res.length)
-    }
-
-    async transferFixedDocuments(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Document 
-            } satisfies Partial<DBDocument> },
-            { $project: this.documentProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedDocuments', res)
-        return success(res.length)
-    }
-
-    async transferFixedEncounters(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Encounter
-            } satisfies Partial<DBEncounter> },
-            { $project: this.encounterProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedEncounters', res)
-        return success(res.length)
-    }
-
-    async transferFixedSpells(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Spell
-            } satisfies Partial<DBSpell> },
-            { $project: this.spellProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedSpells', res)
-        return success(res.length)
-    }
-
-    async transferFixedClasses(): Promise<DBResponse<number>> {
-        let res = await this.backupCollection.aggregate([
-            { $match: { 
-                type: FileType.Class
-            } satisfies Partial<DBClass> },
-            { $project: this.classProjection },
-            { $out: 'dev_files_tmp' },
-        ]).toArray()
-
-        Logger.log('debug.transferFixedClasses', res)
-        return success(res.length)
-    }
-
     private get rootProjection(): KeysOf<DBRoot> {
         return {
             _id: '$_id',
@@ -440,36 +324,28 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<Required<DBAbility["content"]>>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                type: addIfExists('$content.metadata.type'),
-                versatile: addIfExists('$content.metadata.versatile'),
-                action: addIfExists('$content.metadata.action'),
-                notes: addIfExists('$content.metadata.notes'),
-                condition: addIfExists('$content.metadata.condition'),
-                saveAttr: addIfExists('$content.metadata.saveAttr'),
-                damageType: addIfExists('$content.metadata.damageType'),
-                target: addIfExists('$content.metadata.target'),
-                range: addIfExists('$content.metadata.range'),
-                rangeLong: addIfExists('$content.metadata.rangeLong'),
-                rangeThrown: addIfExists('$content.metadata.rangeThrown'),
-                effectVersatileDice: addIfExists('$content.metadata.effectVersatileDice'),
-                conditionScaling: addIfExists('$content.metadata.conditionScaling'),
-                conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
-                conditionModifier: addIfExists('$content.metadata.conditionModifier'),
-                effectText: addIfExists('$content.metadata.effectText'),
-                effectScaling: addIfExists('$content.metadata.effectScaling'),
-                effectProficiency: addIfExists('$content.metadata.effectProficiency'),
-                effectModifier: addIfExists('$content.metadata.effectModifier'),
-                effectDice: addIfExists('$content.metadata.effectDice'),
-                effectDiceNum: addIfExists('$content.metadata.effectDiceNum'),
-                modifiers: addIfExists('$content.metadata.modifiers')
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                type: addIfExists('$metadata.type'),
+                action: addIfExists('$metadata.action'),
+                notes: addIfExists('$metadata.notes'),
+                condition: addIfExists('$metadata.condition'),
+                saveAttr: addIfExists('$metadata.saveAttr'),
+                target: addIfExists('$metadata.target'),
+                range: addIfExists('$metadata.range'),
+                rangeLong: addIfExists('$metadata.rangeLong'),
+                rangeThrown: addIfExists('$metadata.rangeThrown'),
+                conditionScaling: addIfExists('$metadata.conditionScaling'),
+                conditionProficiency: addIfExists('$metadata.conditionProficiency'),
+                conditionModifier: addIfExists('$metadata.conditionModifier'),
+                effects: addIfNotExists('$metadata.effects', this.effectProjection),
+                modifiers: addIfExists('$metadata.modifiers')
             } satisfies KeysOf<Required<DBAbility["metadata"]>>,
-            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBAbility["storage"]> ] },
+            storage: { $ifNull: ['$storage', {} satisfies Required<DBAbility["storage"]> ] },
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
         } satisfies KeysOf<DBAbility>
@@ -484,62 +360,62 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<Required<DBCharacter["content"]>>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                simple: addIfExists('$content.metadata.simple'),
-                gender: addIfExists('$content.metadata.gender'),
-                age: addIfExists('$content.metadata.age'),
-                height: addIfExists('$content.metadata.height'),
-                weight: addIfExists('$content.metadata.weight'),
-                raceText: addIfExists('$content.metadata.raceText'),
-                occupation: addIfExists('$content.metadata.occupation'),
-                appearance: addIfExists('$content.metadata.appearance'),
-                history: addIfExists('$content.metadata.history'),
-                notes: addIfExists('$content.metadata.notes'),
-                type: addIfExists('$content.metadata.type'),
-                size: addIfExists('$content.metadata.size'),
-                alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
-                portrait: addIfExists('$content.metadata.portrait'),
-                abilities: addIfExists('$content.metadata.abilities'),
-                challenge: addIfExists('$content.metadata.challenge'),
-                xp: addIfExists('$content.metadata.xp'),
-                level: addIfExists('$content.metadata.level'),
-                classFile: addIfExists('$content.metadata.classFile'),
-                hitDice: addIfExists('$content.metadata.hitDice'),
-                health: addIfExists('$content.metadata.health'),
-                ac: addIfExists('$content.metadata.ac'),
-                proficiency: addIfExists('$content.metadata.proficiency'),
-                initiative: addIfExists('$content.metadata.initiative'),
-                str: addIfExists('$content.metadata.str'),
-                dex: addIfExists('$content.metadata.dex'),
-                con: addIfExists('$content.metadata.con'),
-                int: addIfExists('$content.metadata.int'),
-                wis: addIfExists('$content.metadata.wis'),
-                cha: addIfExists('$content.metadata.cha'),
-                critRange: addIfExists('$content.metadata.critRange'),
-                resistances: addIfExists('$content.metadata.resistances'),
-                vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
-                advantages: addIfExists('$content.metadata.advantages'),
-                dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
-                conImmunities: addIfExists('$content.metadata.conImmunities'),
-                speed: addIfExists('$content.metadata.speed'),
-                senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
-                proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
-                proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
-                proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
-                proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
-                proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
-                proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
-                spellAttribute: addIfExists('$content.metadata.spellAttribute'),
-                spellSlots: addIfExists('$content.metadata.spellSlots'),
-                spells: addIfExists('$content.metadata.spells'),
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                simple: addIfExists('$metadata.simple'),
+                gender: addIfExists('$metadata.gender'),
+                age: addIfExists('$metadata.age'),
+                height: addIfExists('$metadata.height'),
+                weight: addIfExists('$metadata.weight'),
+                raceText: addIfExists('$metadata.raceText'),
+                occupation: addIfExists('$metadata.occupation'),
+                appearance: addIfExists('$metadata.appearance'),
+                history: addIfExists('$metadata.history'),
+                notes: addIfExists('$metadata.notes'),
+                type: addIfExists('$metadata.type'),
+                size: addIfExists('$metadata.size'),
+                alignment: addIfExistsAndMap('$metadata.alignment', AlignmentMap),
+                portrait: addIfExists('$metadata.portrait'),
+                abilities: addIfExists('$metadata.abilities'),
+                challenge: addIfExists('$metadata.challenge'),
+                xp: addIfExists('$metadata.xp'),
+                level: addIfExists('$metadata.level'),
+                classFile: addIfExists('$metadata.classFile'),
+                hitDice: addIfExists('$metadata.hitDice'),
+                health: addIfExists('$metadata.health'),
+                ac: addIfExists('$metadata.ac'),
+                proficiency: addIfExists('$metadata.proficiency'),
+                initiative: addIfExists('$metadata.initiative'),
+                str: addIfExists('$metadata.str'),
+                dex: addIfExists('$metadata.dex'),
+                con: addIfExists('$metadata.con'),
+                int: addIfExists('$metadata.int'),
+                wis: addIfExists('$metadata.wis'),
+                cha: addIfExists('$metadata.cha'),
+                critRange: addIfExists('$metadata.critRange'),
+                resistances: addIfExists('$metadata.resistances'),
+                vulnerabilities: addIfExists('$metadata.vulnerabilities'),
+                advantages: addIfExists('$metadata.advantages'),
+                dmgImmunities: addIfExists('$metadata.dmgImmunities'),
+                conImmunities: addIfExists('$metadata.conImmunities'),
+                speed: addIfExists('$metadata.speed'),
+                senses: addIfExists('$metadata.sensesThatDoNotExist'), // Does not exist
+                proficienciesSave: addKeysInIfExists('$metadata.saves'),
+                proficienciesSkill: addKeysInIfExistsAndMap('$metadata.skills', SkillMap),
+                proficienciesArmor: addIfExists('$metadata.proficienciesArmor'),
+                proficienciesWeapon: addIfExists('$metadata.proficienciesWeapon'),
+                proficienciesTool: addIfExists('$metadata.proficienciesTool'),
+                proficienciesLanguage: addIfExists('$metadata.proficienciesLanguage'),
+                spellAttribute: addIfExists('$metadata.spellAttribute'),
+                spellSlots: addIfExists('$metadata.spellSlots'),
+                spells: addIfExists('$metadata.spells'),
             } satisfies KeysOf<Required<DBCharacter["metadata"]>>,
             storage: { 
-                classData: { $ifNull: ['$content.storage.classData', {} satisfies Required<DBCharacter["storage"]["classData"]> ] }
+                classData: { $ifNull: ['$storage.classData', {} satisfies Required<DBCharacter["storage"]["classData"]> ] }
             } satisfies KeysOf<Required<DBCharacter["storage"]>>,
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
@@ -555,50 +431,50 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] }
             } satisfies KeysOf<Required<DBCreature["content"]>>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                type: addIfExists('$content.metadata.type'),
-                size: addIfExists('$content.metadata.size'),
-                alignment: addIfExistsAndMap('$content.metadata.alignment', AlignmentMap),
-                portrait: addIfExists('$content.metadata.portrait'),
-                abilities: addIfExists('$content.metadata.abilities'),
-                challenge: addIfExists('$content.metadata.challenge'),
-                xp: addIfExists('$content.metadata.xp'),
-                level: addIfExists('$content.metadata.level'),
-                hitDice: addIfExists('$content.metadata.hitDice'),
-                health: addIfExists('$content.metadata.health'),
-                ac: addIfExists('$content.metadata.ac'),
-                proficiency: addIfExists('$content.metadata.proficiency'),
-                initiative: addIfExists('$content.metadata.initiative'),
-                str: addIfExists('$content.metadata.str'),
-                dex: addIfExists('$content.metadata.dex'),
-                con: addIfExists('$content.metadata.con'),
-                int: addIfExists('$content.metadata.int'),
-                wis: addIfExists('$content.metadata.wis'),
-                cha: addIfExists('$content.metadata.cha'),
-                critRange: addIfExists('$content.metadata.critRange'),
-                resistances: addIfExists('$content.metadata.resistances'),
-                vulnerabilities: addIfExists('$content.metadata.vulnerabilities'),
-                advantages: addIfExists('$content.metadata.advantages'),
-                dmgImmunities: addIfExists('$content.metadata.dmgImmunities'),
-                conImmunities: addIfExists('$content.metadata.conImmunities'),
-                speed: addIfExists('$content.metadata.speed'),
-                senses: addIfExists('$content.metadata.sensesThatDoNotExist'), // Does not exist
-                proficienciesSave: addKeysInIfExists('$content.metadata.saves'),
-                proficienciesSkill: addKeysInIfExistsAndMap('$content.metadata.skills', SkillMap),
-                proficienciesArmor: addIfExists('$content.metadata.proficienciesArmor'),
-                proficienciesWeapon: addIfExists('$content.metadata.proficienciesWeapon'),
-                proficienciesTool: addIfExists('$content.metadata.proficienciesTool'),
-                proficienciesLanguage: addIfExists('$content.metadata.proficienciesLanguage'),
-                spellAttribute: addIfExists('$content.metadata.spellAttribute'),
-                spellSlots: addIfExists('$content.metadata.spellSlots'),
-                spells: addIfExists('$content.metadata.spells'),
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                type: addIfExists('$metadata.type'),
+                size: addIfExists('$metadata.size'),
+                alignment: addIfExistsAndMap('$metadata.alignment', AlignmentMap),
+                portrait: addIfExists('$metadata.portrait'),
+                abilities: addIfExists('$metadata.abilities'),
+                challenge: addIfExists('$metadata.challenge'),
+                xp: addIfExists('$metadata.xp'),
+                level: addIfExists('$metadata.level'),
+                hitDice: addIfExists('$metadata.hitDice'),
+                health: addIfExists('$metadata.health'),
+                ac: addIfExists('$metadata.ac'),
+                proficiency: addIfExists('$metadata.proficiency'),
+                initiative: addIfExists('$metadata.initiative'),
+                str: addIfExists('$metadata.str'),
+                dex: addIfExists('$metadata.dex'),
+                con: addIfExists('$metadata.con'),
+                int: addIfExists('$metadata.int'),
+                wis: addIfExists('$metadata.wis'),
+                cha: addIfExists('$metadata.cha'),
+                critRange: addIfExists('$metadata.critRange'),
+                resistances: addIfExists('$metadata.resistances'),
+                vulnerabilities: addIfExists('$metadata.vulnerabilities'),
+                advantages: addIfExists('$metadata.advantages'),
+                dmgImmunities: addIfExists('$metadata.dmgImmunities'),
+                conImmunities: addIfExists('$metadata.conImmunities'),
+                speed: addIfExists('$metadata.speed'),
+                senses: addIfExists('$metadata.sensesThatDoNotExist'), // Does not exist
+                proficienciesSave: addKeysInIfExists('$metadata.saves'),
+                proficienciesSkill: addKeysInIfExistsAndMap('$metadata.skills', SkillMap),
+                proficienciesArmor: addIfExists('$metadata.proficienciesArmor'),
+                proficienciesWeapon: addIfExists('$metadata.proficienciesWeapon'),
+                proficienciesTool: addIfExists('$metadata.proficienciesTool'),
+                proficienciesLanguage: addIfExists('$metadata.proficienciesLanguage'),
+                spellAttribute: addIfExists('$metadata.spellAttribute'),
+                spellSlots: addIfExists('$metadata.spellSlots'),
+                spells: addIfExists('$metadata.spells'),
             } satisfies KeysOf<Required<DBCreature["metadata"]>>,
-            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBCreature["storage"]> ] },
+            storage: { $ifNull: ['$storage', {} satisfies Required<DBCreature["storage"]> ] },
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
         } satisfies KeysOf<DBCreature>
@@ -613,14 +489,14 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<Required<DBDocument["content"]>>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', { $ifNull: ['$content.metadata.title', ""] }] },
-                description: { $ifNull: ['$content.metadata.description', { $ifNull: ['$content.metadata.content', ""] }] },
+                name: { $ifNull: ['$metadata.name', { $ifNull: ['$metadata.title', ""] }] },
+                description: { $ifNull: ['$metadata.description', { $ifNull: ['$metadata.content', ""] }] },
             } satisfies KeysOf<Required<DBDocument["metadata"]>>,
-            storage: { $ifNull: ['$content.storage', {} satisfies Required<DBDocument["storage"]> ] },
+            storage: { $ifNull: ['$storage', {} satisfies Required<DBDocument["storage"]> ] },
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
         } satisfies KeysOf<DBDocument>
@@ -635,18 +511,18 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<DBEncounter["content"]>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                creatures: addIfExists('$content.metadata.creatures'),
-                challenge: addIfExists('$content.metadata.challenge'),
-                xp: addIfExists('$content.metadata.xp')
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                creatures: addIfExists('$metadata.creatures'),
+                challenge: addIfExists('$metadata.challenge'),
+                xp: addIfExists('$metadata.xp')
             } satisfies KeysOf<Required<DBEncounter["metadata"]>>,
             storage: { 
-                cards: { $ifNull: ['$content.storage.cards', [] satisfies KeysOf<Required<DBEncounter["storage"]["cards"]>> ] }
+                cards: { $ifNull: ['$storage.cards', [] satisfies KeysOf<Required<DBEncounter["storage"]["cards"]>> ] }
             } satisfies KeysOf<Required<DBEncounter["storage"]>>,
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
@@ -662,46 +538,40 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$content.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<DBSpell["content"]>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                level: addIfExists('$content.metadata.level'),
-                school: addIfExists('$content.metadata.school'),
-                time: addIfExists('$content.metadata.time'),
-                timeCustom: addIfExists('$content.metadata.timeCustom'),
-                timeValue: addIfExists('$content.metadata.timeValue'),
-                duration: addIfExists('$content.metadata.duration'),
-                durationValue: addIfExists('$content.metadata.durationValue'),
-                ritual: addIfExists('$content.metadata.ritual'),
-                concentration: addIfExists('$content.metadata.concentration'),
-                componentVerbal: addIfExists('$content.metadata.componentVerbal'),
-                componentSomatic: addIfExists('$content.metadata.componentSomatic'),
-                componentMaterial: addIfExists('$content.metadata.componentMaterial'),
-                materials: addIfExists('$content.metadata.materials'),
-                notes: addIfExists('$content.metadata.notes'),
-                condition: addIfExists('$content.metadata.condition'),
-                saveAttr: addIfExists('$content.metadata.saveAttr'),
-                damageType: addIfExists('$content.metadata.damageType'),
-                target: addIfExists('$content.metadata.target'),
-                range: addIfExists('$content.metadata.range'),
-                rangeLong: addIfExists('$content.metadata.rangeLong'),
-                area: addIfExists('$content.metadata.area'),
-                areaSize: addIfExists('$content.metadata.areaSize'),
-                areaHeight: addIfExists('$content.metadata.areaHeight'),
-                conditionScaling: addIfExists('$content.metadata.conditionScaling'),
-                conditionProficiency: addIfExists('$content.metadata.conditionProficiency'),
-                conditionModifier: addIfExists('$content.metadata.conditionModifier'),
-                effectText: addIfExists('$content.metadata.effectText'),
-                effectScaling: addIfExists('$content.metadata.effectScaling'),
-                effectProficiency: addIfExists('$content.metadata.effectProficiency'),
-                effectModifier: addIfExists('$content.metadata.effectModifier'),
-                effectDice: addIfExists('$content.metadata.effectDice'),
-                effectDiceNum: addIfExists('$content.metadata.effectDiceNum')
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                level: addIfExists('$metadata.level'),
+                school: addIfExists('$metadata.school'),
+                time: addIfExists('$metadata.time'),
+                timeCustom: addIfExists('$metadata.timeCustom'),
+                timeValue: addIfExists('$metadata.timeValue'),
+                duration: addIfExists('$metadata.duration'),
+                durationValue: addIfExists('$metadata.durationValue'),
+                ritual: addIfExists('$metadata.ritual'),
+                concentration: addIfExists('$metadata.concentration'),
+                componentVerbal: addIfExists('$metadata.componentVerbal'),
+                componentSomatic: addIfExists('$metadata.componentSomatic'),
+                componentMaterial: addIfExists('$metadata.componentMaterial'),
+                materials: addIfExists('$metadata.materials'),
+                notes: addIfExists('$metadata.notes'),
+                condition: addIfExists('$metadata.condition'),
+                saveAttr: addIfExists('$metadata.saveAttr'),
+                target: addIfExists('$metadata.target'),
+                range: addIfExists('$metadata.range'),
+                rangeLong: addIfExists('$metadata.rangeLong'),
+                area: addIfExists('$metadata.area'),
+                areaSize: addIfExists('$metadata.areaSize'),
+                areaHeight: addIfExists('$metadata.areaHeight'),
+                conditionScaling: addIfExists('$metadata.conditionScaling'),
+                conditionProficiency: addIfExists('$metadata.conditionProficiency'),
+                conditionModifier: addIfExists('$metadata.conditionModifier'),
+                effects: addIfNotExists('$metadata.effects', this.effectProjection),
             } satisfies KeysOf<Required<DBSpell["metadata"]>>,
-            storage: { $ifNull: ['$content.storage.cards', {} satisfies Required<DBSpell["storage"]> ] },
+            storage: { $ifNull: ['$storage.cards', {} satisfies Required<DBSpell["storage"]> ] },
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
         } satisfies KeysOf<DBSpell>
@@ -716,41 +586,63 @@ class DebugInterface
             type: '$type',
             content: {
                 name: { $ifNull: ['$content.name', ""] },
-                public: { $ifNull: ['$content.metadata.public', false] },
+                public: { $ifNull: ['$metadata.public', false] },
                 text: { $ifNull: ['$content.text', ""] },
             } satisfies KeysOf<DBClass["content"]>,
             metadata: {
-                name: { $ifNull: ['$content.metadata.name', ""] },
-                description: { $ifNull: ['$content.metadata.description', ""] },
-                hitDice: addIfExists('$content.metadata.hitDice'),
-                isSubclass: addIfExists('$content.metadata.isSubclass'),
-                subclassLevel: addIfExists('$content.metadata.subclassLevel'),
-                subclasses: addIfExists('$content.metadata.subclasses'),
-                1: addIfExists('$content.metadata.1'),
-                2: addIfExists('$content.metadata.2'),
-                3: addIfExists('$content.metadata.3'),
-                4: addIfExists('$content.metadata.4'),
-                5: addIfExists('$content.metadata.5'),
-                6: addIfExists('$content.metadata.6'),
-                7: addIfExists('$content.metadata.7'),
-                8: addIfExists('$content.metadata.8'),
-                9: addIfExists('$content.metadata.9'),
-                10: addIfExists('$content.metadata.10'),
-                11: addIfExists('$content.metadata.11'),
-                12: addIfExists('$content.metadata.12'),
-                13: addIfExists('$content.metadata.13'),
-                14: addIfExists('$content.metadata.14'),
-                15: addIfExists('$content.metadata.15'),
-                16: addIfExists('$content.metadata.16'),
-                17: addIfExists('$content.metadata.17'),
-                18: addIfExists('$content.metadata.18'),
-                19: addIfExists('$content.metadata.19'),
-                20: addIfExists('$content.metadata.20'),
+                name: { $ifNull: ['$metadata.name', ""] },
+                description: { $ifNull: ['$metadata.description', ""] },
+                hitDice: addIfExists('$metadata.hitDice'),
+                isSubclass: addIfExists('$metadata.isSubclass'),
+                subclassLevel: addIfExists('$metadata.subclassLevel'),
+                subclasses: addIfExists('$metadata.subclasses'),
+                1: addIfExists('$metadata.1'),
+                2: addIfExists('$metadata.2'),
+                3: addIfExists('$metadata.3'),
+                4: addIfExists('$metadata.4'),
+                5: addIfExists('$metadata.5'),
+                6: addIfExists('$metadata.6'),
+                7: addIfExists('$metadata.7'),
+                8: addIfExists('$metadata.8'),
+                9: addIfExists('$metadata.9'),
+                10: addIfExists('$metadata.10'),
+                11: addIfExists('$metadata.11'),
+                12: addIfExists('$metadata.12'),
+                13: addIfExists('$metadata.13'),
+                14: addIfExists('$metadata.14'),
+                15: addIfExists('$metadata.15'),
+                16: addIfExists('$metadata.16'),
+                17: addIfExists('$metadata.17'),
+                18: addIfExists('$metadata.18'),
+                19: addIfExists('$metadata.19'),
+                20: addIfExists('$metadata.20'),
             } satisfies KeysOf<Required<DBClass["metadata"]>>,
             storage: { $ifNull: ['$storage', {} satisfies Required<DBClass["storage"]> ] },
             dateCreated: '$dateCreated',
             dateUpdated: '$dateUpdated'
         } satisfies KeysOf<DBClass>
+    }
+
+    private get effectProjection(): KeysOf<ValueOf<Required<DBAbility["metadata"]["effects"]>>>[] {
+        return [
+            {
+                id: "main",
+                label: {
+                    $cond: { 
+                        if: { $eq: ['$metadata.damageType', 'none'] },
+                        then: "Effect",
+                        else: "Damage"
+                    }
+                },
+                text: addIfExists('$metadata.effectText'),
+                damageType: addIfExists('$metadata.damageType'),
+                scaling: addIfExists('$metadata.effectScaling'),
+                proficiency: addIfExists('$metadata.effectProficiency'),
+                modifier: addIfExists('$metadata.effectModifier'),
+                dice: addIfExists('$metadata.effectDice'),
+                diceNum: addIfExists('$metadata.effectDiceNum'),
+            } satisfies KeysOf<ValueOf<Required<DBAbility["metadata"]["effects"]>>>
+        ]
     }
 }
 

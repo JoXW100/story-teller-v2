@@ -202,8 +202,10 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 
 .editListItem {
     @include colorBackground(input);
-    height: $size !important;
-    display: flex;
+    max-height: $size;
+    flex: 1;
+    min-width: 0;
+    gap: 0 !important;
 }
 
 .editSelectionMenu {
@@ -214,6 +216,7 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 
 .editOption {
     @extend .editGroupItem;
+
     @include desktop {
         grid-template-columns: $labelWidth $labelWidth 1fr;
     }

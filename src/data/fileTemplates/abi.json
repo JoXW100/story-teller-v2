@@ -29,7 +29,7 @@
                     },
                     {
                         "type": "group",
-                        "params": { "label": "Effect", "open": true },
+                        "params": { "label": "Condition", "open": true },
                         "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "thrownWeapon", "skill"] }] }],
                         "content": [
                             { 
@@ -43,8 +43,26 @@
                             },
                             { 
                                 "type": "enum", 
-                                "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
                             },
+                            { 
+                                "type": "boolean", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Add Proficiency", "key": "conditionProficiency", "default": false }
+                            },
+                            { 
+                                "type": "option", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
+                                "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Effect", "open": true },
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeAttack", "meleeWeapon", "rangedAttack", "rangedWeapon", "thrownWeapon", "skill"] }] }],
+                        "content": [
                             {
                                 "type": "enum",
                                 "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "skill"] }],
@@ -82,66 +100,15 @@
                                 ],
                                 "params": { "label": "Range (Long)", "key": "rangeLong" }
                             },
-                            { 
-                                "type": "text", 
-                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
-                                "params": { "label": "Effect", "key": "effectText" }
-                            },
                             {
-                                "type": "group",
-                                "params": { "label": "Condition Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "condition" }, "none"] }],
-                                "content": [
-                                    { 
-                                        "type": "enum", 
-                                        "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
-                                    },
-                                    { 
-                                        "type": "boolean", 
-                                        "params": { "label": "Proficiency", "key": "conditionProficiency", "default": false }
-                                    },
-                                    { 
-                                        "type": "option", 
-                                        "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "group",
-                                "params": { "label": "Effect Roll", "open": true },
-                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "damageType" },  { "type": "all", "value": ["none", "null"] }] }],
-                                "content": [
-                                    { 
-                                        "type": "enum", 
-                                        "params": { "label": "Scaling", "key": "effectScaling", "type": "scaling", "default": "none" }
-                                    },
-                                    { 
-                                        "type": "boolean", 
-                                        "params": { "label": "Proficiency", "key": "effectProficiency", "default": false }
-                                    },
-                                    { 
-                                        "type": "boolean", 
-                                        "params": { "label": "Versatile", "key": "versatile", "default": false }
-                                    },
-                                    { 
-                                        "type": "option", 
-                                        "params": { "label": "Modifier", "key": "effectModifier", "type": "number" }
-                                    },
-                                    {
-                                        "type": "enum", 
-                                        "params": { "label": "Dice", "key": "effectDice", "type": "dice", "default": 0 }
-                                    },
-                                    {
-                                        "type": "enum", 
-                                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "versatile" }, true] }],
-                                        "params": { "label": "Versatile Dice", "key": "effectVersatileDice", "type": "dice", "default": 0 }
-                                    },
-                                    { 
-                                        "type": "number", 
-                                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "effectDice" }, { "type": "all", "value": [0, "0", null] }] }],
-                                        "params": { "label": "Num Dice", "key": "effectDiceNum" }
-                                    }
-                                ]
+                                "type": "itemList",
+                                "params": { 
+                                    "label": "Effects", 
+                                    "key": "effects", 
+                                    "prompt": "Edit",
+                                    "placeholder": "Name...", 
+                                    "template": "effect" 
+                                }  
                             }
                         ]
                     },
@@ -155,8 +122,8 @@
                                 "params": { 
                                     "label": "Modifiers", 
                                     "key": "modifiers", 
-                                    "prompt": "Edit", 
-                                    "placeholder": "Enter Name" ,
+                                    "prompt": "Edit",
+                                    "placeholder": "Name...",
                                     "template": "modifier"
                                 }
                             }

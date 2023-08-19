@@ -1,9 +1,8 @@
 import { getOptionType } from "data/optionData";
 import CreatureActionData from "./creatureActionData";
 import ModifierData from "./modifier";
-import { AbilityType, ActionType, DiceType } from "types/database/dnd";
+import { AbilityType, ActionType } from "types/database/dnd";
 import { IAbilityMetadata } from "types/database/files/ability";
-import { IModifier } from "types/database/files/modifier";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
 class AbilityData extends CreatureActionData<IAbilityMetadata> implements Required<IAbilityMetadata> {
@@ -19,10 +18,6 @@ class AbilityData extends CreatureActionData<IAbilityMetadata> implements Requir
 
     public get typeName(): string {
         return getOptionType('abilityType').options[this.type] ?? String(this.type)
-    }
-
-    public get versatile(): boolean {
-        return this.metadata.versatile ?? false
     }
 
     public get action(): ActionType {
@@ -41,12 +36,6 @@ class AbilityData extends CreatureActionData<IAbilityMetadata> implements Requir
 
     public get rangeThrown(): number {
         return this.metadata.rangeThrown ?? 0
-    }
-
-    // Hit effect roll scaling
-
-    public get effectVersatileDice(): DiceType {
-        return this.metadata.effectVersatileDice ?? getOptionType("dice").default
     }
 
     // Modifiers

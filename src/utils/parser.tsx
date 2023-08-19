@@ -24,19 +24,18 @@ abstract class Parser
 
     static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
         if (!text)
-            return null
+            return null;
 
-        if (metadata instanceof FileData) {
-            metadata = metadata.metadata
-        }
+        if (metadata instanceof FileData)
+            metadata = metadata.metadata;
 
         let splits = text.split(this.matchBodyExpr);
         let variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
-        Object.keys(metadata).forEach(key => {
+        for (var key in metadata) {
             if (typeof(metadata[key]) != typeof({}) && key !== "public" && key !== variablesKey) {
                 variables[key] = metadata[key]
             }
-        });
+        }
 
         // find variable content from text
         metadata.$vars = { ...metadata.$vars, [variablesKey]: this.parseVariables(splits, variables) };
@@ -59,6 +58,7 @@ abstract class Parser
             let command: IParserObject = null;
             let stack: IParserObject[] = [];
             let current: IParserObject = { type: 'root', content: [], options: [], variables: {} };
+
             splits.forEach((part) => {
                 switch (part) {
                     case '\{':
@@ -79,11 +79,11 @@ abstract class Parser
                         break;
                 }
             })
-            if (current.type !== 'root') {
+
+            if (current.type !== 'root')
                 throw new ParseError("Unexpected content start (\{)")
-            }
             return current;
-        } catch (error) {
+        } catch (error: unknown) {
             if (error instanceof ParseError) 
                 throw error;
             throw new ParseError("Failed parsing");
@@ -181,9 +181,9 @@ abstract class Parser
         })
 
         let queries = tree.content.reduce((prev, e) => {
-            let Q = this.getQueries(e);
-            for (let q in Q) {
-                prev[q] = Math.max(prev[q] ?? 0, Q[q])
+            let queries = this.getQueries(e);
+            for (let key in queries) {
+                prev[key] = Math.max(prev[key] ?? 0, queries[key])
             }
             return prev
         }, element.validate(tree.variables, tree.content))
@@ -223,9 +223,7 @@ abstract class Parser
             throw new ParseError(`Element of type '\\${tree.type}' can only appear inside '\\table' elements.`)
              
         let element = getElement(tree.type);
-        let children = element.buildChildren    
-            ? tree.content.map((child, key) => this.buildComponent(child, variablesKey, key, metadata, tree))
-            : null;
+        
         return (
             <element.toComponent 
                 options={tree.variables} 
@@ -233,7 +231,9 @@ abstract class Parser
                 metadata={metadata} 
                 variablesKey={variablesKey}
                 key={key}>
-                { children }
+                {element.buildChildren && tree.content.map((child, key) => (
+                    this.buildComponent(child, variablesKey, key, metadata, tree)
+                ))}
             </element.toComponent>
         )
     }

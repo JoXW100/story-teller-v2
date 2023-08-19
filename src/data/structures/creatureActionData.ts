@@ -2,9 +2,9 @@ import { getOptionType } from "data/optionData";
 import FileData from "./file";
 import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
-import { getAttributeModifier } from "utils/calculations";
-import { asEnum } from "utils/helpers";
-import { Attribute, DamageType, DiceType, EffectCondition, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
+import IEffect from "types/database/files/effect";
+import { getScalingValue } from "utils/calculations";
+import { Attribute, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
@@ -32,14 +32,6 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata>
         return this.metadata.saveAttr ?? getOptionType("attr").default
     }
 
-    public get damageType(): DamageType {
-        return this.metadata.damageType ?? getOptionType("damageType").default
-    }
-
-    public get damageTypeName(): string {
-        return  getOptionType("damageType").options[this.damageType] ?? String(this.damageType)
-    }
-
     public get target(): TargetType {
         return this.metadata.target ?? getOptionType("target").default
     }
@@ -64,12 +56,12 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata>
         let prof = useProf ? this.stats.proficiency ?? 0 : 0;
         switch (this.conditionModifier.type) {
             case CalculationMode.Modify:
-                return this.getScalingValue(this.conditionScaling) + mod + prof
+                return getScalingValue(this.conditionScaling, this.stats) + mod + prof
             case CalculationMode.Override:
                 return mod + prof
             case CalculationMode.Auto:
             default:
-                return this.getScalingValue(this.conditionScaling) + prof
+                return getScalingValue(this.conditionScaling, this.stats) + prof
         }
     }
 
@@ -79,58 +71,8 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata>
 
     // Hit effect roll scaling
 
-    public get effectText(): string {
-        return this.metadata.effectText ?? ""
-    }
-
-    public get effectScaling(): ScalingType {
-        return this.metadata.effectScaling ?? getOptionType("scaling").default
-    }
-
-    public get effectProficiency(): boolean {
-        return this.metadata.effectProficiency ?? false
-    }
-
-    public get effectModifier(): IOptionType<number> {
-        return this.metadata.effectModifier ?? OptionTypeAuto
-    }
-
-    public get effectModifierValue(): number {
-        let mod = this.effectModifier.value ?? 0;
-        let useProf = this.effectProficiency;
-        let prof = useProf ? this.stats.proficiency : 0;
-        switch (this.effectModifier.type) {
-            case CalculationMode.Modify:
-                return this.getScalingValue(this.effectScaling) + mod + prof
-            case CalculationMode.Override:
-                return mod + prof
-            case CalculationMode.Auto:
-            default:
-                return this.getScalingValue(this.effectScaling) + prof
-            
-        }
-    }
-
-    public get effectDice(): DiceType {
-        return this.metadata.effectDice ?? getOptionType("dice").default
-    }
-
-    public get effectDiceNum(): number {
-        return this.metadata.effectDiceNum ?? 0
-    }
-
-    private getScalingValue(scaling: ScalingType | Attribute | OptionalAttribute): number {
-        switch (scaling) {
-            case ScalingType.Finesse:
-                return Math.max(this.getScalingValue(ScalingType.DEX), this.getScalingValue(ScalingType.STR));
-            case ScalingType.SpellModifier:
-                return this.getScalingValue(this.stats.spellAttribute)
-            case ScalingType.None:
-                return 0;
-            default:
-                let attribute = asEnum(scaling, Attribute);
-                return attribute ? getAttributeModifier(this.stats, attribute) : 0
-        }
+    public get effects(): IEffect[] {
+        return this.metadata.effects ?? []
     }
 }
 

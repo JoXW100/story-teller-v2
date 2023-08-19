@@ -1,24 +1,19 @@
-import type { DiceType, ScalingType, Attribute, DamageType, EffectCondition, TargetType } from "../dnd"
+import type { ScalingType, Attribute, EffectCondition, TargetType } from "../dnd"
 import type { IOptionType } from "../editor"
+import type IEffect from "./effect"
 
 interface ICreatureActionData {
     notes?: string
     // Hit condition
     condition?: EffectCondition
     saveAttr?: Attribute
-    damageType?: DamageType
     target?: TargetType
     // Hit condition roll scaling
     conditionScaling?: ScalingType
     conditionProficiency?: boolean
     conditionModifier?: IOptionType<number>
-    // Hit effect roll scaling
-    effectText?: string
-    effectScaling?: ScalingType
-    effectProficiency?: boolean
-    effectModifier?: IOptionType<number>
-    effectDice?: DiceType
-    effectDiceNum?: number
+    // Hit effect 
+    effects?: IEffect[]
 }
 
 export default ICreatureActionData

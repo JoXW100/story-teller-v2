@@ -1,4 +1,3 @@
-import { ItemListItem } from "components/common/controls/itemListMenu";
 import { Collection, Enum } from "types";
 import { EditFilePage } from "types/context/fileContext";
 import { ObjectId, ObjectIdText } from "types/database";
@@ -42,7 +41,7 @@ export function asKeyOf<T extends Collection>(value: keyof Collection, type: T):
 }
 
 export function isObjectId(value: ObjectIdText): value is ObjectId {
-    return value instanceof Object || /^[0-9a-fA-F]{24}$/.test(value)
+    return /^[0-9a-fA-F]{24}$/.test(String(value))
 }
 
 export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage[]): IFileMetadata {

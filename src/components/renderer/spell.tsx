@@ -17,10 +17,7 @@ import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/databa
 import styles from 'styles/renderer.module.scss';
 import { isObjectId } from 'utils/helpers';
 import { FileType } from 'types/database/files';
-
-interface SpellCategory {
-    [type: number]: JSX.Element[]
-}
+import EffectRenderer from './effect';
 
 type SpellGroupsProps = React.PropsWithRef<{
     spellIds: ObjectIdText[]
@@ -109,39 +106,28 @@ const Spell = ({ metadata, stats, variablesKey }: SpellProps) => {
                     {spell.notes.length > 0 ? spell.notes : '-'}
                 </div>
             </Elements.Align>
-            <Elements.Align options={{ direction: "v" }}>
-                { spell.damageType == DamageType.None && <>
-                    <Elements.Bold>Effect </Elements.Bold>
-                    { spell.effectText }
-                </>}{ spell.damageType != DamageType.None && <>
-                    <Elements.Bold>Damage </Elements.Bold>
-                    <Elements.Roll 
-                        options={{ 
-                            dice: spell.effectDice as any, 
-                            num: spell.effectDiceNum as any, 
-                            mod: spell.effectModifierValue as any, 
-                            mode: RollMode.DMG,
-                            desc: `${spell.name} Damage`
-                        }}
-                    ><Elements.Icon options={{ icon: spell.damageType, tooltips: spell.damageTypeName}}/>
-                    </Elements.Roll>
-                </>}
-                <Elements.Bold>HIT/DC </Elements.Bold>
-                {spell.condition == EffectCondition.Hit && 
-                    <Elements.Roll 
-                        options={{ 
-                            mod: spell.conditionModifierValue as any, 
-                            desc: `${spell.name} Attack` 
-                        }}
-                    />
-                }{spell.condition == EffectCondition.Save &&
-                    <Elements.Save
-                        options={{
-                            attr: spell.saveAttr ?? Attribute.STR,
-                            dc: String(8 + spell.conditionModifierValue)
-                        }}
-                    />
-                }{spell.condition == EffectCondition.None && '-'}
+            <Elements.Align options={{ direction: "v", weight: "1.2" }}>
+                <div className={styles.iconRow}>
+                    <Elements.Bold>HIT/DC </Elements.Bold>
+                    {spell.condition == EffectCondition.Hit && 
+                        <Elements.Roll 
+                            options={{ 
+                                mod: spell.conditionModifierValue as any, 
+                                desc: `${spell.name} Attack` 
+                            }}
+                        />
+                    }{spell.condition == EffectCondition.Save &&
+                        <Elements.Save
+                            options={{
+                                attr: spell.saveAttr ?? Attribute.STR,
+                                dc: String(8 + spell.conditionModifierValue)
+                            }}
+                        />
+                    }{spell.condition == EffectCondition.None && '-'}
+                </div>
+                {spell.effects.map((effect) => (
+                    <EffectRenderer key={effect.id} data={effect} stats={stats} id={variablesKey}/>
+                ))}
             </Elements.Align>
         </Elements.Align>
         { (description || components) && <>
@@ -253,7 +239,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
         if (spellIds && spellIds.length > 0) {
             let ids = spellIds.filter(spell => isObjectId(spell)) as ObjectId[]
             Communication.getManyMetadata(ids)
-            .then((res: DBResponse<FileGetManyMetadataResult>) => {
+            .then((res: DBResponse<FileGetManyMetadataResult<ISpellMetadata>>) => {
                 if (res.success) {
                     setSpells(res.result)
                 } else {

@@ -3,6 +3,7 @@ import { DiceType, AbilityType, ActionType, EffectCondition, TargetType, DamageT
 import { CalculationMode } from "types/database/editor";
 import { IAbilityMetadata } from "types/database/files/ability";
 import { asEnum } from "utils/helpers";
+import { KeysOf } from "types";
 
 const getAbilityType = (ability: string): AbilityType => {
     switch (ability?.toLowerCase()) {
@@ -43,7 +44,7 @@ const getRollMod = (roll: string | null): number => {
 }
 
 const getRange = (range: string): { range: number, rangeLong?: number } => {
-    var splits = range.split('/')
+    var splits = range?.split('/') ?? []
     var res = { range: 0 }
     if (splits[0])
         res['range'] = Number(splits[0]) ? Number(splits[0]) : 0
@@ -65,6 +66,8 @@ const getAction = (action: string, type: AbilityType): ActionType => {
             return ActionType.BonusAction
         case "action":
             return ActionType.Action
+        case "legendary":
+            return ActionType.Legendary
         default:
             return type === AbilityType.Feature 
                 ? ActionType.None
@@ -72,12 +75,14 @@ const getAction = (action: string, type: AbilityType): ActionType => {
     }
 }
 
-const roll20AbilityExpr = /^(?:([A-z ]+): *)?([A-z 0-9-\(\)]+)\. *(?:([A-z ]+): *([+-][0-9]+) *to hit,?.*[A-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
+const roll20AbilityExpr = /^(?:([a-z ]+): *)?([a-z 0-9-\(\)]+)\. *(?:([a-z ]+): *([+-][0-9]+) *to hit,?.*[a-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
 const toAbility = async (text: string): Promise<IAbilityMetadata> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])
         return null
     var type = getAbilityType(res[3])
+    var ranges = getRange(res[5])
+    var damageType = asEnum(res[10], DamageType) ?? DamageType.None
     var result: IAbilityMetadata
     switch (type) {
         case AbilityType.Feature:
@@ -86,7 +91,7 @@ const toAbility = async (text: string): Promise<IAbilityMetadata> => {
                 description: res[11] ?? "",
                 type: type,
                 action: getAction(res[1], type)
-            } satisfies IAbilityMetadata
+            } satisfies KeysOf<IAbilityMetadata>
             break;
         default:
             var dmgNumDice = Number(res[7] ?? "1")
@@ -97,13 +102,20 @@ const toAbility = async (text: string): Promise<IAbilityMetadata> => {
                 action: getAction(res[1], type),
                 condition: EffectCondition.Hit,
                 conditionModifier: { type: CalculationMode.Override, value: getRollMod(res[4]) },
-                effectDiceNum: isNaN(dmgNumDice) ? 1 : dmgNumDice,
-                effectDice: asEnum(Number(res[8]), DiceType) ?? DiceType.None,
-                effectModifier: { type: CalculationMode.Override, value: getRollMod(res[9]) },
-                damageType: asEnum(res[10], DamageType) ?? DamageType.None,
-                ...getRange(res[5]),
+                effects: [
+                    {
+                        id: "main",
+                        label: damageType === DamageType.None ? "Effect" : "Damage",
+                        damageType: damageType,
+                        dice: asEnum(Number(res[8]), DiceType) ?? DiceType.None,
+                        diceNum: isNaN(dmgNumDice) ? 1 : dmgNumDice,
+                        modifier: { type: CalculationMode.Override, value: getRollMod(res[9]) },
+                    }
+                ],
+                range: ranges.range,
+                rangeLong: ranges.rangeLong,
                 target: getTargetType(res[6]),
-            } satisfies IAbilityMetadata
+            } satisfies KeysOf<IAbilityMetadata> 
             break
     }
     Logger.log("toAbility", { file: result, result: res })

@@ -5,6 +5,7 @@ import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, 
 import { CalculationMode, OptionType } from "types/database/editor";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
+import { KeysOf } from "types";
 
 const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/
 const castTimeExpr = /([0-9]+)? *([A-z-]+)/
@@ -561,7 +562,7 @@ export const open5eSpellImporter = async (id: string): Promise<ISpellMetadata> =
     let { damageType, effectDice, effectDiceNum } = getDamage(res.desc)
     let { area, areaSize, areaHeight } = getArea(res.desc)
     let components = res.components.toLowerCase()
-    let metadata = {
+    let metadata: ISpellMetadata = {
         name: res.name,
         description: res.desc,
         level: res.level_int,
@@ -579,7 +580,6 @@ export const open5eSpellImporter = async (id: string): Promise<ISpellMetadata> =
         componentVerbal: components.includes('v'),
         condition: condition,
         saveAttr: saveAttr,
-        damageType: damageType,
         target: getTarget(area, res.range), // TODO: Find in description
         range: getRange(res.range),
         area: area,
@@ -587,9 +587,16 @@ export const open5eSpellImporter = async (id: string): Promise<ISpellMetadata> =
         areaHeight: areaHeight,
         conditionScaling: ScalingType.SpellModifier,
         conditionProficiency: true,
-        effectDice: effectDice,
-        effectDiceNum: effectDiceNum
-    } as ISpellMetadata
+        effects: [
+            {
+                id: "main",
+                label: damageType === DamageType.None ? "Effect" : damageType,
+                damageType: damageType,
+                dice: effectDice,
+                diceNum: effectDiceNum
+            }
+        ]
+    } satisfies KeysOf<ISpellMetadata>
     
     Logger.log("toSpell", { file: res, result: metadata })
     return metadata

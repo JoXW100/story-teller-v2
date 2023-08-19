@@ -1,13 +1,10 @@
 import React, { useCallback, useMemo } from "react";
 import useAutoCompleteDialog from "../autoCompleteDialog";
+import { IItemMetadata } from "types/database/files";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
-interface ItemListItem {
-    $name: string
-}
-
-type ItemListMenuProps<T extends ItemListItem> = React.PropsWithRef<{
+type ItemListMenuProps<T extends IItemMetadata> = React.PropsWithRef<{
     className?: string
     itemClassName?: string
     onChange: (selection: T[]) => void
@@ -23,9 +20,9 @@ type ItemListMenuProps<T extends ItemListItem> = React.PropsWithRef<{
 
 const dialogShowExpression = /^\$([a-z0-9]*)$/i
 
-const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast }: ItemListMenuProps<T>): JSX.Element => { 
+const ItemListMenu = <T extends IItemMetadata>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast }: ItemListMenuProps<T>): JSX.Element => { 
     const handleValidate = (value: T): value is T => {
-        return validateInput(value.$name, values)
+        return validateInput(value.id, values)
     }
     
     const EditComponent = ({ value, values, onUpdate }: ListTemplateComponent<T>): JSX.Element => {
@@ -33,7 +30,7 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
         const [show, hide, onKeyPressed, AutoCompleteDialog] = useAutoCompleteDialog<HTMLInputElement>((e, option: string) => {
             let template = templates[option]
             if (template) {
-                onUpdate({ ...value, $name: '' })
+                onUpdate({ ...value, id: '' })
                 onChange(addLast ? [...values, template] : [template, ...values])
             }
         })
@@ -44,7 +41,7 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
             if (match) {
                 let options = templates ? Object.keys(templates) : []
                 options = options?.filter((template) => template.startsWith(match[1])  
-                    && !values.some(value => value.$name === templates[template].$name)) ?? []
+                    && !values.some(value => value.id === templates[template].id)) ?? []
                 show(5, 20, options)
             } else {
                 hide();
@@ -62,15 +59,15 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
             <div className={styles.inputHolder}>
                 <input 
                     className={style} 
-                    value={value.$name}
+                    value={value.id}
                     type="text"
                     placeholder={placeholder}
-                    data={value.$name?.startsWith('$') ? "template" : undefined}
+                    data={value.id?.startsWith('$') ? "template" : undefined}
                     onClick={hide}
                     onBlur={hide}
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
-                    onChange={(e) => onUpdate({ ...value, $name: e.target.value })}/>
+                    onChange={(e) => onUpdate({ ...value, id: e.target.value })}/>
                 <AutoCompleteDialog className={styles.dialog}/>
             </div>
         )
@@ -82,7 +79,7 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
         const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
             let input = e.target.value;
             if (validateInput(input, values)) {
-                onUpdate({ ...value, $name: input })
+                onUpdate({ ...value, id: input })
             }
         }
 
@@ -90,7 +87,7 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
             <div className={style}> 
                 <input 
                     className={style} 
-                    value={value.$name}
+                    value={value.id}
                     type="text"
                     placeholder={placeholder}
                     onChange={handleInput}/>
@@ -101,7 +98,7 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
         )
     }, [itemClassName, placeholder])
 
-    const defaultItem = useMemo<T>(() => ({ $name: defaultValue } as T), [defaultValue]);
+    const defaultItem = useMemo<T>(() => ({ id: defaultValue } as T), [defaultValue]);
     
     return (
         <ListTemplateMenu<T>
@@ -114,10 +111,6 @@ const ItemListMenu = <T extends ItemListItem>({ className, itemClassName, onChan
             values={values}
             addLast={addLast}/>
     )
-}
-
-export type {
-    ItemListItem
 }
 
 export default ItemListMenu;

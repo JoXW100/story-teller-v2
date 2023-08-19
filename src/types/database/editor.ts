@@ -23,6 +23,11 @@ interface IOptionType<T> {
     value: T 
 }
 
+const OptionTypeAuto: IOptionType<number> = {
+    type: CalculationMode.Auto,
+    value: 0
+}
+
 export type OptionType<T> = { type: CalculationMode.Auto } | IOptionType<T>
 
 interface RendererObject<T extends IFileData = IFileData> {
@@ -33,4 +38,8 @@ interface RendererObject<T extends IFileData = IFileData> {
 export type {
     IOptionType,
     RendererObject
+}
+
+export {
+    OptionTypeAuto
 }
