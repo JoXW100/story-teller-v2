@@ -202,20 +202,26 @@ export const CharacterProficienciesPage = ({ data }: CreatureProficienciesPagePr
             <div className={styles.skillTable}>
                 <div>
                     <b>Mod</b>
+                    <br/>
                     <b>Skill</b>
                     <b>Bonus</b>
                 </div>
-                { Object.keys(skills).map((skill: Skill) => (
-                    <div key={skill}>
-                        <b>{attributes[data.getSkillAttribute(skill)]}</b>
-                        <label>{skills[skill]}</label>
-                        <Elements.Roll options={{
-                            mod: data.getSkillModifier(skill).toString(),
-                            desc: `${skills[skill]} Check`,
-                            tooltips: `Roll ${skills[skill]} Check`
-                        }}/>
-                    </div>
-                ))}
+                { Object.keys(skills).map((skill: Skill) => {
+                    return (
+                        <div key={skill}>
+                            <b>{attributes[data.getSkillAttribute(skill)]}</b>
+                            <div 
+                                data={data.proficienciesSkill.includes(skill) ? "proficient" : "none"}
+                                tooltips={Localization.toText('creature-Proficient')}/>
+                            <label>{skills[skill]}</label>
+                            <Elements.Roll options={{
+                                mod: data.getSkillModifier(skill).toString(),
+                                desc: `${skills[skill]} Check`,
+                                tooltips: `Roll ${skills[skill]} Check`
+                            }}/>
+                        </div>
+                    )
+                })}
             </div>
             <Elements.Line/>
             <Elements.Header3>Armor</Elements.Header3>

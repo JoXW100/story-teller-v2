@@ -24,7 +24,7 @@
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "humanoid" }
+                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "none" }
                     },
                     { 
                         "type": "enum", 

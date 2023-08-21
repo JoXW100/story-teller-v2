@@ -23,7 +23,7 @@ const DicePanel = ({ open }: DicePanelProps): JSX.Element => {
     const [state, setState] = useState({ collection: new DiceCollection() });
     
     const handleClick = (dice: Dice) => {
-        state.collection.add(dice, 1);
+        state.collection.add(dice);
         setState({ ...state })
     }
 

@@ -15,7 +15,7 @@ class DiceCollection {
     }
 
     /** Adds a number of dice to the collection */
-    add(dice: Dice, num: number) {
+    add(dice: Dice, num: number = 1) {
         let value = this.collection[dice.num] ?? 0;
         this.collection[dice.num] = value + num;
     }

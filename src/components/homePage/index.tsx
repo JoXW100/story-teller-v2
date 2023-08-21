@@ -15,7 +15,6 @@ import { DBResponse } from 'types/database';
 import { StoryGetAllResult } from 'types/database/responses';
 import { CardType, PageStatus, StoryCardData } from 'types/homePage';
 import styles from 'styles/pages/homePage/main.module.scss'
-import Logger from 'utils/logger';
 
 interface HomePageState {
     loading: boolean
@@ -72,13 +71,6 @@ const HomePage = (): JSX.Element => {
 
     const handleSetStatus = (status: PageStatus) => { 
         setState({ ...state, status: status }) 
-    }
-
-    const handleDebugClick = () => {
-        Communication.debug()
-        .then((res) => res.success 
-            ? Logger.log("debug.response", res.result)
-            : Logger.error("debug.response", res.result))
     }
     
     const Content = useMemo<HomePageMenu>(() => {
@@ -146,5 +138,12 @@ const HomePage = (): JSX.Element => {
 const LoadingMenu = () => (
     <Loading className={styles.loading}/>
 )
+
+const handleDebugClick = () => {
+    //Communication.debug()
+    //.then((res) => res.success 
+    //    ? Logger.log("debug.response", res.result)
+    //    : Logger.error("debug.response", res.result))
+}
 
 export default HomePage;

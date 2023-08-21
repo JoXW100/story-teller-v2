@@ -4,7 +4,7 @@ import type { ObjectId } from "."
 
 
 export type FileMetadataQueryResult<Metadata extends IFileMetadata = IFileMetadata> = {
-    id: ObjectId,
+    id: ObjectId
     type: FileType
     metadata: Metadata
 }

@@ -7,20 +7,20 @@ import styles from 'styles/components/listMenu.module.scss';
 type ItemListMenuProps<T extends IItemMetadata> = React.PropsWithRef<{
     className?: string
     itemClassName?: string
-    onChange: (selection: T[]) => void
-    onClick: (value: T, index: number) => void
-    validateInput?: (value: string, values: T[]) => boolean
     values: T[]
     templates?: Record<string, T>
     prompt: string
     defaultValue: string
     placeholder?: string
     addLast?: boolean
+    onChange: (selection: T[]) => void
+    onClick: (value: T, index: number) => void
+    validateInput?: (value: string, values: T[]) => boolean
 }>
 
 const dialogShowExpression = /^\$([a-z0-9]*)$/i
 
-const ItemListMenu = <T extends IItemMetadata>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast }: ItemListMenuProps<T>): JSX.Element => { 
+const ItemListMenu = <T extends IItemMetadata>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast = true }: ItemListMenuProps<T>): JSX.Element => { 
     const handleValidate = (value: T): value is T => {
         return validateInput(value.id, values)
     }

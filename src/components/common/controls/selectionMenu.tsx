@@ -10,6 +10,7 @@ type SelectionMenuProps = React.PropsWithRef<{
     selection: string[]
     values: Record<string, ReactNode>
     alternate?: Record<string, ReactNode>
+    addLast?: boolean
     onChange: (selection: string[]) => void
 }>
 
@@ -17,7 +18,7 @@ const getFirstNotInCollection = (values: string[], collection: string[]): string
     values.find((key) => !collection.includes(key))
 )
 
-const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, values, alternate, selection, onChange }: SelectionMenuProps) => {
+const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, values, alternate, selection, addLast = true, onChange }: SelectionMenuProps) => {
     const style = className ? `${styles.list} ${className}` : styles.list
     const list = Object.keys(values);
     const defaultValue = getFirstNotInCollection(list, selection)
@@ -37,16 +38,23 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
         return value != undefined;
     }
 
-    const EditComponent = ({ value, onUpdate }: ListTemplateComponent<string>) => {
+    const EditComponent = ({ value, values, onUpdate }: ListTemplateComponent<string>) => {
         const style = dropdownClassName ? `${styles.dropdown} ${dropdownClassName}` : styles.dropdown;
         const itemStyle = dropdownItemClassName ? `${styles.dropdownItem} ${dropdownItemClassName}` : styles.dropdownItem
+
+        const handleChange = (value: string) => {
+            let newSelection = addLast ? [...values, value] : [value, ...values];
+            onUpdate(defaultValue)
+            onChange(newSelection)
+        }
+
         return (
             <DropdownMenu 
                 className={style}
                 itemClassName={itemStyle}
                 values={options}
                 value={value}
-                onChange={onUpdate}/>
+                onChange={handleChange}/>
         )
     }
 
@@ -59,6 +67,7 @@ const SelectionMenu = ({ className, dropdownClassName, dropdownItemClassName, va
             className={style}
             defaultValue={defaultValue}
             values={selection}
+            addLast={addLast}
             onChange={onChange}
             validateInput={handleValidateInput}
             Component={Component}

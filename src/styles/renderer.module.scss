@@ -375,7 +375,7 @@
     font-family: $fontNormal;
     & > div {
         display: grid;
-        grid-template-columns: 40px minmax(0, 1fr) 55px;
+        grid-template-columns: auto 10px minmax(0, 1fr) 55px;
         gap: 5px;
         height: $iconSmallSize;
 
@@ -383,9 +383,32 @@
             font-family: $fontDocument;
         }
 
+        & > div {
+            @include colorBorder(document);
+            height: 9px;
+            width: 9px;
+            margin-bottom: 3px;
+            align-self: center;
+            justify-self: center;
+            &[data=proficient] {
+                border: 2px solid;
+                border-radius: 100%;
+            }
+            &[data=expert] {
+                border: 2px solid;
+                border-radius: 100%;
+                background-color: color(accents);
+            }
+            &[data=none] {
+                pointer-events: none;
+            }
+        }
+
         & > *:last-child {
             text-align: center;
             justify-self: center;
+            align-self: center;
+            height: fit-content;
         }
     }
 
