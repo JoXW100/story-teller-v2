@@ -247,3 +247,9 @@ export enum ProficiencyType {
     Save = "save",
     Skill = "skill",
 }
+
+export enum RestType {
+    None = "none",
+    ShortRest = "short",
+    LongRest = "long"
+}

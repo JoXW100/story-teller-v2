@@ -114,6 +114,21 @@
                     },
                     {
                         "type": "group",
+                        "params": { "label": "Charges", "open": true },
+                        "content": [
+                            {
+                                "type": "number",
+                                "params": { "label": "Charges", "key": "charges", "default": 0 }
+                            },
+                            {
+                                "type": "enum",
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "charges" }, 0] }],
+                                "params": { "label": "Reset", "key": "chargesReset", "type": "restType", "default": "none" }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
                         "params": { "label": "Modifiers", "open": true },
                         "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "feature"] }],
                         "content": [

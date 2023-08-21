@@ -4,25 +4,26 @@ import { getComponents, getSpellRange } from 'utils/calculations';
 import Communication from 'utils/communication';
 import Localization from 'utils/localization';
 import Logger from 'utils/logger';
+import { isObjectId } from 'utils/helpers';
 import SpellData from 'data/structures/spell';
 import Elements from 'data/elements';
-import SpellSlotToggle from 'components/common/controls/spellSlotToggle';
-import { Attribute, DamageType, EffectCondition, TargetType } from 'types/database/dnd';
+import EffectRenderer from './effect';
+import ChargesRenderer from 'components/renderer/chargeToggle';
+import { Attribute, EffectCondition, TargetType } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { DBResponse, ObjectId, ObjectIdText } from 'types/database';
-import { RollMode } from 'types/elements';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import SpellFile, { ISpellMetadata } from 'types/database/files/spell';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
-import styles from 'styles/renderer.module.scss';
-import { isObjectId } from 'utils/helpers';
 import { FileType } from 'types/database/files';
-import EffectRenderer from './effect';
+import styles from 'styles/renderer.module.scss';
 
 type SpellGroupsProps = React.PropsWithRef<{
     spellIds: ObjectIdText[]
     spellSlots: number[]
-    data?: ICreatureStats
+    expendedSlots: number[]
+    stats?: ICreatureStats
+    setExpendedSlots: (value: number[]) => void
 }>
 
 type SpellProps = React.PropsWithRef<{
@@ -219,7 +220,7 @@ const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element
     return <Spell metadata={file.metadata} stats={stats} variablesKey={`$${file.id}.description`}/>
 }
 
-export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): JSX.Element => {
+export const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExpendedSlots }: SpellGroupsProps): JSX.Element => {
     const [spells, setSpells] = useState<FileGetManyMetadataResult<ISpellMetadata>>([])
     const categories = useMemo(() => {
         let categories: Record<number, JSX.Element[]> = []
@@ -228,7 +229,7 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
                 let level = file.metadata?.level as number ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 
-                    <SpellToggleRenderer key={index} metadata={file.metadata} stats={data}/>
+                    <SpellToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
                 ]
             }
         })
@@ -252,6 +253,15 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
         }
     }, [spellIds])
 
+    const handleSetExpended = (value: number, level: number) => {
+        let slots = Array.from({ length: spellSlots.length }, () => 0)
+        for (let i = 0; i < expendedSlots.length && i < spellSlots.length; i++) {
+            slots[i] = expendedSlots[i] ?? 0
+        }
+        slots[level - 1] = value
+        setExpendedSlots(slots)
+    }
+ 
     Logger.log("Spell", "SpellGroups")
     
     return (
@@ -262,9 +272,12 @@ export const SpellGroups = ({ spellIds, spellSlots, data }: SpellGroupsProps): J
                         <Elements.Bold> 
                             {level === 0 ? 'Cantrips:' : `Level ${level}:`} 
                         </Elements.Bold>
-                        { level > 0 && Array.from({length: spellSlots[level - 1] }, (_,i) => (
-                            <SpellSlotToggle key={i}/>
-                        ))}
+                        { level > 0 && (
+                            <ChargesRenderer 
+                                charges={spellSlots[level - 1]}
+                                expended={expendedSlots[level - 1]}
+                                setExpended={(value) => handleSetExpended(value, level)}/>
+                        )}
                     </Elements.Row>
                     { categories[level] ?? <Elements.Space/> }
                 </React.Fragment>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
@@ -16,6 +16,7 @@ import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/databa
 import styles from 'styles/renderer.module.scss';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
+import { Context } from 'components/contexts/fileContext';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: CreatureFile
@@ -32,6 +33,7 @@ type CreatureProficienciesPageProps = React.PropsWithRef<{
 const Pages = ["Actions", "Proficiencies"] as const
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
+    const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const creature = useMemo(() => new CreatureData(file.metadata, modifiers), [file.metadata, modifiers])
@@ -41,6 +43,10 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const content = useParser(file.content.text, creature, "$content");
     const description = useParser(creature.description, creature, "description")
 
+    const expendedAbilityCharges = file.storage?.abilityData ?? {}
+    const expendedSpellSlots = file.storage?.spellData ?? []
+
+
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollectionData(modifiersList, null)
@@ -48,6 +54,19 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
             setModifiers(collection);
         }
     }
+    const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
+        let data = Object.keys(value).reduce<Record<string, number>>((prev, key) => (
+            abilities.includes(key)
+            ? { ...prev, [key]: value[key] } 
+            : prev
+        ), {})
+        dispatch.setStorage("abilityData", data)
+    }
+
+    const handleSetExpendedSpellSlots = (value: number[]) => {
+        dispatch.setStorage("spellData", value)
+    }
+        
 
     return (
         <>
@@ -145,7 +164,12 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     </div>
                     <Elements.Line/>
                     <div className={styles.pageItem} data={page === "Actions" ? "show" : "hide"}>
-                        <AbilityGroups abilityIds={abilities} stats={stats} onLoaded={handleAbilitiesLoaded}/>
+                        <AbilityGroups 
+                            abilityIds={abilities} 
+                            stats={stats} 
+                            expendedCharges={expendedAbilityCharges}
+                            setExpendedCharges={handleSetExpendedAbilityCharges}
+                            onLoaded={handleAbilitiesLoaded}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
                         <CharacterProficienciesPage data={creature}/>
@@ -184,8 +208,10 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     </Elements.Align>
                     <SpellGroups 
                         spellIds={creature.spells} 
-                        spellSlots={creature.spellSlots} 
-                        data={stats}/>
+                        spellSlots={creature.spellSlots}
+                        expendedSlots={expendedSpellSlots}
+                        setExpendedSlots={handleSetExpendedSpellSlots} 
+                        stats={stats}/>
                 </>
             }
             {content && <Elements.Line/>}

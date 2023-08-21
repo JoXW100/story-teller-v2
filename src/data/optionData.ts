@@ -1,5 +1,5 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, RestType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
@@ -396,6 +396,15 @@ const OptionTypes = {
             [ModifierSetTypeProperty.CritRange]: "Critical Range"
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
+    "restType": {
+        enum: RestType,
+        default: RestType.None,
+        options: {
+            [RestType.None]: "None",
+            [RestType.ShortRest]: "Short Rest",
+            [RestType.LongRest]: "Long Rest"
+        }
+    },
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,

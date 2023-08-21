@@ -23,8 +23,14 @@ interface ICharacterMetadata extends IFileMetadata, ICreatureMetadata {
     classFile?: ObjectId
 }
 
+interface ICharacterAbilityStorageData {
+    expendedCharges?: number
+}
+
 interface ICharacterStorage extends IFileStorage {
     classData?: Record<string, any>
+    abilityData?: Record<string, ICharacterAbilityStorageData>
+    spellData?: number[]
 }
 
 abstract class CharacterFile implements IFileData {
@@ -38,5 +44,6 @@ export default CharacterFile
 export type {
     ICharacterContent,
     ICharacterMetadata,
-    ICharacterStorage
+    ICharacterStorage,
+    ICharacterAbilityStorageData
 }

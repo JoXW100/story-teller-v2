@@ -1,7 +1,7 @@
 import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
 import type { IModifier } from "./modifier"
 import type ICreatureActionData from "./iConditionalHitEffect"
-import type { AbilityType, ActionType } from "../dnd"
+import type { AbilityType, ActionType, RestType } from "../dnd"
 
 interface IAbilityContent extends IFileContent {
     text: string
@@ -16,6 +16,8 @@ interface IAbilityMetadata extends IFileMetadata, ICreatureActionData {
     rangeThrown?: number
     // Modifiers
     modifiers?: IModifier[]
+    charges?: number
+    chargesReset?: RestType
 }
 
 interface IAbilityStorage extends IFileStorage {

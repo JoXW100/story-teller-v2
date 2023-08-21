@@ -17,7 +17,7 @@ import ModifierCollectionData from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/classData';
 import { getOptionType } from 'data/optionData';
 import Logger from 'utils/logger';
-import CharacterFile, { ICharacterMetadata } from 'types/database/files/character';
+import CharacterFile, { ICharacterAbilityStorageData, ICharacterMetadata } from 'types/database/files/character';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
 import { Attribute, OptionalAttribute } from 'types/database/dnd';
@@ -25,6 +25,7 @@ import { RendererObject } from 'types/database/editor';
 import { ChoiceChoiceData, EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
+import { FileContextDispatch } from 'types/context/fileContext';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -39,12 +40,13 @@ type CharacterBackgroundPageProps = React.PropsWithRef<{
     appearance: JSX.Element 
     description: JSX.Element  
     history: JSX.Element 
-    notes: JSX.Element 
+    notes: JSX.Element
 }>
 
 type CharacterClassPageProps = React.PropsWithRef<{
     character: CharacterData 
     classData: ClassData
+    setStorage: FileContextDispatch["setStorage"]
 }>
 
 const Pages = ["Background", "Proficiencies", "Class"] as const
@@ -99,6 +101,7 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
 } 
 
 const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
+    const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
@@ -116,6 +119,11 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const history = useParser(character.history, character, "history")
     const notes = useParser(character.notes, character, "notes")
 
+    const expendedAbilityCharges = Object.keys(file.storage?.abilityData ?? {}).reduce<Record<string,number>>((prev, value) => (
+        { ...prev, [value]: file.storage.abilityData[value].expendedCharges ?? 0 }
+    ), {})
+    const expendedSpellSlots = file.storage?.spellData ?? []
+
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollectionData(modifiersList, file.storage)
@@ -124,13 +132,26 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         }
     }
 
+    const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
+        let data = Object.keys(value).reduce<Record<string,ICharacterAbilityStorageData>>((prev, key) => (
+            abilities.includes(key)
+            ? { ...prev, [key]: { ...file.storage.abilityData[key], expendedCharges: value[key] }} 
+            : prev
+        ), {})
+        dispatch.setStorage("abilityData", data)
+    }
+
+    const handleSetExpendedSpellSlots = (value: number[]) => {
+        dispatch.setStorage("spellData", value)
+    }
+
     Logger.log("Character", "DetailedCharacterRenderer")
 
     return (
         <>
             <Elements.Align>
                 <Elements.Block>
-                    <Elements.Header1> {character.name} </Elements.Header1>
+                    <Elements.Header1>{character.name}</Elements.Header1>
                     <Elements.Line/>
                     <div className={styles.pageSelector}>
                         { Object.values(Pages).filter(x => x !== "Class" || character.classFile).map((p, index) => (
@@ -152,7 +173,10 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <CharacterProficienciesPage data={character}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
-                        <CharacterClassPage character={character} classData={classData}/>
+                        <CharacterClassPage 
+                            character={character} 
+                            classData={classData} 
+                            setStorage={dispatch.setStorage}/>
                     </div>
                 </Elements.Block>
                 <Elements.Line/>
@@ -231,7 +255,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <Elements.Line/>
                     <AbilityGroups 
                         abilityIds={abilities} 
-                        stats={stats} 
+                        stats={stats}
+                        expendedCharges={expendedAbilityCharges}
+                        setExpendedCharges={handleSetExpendedAbilityCharges}
                         onLoaded={handleAbilitiesLoaded}/>
                 </Elements.Block>
             </Elements.Align>
@@ -268,7 +294,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <SpellGroups 
                         spellIds={character.spells} 
                         spellSlots={character.spellSlots} 
-                        data={stats}/>
+                        expendedSlots={expendedSpellSlots}
+                        setExpendedSlots={handleSetExpendedSpellSlots}
+                        stats={stats}/>
                 </>
             }  
             {content && <Elements.Line/>}
@@ -280,7 +308,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
 const CharacterBackgroundPage = ({ character, appearance, description, history, notes }: CharacterBackgroundPageProps): JSX.Element => {
     return (
         <>
-            {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
+            {`${character.sizeText} ${character.typeText}, ${character.alignmentText}, ${character.characterClass.name}`}
             <Elements.Line/>
             <Elements.Image options={{href: character.portrait}}/>
             <Elements.Line/>
@@ -293,22 +321,22 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
             { character.appearance.length > 0 ? <>
                 <Elements.Line/>
                 <Elements.Header3>Appearance</Elements.Header3>
-                <Elements.Text>{appearance}</Elements.Text>
+                {appearance}
             </> : null }
             { character.description.length > 0 ? <>
                 <Elements.Line/>
                 <Elements.Header3>Description</Elements.Header3>
-                <Elements.Text>{description}</Elements.Text>
+                {description}
             </> : null }
             { character.history.length > 0 ? <>
                 <Elements.Line/>
                 <Elements.Header3>History</Elements.Header3>
-                <Elements.Text>{history}</Elements.Text>
+                {history}
             </> : null }
             { character.notes.length > 0 ? <>
                 <Elements.Line/>
                 <Elements.Header3>Notes</Elements.Header3>
-                <Elements.Text>{notes}</Elements.Text>
+                {notes}
             </> : null }
         </>
     )
@@ -326,15 +354,15 @@ const reduceChoiceOptions = (value: ChoiceChoiceData) => (
     ), { null: "Unset" })
 )
 
-const CharacterClassPage = ({ character, classData }: CharacterClassPageProps): JSX.Element => {
-    const [_, dispatch] = useContext(Context)
+const CharacterClassPage = ({ character, classData, setStorage }: CharacterClassPageProps): JSX.Element => {
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
     const storage = classData.storage?.classData ?? {}
+    
     const handleChange = (value: any, key: string) => {
         let validStorage = Object.keys(storage).reduce((prev, key) => (
             Object.keys(choices).includes(key) ? { ...prev, [key]: storage[key] } : prev
         ), {})
-        dispatch.setStorage("classData", { ...validStorage, [key]: value });
+        setStorage("classData", { ...validStorage, [key]: value });
     }
 
     return (

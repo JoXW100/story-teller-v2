@@ -1,7 +1,7 @@
 import { getOptionType } from "data/optionData";
 import CreatureActionData from "./creatureActionData";
 import ModifierData from "./modifier";
-import { AbilityType, ActionType } from "types/database/dnd";
+import { AbilityType, ActionType, RestType } from "types/database/dnd";
 import { IAbilityMetadata } from "types/database/files/ability";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
@@ -42,6 +42,14 @@ class AbilityData extends CreatureActionData<IAbilityMetadata> implements Requir
 
     public get modifiers(): ModifierData[] {
         return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id))
+    }
+    
+    public get charges(): number {
+        return this.metadata.charges ?? 0
+    }
+    
+    public get chargesReset(): RestType {
+        return this.metadata.chargesReset ?? getOptionType("restType").default
     }
 }
 

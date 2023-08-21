@@ -49,7 +49,8 @@ interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "profici
 }
 
 interface ICreatureStorage extends IFileStorage {
-    
+    abilityData?: Record<string, number>
+    spellData?: number[]
 }
 
 abstract class CreatureFile implements IFileData {

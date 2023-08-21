@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Elements from 'data/elements';
 import AbilityData from 'data/structures/ability';
 import EffectRenderer from './effect';
+import ChargesRenderer from './chargeToggle';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
@@ -25,6 +26,8 @@ interface AbilityCategory {
 type AbilityGroupsProps = React.PropsWithRef<{
     abilityIds: ObjectIdText[]
     stats?: ICreatureStats
+    expendedCharges: Record<string, number>
+    setExpendedCharges: (value: Record<string, number>) => void
     onLoaded?: (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => void 
 }>
 
@@ -45,18 +48,22 @@ type AbilityLinkRendererProps = React.PropsWithRef<{
 type AbilityToggleRendererProps = React.PropsWithRef<{
     metadata: IAbilityMetadata
     stats: ICreatureStats
-    isOpen?: boolean
+    expendedCharges: number
+    setExpendedCharges: (value: number) => void
+    open?: boolean
 }>
 
 
 type AbilityProps = React.PropsWithRef<{ 
     metadata: IAbilityMetadata, 
     stats: ICreatureStats
+    expendedCharges: number
+    setExpendedCharges: (value: number) => void
     open: boolean
     variablesKey: string
 }>
 
-const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Element => {
+const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpendedCharges }: AbilityProps): JSX.Element => {
     const ability = useMemo(() => new AbilityData(metadata, stats), [metadata, stats])
     const description = useParser(ability.description, ability, variablesKey)
     Logger.log("Ability", "Ability")
@@ -65,7 +72,14 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
         case AbilityType.Feature:
         default:
             return <>
-                <Elements.Header3>{ ability.name }</Elements.Header3>
+                <Elements.Align options={{ direction: "hc" }}>
+                    <Elements.Header3>{ ability.name }</Elements.Header3>
+                    <Elements.Fill/>
+                    <ChargesRenderer 
+                        charges={ability.charges}
+                        expended={expendedCharges} 
+                        setExpended={setExpendedCharges}/>
+                </Elements.Align>
                 { description }
             </>
         case AbilityType.RangedAttack:
@@ -76,8 +90,14 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
             return <>
                 <Elements.Align>
                     <div style={{ width: '50%'}}>
-                        <Elements.Bold>{ ability.name }</Elements.Bold><br/>
-                        {ability.typeName}
+                        <Elements.Bold>{ability.name}</Elements.Bold><br/>
+                        {ability.typeName}<br/>
+                        <Elements.Align>
+                            <ChargesRenderer 
+                                charges={ability.charges} 
+                                expended={expendedCharges} 
+                                setExpended={setExpendedCharges}/>
+                        </Elements.Align>
                     </div>
                     <Elements.Line/>
                     <div>
@@ -137,36 +157,58 @@ const Ability = ({ metadata, stats, open, variablesKey }: AbilityProps): JSX.Ele
     }
 }
 
-const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JSX.Element => (
-    <AbilityToggleRenderer metadata={file.metadata} stats={stats} isOpen={true}/>
-)
+const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JSX.Element => {
+    const [expended, setExpended] = useState<number>(0)
+    return (
+        <AbilityToggleRenderer 
+            metadata={file.metadata} 
+            stats={stats} 
+            expendedCharges={expended}
+            setExpendedCharges={setExpended}
+            open={true}/>
+    )
+}
 
-const AbilityToggleRenderer = ({ metadata, stats = {}, isOpen = false }: AbilityToggleRendererProps): JSX.Element => {
-    const [open, setOpen] = useState(isOpen);
+const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, setExpendedCharges, open = false }: AbilityToggleRendererProps): JSX.Element => {
+    const [isOpen, setOpen] = useState(open);
     const canClose =  metadata?.type && metadata?.type !== AbilityType.Feature
     const data = canClose && metadata?.description?.length > 0
-        ? open ? "open" : "closed"
+        ? isOpen ? "open" : "closed"
         : "none"
+
     const handleClick = () => {
-        setOpen(!open)
+        if (canClose) {
+            setOpen(!isOpen)
+        }
     }
 
     return (
         <div 
             className={styles.ability} 
             data={data} 
-            onClick={canClose ? handleClick : undefined}>
+            onClick={handleClick}>
             <Ability 
                 metadata={metadata} 
                 stats={stats} 
-                open={open} 
-                variablesKey='description'/>
+                open={isOpen} 
+                variablesKey='description'
+                expendedCharges={expendedCharges}
+                setExpendedCharges={setExpendedCharges}/>
         </div>
     )
 }
 
 const AbilityLinkRenderer = ({ file, stats = {} }: AbilityLinkRendererProps): JSX.Element => {
-    return <Ability metadata={file.metadata} stats={stats} open={true} variablesKey={`$${file.id}.description`}/>
+    const [expended, setExpended] = useState<number>(0)
+    return (
+        <Ability 
+            metadata={file.metadata} 
+            stats={stats} 
+            open={true} 
+            variablesKey={`$${file.id}.description`}
+            expendedCharges={expended}
+            setExpendedCharges={setExpended}/>
+    )
 }
 
 const parseText = async (value: string): Promise<FileGetMetadataResult> => {
@@ -189,7 +231,7 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
     ), { results: [], rest: [] })
 } 
 
-export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProps): React.ReactNode => {
+export const AbilityGroups = ({ abilityIds, stats, expendedCharges, setExpendedCharges, onLoaded }: AbilityGroupsProps): React.ReactNode => {
     const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
     Logger.log("Ability", "AbilityGroups")
@@ -205,7 +247,12 @@ export const AbilityGroups = ({ abilityIds, stats, onLoaded }: AbilityGroupsProp
         } satisfies Record<ActionType, AbilityCategory>
         abilities.forEach((file: FileMetadataQueryResult<IAbilityMetadata>, index) => {
             categories[file.metadata?.action ?? ActionType.Action].content.push(
-                <AbilityToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
+                <AbilityToggleRenderer 
+                    key={index} 
+                    metadata={file.metadata} 
+                    stats={stats}
+                    expendedCharges={expendedCharges[String(file.id)]}
+                    setExpendedCharges={(value) => setExpendedCharges({ ...expendedCharges, [String(file.id)]: value })}/>
             )
         })
         setCategories(categories)

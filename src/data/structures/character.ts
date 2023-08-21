@@ -6,14 +6,15 @@ import { RollOptions } from "data/elements/roll";
 import { Attribute, DiceType, Gender } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { ICharacterMetadata } from "types/database/files/character";
-import { IClassMetadataProperties } from "types/database/files/class";
+import { IClassMetadata } from "types/database/files/class";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId } from "types/database";
 
 class CharacterData extends CreatureData implements Required<ICharacterMetadata> {
     public readonly metadata: ICharacterMetadata;
-    private readonly characterClass: IClassMetadataProperties 
+    public readonly characterClass: IClassMetadata 
+    public readonly characterSubClass?: IClassMetadata 
     public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
         if (characterClass) {
             let collection = characterClass.getModifiers(metadata?.level ?? 0, characterSubclass);
@@ -23,6 +24,7 @@ class CharacterData extends CreatureData implements Required<ICharacterMetadata>
             super(metadata, modifiers)
         }
         this.characterClass = characterClass;
+        this.characterSubClass = characterSubclass
     }
 
     // overrides
