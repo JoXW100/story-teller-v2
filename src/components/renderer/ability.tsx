@@ -11,7 +11,7 @@ import Logger from 'utils/logger';
 import AbilityFile, { IAbilityMetadata } from 'types/database/files/ability';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { RendererObject } from 'types/database/editor';
-import { RollMode } from 'types/elements';
+import { IParserMetadata, RollMode } from 'types/elements';
 import { FileType } from 'types/database/files';
 import { ObjectIdText } from 'types/database';
 import { FileGetManyMetadataResult, FileGetMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
@@ -25,6 +25,7 @@ interface AbilityCategory {
 
 type AbilityGroupsProps = React.PropsWithRef<{
     abilityIds: ObjectIdText[]
+    values?: Record<string, number>
     stats?: ICreatureStats
     expendedCharges: Record<string, number>
     setExpendedCharges: (value: Record<string, number>) => void
@@ -46,7 +47,7 @@ type AbilityLinkRendererProps = React.PropsWithRef<{
 }>
 
 type AbilityToggleRendererProps = React.PropsWithRef<{
-    metadata: IAbilityMetadata
+    metadata: IAbilityMetadata & IParserMetadata
     stats: ICreatureStats
     expendedCharges: number
     setExpendedCharges: (value: number) => void
@@ -231,7 +232,7 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
     ), { results: [], rest: [] })
 } 
 
-export const AbilityGroups = ({ abilityIds, stats, expendedCharges, setExpendedCharges, onLoaded }: AbilityGroupsProps): React.ReactNode => {
+export const AbilityGroups = ({ abilityIds, stats, values, expendedCharges, setExpendedCharges, onLoaded }: AbilityGroupsProps): React.ReactNode => {
     const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
     Logger.log("Ability", "AbilityGroups")
@@ -249,7 +250,7 @@ export const AbilityGroups = ({ abilityIds, stats, expendedCharges, setExpendedC
             categories[file.metadata?.action ?? ActionType.Action].content.push(
                 <AbilityToggleRenderer 
                     key={index} 
-                    metadata={file.metadata} 
+                    metadata={{ ...file.metadata, $values: values }} 
                     stats={stats}
                     expendedCharges={expendedCharges[String(file.id)]}
                     setExpendedCharges={(value) => setExpendedCharges({ ...expendedCharges, [String(file.id)]: value })}/>

@@ -36,6 +36,10 @@ export function asEnum<T extends Enum>(value: Enum[keyof Enum], type: T): T[keyo
     return isEnum(value, type) ? value : undefined
 }
 
+export function isNumber(value: unknown): value is number {
+    return typeof value == 'number'
+}
+
 export function asKeyOf<T extends Collection>(value: keyof Collection, type: T): keyof T | undefined {
     return Object.keys(type).includes(value) ? value as keyof Collection : undefined
 }

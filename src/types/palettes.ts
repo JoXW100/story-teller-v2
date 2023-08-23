@@ -15,6 +15,8 @@ interface Palette {
         "syntax-function-name": string
         "syntax-function-option": string
         "syntax-function-separator": string
+        "syntax-calc-value": string
+        "syntax-calc-number": string
         "syntax-bracket": string
         "syntax-variable": string
         "syntax-tab": string

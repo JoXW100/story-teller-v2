@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
-import { arrayUnique, isObjectId } from "./helpers";
+import { arrayUnique, isNumber, isObjectId } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
 import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
 import styles from 'styles/renderer.module.scss';
@@ -13,9 +13,19 @@ export class ParseError extends Error {
     }
 }
 
+enum CalcOperation {
+    None = 'none',
+    Value = 'value',
+    Add = '+',
+    Subtract = '-',
+    Multiply = '*'
+}
+
 abstract class Parser
 {
     public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
+    public static readonly matchCalcExpr = /\$\{([^\}]*)\}/g
+    public static readonly splitCalcExpr = / *(-(?![0-9]+)|[\+\*]) */g
     public static readonly matchBodyExpr = /([\{\}])/
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
     public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]\n\r]*\])?)/gi
@@ -29,6 +39,7 @@ abstract class Parser
         if (metadata instanceof FileData)
             metadata = metadata.metadata;
 
+        // Initialize variables
         let splits = text.split(this.matchBodyExpr);
         let variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
         for (var key in metadata) {
@@ -39,14 +50,22 @@ abstract class Parser
 
         // find variable content from text
         metadata.$vars = { ...metadata.$vars, [variablesKey]: this.parseVariables(splits, variables) };
+
         // replace variables in text with its respective content
         let withVars = text.replace(this.matchVarsExpr, (...x) => {
-            if (variables[x[1]]) return variables[x[1]]
-            else if (metadata[x[1]] && typeof(metadata[x[1]]) != typeof({})) return metadata[x[1]]
-            else throw new ParseError(`Unset variable '${x[1]}'`)
+            let name = x[1]
+            if (variables[name]) return variables[name]
+            else if (metadata[name] && typeof(metadata[name]) != typeof({})) return metadata[name]
+            else throw new ParseError(`Unset variable '${name}'`)
         });
 
-        splits = withVars.split(this.matchBodyExpr);
+        let withCalc = withVars.replace(this.matchCalcExpr, (...x) => {
+            let body = x[1]
+            let result = this.parseCalc(body, metadata.$values)
+            return isNaN(result) ? '' : String(result)
+        });
+
+        splits = withCalc.split(this.matchBodyExpr);
         // build tree structure
         let tree = this.buildTree(splits);
         metadata.$queries = await this.resolveQueries(tree)
@@ -88,6 +107,75 @@ abstract class Parser
                 throw error;
             throw new ParseError("Failed parsing");
         }
+    }
+
+    private static parseCalc(text: string, values: Record<string, number> = {}): number {
+        let splits = text.split(this.splitCalcExpr)
+        let parts: (number | Exclude<CalcOperation, CalcOperation.None|CalcOperation.Value>)[] = []
+        let index = 0;
+        
+        for (let i = 0; i < splits.length; i++) {
+            const part = splits[i];
+            switch (part) {
+                case CalcOperation.Add:
+                case CalcOperation.Subtract:
+                    parts[index++] = part
+                    break
+                default:
+                    let number = parseFloat(part.replace(',', '.'))
+                    if (isNaN(number)) {
+                        if (part in values) {
+                            number = values[part]
+                        } else {
+                            return NaN
+                        }                            
+                    }
+                    let left = parts[index - 2]
+                    if (index > 1 && parts[index - 1] == CalcOperation.Multiply && isNumber(left)) {
+                        parts[index - 2] = left * number
+                        parts[index - 1] = 0
+                        index--
+                    } else {
+                        parts[index++] = number
+                    }
+                    break
+            }
+            
+        }
+
+        let value = 0;
+        let operation: CalcOperation = CalcOperation.None
+        for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            switch (part) {
+                case CalcOperation.Add:
+                case CalcOperation.Subtract:
+                case CalcOperation.Multiply:
+                    if (operation !== CalcOperation.Value)
+                        throw new ParseError(`Failed parsing calculation: ${text}, unexpected ${part}`)
+                    operation = part
+                    break
+                default:
+                    switch (operation) {
+                        case CalcOperation.None:
+                            value = part;
+                            break;
+                        case CalcOperation.Add:
+                            value += part;
+                            break;
+                        case CalcOperation.Subtract:
+                            value -= part;
+                            break;
+                        default:
+                            throw new ParseError(`Failed parsing calculation: ${text}, unexpected ${part}`)
+                            
+                    }
+                    operation = CalcOperation.Value
+                    break
+            }
+        }
+
+        return value
     }
 
     private static parseVariables(splits: string[], data: Variables): Variables {

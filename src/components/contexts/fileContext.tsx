@@ -116,7 +116,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
             if (state.file && action.data?.key) {
                 let data: IParserMetadata = { ...state.file.metadata }
                 getRelativeMetadata(data, state.editFilePages)[action.data.key] = action.data.value
-                let { $vars, $queries, ...rest} = data;
+                let { $vars, $queries, $values, ...rest} = data;
 
                 state.queue.addRequest(() => {
                     Communication.setFileMetadata(state.story, state.file.id, rest).then((res) => {

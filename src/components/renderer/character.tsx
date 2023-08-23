@@ -8,7 +8,7 @@ import Localization from 'utils/localization';
 import { useFile } from 'utils/handlers/files';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
-import { CharacterProficienciesPage } from './creature';
+import { AttributesBox, ProficienciesPage } from './creature';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import CharacterData from 'data/structures/character';
@@ -20,7 +20,7 @@ import Logger from 'utils/logger';
 import CharacterFile, { ICharacterAbilityStorageData, ICharacterMetadata } from 'types/database/files/character';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
-import { Attribute, OptionalAttribute } from 'types/database/dnd';
+import { OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { ChoiceChoiceData, EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
@@ -112,6 +112,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const character =  useMemo(() => new CharacterData(file.metadata, modifiers, classData, subclassData), [file.metadata, modifiers, classData, subclassData])
     const abilities = useMemo(() => character.abilities, [character])
     const stats = useMemo(() => character.getStats(), [character])
+    const values = useMemo(() => character.getValues(), [character])
 
     const content = useParser(file.content.text, character, "$content");
     const appearance = useParser(character.appearance, character, "appearance")
@@ -170,7 +171,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             notes={notes} />
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
-                        <CharacterProficienciesPage data={character}/>
+                        <ProficienciesPage data={character}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
                         <CharacterClassPage 
@@ -181,6 +182,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
+                    <AttributesBox data={character}/>
+                    <Elements.Line/>
                     <div><Elements.Bold>Armor Class </Elements.Bold>{character.acValue}</div>
                     <div><Elements.Bold>Hit Points </Elements.Bold>
                         {`${character.healthValue} `}
@@ -199,27 +202,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             desc: "Proficiency Check"
                         }}/>
                     </div>
-                    <Elements.Line/>
-                    <Elements.Align>
-                        { Object.keys(Attribute).map((attr, index) => (
-                            <div className={styles.attributeBox} key={index}>
-                                <Elements.Bold>{attr}</Elements.Bold>
-                                <Elements.Bold>{character[Attribute[attr]] ?? 0}</Elements.Bold>
-                                <Elements.Roll options={{ 
-                                    mod: character.getAttributeModifier(Attribute[attr]).toString(), 
-                                    desc: `${attr} Check`,
-                                    tooltips: `${attr} Check`
-                                }}/>
-                                <div/>
-                                <Elements.Roll options={{ 
-                                    mod: character.getSaveModifier(Attribute[attr]).toString(), 
-                                    desc: `${attr} Save`,
-                                    tooltips: `${attr} Save`
-                                }}/>
-                            </div>
-                        ))}
-                    </Elements.Align>
-                    <Elements.Line/>
+                    <Elements.Space/>
                     { character.resistances.length > 0 && 
                         <div>
                             <Elements.Bold>Resistances </Elements.Bold>
@@ -258,7 +241,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         stats={stats}
                         expendedCharges={expendedAbilityCharges}
                         setExpendedCharges={handleSetExpendedAbilityCharges}
-                        onLoaded={handleAbilitiesLoaded}/>
+                        onLoaded={handleAbilitiesLoaded}
+                        values={values}/>
                 </Elements.Block>
             </Elements.Align>
             { character.spellAttribute !== OptionalAttribute.None &&

@@ -69,7 +69,7 @@ class Options implements Required<RollOptions> {
         if (validModes.has(this.options.mode)) {
             return this.options.mode as RollMode
         }
-        if (this.numValue == 0 || (this.numValue == 1 && this.diceValue.num == 20)) {
+        if (this.numValue == 0 || this.diceValue.num == 0 || (this.numValue == 1 && this.diceValue.num == 20)) {
             return RollMode.Mod
         }
         return RollMode.Dice

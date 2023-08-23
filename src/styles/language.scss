@@ -36,6 +36,16 @@ code {
         color: color(syntax-variable);
     }
 
+    .token.calc {
+        display: contents;
+        .token.number {
+            color: color(syntax-calc-number);
+        }
+        .token.value {
+            color: color(syntax-calc-value);
+        }
+    }
+
     .token.tab:not(.token.line + .token):not(.token:has(.token.line) + .token):not(.token:not(.tab) + .token.tab) {
         position: relative;
         &:before {

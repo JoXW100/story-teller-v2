@@ -26,6 +26,7 @@ export enum AlignDirection {
 
 interface IParserMetadata extends IFileMetadata { 
     $vars?: VariablesCollection
+    $values?: Record<string, number>
     $queries?: QueryCollection
 }
 

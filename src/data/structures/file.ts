@@ -1,6 +1,6 @@
 import { IParserMetadata, QueryCollection, VariablesCollection } from "types/elements";
 
-abstract class FileData<T extends IParserMetadata> implements IParserMetadata
+abstract class FileData<T extends IParserMetadata> implements Required<IParserMetadata>
 {
     public readonly metadata: T;
 
@@ -22,6 +22,14 @@ abstract class FileData<T extends IParserMetadata> implements IParserMetadata
 
     public set $queries(value: QueryCollection) {
         this.metadata.$queries = value
+    }
+
+    public get $values(): Record<string, number> {
+        return this.metadata.$values ?? {}
+    }
+
+    public set $values(value: Record<string, number>) {
+        this.metadata.$values = value
     }
 
     public get name(): string {

@@ -129,10 +129,28 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                     'name error': /\\[a-z0-9]+/i,
                     'bracket': /\[|\]/,
                     'option': /[a-z0-9]+(?=:)(?!:\/)/i,
+                    'calc': {
+                        pattern: /\$\{[^}]+\}/,
+                        inside: {
+                            'variable': /\$/,
+                            'bracket': /[\{\}]/,
+                            'number': /-?[0-9]+/,
+                            'value': /[a-z0-9]+/i
+                        }
+                    },
                     'separator': /,|:/,
                     'line': /\n|\r/,
                     'tab': /\t/,
-                    'text': / *\S+/ 
+                    'text': / *\S+/,
+                }
+            },
+            'calc': {
+                pattern: Parser.matchCalcExpr,
+                inside: {
+                    'variable': /\$/,
+                    'bracket': /[\{\}]/,
+                    'number': /-?[0-9]+/,
+                    'value': /[a-z0-9]+/i
                 }
             },
             'bracket': /[\{\}]/,
@@ -140,7 +158,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                 ? new RegExp(`\\$(?:${variables.join('|')})(?![a-z0-9]+)`, "i")
                 : Parser.matchVarsExpr,
             'variable error': Parser.matchVarsExpr,
-            'line': /\n/,
+            'line': /\n|\r/,
             'tab': /\t/,
             'text': / *\S+/
         }

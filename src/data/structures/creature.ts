@@ -1,6 +1,6 @@
 import { getOptionType } from "data/optionData";
 import Dice from "utils/data/dice";
-import { isEnum } from "utils/helpers";
+import { asEnum, isEnum } from "utils/helpers";
 import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
@@ -31,6 +31,20 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
             spellAttribute: this.spellAttribute,
             critRange: this.critRange
         } as ICreatureStats)
+    }
+
+    public getValues(): Record<string, number> {
+        return {
+            str: this.getAttributeModifier(Attribute.STR),
+            dex: this.getAttributeModifier(Attribute.DEX),
+            con: this.getAttributeModifier(Attribute.CON),
+            int: this.getAttributeModifier(Attribute.INT),
+            wis: this.getAttributeModifier(Attribute.WIS),
+            cha: this.getAttributeModifier(Attribute.CHA),
+            proficiency: this.proficiencyValue,
+            spellAttribute: this.getAttributeModifier(this.spellAttribute),
+            level: this.level,
+        }
     }
 
     public getAttributeModifier(attribute: Attribute | OptionalAttribute): number {

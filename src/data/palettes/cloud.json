@@ -22,6 +22,8 @@
         "syntax-function-name": "#1440ff",
         "syntax-function-option": "#0872f5",
         "syntax-function-separator": "#1440ff",
+        "syntax-calc-value": "#fe1eff",
+        "syntax-calc-number": "#9df4ff",
         "syntax-bracket": "#1a0078",
         "syntax-variable": "#fe1eff",
         "syntax-tab": "#00143c",

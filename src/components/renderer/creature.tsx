@@ -26,7 +26,7 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<ICreatureMetadata>
 }>
 
-type CreatureProficienciesPageProps = React.PropsWithRef<{
+type DataProps = React.PropsWithRef<{
     data: CreatureData 
 }>
 
@@ -39,6 +39,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const creature = useMemo(() => new CreatureData(file.metadata, modifiers), [file.metadata, modifiers])
     const abilities = useMemo(() => creature.abilities, [creature])
     const stats = useMemo(() => creature.getStats(), [creature])
+    const values = useMemo(() => creature.getValues(), [creature])
 
     const content = useParser(file.content.text, creature, "$content");
     const description = useParser(creature.description, creature, "description")
@@ -96,25 +97,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                         }}/>
                     </div>
                     <Elements.Line/>
-                    <Elements.Align>
-                        { Object.keys(Attribute).map((attr, index) => (
-                            <div className={styles.attributeBox} key={index}>
-                                <Elements.Bold>{attr}</Elements.Bold>
-                                <Elements.Bold>{creature[Attribute[attr]] ?? 0}</Elements.Bold>
-                                <Elements.Roll options={{
-                                    mod: creature.getAttributeModifier(Attribute[attr]).toString(), 
-                                    desc: `${attr} Check`,
-                                    tooltips: `${attr} Check`
-                                }}/>
-                                <div/>
-                                <Elements.Roll options={{
-                                    mod: creature.getSaveModifier(Attribute[attr]).toString(), 
-                                    desc: `${attr} Save`,
-                                    tooltips: `${attr} Save`
-                                }}/>
-                            </div>
-                        ))}
-                    </Elements.Align>
+                    <AttributesBox data={creature}/>
                     <Elements.Line/>
                     <Elements.Header2>Description</Elements.Header2>
                     { description }
@@ -169,10 +152,11 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             stats={stats} 
                             expendedCharges={expendedAbilityCharges}
                             setExpendedCharges={handleSetExpendedAbilityCharges}
-                            onLoaded={handleAbilitiesLoaded}/>
+                            onLoaded={handleAbilitiesLoaded}
+                            values={values}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
-                        <CharacterProficienciesPage data={creature}/>
+                        <ProficienciesPage data={creature}/>
                     </div>
                 </Elements.Block>
             </Elements.Align>
@@ -220,7 +204,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     )
 }
 
-export const CharacterProficienciesPage = ({ data }: CreatureProficienciesPageProps): JSX.Element => {
+export const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
     const skills = getOptionType("skill").options
     const attributes = getOptionType("attr").options;
     return (
@@ -261,6 +245,28 @@ export const CharacterProficienciesPage = ({ data }: CreatureProficienciesPagePr
         </>
     )
 }
+
+export const AttributesBox = ({ data }: DataProps): JSX.Element => (
+    <Elements.Align>
+        { Object.keys(Attribute).map((attr, index) => (
+            <div className={styles.attributeBox} key={index}>
+                <Elements.Bold>{attr}</Elements.Bold>
+                <Elements.Bold>{data[Attribute[attr]] ?? 0}</Elements.Bold>
+                <Elements.Roll options={{ 
+                    mod: data.getAttributeModifier(Attribute[attr]).toString(), 
+                    desc: `${attr} Check`,
+                    tooltips: `${attr} Check`
+                }}/>
+                <div/>
+                <Elements.Roll options={{ 
+                    mod: data.getSaveModifier(Attribute[attr]).toString(), 
+                    desc: `${attr} Save`,
+                    tooltips: `${attr} Save`
+                }}/>
+            </div>
+        ))}
+    </Elements.Align>
+)
 
 const CreatureLinkRenderer = ({ file }: CreatureLinkRendererProps): JSX.Element => {
     const description = useParser(file.metadata?.description, file.metadata, `$${file.id}.description`)
