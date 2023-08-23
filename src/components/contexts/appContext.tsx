@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo, useReducer } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import Localization from 'utils/localization'
+import Communication from 'utils/communication'
 import Storage from 'utils/storage'
 import Logger from 'utils/logger'
 import Palettes from 'data/palettes'
 import { AppContextDispatch, AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
+import { FileMetadataQueryResult } from 'types/database/responses'
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
@@ -25,7 +27,6 @@ const appReducer = (state: AppContextState, action: AppContextDispatchAction): A
     Logger.log("appContext", action.type);
     switch (action.type) {
         case 'init':
-            Localization.initialize();
             return state.loading 
                 ? { 
                     ...state, 
@@ -60,7 +61,26 @@ const appReducer = (state: AppContextState, action: AppContextDispatchAction): A
     }
 }
 
+const getCommunicationCacheEntries = (): Record<string, FileMetadataQueryResult> => {
+    let storedCache = Storage.getObject<Record<string, FileMetadataQueryResult>>("communicationCache")
+    if (storedCache) {
+        // Delete old items
+        let date = new Date()
+        date.setMonth(date.getMonth() - 2)
+        let time = date.getTime()
+        
+        for (var key in storedCache) {
+            if (storedCache[key].date < time) {
+                Storage.delete(key)
+                delete storedCache[key]
+            }
+        }
+    }
+    return storedCache ?? {}
+}
+
 const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
+    const [communicationCache, setCommunicationCache] = useState<Record<string, FileMetadataQueryResult>>(null)
     const [state, dispatch] = useReducer(appReducer, {
         loading: true,
         palette: DefaultPalette,
@@ -71,7 +91,20 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         automaticLineBreak: 0
     })
 
-    useEffect(() => { state.loading && dispatch({ type: 'init', data: null, dispatch: dispatch }) }, [])
+    useEffect(() => { 
+        Localization.initialize();
+        state.loading && dispatch({ type: 'init', data: null, dispatch: dispatch }) 
+    }, [])
+
+    useEffect(() => { 
+        if (communicationCache === null) {
+            setCommunicationCache(getCommunicationCacheEntries())
+        } else {
+            Storage.setObject("communicationCache", communicationCache)
+            Communication.initialize(communicationCache, setCommunicationCache)
+        }
+    }, [communicationCache])
+
     useEffect(() => setPalette(state.palette), [state.palette])
 
     const memoizedDispatch = useMemo<AppContextDispatch>(() => ({

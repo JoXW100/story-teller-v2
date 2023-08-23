@@ -1,12 +1,13 @@
 import type { FileType, IFile, IFileMetadata, IFileStructure } from "types/database/files"
 import type { IStory, IStoryData } from "./stories"
-import type { ObjectId } from "."
+import type { DateValue, ObjectId } from "."
 
 
 export type FileMetadataQueryResult<Metadata extends IFileMetadata = IFileMetadata> = {
     id: ObjectId
     type: FileType
     metadata: Metadata
+    date?: DateValue
 }
 
 // Stories

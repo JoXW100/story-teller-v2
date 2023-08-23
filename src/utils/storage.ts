@@ -1,4 +1,5 @@
 import { asEnum, asKeyOf } from "./helpers"
+import Logger from "./logger"
 
 abstract class Storage {
     /** Sets the value of the item at the given key */
@@ -23,6 +24,15 @@ abstract class Storage {
     static setBoolean(key: string, value: boolean): boolean {
         if (typeof window !== "undefined") {
             window.localStorage.setItem(key, value ? "true" : "false")
+            return true
+        }
+        return false
+    }
+    
+    /** Sets the value of the item at the given key */
+    static setObject<T extends object>(key: string, value: T): boolean {
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem(key, JSON.stringify(value))
             return true
         }
         return false
@@ -74,6 +84,26 @@ abstract class Storage {
             }
         }
         return undefined
+    }
+    
+    /** Sets the value of the item at the given key */
+    static getObject<T extends object>(key: string): T {
+        if (typeof window !== "undefined") {
+            let value = window.localStorage.getItem(key)
+            if (value !== null) {
+                return JSON.parse(value) as T
+            }
+        }
+        return undefined
+    }
+
+    static delete(key: string): boolean {
+        if (typeof window !== "undefined") {
+            window.localStorage.removeItem(key)
+            Logger.warn("storage.delete", key)
+            return true
+        }
+        return false
     }
 }
 

@@ -35,7 +35,6 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
                 } else {
                     return { ...prev, results: [...prev.results, value] }
                 }
-
             }, { results: [], rest: []})
             resolve(ids as any)
         })

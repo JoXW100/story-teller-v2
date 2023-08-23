@@ -1,13 +1,13 @@
 import Logger from "./logger"
 import { DBResponse, ObjectId } from "types/database"
-import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses"
+import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileMetadataQueryResult } from "types/database/responses"
 import { Open5eFetchType } from "types/open5eCompendium"
 import { FileType, IFileData, IFileMetadata, IFileStorage } from "types/database/files"
 import { IStory } from "types/database/stories"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
-export type ServerMode = "maintenance"|"running"|"failed"
+export type ServerMode = "maintenance" | "running" | "failed"
 
 export interface Open5eResponse<T> {
     readonly count: number
@@ -17,9 +17,16 @@ export interface Open5eResponse<T> {
 }
 
 abstract class Communication {
-    private static readonly _databaseRootURL = "/api/database/";
+    private static readonly _databaseRootURL = "/api/database/"
     private static readonly _serverRootURL = "/api/server";
-    private static readonly open5eRoot = "https://api.open5e.com/"
+    private static readonly _open5eRootURL = "https://api.open5e.com/"
+    private static cache: Record<string, FileMetadataQueryResult>
+    private static updateCache: (value: typeof Communication["cache"]) => void
+
+    public static initialize(cache: typeof Communication["cache"], updateCache: (value: typeof Communication["cache"]) => void): void {
+        this.cache = cache
+        this.updateCache = updateCache
+    }
 
     public static async isConnected(): Promise<boolean> {
         let res = await this.databaseFetch<boolean>('isConnected', 'GET')
@@ -78,10 +85,20 @@ abstract class Communication {
     }
 
     public static async getFile(storyId: ObjectId, fileId: ObjectId): Promise<DBResponse<FileGetResult>> {
-        return await this.databaseFetch<FileGetResult>('getFile', 'GET', {
+        let result = await this.databaseFetch<FileGetResult>('getFile', 'GET', {
             storyId: storyId, 
             fileId: fileId
         })
+
+        if (result.success) {
+            this.cache[String(result.result.id)] = {
+                id: result.result.id,
+                type: result.result.type,
+                metadata: result.result.metadata
+            }
+        }
+
+        return result
     }
 
     public static async getFileStructure(storyId: ObjectId): Promise<DBResponse<FileGetStructureResult>> {
@@ -91,15 +108,44 @@ abstract class Communication {
     }
 
     public static async getMetadata(fileId: ObjectId): Promise<DBResponse<FileGetMetadataResult>> {
-        return await this.databaseFetch<FileGetMetadataResult>('getMetadata', 'GET', {
+        if (this.cache[String(fileId)]) return { success: true, result: this.cache[String(fileId)] }
+
+        let result = await this.databaseFetch<FileGetMetadataResult>('getMetadata', 'GET', {
             fileId: fileId
         })
+
+        if (result.success) {
+            this.updateCache({ ...this.cache, [String(result.result.id)]: { ...result.result, date: Date.now() } })
+        }
+
+        return result
     }
 
     public static async getManyMetadata(fileIds: ObjectId[]): Promise<DBResponse<FileGetManyMetadataResult>> {
-        return await this.databaseFetch<FileGetManyMetadataResult>('getManyMetadata', 'GET', {
-            fileIds: fileIds
-        })
+        const { rest } = fileIds.reduce<{ cached: ObjectId[], rest: ObjectId[] }>((prev, value) => (
+            this.cache[String(value)] 
+            ? { cached: [...prev.cached, value], rest: prev.rest }
+            : { cached: prev.cached, rest: [...prev.rest, value] }
+        ), { cached: [], rest: [] }) 
+        
+
+        let cache = this.cache
+        if (rest.length > 0) {
+            let result = await this.databaseFetch<FileGetManyMetadataResult>('getManyMetadata', 'GET', {
+                fileIds: rest
+            })
+
+            if (result.success) {
+                let time = Date.now()
+                cache = { ...this.cache }
+                result.result.forEach(res => (cache[String(res.id)] = { ...res, date: time }))
+                this.updateCache(cache)
+            } else {
+                return result
+            }
+        }
+        
+        return { success: true, result: fileIds.map(id => cache[String(id)]) }
     }
 
     public static async addFile(storyId: ObjectId, holderId: ObjectId, name: string, type: FileType): Promise<DBResponse<FileAddResult>> {
@@ -131,6 +177,12 @@ abstract class Communication {
     }
 
     public static async deleteFile(storyId: ObjectId, fileId: ObjectId): Promise<DBResponse<FileDeleteFromResult>> {
+        if (String(fileId) in this.cache) {
+            let newCache = { ...this.cache }
+            delete newCache[String(fileId)]
+            this.updateCache(newCache)
+        }
+
         return await this.databaseFetch<FileDeleteFromResult>('deleteFile', 'DELETE', {
             storyId: storyId, 
             fileId: fileId 
@@ -138,6 +190,10 @@ abstract class Communication {
     }
 
     public static async convertFile(storyId: ObjectId, fileId: ObjectId, type: FileType): Promise<DBResponse<FileConvertResult>> {
+        if (String(fileId) in this.cache) {
+            this.updateCache({ ...this.cache, [String(fileId)]: { ...this.cache[String(fileId)], type: type, date: Date.now() }})
+        }
+
         return await this.databaseFetch<FileConvertResult>('convertFile', 'PUT', {
             storyId: storyId, 
             fileId: fileId,
@@ -186,6 +242,11 @@ abstract class Communication {
     }
 
     public static async setFileMetadata(storyId: ObjectId, fileId: ObjectId, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
+        this.cache[String(fileId)] = {
+            ...this.cache[String(fileId)],
+            metadata: metadata
+        }
+        
         return await this.databaseFetch<FileSetPropertyResult>('setFileMetadata', 'PUT', {
             storyId: storyId,
             fileId: fileId,
@@ -237,7 +298,7 @@ abstract class Communication {
                 let fieldQuery = fields.length > 0 
                     ? `/?fields=${fields.join(',')}&${filterQuery}`
                     : `/?${filterQuery}`
-                let data = await fetch(this.open5eRoot + type + fieldQuery)
+                let data = await fetch(this._open5eRootURL + type + fieldQuery)
                 resolve(await data.json() as Open5eResponse<T>)
             } catch (error) {
                 Logger.throw("communication.open5eFetchAll", error)
@@ -253,7 +314,7 @@ abstract class Communication {
 
     public static async open5eFetchOne<T>(type: Open5eFetchType, id: string): Promise<T | null> {
         try {
-            let data = await fetch(`${this.open5eRoot}${type}/${id}`)
+            let data = await fetch(`${this._open5eRootURL}${type}/${id}`)
             let result = await data.json() as T
             return result;
         } catch (error) {

@@ -54,6 +54,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
             setModifiers(collection);
         }
     }
+
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
         let data = Object.keys(value).reduce<Record<string, number>>((prev, key) => (
             abilities.includes(key)
@@ -66,7 +67,6 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const handleSetExpendedSpellSlots = (value: number[]) => {
         dispatch.setStorage("spellData", value)
     }
-        
 
     return (
         <>
