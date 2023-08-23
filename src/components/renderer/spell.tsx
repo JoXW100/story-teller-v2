@@ -60,7 +60,10 @@ const Spell = ({ metadata, stats, variablesKey }: SpellProps) => {
         <Elements.Align>
             <Elements.Align options={{ direction: "v", weight: "1.5" }}>
                 <Elements.Bold>{spell.name}</Elements.Bold>
-                {Localization.toText('spell-level-school', spell.level, spell.schoolName)}
+                { spell.level > 0 
+                    ? Localization.toText('spell-level-school', spell.level, spell.schoolName)
+                    : `Cantrip, ${spell.schoolName}`
+                }
             </Elements.Align>
             <Elements.Align options={{ direction: "v" }}>
                 <div><Elements.Bold>Casting</Elements.Bold>
