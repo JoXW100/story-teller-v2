@@ -417,7 +417,7 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
     // Spells
 
     public get spellAttribute(): OptionalAttribute {
-        return this.metadata.spellAttribute ?? getOptionType("optionalAttr").default
+        return asEnum(this.modifiers.spellAttribute, OptionalAttribute) ?? this.metadata.spellAttribute ?? getOptionType("optionalAttr").default
     }
 
     public get spellSlots(): number[] {
@@ -425,7 +425,7 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
     }
 
     public get spells(): ObjectIdText[] {
-        return this.metadata.spells ?? []
+        return this.modifiers.modifySpells(this.metadata.spells ?? [])
     }
 
     public get spellAttackModifier(): number {

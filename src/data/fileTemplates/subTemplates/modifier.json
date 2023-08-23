@@ -74,7 +74,7 @@
                     "type": "boolean", 
                     "conditions": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "ability"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, { "type": "any", "value": ["ability", "spell"] }] },
                         { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                     ],
                     "params": { "label": "Allow Any", "key": "allowAny", "default": false }
@@ -238,12 +238,40 @@
                 }, 
                 
                 { 
+                    "type": "linkInput", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "spell"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Spell", "key": "file", "placeholder": "Spell id...", "fileTypes": ["spe"] }
+                }, { 
+                    "type": "linkList", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "spell"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "allowAny" }, false] }
+                    ],
+                    "params": { "label": "Options", "key": "files", "fill": true, "fileTypes": ["spe"], "placeholder": "Spell file ID ..." }
+                }, 
+                
+                { 
                     "type": "number", 
                     "conditions": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
                         { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "critRange"] }
                     ],
                     "params": { "label": "Critical Range", "key": "value" }
+                },
+                
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "spellAttribute"] }
+                    ],
+                    "params": { "label": "Spell Attribute", "key": "attribute", "default": "str", "type": "attr" }
                 },
                 
                 { 

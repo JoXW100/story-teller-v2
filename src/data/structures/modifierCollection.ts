@@ -68,7 +68,12 @@ class ModifierCollectionData implements IModifierCollection {
                 && mod.allowAny) {
                 return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
+                && mod.select === SelectType.Choice
+                && mod.allowAny) {
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell] } satisfies AnyFileChoiceData}
+            } else if (mod.type === ModifierType.Add 
+                && (mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability || mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell)
                 && mod.select === SelectType.Choice
                 && !mod.allowAny) {
                 return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
@@ -126,6 +131,14 @@ class ModifierCollectionData implements IModifierCollection {
         return this.modifiers.reduce<number>((prev, modifier) => 
             modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.CritRange && modifier.value !== null
                 ? modifier.value 
+                : prev
+        , null)
+    }
+
+    public get spellAttribute(): Attribute {
+        return this.modifiers.reduce<Attribute>((prev, modifier) => 
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.SpellAttribute && modifier.attribute !== null
+                ? modifier.attribute 
                 : prev
         , null)
     }
@@ -226,6 +239,23 @@ class ModifierCollectionData implements IModifierCollection {
             return prev
         }, abilities)
     }
+
+    public modifySpells(spells: ObjectId[]): ObjectId[] {
+        return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
+            if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
+                && mod.select === SelectType.Value) {
+                return [...prev, mod.file]
+            } else if (mod.type === ModifierType.Add 
+                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
+                && mod.select === SelectType.Choice
+                && this.storage?.classData
+                && this.storage.classData[mod.id]) {
+                return [...prev, this.storage.classData[mod.id]]
+            }
+            return prev
+        }, spells)
+    }
 }
 
 class CombinedModifierCollection implements IModifierCollection {
@@ -280,6 +310,10 @@ class CombinedModifierCollection implements IModifierCollection {
         return this.c1.critRange ?? this.c2.critRange 
     }
 
+    public get spellAttribute(): Attribute {
+        return this.c1.spellAttribute ?? this.c2.spellAttribute 
+    }
+
     public getAttributeBonus(attribute: Attribute): number {
         return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
     }
@@ -319,6 +353,11 @@ class CombinedModifierCollection implements IModifierCollection {
     public modifyAbilities(abilities: ObjectIdText[]): ObjectIdText[] {
         abilities = this.c1.modifyAbilities(abilities)
         return this.c2.modifyAbilities(abilities)
+    }
+
+    public modifySpells(abilities: ObjectIdText[]): ObjectIdText[] {
+        abilities = this.c1.modifySpells(abilities)
+        return this.c2.modifySpells(abilities)
     }
 }
 

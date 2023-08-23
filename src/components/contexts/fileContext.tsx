@@ -8,6 +8,7 @@ import { getRelativeMetadata } from 'utils/helpers'
 import { FileContextDispatch, FileContextDispatchAction, FileContextProvider, FileContextState } from 'types/context/fileContext'
 import { FileGetResult } from 'types/database/responses'
 import { IParserMetadata } from 'types/elements'
+import { IFileStorage } from 'types/database/files'
 
 export const Context: React.Context<FileContextProvider> = React.createContext([null, null])
 
@@ -139,7 +140,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
 
         case 'setStorage':
             if (state.file && action.data?.key) {
-                let data = { 
+                let data: IFileStorage = { 
                     ...state.file.storage, 
                     [action.data.key]: action.data.value 
                 }

@@ -21,10 +21,10 @@ abstract class Communication {
     private static readonly _serverRootURL = "/api/server";
     private static readonly _open5eRootURL = "https://api.open5e.com/"
     private static cache: Record<string, FileMetadataQueryResult>
-    private static updateCache: (value: typeof Communication["cache"]) => void
+    private static updateCache: (value: Record<string, FileMetadataQueryResult>) => void
 
-    public static initialize(cache: typeof Communication["cache"], updateCache: (value: typeof Communication["cache"]) => void): void {
-        this.cache = cache
+    public static initialize(cache: Record<string, FileMetadataQueryResult>, updateCache: (value: Record<string, FileMetadataQueryResult>) => void): void {
+        this.cache = cache ?? {}
         this.updateCache = updateCache
     }
 

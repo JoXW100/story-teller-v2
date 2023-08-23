@@ -111,6 +111,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const subclassData = useMemo(() => new ClassData(subclassFile?.metadata, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile])
     const character =  useMemo(() => new CharacterData(file.metadata, modifiers, classData, subclassData), [file.metadata, modifiers, classData, subclassData])
     const abilities = useMemo(() => character.abilities, [character])
+    const spells = useMemo(() => character.spells, [character])
     const stats = useMemo(() => character.getStats(), [character])
     const values = useMemo(() => character.getValues(), [character])
 
@@ -276,7 +277,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             </Elements.Align>
                     </Elements.Align>
                     <SpellGroups 
-                        spellIds={character.spells} 
+                        spellIds={spells} 
                         spellSlots={character.spellSlots} 
                         expendedSlots={expendedSpellSlots}
                         setExpendedSlots={handleSetExpendedSpellSlots}
@@ -344,7 +345,7 @@ const CharacterClassPage = ({ character, classData, setStorage }: CharacterClass
     
     const handleChange = (value: any, key: string) => {
         let validStorage = Object.keys(storage).reduce((prev, key) => (
-            Object.keys(choices).includes(key) ? { ...prev, [key]: storage[key] } : prev
+            Object.keys(choices).includes(key) || key === "$subclass" ? { ...prev, [key]: storage[key] } : prev
         ), {})
         setStorage("classData", { ...validStorage, [key]: value });
     }

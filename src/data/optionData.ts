@@ -386,14 +386,16 @@ const OptionTypes = {
         default: ModifierAddRemoveTypeProperty.Proficiency,
         options: {
             [ModifierAddRemoveTypeProperty.Proficiency]: "Proficiency",
-            [ModifierAddRemoveTypeProperty.Ability]: "Ability"
+            [ModifierAddRemoveTypeProperty.Ability]: "Ability",
+            [ModifierAddRemoveTypeProperty.Spell]: "Spell"
         }
     } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>,
     "modifierSetTypeProperty": {
         enum: ModifierSetTypeProperty,
         default: ModifierSetTypeProperty.CritRange,
         options: {
-            [ModifierSetTypeProperty.CritRange]: "Critical Range"
+            [ModifierSetTypeProperty.CritRange]: "Critical Range",
+            [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute"
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "restType": {

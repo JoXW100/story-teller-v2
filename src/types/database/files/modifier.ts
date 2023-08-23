@@ -13,11 +13,13 @@ export enum ModifierBonusTypeProperty {
 
 export enum ModifierAddRemoveTypeProperty {
     Proficiency = "proficiency",
-    Ability = "ability"
+    Ability = "ability",
+    Spell = "spell"
 }
 
 export enum ModifierSetTypeProperty {
-    CritRange = "critRange"
+    CritRange = "critRange",
+    SpellAttribute = "spellAttribute"
 }
 
 export enum ModifierType {

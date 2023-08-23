@@ -26,6 +26,7 @@ interface IModifierCollection {
 
     // Set
     critRange: number
+    spellAttribute: Attribute
 
     // Add / Remove
     modifyProficienciesArmor: (proficiencies: ArmorType[], onlyRemove?: boolean) => ArmorType[]
@@ -35,6 +36,7 @@ interface IModifierCollection {
     modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
     modifyProficienciesSkill: (proficiencies: Skill[], onlyRemove?: boolean) => Skill[]
     modifyAbilities: (abilities: ObjectIdText[]) => ObjectIdText[]
+    modifySpells: (spells: ObjectIdText[]) => ObjectIdText[]
 }
 
 export type {
