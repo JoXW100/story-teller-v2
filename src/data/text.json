@@ -83,6 +83,8 @@
             "settingsPage-rowNumbers": "Show row numbers: ",
             "settingsPage-colorFileByType": "Color files by type:",
             "settingsPage-automaticLineBreak": "Line break at character count:",
+            "settingsPage-cashedEntries": "Cached files: @0",
+            "settingsPage-clearCache": "Clear Cache",
             "helpMenu-close": "Close help menu",
             "helpMenu-title": "Help Menu",
             "helpMenu-prompt": "Search: ",

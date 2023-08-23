@@ -28,6 +28,10 @@ abstract class Communication {
         this.updateCache = updateCache
     }
 
+    public static get cachedEntries(): FileMetadataQueryResult[] {
+        return Object.values(this.cache)
+    }
+
     public static async isConnected(): Promise<boolean> {
         let res = await this.databaseFetch<boolean>('isConnected', 'GET')
         return res.success && res.result

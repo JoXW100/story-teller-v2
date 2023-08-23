@@ -8,9 +8,10 @@ import Checkbox from './common/checkbox';
 import Palettes from 'data/palettes';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
+import Communication from 'utils/communication';
+import { isEnum } from 'utils/helpers';
 import { ViewMode } from 'types/context/appContext';
 import styles from 'styles/pages/settingsPage.module.scss';
-import { isEnum } from 'utils/helpers';
 
 type SettingsPageProps = React.PropsWithRef<{
     returnURL?: string
@@ -26,6 +27,11 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
     const palettes = Object.keys(Palettes).reduce<Record<string, string>>((prev, val) => (
         { ...prev, [val]: Palettes[val].name }
     ), {}) 
+
+    const handleClearCache = () => {
+        dispatch.clearCommunicationCache()
+    }
+
     return (
         <div className={styles.main}>
             <div className={styles.header}>
@@ -86,6 +92,15 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         className={styles.checkbox}
                         value={context.automaticLineBreak > 0}
                         onChange={(value) => dispatch.setAutomaticLineBreak(value ? 80 : 0)}/>
+                </div>
+                <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-cashedEntries", Communication.cachedEntries.length)}</label> 
+                    <button 
+                        className={styles.button} 
+                        onClick={handleClearCache}
+                        disabled={Communication.cachedEntries.length == 0}>
+                        {Localization.toText("settingsPage-clearCache")}
+                    </button>
                 </div>
             </div>
         </div>

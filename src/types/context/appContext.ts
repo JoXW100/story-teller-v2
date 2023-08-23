@@ -22,6 +22,7 @@ interface AppContextDispatch extends ContextDispatch {
     setEnableRowNumbers: (isEnabled: boolean) => void
     setEnableColorFileByType: (isEnabled: boolean) => void
     setAutomaticLineBreak: (count: number) => void
+    clearCommunicationCache: () => void
 }
 
 type AppContextDispatchAction = 

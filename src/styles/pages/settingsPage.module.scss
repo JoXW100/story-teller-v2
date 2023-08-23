@@ -93,20 +93,28 @@ $rowSize: 30px;
 
     & > :not(label) {
         max-width: $controlWidth;
+        height: 100%;
     }
+}
+
+.button {
+    width: 100%;
 }
 
 .dropdownItem {
     height: $rowSize !important;
+    width: 100%;
 }
 
 .checkbox {
     margin-left: auto;
+    width: $rowSize;
+    height: $rowSize;
 }
 
 .numberInput {
     height: 100%;
     margin-right: 2px;
     text-indent: 5px;
-    width: $controlWidth - $rowSize - 5px;
+    width: $controlWidth - $rowSize - 2px;
 }

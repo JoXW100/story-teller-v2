@@ -114,6 +114,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
         setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }),
         setAutomaticLineBreak: (count: number) => dispatch({ type: 'setAutomaticLineBreak', data: count }),
+        clearCommunicationCache: () => setCommunicationCache({})
     }), [dispatch])
 
     return (
