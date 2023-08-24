@@ -1,6 +1,8 @@
 @import 'styles/colors.scss';
 @import 'styles/constants.scss';
 @import 'styles/prefabs.scss';
+@import 'styles/fonts.scss';
+
 $size: 20px;
 
 .main {
@@ -52,6 +54,18 @@ $size: 20px;
 
     &[data=template] {
         color: color(syntax-variable)
+    }
+}
+
+.inputRow {
+    display: grid;
+    grid-template-columns: $labelWidth 1fr;
+    max-height: $size;
+
+    & > label {
+        @include fontNoLineBreak;
+        display: flex;
+        align-items: center;
     }
 }
 

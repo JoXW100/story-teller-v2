@@ -29,6 +29,10 @@ interface ICharacterAbilityStorageData {
 
 interface ICharacterStorage extends IFileStorage {
     classData?: Record<string, any>
+    cantrips?: ObjectId[]
+    learnedSpells?: ObjectId[]
+    preparedSpells?: ObjectId[]
+
     abilityData?: Record<string, ICharacterAbilityStorageData>
     spellData?: number[]
 }

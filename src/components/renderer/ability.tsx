@@ -3,10 +3,10 @@ import Elements from 'data/elements';
 import AbilityData from 'data/structures/ability';
 import EffectRenderer from './effect';
 import ChargesRenderer from './chargeToggle';
+import CollapsibleGroup from 'components/common/collapsibleGroup';
 import { toAbility } from 'utils/importers/stringFormatAbilityImporter';
 import { useParser } from 'utils/parser';
 import { ProcessFunction, useFiles } from 'utils/handlers/files';
-import Localization from 'utils/localization';
 import Logger from 'utils/logger';
 import AbilityFile, { IAbilityMetadata } from 'types/database/files/ability';
 import ICreatureStats from 'types/database/files/iCreatureStats';
@@ -30,10 +30,6 @@ type AbilityGroupsProps = React.PropsWithRef<{
     expendedCharges: Record<string, number>
     setExpendedCharges: (value: Record<string, number>) => void
     onLoaded?: (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => void 
-}>
-
-type AbilityGroupProps = React.PropsWithChildren<{
-    header: string
 }>
 
 type AbilityFileRendererProps = React.PropsWithRef<{
@@ -265,32 +261,11 @@ export const AbilityGroups = ({ abilityIds, stats, values, expendedCharges, setE
     return !loading && Object.keys(categories)
         .filter((type: ActionType) => categories[type].content.length > 0)
         .map((type: ActionType) => (
-            <AbilityGroup key={type} header={categories[type].header}>
+            <CollapsibleGroup key={type} header={categories[type].header}>
                 { categories[type].content }
-            </AbilityGroup>
+            </CollapsibleGroup>
         )
     )
-}
-
-const AbilityGroup = ({ header, children }: AbilityGroupProps): JSX.Element => {
-    const [open, setOpen] = useState(true)
-    const tooltips = open 
-        ? Localization.toText('common-collapse')
-        : Localization.toText('common-expand')
-    return <>
-        { header && (
-            <div className={styles.abilityGroupHeader} data={open ? "open" : "closed"}>
-                <button 
-                    onClick={() => setOpen(!open)}
-                    tooltips={tooltips}>
-                    <Elements.Header2>
-                        {header}
-                    </Elements.Header2>
-                </button>
-            </div>
-        )}
-        { open && children }
-    </>
 }
 
 const AbilityRenderer: RendererObject<AbilityFile> = {

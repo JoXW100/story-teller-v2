@@ -275,12 +275,12 @@ export const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExp
                         <Elements.Bold> 
                             {level === 0 ? 'Cantrips:' : `Level ${level}:`} 
                         </Elements.Bold>
-                        { level > 0 && (
+                        { level > 0 &&
                             <ChargesRenderer 
                                 charges={spellSlots[level - 1]}
                                 expended={expendedSlots[level - 1]}
                                 setExpended={(value) => handleSetExpended(value, level)}/>
-                        )}
+                        }
                     </Elements.Row>
                     { categories[level] ?? <Elements.Space/> }
                 </React.Fragment>

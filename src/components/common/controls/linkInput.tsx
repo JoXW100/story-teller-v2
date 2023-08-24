@@ -11,6 +11,7 @@ type EditLinkInputComponentProps = React.PropsWithRef<{
     value: ObjectId
     placeholder?: string
     fileTypes?: FileType[]
+    allowRemove?: boolean
     onChange: (value: ObjectId) => void
 }>
 
@@ -20,7 +21,7 @@ interface EditLinkInputState {
     highlight: boolean
 }
 
-const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
+const LinkInput = ({ className, value, placeholder, fileTypes, allowRemove = true, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
     const [file, loading] = useFile(value)
     const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
@@ -93,12 +94,14 @@ const LinkInput = ({ className, value, placeholder, fileTypes, onChange }: EditL
                 data={state.highlight ? "highlight" : undefined}
                 disabled={valid}
                 error={String(state.error)}/>
-            <button 
-                className={styles.button} 
-                onClick={handleRemove} 
-                disabled={!valid}>
-                <RemoveIcon sx={{ width: '100%' }}/>
-            </button>
+            { allowRemove &&
+                <button 
+                    className={styles.button} 
+                    onClick={handleRemove} 
+                    disabled={!valid}>
+                    <RemoveIcon sx={{ width: '100%' }}/>
+                </button>
+            }
         </div>
     )
 }

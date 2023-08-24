@@ -15,8 +15,8 @@ type ListTemplateMenuProps<E, T extends E> = React.PropsWithoutRef<{
     onChange: (items: T[]) => void
     validateInput?: (value: E, values: T[]) => value is T
     Component: (props: ListTemplateComponent<T>) => React.ReactNode
-    EditComponent: (props: ListTemplateComponent<E>) => React.ReactNode
-    defaultValue: E
+    EditComponent?: (props: ListTemplateComponent<E>) => React.ReactNode
+    defaultValue?: E
     values: T[]
     addLast?: boolean
 }>
@@ -51,17 +51,22 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
     
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
-            <div className={styles.addRow}>
-                <div className={styles.collection}>
-                    <EditComponent value={value} values={values} index={-1} onUpdate={(value) => handleEditChange(value)}/>
+            { EditComponent &&
+                <div className={styles.addRow}>
+                    <div className={styles.collection}>
+                        <EditComponent value={value} values={values} index={-1} onUpdate={(value) => handleEditChange(value)}/>
+                    </div>
+                    <button className={styles.button} onClick={handleAdd} disabled={validateInput && !validateInput(value, values ?? [])}>
+                        <AddIcon sx={{ width: '100%' }}/>
+                    </button>
                 </div>
-                <button className={styles.button} onClick={handleAdd} disabled={validateInput && !validateInput(value, values ?? [])}>
-                    <AddIcon sx={{ width: '100%' }}/>
-                </button>
-            </div>
+            }
             <div className={styles.content}>
                 { values?.map((value, index) => (
-                    <TemplateListRow key={index} onClick={() => handleRemove(index)}> 
+                    <TemplateListRow 
+                        key={index} 
+                        removable={EditComponent !== undefined} 
+                        onClick={() => handleRemove(index)}> 
                         <Component value={value} values={values} index={index} onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 ))}
@@ -71,18 +76,21 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
 }
 
 type TemplateListRowProps = React.PropsWithChildren<{
+    removable: boolean
     onClick: () => void
 }>
 
-const TemplateListRow = ({ children, onClick }: TemplateListRowProps): JSX.Element => {
+const TemplateListRow = ({ children, removable, onClick }: TemplateListRowProps): JSX.Element => {
     return (
         <div className={styles.row}>
             <div className={styles.collection}>
                 { children }
             </div>
-            <button className={styles.button} onClick={onClick}>
-                <RemoveIcon sx={{ width: '100%' }}/>
-            </button>
+            { removable &&
+                <button className={styles.button} onClick={onClick}>
+                    <RemoveIcon sx={{ width: '100%' }}/>
+                </button>
+            }
         </div>
     )
 }

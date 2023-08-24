@@ -22,7 +22,7 @@
             },
             {
                 "type": "group",
-                "params": { "label": "Options", "open": true },
+                "params": { "label": "Class", "open": true },
                 "content": [
                     {
                         "type": "boolean",
@@ -42,6 +42,78 @@
                         "type": "linkList", 
                         "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "isSubclass" }, false] }],
                         "params": { "label": "Subclasses", "key": "subclasses", "fileTypes": ["cla"], "placeholder": "Class file ID ..." }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Spells", "open": false },
+                "content": [
+                    {
+                        "type": "enum",
+                        "params": { "label": "Spell Attribute", "key": "spellAttribute", "type": "optionalAttr", "default": "none"  }
+                    },
+                    {
+                        "type": "boolean",
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                        "params": { "label": "Can Ritual-Cast", "key": "canRitualCast", "default": false }
+                    },
+                    {
+                        "type": "staticList",
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                        "params": { "label": "Spell slots", "key": "spellSlots", "type": "list", "default": [], "labels": [
+                            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
+                            "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20"
+                        ]}
+                    },
+                    {
+                        "type": "staticList",
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                        "params": { "label": "Known Cantrips", "key": "cantripSlots", "type": "number", "default": 0, "labels": [
+                            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
+                            "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20"
+                        ]}
+                    },
+                    {
+                        "type": "boolean",
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                        "params": { "label": "Knows All", "key": "learnedAll", "default": false }
+                    },
+                    {
+                        "type": "staticList",
+                        "conditions": [
+                            { "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "learnedAll" }, false] }
+                        ],
+                        "params": { "label": "Known Spells", "key": "learnedSlots", "type": "number", "default": 0, "labels": [
+                            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
+                            "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20"
+                        ]}
+                    },
+                    
+                    {
+                        "type": "boolean",
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                        "params": { "label": "Prepared All", "key": "preparationAll", "default": false }
+                    },
+                    {
+                        "type": "enum",
+                        "conditions": [
+                            { "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "preparationAll" }, false] }
+                        ],
+                        "params": { "label": "Prepared Scaling", "key": "preparationSlotsScaling", "type": "optionalAttr", "default": "none"  }
+                    },
+                    {
+                        "type": "staticList",
+                        "conditions": [
+                            { "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "preparationAll" }, false] }
+                        ],
+                        "params": { "label": "Prepared Spells", "key": "preparationSlots", "type": "number", "default": 0, "labels": [
+                            "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10",
+                            "Level 11", "Level 12", "Level 13", "Level 14", "Level 15", "Level 16", "Level 17", "Level 18", "Level 19", "Level 20"
+                        ]}
                     }
                 ]
             },

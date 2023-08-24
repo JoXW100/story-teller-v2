@@ -12,7 +12,7 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
     const values: (string | number)[] = (metadata && metadata[params.key]) ?? []
         
     const handleChange = (values: string[]) => {
-        dispatch.setMetadata(params.key, values)
+        dispatch.setMetadata(params.key, values.map(value => parseInt(value)))
     }
 
     const handleValidate = (value: string | number): value is string | number => {

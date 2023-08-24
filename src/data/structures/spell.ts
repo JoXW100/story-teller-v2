@@ -7,6 +7,9 @@ class SpellData extends CreatureActionData<ISpellMetadata> implements Required<I
     public get level(): number {
         return this.metadata.level ?? 1
     }
+    public get levelText(): string {
+        return this.level === 0 ? "Cantrip" : `Level ${this.level}`
+    }
 
     public get school(): MagicSchool {
         return this.metadata.school ?? getOptionType("magicSchool").default

@@ -3,11 +3,12 @@ import FileData from "./file";
 import ModifierData from "./modifier";
 import ModifierCollectionData from "./modifierCollection";
 import { getOptionType } from "data/optionData";
-import { DiceType } from "types/database/dnd";
+import { DiceType, OptionalAttribute } from "types/database/dnd";
 import { ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata, IClassMetadataProperties } from "types/database/files/class";
 import { IModifier } from "types/database/files/modifier";
 import { IModifierCollection } from "types/database/files/modifierCollection";
+import { ObjectIdText } from "types/database";
 
 class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage
@@ -33,6 +34,39 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
 
     public get subclasses(): ObjectId[] {
         return this.metadata.subclasses ?? [];
+    }
+
+    public get spellAttribute(): OptionalAttribute {
+        return this.metadata.spellAttribute ?? getOptionType("optionalAttr").default
+    }
+
+    public get spellSlots(): number[][] {
+        return this.metadata.spellSlots ?? []
+    }
+
+    public get preparationSlots(): number[] {
+        return this.metadata.preparationSlots ?? []
+    }
+    public get preparationSlotsScaling(): OptionalAttribute {
+        return this.metadata.preparationSlotsScaling ?? getOptionType("optionalAttr").default
+    }
+    public get preparationAll(): boolean {
+        return this.metadata.preparationAll ?? false
+    }
+
+    public get cantripSlots(): number[] {
+        return this.metadata.cantripSlots ?? []
+    }
+
+    public get learnedSlots(): number[] {
+        return this.metadata.learnedSlots ?? []
+    }
+    public get learnedAll(): boolean {
+        return this.metadata.learnedAll ?? false
+    }
+
+    public get canRitualCast(): boolean {
+        return this.metadata.canRitualCast ?? false
     }
 
     public getModifiers(level: number, subclass?: ClassData): IModifierCollection {

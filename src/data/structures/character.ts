@@ -1,30 +1,33 @@
 import Dice from "utils/data/dice";
 import CreatureData from "./creature";
-import ClassData from "./classData";
+import ClassData from "./class";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
-import { Attribute, DiceType, Gender } from "types/database/dnd";
+import { asEnum } from "utils/helpers";
+import { Attribute, DiceType, Gender, OptionalAttribute } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
-import { ICharacterMetadata } from "types/database/files/character";
+import { ICharacterMetadata, ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata } from "types/database/files/class";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
-import { ObjectId } from "types/database";
+import { ObjectId, ObjectIdText } from "types/database";
 
 class CharacterData extends CreatureData implements Required<ICharacterMetadata> {
     public readonly metadata: ICharacterMetadata;
-    public readonly characterClass: IClassMetadata 
-    public readonly characterSubClass?: IClassMetadata 
+    public readonly storage: ICharacterStorage;
+    public readonly characterClass: ClassData 
+    public readonly characterSubClass: ClassData 
+    
     public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
         if (characterClass) {
             let collection = characterClass.getModifiers(metadata?.level ?? 0, characterSubclass);
             super(metadata, collection?.join(modifiers) ?? modifiers)
         } else {
-            characterClass = new ClassData()
             super(metadata, modifiers)
         }
-        this.characterClass = characterClass;
-        this.characterSubClass = characterSubclass
+        this.characterClass = characterClass ?? new ClassData();
+        this.characterSubClass = characterSubclass ?? new ClassData()
+        this.storage = characterClass?.storage ?? characterSubclass?.storage ?? {}
     }
 
     // overrides
@@ -88,6 +91,40 @@ class CharacterData extends CreatureData implements Required<ICharacterMetadata>
         }
     }
 
+    public override get spells(): ObjectIdText[] {
+        let spells = this.metadata.spells ?? []
+        if ((this.characterClass.spellAttribute !== OptionalAttribute.None && this.characterClass.preparationAll )
+         || (this.characterSubClass.spellAttribute !== OptionalAttribute.None && this.characterSubClass.preparationAll)) {
+            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.learnedSpells ?? [])]
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None || this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.preparedSpells ?? [])]
+        }
+        return this.modifiers.modifySpells(spells)
+    }
+
+    public override get spellAttribute(): OptionalAttribute {
+        let attribute = asEnum(this.modifiers.spellAttribute, OptionalAttribute)
+        if (attribute) {
+            return attribute
+        } else if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.spellAttribute
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.spellAttribute
+        } else {
+            return this.metadata.spellAttribute ?? getOptionType("optionalAttr").default
+        }
+    }
+
+    public override get spellSlots(): number[] {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.spellSlots[this.level - 1] ?? []
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.spellSlots[this.level - 1] ?? []
+        } else {
+            return this.metadata.spellSlots ?? []
+        }
+    }
+
     // Metadata
 
     public get simple(): boolean {
@@ -145,6 +182,74 @@ class CharacterData extends CreatureData implements Required<ICharacterMetadata>
 
     public get classFile(): ObjectId {
         return this.metadata.classFile ?? null
+    }
+
+    // Spells
+    
+    public get preparationSlots(): number {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            let mod = this.getAttributeModifier(this.characterSubClass.preparationSlotsScaling)
+            return (this.characterSubClass.preparationSlots[this.level - 1] ?? 0) + mod
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            let mod = this.getAttributeModifier(this.characterClass.preparationSlotsScaling)
+            return (this.characterClass.preparationSlots[this.level - 1] ?? 0) + mod
+        } else {
+            return 0
+        }
+    }
+    
+    public get preparationAll(): boolean {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.preparationAll
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.preparationAll
+        } else {
+            return false
+        }
+    }
+    
+    public get cantripSlots(): number {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.cantripSlots[this.level - 1] ?? 0
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.cantripSlots[this.level - 1] ?? 0
+        } else {
+            return 0
+        }
+    }
+    
+    public get learnedSlots(): number {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.learnedSlots[this.level - 1] ?? 0
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.learnedSlots[this.level - 1] ?? 0
+        } else {
+            return 0
+        }
+    }
+
+    public get learnedAll(): boolean {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.learnedAll
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.learnedAll
+        } else {
+            return false
+        }
+    }
+
+    public get maxSpellLevel(): number {
+        return this.spellSlots.length
+    }
+
+    public get canRitualCast(): boolean {
+        if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterSubClass.canRitualCast
+        } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
+            return this.characterClass.canRitualCast
+        } else {
+            return false
+        }
     }
 }
 

@@ -93,6 +93,13 @@ interface ListTemplateParams extends IFileTemplateParams {
     placeholder?: string
     fill?: boolean
 }
+
+interface StaticListTemplateParams extends IFileTemplateParams {
+    default?: number | number[]
+    type: "number" | "list"
+    labels: string[]
+}
+
 interface ItemListTemplateParams extends IFileTemplateParams {
     template: string
     default?: string
@@ -168,6 +175,7 @@ type TemplateComponent =
     | EnumTemplateComponent
     | GroupTemplateComponent
     | ListTemplateComponent
+    | StaticListTemplateComponent
     | ItemListTemplateComponent
     | LinkListTemplateComponent
     | LinkInputTemplateComponent
@@ -207,6 +215,12 @@ abstract class ListTemplateComponent implements ITemplateComponent {
     type: EditInputType.List
     conditions?: TemplateCondition[]
     params?: ListTemplateParams;
+}
+
+abstract class StaticListTemplateComponent implements ITemplateComponent {
+    type: EditInputType.StaticList
+    conditions?: TemplateCondition[]
+    params?: StaticListTemplateParams;
 }
 
 abstract class ItemListTemplateComponent implements ITemplateComponent {
@@ -289,6 +303,7 @@ export enum EditInputType {
     Textarea = 'textarea',
     Number = 'number',
     List = 'list',
+    StaticList = 'staticList',
     ItemList = 'itemList',
     LinkList = 'linkList',
     LinkInput = 'linkInput',
@@ -312,6 +327,7 @@ export type {
     EnumTemplateParams,
     GroupTemplateParams,
     ListTemplateParams,
+    StaticListTemplateParams,
     ItemListTemplateParams,
     LinkListTemplateParams,
     LinkInputTemplateParams,

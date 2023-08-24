@@ -205,7 +205,6 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     max-height: $size;
     flex: 1;
     min-width: 0;
-    gap: 0 !important;
 }
 
 .editSelectionMenu {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
-import { arrayUnique, isNumber, isObjectId } from "./helpers";
+import { arrayUnique, isEnum, isNumber, isObjectId } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
 import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
 import styles from 'styles/renderer.module.scss';
@@ -18,14 +18,17 @@ enum CalcOperation {
     Value = 'value',
     Add = '+',
     Subtract = '-',
-    Multiply = '*'
+    Multiply = '*',
+    DivideDown = '>/',
+    DivideUp = '</'
 }
+const OperationsOrder: CalcOperation[] = [CalcOperation.Multiply, CalcOperation.DivideDown, CalcOperation.DivideUp, CalcOperation.Subtract, CalcOperation.Add]
 
 abstract class Parser
 {
     public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
     public static readonly matchCalcExpr = /\$\{([^\}]*)\}/g
-    public static readonly splitCalcExpr = / *(-(?![0-9]+)|[\+\*]) */g
+    public static readonly splitCalcExpr = / *(-(?![0-9]+)|\+|\*|\<\/|\>\/) */g
     public static readonly matchBodyExpr = /([\{\}])/
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
     public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]\n\r]*\])?)/gi
@@ -111,71 +114,46 @@ abstract class Parser
 
     private static parseCalc(text: string, values: Record<string, number> = {}): number {
         let splits = text.split(this.splitCalcExpr)
-        let parts: (number | Exclude<CalcOperation, CalcOperation.None|CalcOperation.Value>)[] = []
-        let index = 0;
-        
-        for (let i = 0; i < splits.length; i++) {
-            const part = splits[i];
-            switch (part) {
-                case CalcOperation.Add:
-                case CalcOperation.Subtract:
-                    parts[index++] = part
-                    break
-                default:
-                    let number = parseFloat(part.replace(',', '.'))
-                    if (isNaN(number)) {
-                        if (part in values) {
-                            number = values[part]
-                        } else {
-                            return NaN
-                        }                            
-                    }
-                    let left = parts[index - 2]
-                    if (index > 1 && parts[index - 1] == CalcOperation.Multiply && isNumber(left)) {
-                        parts[index - 2] = left * number
-                        parts[index - 1] = 0
-                        index--
-                    } else {
-                        parts[index++] = number
-                    }
-                    break
-            }
-            
-        }
+        let parts: (number | CalcOperation)[] = splits.map(split => (
+            isEnum(split, CalcOperation) ? split : values[split] ?? parseFloat(split.replace(',', '.'))
+        ))
 
-        let value = 0;
-        let operation: CalcOperation = CalcOperation.None
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
-            switch (part) {
-                case CalcOperation.Add:
-                case CalcOperation.Subtract:
-                case CalcOperation.Multiply:
-                    if (operation !== CalcOperation.Value)
-                        throw new ParseError(`Failed parsing calculation: ${text}, unexpected ${part}`)
-                    operation = part
-                    break
-                default:
-                    switch (operation) {
-                        case CalcOperation.None:
-                            value = part;
-                            break;
-                        case CalcOperation.Add:
-                            value += part;
-                            break;
-                        case CalcOperation.Subtract:
-                            value -= part;
-                            break;
-                        default:
-                            throw new ParseError(`Failed parsing calculation: ${text}, unexpected ${part}`)
-                            
+        OperationsOrder.forEach(operation => {
+            for (let i = 0; i < parts.length - 1; i++) {
+                if (i > 0) {
+                    let left  = parts[i - 1]
+                    let right = parts[i + 1]
+                    if (i > 0 && parts[i] === operation && isNumber(left) && isNumber(right)) {
+                        switch (operation) {
+                            case CalcOperation.Add:
+                                parts = [...parts.slice(0, i - 1), left + right, ...parts.slice(i + 2)]
+                                i--
+                                break;
+                            case CalcOperation.Subtract:
+                                parts = [...parts.slice(0, i - 1), left - right, ...parts.slice(i + 2)]
+                                i--
+                                break;
+                            case CalcOperation.Multiply:
+                                parts = [...parts.slice(0, i - 1), left * right, ...parts.slice(i + 2)]
+                                i--
+                                break;
+                            case CalcOperation.DivideDown:
+                                parts = [...parts.slice(0, i - 1), Math.floor(left / right), ...parts.slice(i + 2)]
+                                i--
+                                break;
+                            case CalcOperation.DivideUp:
+                                parts = [...parts.slice(0, i - 1), Math.ceil(left / right), ...parts.slice(i + 2)]
+                                i--
+                                break;
+                            default:
+                                throw new ParseError(`Failed parsing calculation: ${text}, operation not defined for: ${operation}`)
+                        }
                     }
-                    operation = CalcOperation.Value
-                    break
+                }
             }
-        }
+        })
 
-        return value
+        return isNumber(parts[0]) ? parts[0] : NaN
     }
 
     private static parseVariables(splits: string[], data: Variables): Variables {

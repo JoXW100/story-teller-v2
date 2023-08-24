@@ -13,6 +13,7 @@ import Option from './option';
 import Publish from './publish';
 import Selection from './selection';
 import SelectionInput from './selectionInput';
+import StaticList from './staticList';
 import Navigation from './navigation';
 import { IFileTemplateParams } from 'types/templates';
 
@@ -37,6 +38,7 @@ const Components = {
     Publish,
     Selection,
     SelectionInput,
+    StaticList,
     Navigation
 }
 

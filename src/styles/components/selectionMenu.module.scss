@@ -20,7 +20,6 @@ $height: 100px;
     display: grid;
     grid-template-columns: $labelWidth 1fr;
     height: $size;
-    display: flex;
     align-items: center;
     background-color: inherit;
     user-select: text;

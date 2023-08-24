@@ -4,7 +4,7 @@ import styles from 'styles/components/listMenu.module.scss';
 type ListMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string
-    onChange: (selection: string[]) => void
+    onChange: (selection: (string | number)[]) => void
     validateInput?: (value: string | number, values: (string | number)[]) => value is (string | number)
     values: (string | number)[]
     type: "text" | "number"

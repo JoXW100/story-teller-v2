@@ -1,6 +1,6 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
 import { ObjectId } from ".."
-import type { DiceType } from "../dnd"
+import type { DiceType, OptionalAttribute } from "../dnd"
 import type { IModifier } from "./modifier"
 
 interface IClassContent extends IFileContent {
@@ -35,6 +35,16 @@ interface IClassMetadataProperties {
     hitDice?: DiceType
     subclassLevel: number
     subclasses?: ObjectId[]
+    // Spells
+    spellAttribute?: OptionalAttribute
+    spellSlots?: number[][]
+    preparationSlots?: number[]
+    preparationSlotsScaling?: OptionalAttribute
+    preparationAll?: boolean
+    cantripSlots?: number[]
+    learnedSlots?: number[]
+    learnedAll?: boolean
+    canRitualCast?: boolean
 }
 
 interface IClassMetadata extends IClassMetadataProperties, IClassLevels, IFileMetadata {

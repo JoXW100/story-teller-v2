@@ -48,7 +48,6 @@ const NumberInput = ({ value, setValue, className, decimal = false, disabled = f
             className={className}
             disabled={disabled}
             value={inputText}
-            step={1}
             error={String(error)}/>
     );
 }

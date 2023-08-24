@@ -1,11 +1,15 @@
 import React, { useContext, useMemo, useState } from 'react';
+import RemoveIcon from '@mui/icons-material/Remove';
+import PrepareIcon from '@mui/icons-material/ImportContactsSharp';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
 import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
 import LinkInput from 'components/common/controls/linkInput';
 import { Context } from 'components/contexts/fileContext';
+import CollapsibleGroup from 'components/common/collapsibleGroup';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
-import { useFile } from 'utils/handlers/files';
+import { useFile, useFiles } from 'utils/handlers/files';
+import Communication from 'utils/communication';
 import { AbilityGroups } from './ability';
 import { SpellGroups } from './spell';
 import { AttributesBox, ProficienciesPage } from './creature';
@@ -14,18 +18,22 @@ import RollElement from 'data/elements/roll';
 import CharacterData from 'data/structures/character';
 import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
-import ClassData from 'data/structures/classData';
+import ClassData from 'data/structures/class';
+import SpellData from 'data/structures/spell';
 import { getOptionType } from 'data/optionData';
 import Logger from 'utils/logger';
-import CharacterFile, { ICharacterAbilityStorageData, ICharacterMetadata } from 'types/database/files/character';
+import CharacterFile, { ICharacterAbilityStorageData, ICharacterMetadata, ICharacterStorage } from 'types/database/files/character';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
 import { OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { ChoiceChoiceData, EnumChoiceData, IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
-import styles from 'styles/renderer.module.scss';
 import { FileContextDispatch } from 'types/context/fileContext';
+import { ObjectId } from 'types/database';
+import { FileType } from 'types/database/files';
+import { ISpellMetadata } from 'types/database/files/spell';
+import styles from 'styles/renderer.module.scss';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -49,7 +57,12 @@ type CharacterClassPageProps = React.PropsWithRef<{
     setStorage: FileContextDispatch["setStorage"]
 }>
 
-const Pages = ["Background", "Proficiencies", "Class"] as const
+type CharacterSpellPageProps = React.PropsWithRef<{
+    character: CharacterData 
+    storage: ICharacterStorage
+    setStorage: FileContextDispatch["setStorage"]
+}>
+
 
 const CharacterFileRenderer = (props: CharacterFileRendererProps): JSX.Element => {
     const Renderer = props.file?.metadata?.simple ?? false
@@ -64,7 +77,7 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
     const content = useParser(file.content.text, character, "$content");
     const appearance = useParser(character.appearance, character, "appearance")
     const description = useParser(character.description, character, "description")
-    Logger.log("Character", "SimpleCharacterRenderer")
+    Logger.log("SimpleCharacterRenderer", character)
     return (
         <>
             <Elements.Align>
@@ -103,12 +116,12 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
 const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
-    const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
+    const [page, setPage] = useState<typeof Pages[number]>("Background")
     const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
     const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
 
     const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
-    const subclassData = useMemo(() => new ClassData(subclassFile?.metadata, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile])
+    const subclassData = useMemo(() => new ClassData(classData.subclasses.includes(subclassFile?.id) ? subclassFile?.metadata : null, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile, classData])
     const character =  useMemo(() => new CharacterData(file.metadata, modifiers, classData, subclassData), [file.metadata, modifiers, classData, subclassData])
     const abilities = useMemo(() => character.abilities, [character])
     const spells = useMemo(() => character.spells, [character])
@@ -120,6 +133,12 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const description = useParser(character.description, character, "description")
     const history = useParser(character.history, character, "history")
     const notes = useParser(character.notes, character, "notes")
+
+    const Pages = [
+        "Background", 
+        "Proficiencies", 
+        character.spellAttribute !== OptionalAttribute.None && character.classFile ? "Spells" : null, 
+        character.classFile ? "Class" : null]
 
     const expendedAbilityCharges = Object.keys(file.storage?.abilityData ?? {}).reduce<Record<string,number>>((prev, value) => (
         { ...prev, [value]: file.storage.abilityData[value].expendedCharges ?? 0 }
@@ -147,7 +166,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         dispatch.setStorage("spellData", value)
     }
 
-    Logger.log("Character", "DetailedCharacterRenderer")
+    Logger.log("DetailedCharacterRenderer", character)
 
     return (
         <>
@@ -156,7 +175,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <Elements.Header1>{character.name}</Elements.Header1>
                     <Elements.Line/>
                     <div className={styles.pageSelector}>
-                        { Object.values(Pages).filter(x => x !== "Class" || character.classFile).map((p, index) => (
+                        { Object.values(Pages).filter(x => x !== null).map((p, index) => (
                             <button key={index} disabled={page === p} onClick={() => setPage(p)}>
                                 {p}
                             </button>
@@ -173,6 +192,12 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
                         <ProficienciesPage data={character}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
+                        <CharacterSpellPage 
+                            character={character} 
+                            storage={file.storage} 
+                            setStorage={dispatch.setStorage}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
                         <CharacterClassPage 
@@ -327,6 +352,151 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
     )
 }
 
+const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPageProps): JSX.Element => {
+    const [cantrips] = useFiles<ISpellMetadata>(storage.cantrips)
+    const [spells] = useFiles<ISpellMetadata>(storage.learnedSpells)
+    const prepared = spells.filter(spell => storage.preparedSpells?.includes(spell.id) ?? false)
+    const MaxLevel = character.maxSpellLevel
+
+    const handleChange = (value: ObjectId) => {
+        Communication.getMetadata(value)
+        .then((res) => {
+            if (res.success && res.result.type === FileType.Spell) {
+                let spell: ISpellMetadata = res.result.metadata
+                if (spell.level === 0) {
+                    setStorage("cantrips", [ ...(storage.cantrips ?? []), value ])
+                } else {
+                    setStorage("learnedSpells", [ ...(storage.learnedSpells ?? []), value ])
+                }
+            }
+        })
+    }
+
+    const handlePrepare = (id: ObjectId) => {
+        let spells = storage.preparedSpells ?? []
+        setStorage("preparedSpells", [...spells, id])
+    }
+
+    const handleRemovePrepared = (id: ObjectId) => {
+        let spells = storage.preparedSpells ?? []
+        let index = spells.findIndex(spellId => String(spellId) === String(id))
+        if (index >= 0) {
+            setStorage("preparedSpells", [ ...spells.slice(0, index), ...spells.slice(index + 1) ])
+        }
+    }
+
+    const handleRemove = (id: ObjectId) => {
+        let spells = storage.learnedSpells ?? []
+        let index = spells.findIndex(spellId => String(spellId) === String(id))
+        if (index >= 0) {
+            setStorage("learnedSpells", [ ...spells.slice(0, index), ...spells.slice(index + 1) ])
+            if (storage.preparedSpells?.includes(id)) {
+                handleRemovePrepared(id)
+            }
+        }
+    }
+
+    const handleRemoveCantrip = (id: ObjectId) => {
+        let cantrips = storage.cantrips ?? []
+        let index = cantrips.findIndex(spellId => String(spellId) === String(id))
+        if (index >= 0) {
+            setStorage("cantrips", [ ...cantrips.slice(0, index), ...cantrips.slice(index + 1) ])
+        }
+    }
+
+    return (
+        <>
+            { !character.learnedAll &&
+                <CollapsibleGroup header={`Known Spells (${spells.length}/${character.learnedSlots})`}>
+                    <div className={styles.spellFilterMenu}>
+                        <label>Filter: </label>
+                        { Array.from({ length: MaxLevel }).map((_, index) => (
+                            <button 
+                                key={index}
+                                className={styles.spellFilterMenuItem}
+                                tooltips={`Toggle`}>
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
+                    { spells.map((data) => {
+                        let spell = new SpellData(data.metadata)
+                        let error = spell.level > MaxLevel
+                        return (
+                            <div key={String(data.id)} className={styles.spellItem} error={String(error)}>
+                                <b>{spell.name}: </b>
+                                <label>{spell.levelText}</label>
+                                <label>{spell.schoolName}</label>
+                                <button tooltips="Prepare" onClick={() => handlePrepare(data.id)}>
+                                    <PrepareIcon/>
+                                </button>
+                                <button tooltips="Remove" onClick={() => handleRemove(data.id)}>
+                                    <RemoveIcon/>
+                                </button>
+                            </div>
+                        )
+                    })}
+                </CollapsibleGroup>
+            }{ !character.learnedAll &&
+                <CollapsibleGroup header={`Cantrips (${cantrips.length}/${character.cantripSlots})`}>
+                    { cantrips.map((data) => {
+                        let spell = new SpellData(data.metadata)
+                        return (
+                            <div key={String(data.id)} className={styles.spellItem}>
+                                <b>{spell.name}: </b>
+                                <label>{spell.levelText}</label>
+                                <label>{spell.schoolName}</label>
+                                <button tooltips="Remove" onClick={() => handleRemoveCantrip(data.id)}>
+                                    <RemoveIcon/>
+                                </button>
+                            </div>
+                        )
+                    })}
+                </CollapsibleGroup>
+            }{ !character.preparationAll &&
+                <CollapsibleGroup header={`Prepared Spells (${prepared.length ?? 0}/${character.preparationSlots})`}>
+                    <div className={styles.spellFilterMenu}>
+                        <label>Filter: </label>
+                        { Array.from({ length: MaxLevel }).map((_, index) => (
+                            <button 
+                                key={index}
+                                className={styles.spellFilterMenuItem}
+                                tooltips={`Toggle`}>
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
+                    { prepared.map((data) => {
+                        let spell = new SpellData(data.metadata)
+                        let error = spells.every(x => x.id !== data.id)
+                        return (
+                            <div key={String(data.id)} className={styles.spellItem} error={String(error)}>
+                                <b>{spell.name}: </b>
+                                <label>{spell.levelText}</label>
+                                <label>{spell.schoolName}</label>
+                                <button tooltips="Remove" onClick={() => handleRemovePrepared(data.id)}>
+                                    <RemoveIcon/>
+                                </button>
+                            </div>
+                        )
+                    })}
+                </CollapsibleGroup>
+            }
+            <CollapsibleGroup header="Add Spell">
+                <div className={styles.modifierChoice}>
+                    <Elements.Bold>Spell: </Elements.Bold>
+                    <LinkInput
+                        value={null}
+                        fileTypes={[FileType.Spell]}
+                        placeholder="Spell ID..."
+                        allowRemove={false}
+                        onChange={handleChange}/>
+                </div>
+            </CollapsibleGroup>
+        </>
+    )
+}
+
 const reduceEnumOptions = (value: EnumChoiceData) => (
     value.options.reduce((prev, option) => (
         { ...prev, [option]: getOptionType(value.enum).options[option] }
@@ -362,8 +532,7 @@ const CharacterClassPage = ({ character, classData, setStorage }: CharacterClass
                         allowNull={true}
                         onChange={(value) => handleChange(value, "$subclass")}/>
                 </div>
-            }
-            { Object.keys(choices).map(key => {
+            }{ Object.keys(choices).map(key => {
                 let value = choices[key]
                 return (
                     <div className={styles.modifierChoice} key={key}>
