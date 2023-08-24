@@ -246,16 +246,18 @@ abstract class Communication {
     }
 
     public static async setFileMetadata(storyId: ObjectId, fileId: ObjectId, metadata: IFileMetadata): Promise<DBResponse<FileSetPropertyResult>> {
-        this.cache[String(fileId)] = {
-            ...this.cache[String(fileId)],
-            metadata: metadata
-        }
-        
-        return await this.databaseFetch<FileSetPropertyResult>('setFileMetadata', 'PUT', {
+        let response = await this.databaseFetch<FileSetPropertyResult>('setFileMetadata', 'PUT', {
             storyId: storyId,
             fileId: fileId,
             metadata: metadata
         })
+        if (response.success && response.result) {
+            this.updateCache({ ...this.cache, [String(fileId)]: {
+                ...this.cache[String(fileId)],
+                metadata: metadata
+            }})
+        }
+        return response
     }
 
     public static async setFileStorage(storyId: ObjectId, fileId: ObjectId, storage: IFileStorage): Promise<DBResponse<FileSetPropertyResult>> {
