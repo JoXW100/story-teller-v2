@@ -467,7 +467,7 @@
     border-color: inherit;
     border-radius: 6px;
 
-    &[data=off] {
+    &[data=false] {
         filter: opacity(80%);
     }
 }

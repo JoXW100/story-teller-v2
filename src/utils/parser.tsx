@@ -305,7 +305,7 @@ abstract class Parser
     }
 }
 
-export const useParser = (text: string, metadata: IParserMetadata, key: string, dependency?: object): JSX.Element => {
+export const useParser = (text: string, metadata: IParserMetadata, key: string): JSX.Element => {
     const [state, setState] = useState(null)
     useEffect(() => {
         Parser.parse(text, metadata, key)
@@ -319,7 +319,7 @@ export const useParser = (text: string, metadata: IParserMetadata, key: string, 
                     throw error;
             }
         })
-    }, [text, dependency ? dependency : metadata, key])
+    }, [text, metadata, key])
     return state
 }
 

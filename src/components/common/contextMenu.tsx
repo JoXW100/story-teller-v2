@@ -74,7 +74,7 @@ const ContextMenu = () => {
     }
 
     useEffect(() => {
-        setState({ ...state, show: false })
+        setState((state) => ({ ...state, show: false }))
     }, [router.route])
 
     useEffect(() => {

@@ -1,22 +1,23 @@
 import React, { useContext, useMemo, useState } from 'react';
+import { Context } from 'components/contexts/fileContext';
+import AbilityGroups from '../ability/abilityGroup';
+import SpellGroups from '../spell/spellGroups';
+import AttributesBox from './attributesBox';
+import ProficienciesPage from './proficienciesPage';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
-import { useParser } from 'utils/parser';
-import Localization from 'utils/localization';
-import { AbilityGroups } from './ability';
-import { SpellGroups } from './spell';
 import CreatureData from 'data/structures/creature';
 import AbilityData from 'data/structures/ability';
 import ModifierCollectionData from 'data/structures/modifierCollection';
-import { getOptionType } from 'data/optionData';
+import { useParser } from 'utils/parser';
+import Localization from 'utils/localization';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
-import { Attribute, OptionalAttribute, Skill } from 'types/database/dnd';
+import { OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/database/responses';
-import styles from 'styles/renderer.module.scss';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
-import { Context } from 'components/contexts/fileContext';
+import styles from 'styles/renderer.module.scss';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: CreatureFile
@@ -24,10 +25,6 @@ type CreatureFileRendererProps = React.PropsWithRef<{
 
 type CreatureLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<ICreatureMetadata>
-}>
-
-type DataProps = React.PropsWithRef<{
-    data: CreatureData 
 }>
 
 const Pages = ["Actions", "Proficiencies"] as const
@@ -203,70 +200,6 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
         </>
     )
 }
-
-export const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
-    const skills = getOptionType("skill").options
-    const attributes = getOptionType("attr").options;
-    return (
-        <>
-            <div className={styles.skillTable}>
-                <div>
-                    <b>Mod</b>
-                    <br/>
-                    <b>Skill</b>
-                    <b>Bonus</b>
-                </div>
-                { Object.keys(skills).map((skill: Skill) => {
-                    return (
-                        <div key={skill}>
-                            <b>{attributes[data.getSkillAttribute(skill)]}</b>
-                            <div 
-                                data={data.proficienciesSkill.includes(skill) ? "proficient" : "none"}
-                                tooltips={Localization.toText('creature-Proficient')}/>
-                            <label>{skills[skill]}</label>
-                            <Elements.Roll options={{
-                                mod: data.getSkillModifier(skill).toString(),
-                                desc: `${skills[skill]} Check`,
-                                tooltips: `Roll ${skills[skill]} Check`
-                            }}/>
-                        </div>
-                    )
-                })}
-            </div>
-            <Elements.Line/>
-            <Elements.Header3>Armor</Elements.Header3>
-            <div>{data.proficienciesArmorText}</div>
-            <Elements.Header3>Weapons</Elements.Header3>
-            <div>{data.proficienciesWeaponText}</div>
-            <Elements.Header3>Languages</Elements.Header3>
-            <div>{data.proficienciesLanguageText}</div>
-            <Elements.Header3>Tools</Elements.Header3>
-            <div>{data.proficienciesToolText}</div>
-        </>
-    )
-}
-
-export const AttributesBox = ({ data }: DataProps): JSX.Element => (
-    <Elements.Align>
-        { Object.keys(Attribute).map((attr, index) => (
-            <div className={styles.attributeBox} key={index}>
-                <Elements.Bold>{attr}</Elements.Bold>
-                <Elements.Bold>{data[Attribute[attr]] ?? 0}</Elements.Bold>
-                <Elements.Roll options={{ 
-                    mod: data.getAttributeModifier(Attribute[attr]).toString(), 
-                    desc: `${attr} Check`,
-                    tooltips: `${attr} Check`
-                }}/>
-                <div/>
-                <Elements.Roll options={{ 
-                    mod: data.getSaveModifier(Attribute[attr]).toString(), 
-                    desc: `${attr} Save`,
-                    tooltips: `${attr} Save`
-                }}/>
-            </div>
-        ))}
-    </Elements.Align>
-)
 
 const CreatureLinkRenderer = ({ file }: CreatureLinkRendererProps): JSX.Element => {
     const description = useParser(file.metadata?.description, file.metadata, `$${file.id}.description`)

@@ -104,7 +104,7 @@ const useAutoCompleteDialog = <T extends HTMLElement>(handleApply: (e: React.Key
                 </div>
             </dialog>
         )
-    }, [state])
+    }, [state, dialogIsOpen])
 
     return [handleShow, handleHide, handleKey, dialogControl]
 }

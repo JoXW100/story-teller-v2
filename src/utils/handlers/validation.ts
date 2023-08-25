@@ -19,7 +19,7 @@ export const useValidation = (): boolean => {
 
     useEffect(() => {
         Communication.getServerMode()
-        .then(mode => setState({ ...state, loading: false, mode: mode }))
+        .then(mode => setState((state) => ({ ...state, loading: false, mode: mode })))
     }, [location.pathname])
 
     if (!context.user && !context.isLoading) {
