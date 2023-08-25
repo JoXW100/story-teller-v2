@@ -25,17 +25,19 @@ const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPa
     const MaxLevel = character.maxSpellLevel
 
     const handleChange = (value: ObjectId) => {
-        Communication.getMetadata(value)
-        .then((res) => {
-            if (res.success && res.result.type === FileType.Spell) {
-                let spell: ISpellMetadata = res.result.metadata
-                if (spell.level === 0) {
-                    setStorage("cantrips", [ ...(storage.cantrips ?? []), value ])
-                } else {
-                    setStorage("learnedSpells", [ ...(storage.learnedSpells ?? []), value ])
+        if (!spells.some(spell => spell.id === value) && !cantrips.some(cantrip => cantrip.id === value)) {
+            Communication.getMetadata(value)
+            .then((res) => {
+                if (res.success && res.result.type === FileType.Spell) {
+                    let spell: ISpellMetadata = res.result.metadata
+                    if (spell.level === 0) {
+                        setStorage("cantrips", [ ...(storage.cantrips ?? []), value ])
+                    } else {
+                        setStorage("learnedSpells", [ ...(storage.learnedSpells ?? []), value ])
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     const handlePrepare = (id: ObjectId) => {
