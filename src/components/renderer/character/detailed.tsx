@@ -150,6 +150,10 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Bold>Resistances </Elements.Bold>
                             {character.resistances}
                         </div> 
+                    }{ character.disadvantages.length > 0 && 
+                        <div><Elements.Bold>Disadvantages </Elements.Bold>
+                            {character.disadvantages}
+                        </div> 
                     }{ character.advantages.length > 0 && 
                         <div><Elements.Bold>Advantages </Elements.Bold>
                             {character.advantages}

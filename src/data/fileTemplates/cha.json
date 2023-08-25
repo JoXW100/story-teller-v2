@@ -137,6 +137,10 @@
                             },
                             { 
                                 "type": "text", 
+                                "params": { "label": "Disadvantages", "key": "disadvantages", "type": "string" }
+                            },
+                            { 
+                                "type": "text", 
                                 "params": { "label": "Vulnerabilities", "key": "vulnerabilities", "type": "string" }
                             },
                             { 

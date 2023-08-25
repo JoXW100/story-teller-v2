@@ -302,7 +302,12 @@ const OptionTypes = {
         default: WeaponType.Simple,
         options: {
             [WeaponType.Simple]: "Simple Weapons",
-            [WeaponType.Martial]: "Martial Weapons"
+            [WeaponType.Martial]: "Martial Weapons",
+            [WeaponType.Daggers]: "Daggers",
+            [WeaponType.Darts]: "Darts",
+            [WeaponType.LightCrossbows]: "Light Crossbow",
+            [WeaponType.Quarterstaffs]: "Quarterstaffs",
+            [WeaponType.Slings]: "Slings"
         }
     } satisfies IOptionType<typeof WeaponType>,
     "language": {
@@ -387,7 +392,13 @@ const OptionTypes = {
         options: {
             [ModifierAddRemoveTypeProperty.Proficiency]: "Proficiency",
             [ModifierAddRemoveTypeProperty.Ability]: "Ability",
-            [ModifierAddRemoveTypeProperty.Spell]: "Spell"
+            [ModifierAddRemoveTypeProperty.Spell]: "Spell",
+            [ModifierAddRemoveTypeProperty.Advantage]: "Advantage",
+            [ModifierAddRemoveTypeProperty.Disadvantage]: "Disadvantage",
+            [ModifierAddRemoveTypeProperty.Resistance]: "Resistance",
+            [ModifierAddRemoveTypeProperty.Vulnerability]: "Vulnerability",
+            [ModifierAddRemoveTypeProperty.CONImmunity]: "Condition Immunity",
+            [ModifierAddRemoveTypeProperty.DMGImmunity]: "Damage Immunity"
         }
     } satisfies IOptionType<typeof ModifierAddRemoveTypeProperty>,
     "modifierSetTypeProperty": {

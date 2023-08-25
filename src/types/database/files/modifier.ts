@@ -14,7 +14,13 @@ export enum ModifierBonusTypeProperty {
 export enum ModifierAddRemoveTypeProperty {
     Proficiency = "proficiency",
     Ability = "ability",
-    Spell = "spell"
+    Spell = "spell",
+    Resistance = "resistance",
+    Vulnerability = "vulnerability",
+    DMGImmunity = "dmgImmunity",
+    CONImmunity = "conImmunity",
+    Advantage = "advantage",
+    Disadvantage = "disadvantage"
 }
 
 export enum ModifierSetTypeProperty {
@@ -60,6 +66,8 @@ interface IModifier extends IItemMetadata {
 
     // Values
     value?: number
+    text?: string
+    texts?: string[]
     file?: ObjectId
     files?: ObjectId[]
     attribute?: Attribute

@@ -290,23 +290,33 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
     }
 
     public get resistances(): string {
-        return this.metadata.resistances ?? ""
+        let splits = (this.metadata.resistances ?? "").split(/ *, */)
+        return this.modifiers.modifyResistances(splits).join(', ')
     }
 
     public get advantages(): string {
-        return this.metadata.advantages ?? ""
+        let splits = (this.metadata.advantages ?? "").split(/ *, */)
+        return this.modifiers.modifyAdvantages(splits).join(', ')
+    }
+
+    public get disadvantages(): string {
+        let splits = (this.metadata.disadvantages ?? "").split(/ *, */)
+        return this.modifiers.modifyDisadvantages(splits).join(', ')
     }
 
     public get vulnerabilities(): string {
-        return this.metadata.vulnerabilities ?? ""
+        let splits = (this.metadata.vulnerabilities ?? "").split(/ *, */)
+        return this.modifiers.modifyVulnerabilities(splits).join(', ')
     }
 
     public get dmgImmunities(): string {
-        return this.metadata.dmgImmunities ?? ""
+        let splits = (this.metadata.dmgImmunities ?? "").split(/ *, */)
+        return this.modifiers.modifyDMGImmunities(splits).join(', ')
     }
 
     public get conImmunities(): string {
-        return this.metadata.conImmunities ?? ""
+        let splits = (this.metadata.conImmunities ?? "").split(/ *, */)
+        return this.modifiers.modifyCONImmunities(splits).join(', ')
     }
 
     public get speed(): Partial<Record<MovementType, number>> {

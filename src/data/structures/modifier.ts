@@ -58,6 +58,14 @@ class ModifierData implements Required<IModifier>  {
     public get value(): number {
         return this.metadata.value ?? 0
     }
+
+    public get text(): string {
+        return this.metadata.text ?? ""
+    }
+
+    public get texts(): string[] {
+        return this.metadata.texts ?? []
+    }
     
     public get file(): ObjectId {
         return this.metadata.file ?? null

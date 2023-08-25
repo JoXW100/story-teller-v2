@@ -257,6 +257,24 @@
                 }, 
                 
                 { 
+                    "type": "text", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, { "type": "any", "value": ["resistance", "vulnerability", "dmgImmunity", "conImmunity", "advantage", "disadvantage"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Value", "key": "text", "placeholder": "..." }
+                }, { 
+                    "type": "list", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, { "type": "any", "value": ["resistance", "vulnerability", "dmgImmunity", "conImmunity", "advantage", "disadvantage"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                    ],
+                    "params": { "label": "Options", "key": "texts", "fill": true, "type": "text", "placeholder": "..." }
+                }, 
+                
+                { 
                     "type": "number", 
                     "conditions": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },

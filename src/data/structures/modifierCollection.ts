@@ -3,7 +3,7 @@ import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponTyp
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
-import { IModifierCollection, ChoiceData, EnumChoiceData, AnyFileChoiceData, FileChoiceData, ChoiceChoiceData } from "types/database/files/modifierCollection";
+import { IModifierCollection, ChoiceData, EnumChoiceData, AnyFileChoiceData, FileChoiceData, ChoiceChoiceData, TextChoiceData } from "types/database/files/modifierCollection";
 
 type AddRemoveGroup<T> = { add: T[], remove: T[] }
 
@@ -73,16 +73,19 @@ class ModifierCollectionData implements IModifierCollection {
                 && mod.allowAny) {
                 return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell] } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
-                && (mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability || mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell)
+                && [ModifierAddRemoveTypeProperty.Ability, ModifierAddRemoveTypeProperty.Spell].includes(mod.addRemoveProperty)
                 && mod.select === SelectType.Choice
                 && !mod.allowAny) {
                 return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
+            } else if (mod.type === ModifierType.Add 
+                && [ModifierAddRemoveTypeProperty.Advantage, ModifierAddRemoveTypeProperty.Disadvantage, ModifierAddRemoveTypeProperty.CONImmunity, ModifierAddRemoveTypeProperty.DMGImmunity, ModifierAddRemoveTypeProperty.Resistance, ModifierAddRemoveTypeProperty.Vulnerability].includes(mod.addRemoveProperty)
+                && mod.select === SelectType.Choice) {
+                return {  ...prev,  [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts } satisfies TextChoiceData}
             } else if (mod.type === ModifierType.Bonus 
                 && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
                 && mod.select === SelectType.Choice) {
                 return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies EnumChoiceData}
             }
-
             return prev
         }, {})
     }
@@ -160,67 +163,102 @@ class ModifierCollectionData implements IModifierCollection {
                 return prev
             }
         }, 0)
-    } 
+    }
 
-    private modifyProficiencies<T extends string>(proficiencies: T[], type: ProficiencyType, onlyRemove: boolean): T[] {
+    private modifyCollection<T>(values: T[], key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): T[] {
         let exclude: Set<T>
-        let proficiency: keyof IModifier = ModifierMap[type];
         if (onlyRemove) {
             let remove = this.modifiers.reduce<T[]>((prev, mod) => (
-                mod.type === ModifierType.Remove  
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                && mod.proficiency === type 
-                ? [...prev, mod[proficiency] as T]  : prev
+                mod.type === ModifierType.Remove && filter(mod) ? [...prev, mod[key] as T]  : prev
             ), [])
             exclude = new Set(remove);
         } else {
             let groups = this.modifiers.reduce<AddRemoveGroup<T>>((prev, mod) => {
                 if (mod.type === ModifierType.Add 
-                    && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                    && mod.proficiency === type
+                    && filter(mod)
                     && mod.select === SelectType.Value) {
-                    return { ...prev, add: [...prev.add, mod[proficiency] ]}
+                    return { ...prev, add: [...prev.add, mod[key] ]}
                 } else if (mod.type === ModifierType.Add 
-                    && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                    && mod.proficiency === type
+                    && filter(mod)
                     && mod.select === SelectType.Choice
                     && this.storage?.classData
                     && this.storage.classData[mod.id]) {
                         return { ...prev, add: [...prev.add, this.storage.classData[mod.id] ] }
-                } else if (mod.type === ModifierType.Remove 
-                    && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                    && mod.proficiency === type) {
-                    return { ...prev, remove: [...prev.remove, mod[proficiency] as T]}
+                } else if (mod.type === ModifierType.Remove && filter(mod)) {
+                    return { ...prev, remove: [...prev.remove, mod[key] as T]}
                 }
                 return prev
             }, { add: [], remove: [] })
             
-            proficiencies = groups.add.reduce<T[]>((prev, armor) => (
+            values = groups.add.reduce<T[]>((prev, armor) => (
                 prev.includes(armor) ? prev : [...prev, armor]
-            ), proficiencies)
+            ), values)
 
             exclude = new Set(groups.remove);
         }
-        return proficiencies.filter(x => !exclude.has(x))
+        return values.filter(x => !exclude.has(x))
     }
 
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {
-        return this.modifyProficiencies<ArmorType>(proficiencies, ProficiencyType.Armor, onlyRemove)
+        const type = ProficiencyType.Armor
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesWeapon(proficiencies: WeaponType[], onlyRemove?: boolean): WeaponType[] {
-        return this.modifyProficiencies<WeaponType>(proficiencies, ProficiencyType.Weapon, onlyRemove)
+    public modifyProficienciesWeapon(proficiencies: WeaponType[], onlyRemove: boolean = false): WeaponType[] {
+        const type = ProficiencyType.Weapon
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove?: boolean): Tool[] {
-        return this.modifyProficiencies<Tool>(proficiencies, ProficiencyType.Tool, onlyRemove)
+    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove: boolean = false): Tool[] {
+        const type = ProficiencyType.Tool
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove?: boolean): Language[] {
-        return this.modifyProficiencies<Language>(proficiencies, ProficiencyType.Language, onlyRemove)
+    public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove: boolean = false): Language[] {
+        const type = ProficiencyType.Language
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesSave(proficiencies: Attribute[], onlyRemove?: boolean): Attribute[] {
-        return this.modifyProficiencies<Attribute>(proficiencies, ProficiencyType.Save, onlyRemove)
+    public modifyProficienciesSave(proficiencies: Attribute[], onlyRemove: boolean = false): Attribute[] {
+        const type = ProficiencyType.Save
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove?: boolean): Skill[]{
-        return this.modifyProficiencies<Skill>(proficiencies, ProficiencyType.Skill, onlyRemove)
+    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove: boolean = false): Skill[]{
+        const type = ProficiencyType.Skill
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+    }
+
+    public modifyResistances(resistances: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Resistance
+        return this.modifyCollection(resistances, "text", onlyRemove, filter)
+    }
+    public modifyVulnerabilities(vulnerabilities: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Vulnerability
+        return this.modifyCollection(vulnerabilities, "text", onlyRemove, filter)
+    }
+    public modifyAdvantages(advantages: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Advantage
+        return this.modifyCollection(advantages, "text", onlyRemove, filter)
+    }
+    public modifyDisadvantages(disadvantages: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Disadvantage
+        return this.modifyCollection(disadvantages, "text", onlyRemove, filter)
+    }
+    public modifyDMGImmunities(immunities: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.DMGImmunity
+        return this.modifyCollection(immunities, "text", onlyRemove, filter)
+    }
+    public modifyCONImmunities(immunities: string[], onlyRemove: boolean = false): string[] {
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.CONImmunity
+        return this.modifyCollection(immunities, "text", onlyRemove, filter)
     }
 
     public modifyAbilities(abilities: ObjectId[]): ObjectId[] {
@@ -239,7 +277,6 @@ class ModifierCollectionData implements IModifierCollection {
             return prev
         }, abilities)
     }
-
     public modifySpells(spells: ObjectId[]): ObjectId[] {
         return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
             if (mod.type === ModifierType.Add 
@@ -318,36 +355,67 @@ class CombinedModifierCollection implements IModifierCollection {
         return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
     }
     
-    public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove?: boolean): ArmorType[] {
+    public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesArmor(proficiencies) }
         proficiencies = this.c2.modifyProficienciesArmor(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesArmor(proficiencies, true) // Remove those added by c2
     }
-    public modifyProficienciesWeapon(proficiencies: WeaponType[], onlyRemove?: boolean): WeaponType[] {
+    public modifyProficienciesWeapon(proficiencies: WeaponType[], onlyRemove: boolean = false): WeaponType[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesWeapon(proficiencies) }
         proficiencies = this.c2.modifyProficienciesWeapon(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesWeapon(proficiencies, true) // Remove those added by c2
     }
-    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove?: boolean): Tool[] {
+    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove: boolean = false): Tool[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesTool(proficiencies) }
         proficiencies = this.c2.modifyProficienciesTool(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesTool(proficiencies, true) // Remove those added by c2
     }
-    public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove?: boolean): Language[] {
+    public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove: boolean = false): Language[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesLanguage(proficiencies) }
         proficiencies = this.c2.modifyProficienciesLanguage(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesLanguage(proficiencies, true) // Remove those added by c2
     }
-    public modifyProficienciesSave(proficiencies: Attribute[], onlyRemove?: boolean): Attribute[] {
+    public modifyProficienciesSave(proficiencies: Attribute[], onlyRemove: boolean = false): Attribute[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesSave(proficiencies) }
         proficiencies = this.c2.modifyProficienciesSave(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesSave(proficiencies, true) // Remove those added by c2
 
     }
-    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove?: boolean): Skill[] {
+    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove: boolean = false): Skill[] {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesSkill(proficiencies) }
         proficiencies = this.c2.modifyProficienciesSkill(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesSkill(proficiencies, true) // Remove those added by c2
+    }
+
+    public modifyResistances(resistances: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { resistances = this.c1.modifyResistances(resistances) }
+        resistances = this.c2.modifyResistances(resistances, onlyRemove)
+        return this.c1.modifyResistances(resistances, true) // Remove those added by c2
+    }
+    public modifyVulnerabilities(vulnerabilities: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { vulnerabilities = this.c1.modifyVulnerabilities(vulnerabilities) }
+        vulnerabilities = this.c2.modifyVulnerabilities(vulnerabilities, onlyRemove)
+        return this.c1.modifyVulnerabilities(vulnerabilities, true) // Remove those added by c2
+    }
+    public modifyAdvantages(advantages: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { advantages = this.c1.modifyAdvantages(advantages) }
+        advantages = this.c2.modifyAdvantages(advantages, onlyRemove)
+        return this.c1.modifyAdvantages(advantages, true) // Remove those added by c2
+    }
+    public modifyDisadvantages(disadvantages: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { disadvantages = this.c1.modifyDisadvantages(disadvantages) }
+        disadvantages = this.c2.modifyDisadvantages(disadvantages, onlyRemove)
+        return this.c1.modifyDisadvantages(disadvantages, true) // Remove those added by c2
+    }
+    public modifyDMGImmunities(dmgImmunities: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { dmgImmunities = this.c1.modifyDMGImmunities(dmgImmunities) }
+        dmgImmunities = this.c2.modifyDMGImmunities(dmgImmunities, onlyRemove)
+        return this.c1.modifyDMGImmunities(dmgImmunities, true) // Remove those added by c2
+    }
+    public modifyCONImmunities(conImmunities: string[], onlyRemove?: boolean): string[] {
+        if (!onlyRemove) { conImmunities = this.c1.modifyCONImmunities(conImmunities) }
+        conImmunities = this.c2.modifyCONImmunities(conImmunities, onlyRemove)
+        return this.c1.modifyCONImmunities(conImmunities, true) // Remove those added by c2
     }
 
     public modifyAbilities(abilities: ObjectIdText[]): ObjectIdText[] {

@@ -220,6 +220,11 @@ export enum ArmorType {
 export enum WeaponType {
     Simple = "simple",
     Martial = "martial",
+    Daggers = "daggers",
+    Darts = "darts",
+    Slings = "slings",
+    Quarterstaffs = "quarterstaffs",
+    LightCrossbows = "lightCrossbows"
 }
 
 export enum Tool {

@@ -4,11 +4,12 @@ import { IChoice } from "./modifier"
 import type { ArmorType, Attribute, Language, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[] }
+export type TextChoiceData = { type: "text", label: string, text: string, options: string[] }
 export type AnyFileChoiceData = { type: "file", label: string, allowAny: true, options: FileType[] }
 export type FileChoiceData = { type: "file", label: string, allowAny: false, options: ObjectId[] }
 export type ChoiceChoiceData = { type: "choice", label: string, options: IChoice[] }
 
-export type ChoiceData = EnumChoiceData | AnyFileChoiceData | FileChoiceData | ChoiceChoiceData
+export type ChoiceData = EnumChoiceData | TextChoiceData | AnyFileChoiceData | FileChoiceData | ChoiceChoiceData
  
 interface IModifierCollection {
     equals(other: IModifierCollection): boolean
@@ -35,6 +36,14 @@ interface IModifierCollection {
     modifyProficienciesLanguage: (proficiencies: Language[], onlyRemove?: boolean) => Language[]
     modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
     modifyProficienciesSkill: (proficiencies: Skill[], onlyRemove?: boolean) => Skill[]
+
+    modifyResistances: (resistances: string[], onlyRemove?: boolean) => string[]
+    modifyVulnerabilities: (vulnerabilities: string[], onlyRemove?: boolean) => string[]
+    modifyAdvantages: (advantages: string[], onlyRemove?: boolean) => string[]
+    modifyDisadvantages: (disadvantages: string[], onlyRemove?: boolean) => string[]
+    modifyDMGImmunities: (dmgImmunities: string[], onlyRemove?: boolean) => string[]
+    modifyCONImmunities: (conImmunities: string[], onlyRemove?: boolean) => string[]
+
     modifyAbilities: (abilities: ObjectIdText[]) => ObjectIdText[]
     modifySpells: (spells: ObjectIdText[]) => ObjectIdText[]
 }
