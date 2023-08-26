@@ -317,8 +317,12 @@ const OptionTypes = {
             [WeaponType.Martial]: "Martial Weapons",
             [WeaponType.Daggers]: "Daggers",
             [WeaponType.Darts]: "Darts",
+            [WeaponType.HandCrossbows]: "Hand Crossbows",
+            [WeaponType.Longswords]: "Longswords",
             [WeaponType.LightCrossbows]: "Light Crossbow",
+            [WeaponType.Rapiers]: "Rapiers",
             [WeaponType.Quarterstaffs]: "Quarterstaffs",
+            [WeaponType.Shortswords]: "Shortswords",
             [WeaponType.Slings]: "Slings"
         }
     } satisfies IOptionType<typeof WeaponType>,
@@ -346,6 +350,7 @@ const OptionTypes = {
             [Tool.AlchemistsSupplies]: "Alchemist's Supplies",
             [Tool.HerbalismKit]: "Herbalism Kit",
             [Tool.PoisonersKit]: "Poisoner's Kit",
+            [Tool.ThievesTools]: "Thieve's Tools"
         }
     } satisfies IOptionType<typeof Tool>,
     "proficiencyType": {

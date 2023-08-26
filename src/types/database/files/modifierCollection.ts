@@ -3,11 +3,11 @@ import type { ObjectId, ObjectIdText } from ".."
 import type { IChoice } from "./modifier"
 import type { ArmorType, Attribute, Language, Skill, Tool, WeaponType } from "types/database/dnd"
 
-export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[] }
-export type TextChoiceData = { type: "text", label: string, text: string, options: string[] }
-export type AnyFileChoiceData = { type: "file", label: string, allowAny: true, options: FileType[] }
-export type FileChoiceData = { type: "file", label: string, allowAny: false, options: ObjectId[] }
-export type ChoiceChoiceData = { type: "choice", label: string, options: IChoice[] }
+export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
+export type TextChoiceData = { type: "text", label: string, text: string, options: string[], num: number }
+export type AnyFileChoiceData = { type: "file", label: string, allowAny: true, options: FileType[], num: number }
+export type FileChoiceData = { type: "file", label: string, allowAny: false, options: ObjectId[], num: number }
+export type ChoiceChoiceData = { type: "choice", label: string, options: IChoice[], num: number }
 
 export type ChoiceData = EnumChoiceData | TextChoiceData | AnyFileChoiceData | FileChoiceData | ChoiceChoiceData
  

@@ -60,6 +60,24 @@
                         ]}
                     ],
                     "params": { "label": "Choice Label", "key": "label", "placeholder": "Modifier..." }
+                }, { 
+                    "type": "number", 
+                    "conditions": [
+                        { "type": "any", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "choice"] },
+                            { "type": "all", "value": [
+                                { "type": "any", "value": [
+                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
+                                    { "type": "all", "value": [
+                                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] }
+                                    ]}
+                                ]},
+                                { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
+                            ]}
+                        ]}
+                    ],
+                    "params": { "label": "Num Choices", "key": "numChoices", "default": 1 }
                 },
                 
                 { 

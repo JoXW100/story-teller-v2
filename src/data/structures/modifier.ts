@@ -29,6 +29,10 @@ class ModifierData implements Required<IModifier>  {
         return this.metadata.allowAny ?? false
     }
 
+    public get numChoices(): number {
+        return this.metadata.numChoices ?? 1
+    }
+
     public get type(): ModifierType {
         return this.metadata.type ?? getOptionType('modifierType').default
     }

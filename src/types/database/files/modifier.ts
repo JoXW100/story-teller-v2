@@ -61,6 +61,7 @@ interface IModifier extends ISubPageItemMetadata {
 
     label?: string
     allowAny?: boolean
+    numChoices?: number
 
     proficiency?: ProficiencyType
 

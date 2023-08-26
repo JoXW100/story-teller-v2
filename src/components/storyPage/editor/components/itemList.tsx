@@ -39,15 +39,7 @@ const Templates: Record<string, IModifier> = {
                         type: ModifierType.Bonus,
                         bonusProperty: ModifierBonusTypeProperty.Attribute,
                         select: SelectType.Choice,
-                        label: "Improvement Attribute",
-                        attributes: Object.values(Attribute),
-                        value: 1
-                    },
-                    {
-                        id:"attribute2",
-                        type: ModifierType.Bonus,
-                        bonusProperty: ModifierBonusTypeProperty.Attribute,
-                        select: SelectType.Choice,
+                        numChoices: 2,
                         label: "Improvement Attribute",
                         attributes: Object.values(Attribute),
                         value: 1

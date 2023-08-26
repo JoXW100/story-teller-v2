@@ -233,13 +233,18 @@ export enum WeaponType {
     Darts = "darts",
     Slings = "slings",
     Quarterstaffs = "quarterstaffs",
-    LightCrossbows = "lightCrossbows"
+    Longswords = "longswords",
+    Shortswords = "shortswords",
+    Rapiers = "rapiers",
+    LightCrossbows = "lightCrossbows",
+    HandCrossbows = "handCrossbows"
 }
 
 export enum Tool {
     AlchemistsSupplies = "alchemistsSupplies",
     HerbalismKit = "herbalismKit",
-    PoisonersKit = "poisonersKit"
+    PoisonersKit = "poisonersKit",
+    ThievesTools = "thievesTools"
 }
 
 export enum Language {

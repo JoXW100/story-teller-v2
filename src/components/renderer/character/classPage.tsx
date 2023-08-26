@@ -34,11 +34,17 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
     const classStorage = storage?.classData ?? {}
     
-    const handleChange = (value: any, key: string) => {
-        let validStorage = Object.keys(storage).reduce((prev, key) => (
-            Object.keys(choices).includes(key) || key === "$subclass" ? { ...prev, [key]: storage[key] } : prev
+    const handleChange = (value: any, key: string, index: number = -1) => {
+        let validStorage = Object.keys(classStorage).reduce<Record<string, any[]>>((prev, key) => (
+            Object.keys(choices).includes(key) || key === "$subclass" ? { ...prev, [key]: classStorage[key] } : prev
         ), {})
-        setStorage("classData", { ...validStorage, [key]: value });
+        let newValue = validStorage[key] ?? []
+        if (index < 0) {
+            newValue = value
+        } else {
+            newValue[index] = value
+        }
+        setStorage("classData", { ...validStorage, [key]: newValue });
     }
 
     return (
@@ -53,39 +59,39 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
                         allowNull={true}
                         onChange={(value) => handleChange(value, "$subclass")}/>
                 </div>
-            }{ Object.keys(choices).map(key => {
+            }{ Object.keys(choices).flatMap(key => {
                 let value = choices[key]
-                return (
-                    <div className={styles.modifierChoice} key={key}>
+                return Array.from({ length: value.num }).map((_, i) =>
+                    <div className={styles.modifierChoice} key={key + i}>
                         <Elements.Bold>{`${value.label}:`} </Elements.Bold>
                         { value.type === "choice" &&
                             <DropdownMenu
-                                value={classStorage[key] ?? null}
+                                value={classStorage[key]?.[i] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={reduceChoiceOptions(value)}
-                                onChange={(value) => handleChange(value, key)}/>
+                                onChange={(value) => handleChange(value, key, i)}/>
                         }
                         { value.type === "enum" &&
                             <DropdownMenu
-                                value={classStorage[key] ?? null}
+                                value={classStorage[key]?.[i] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={reduceEnumOptions(value)}
-                                onChange={(value) => handleChange(value, key)}/>
+                                onChange={(value) => handleChange(value, key, i)}/>
                         }
                         { value.type === "file" && value.allowAny === false &&
                             <LinkDropdownMenu
-                                value={classStorage[key] ?? null}
+                                value={classStorage[key]?.[i] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={value.options}
                                 allowNull={true}
-                                onChange={(value) => handleChange(value, key)}/>
+                                onChange={(value) => handleChange(value, key, i)}/>
                         }
                         { value.type === "file" && value.allowAny &&
                             <LinkInput
-                                value={classStorage[key] ?? null}
+                                value={classStorage[key]?.[i] ?? null}
                                 fileTypes={value.options}
                                 placeholder="File ID..."
-                                onChange={(value) => handleChange(value, key)}/>
+                                onChange={(value) => handleChange(value, key, i)}/>
                         }
                     </div>
                 )

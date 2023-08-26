@@ -32,10 +32,9 @@ class ModifierCollection implements IModifierCollection {
     
     constructor(modifiers: IModifier[], storage: ICharacterStorage) {
         this.modifiers = modifiers.reduce<IModifier[]>((prev, mod) => {
-            if (mod.type === ModifierType.Choice 
-             && storage?.classData 
-             && storage.classData[mod.id]) {
-                let value = mod.choices.find(choice => choice.id === storage.classData[mod.id])
+            if (mod.type === ModifierType.Choice && storage?.classData?.[mod.id]) {
+                let data: string[] =  storage.classData[mod.id]
+                let value = mod.choices.find(choice => data.includes(choice.id))
                 return [...prev, mod, ...value?.modifiers ?? []]
             }
             return [...prev, mod]
@@ -58,34 +57,34 @@ class ModifierCollection implements IModifierCollection {
     public getChoices(): Record<string, ChoiceData> {
         return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
             if (mod.type === ModifierType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "choice", label: mod.label, options: mod.choices } satisfies ChoiceChoiceData}
+                return {  ...prev,  [mod.id]: { type: "choice", label: mod.label, options: mod.choices, num: mod.numChoices } satisfies ChoiceChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
                 && mod.select === SelectType.Choice ) {
-                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [] } satisfies ChoiceData}
+                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [], num: mod.numChoices } satisfies ChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability] } satisfies AnyFileChoiceData}
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability], num: mod.numChoices } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
                 && mod.select === SelectType.Choice
                 && mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell] } satisfies AnyFileChoiceData}
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell], num: mod.numChoices } satisfies AnyFileChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && [ModifierAddRemoveTypeProperty.Ability, ModifierAddRemoveTypeProperty.Spell].includes(mod.addRemoveProperty)
                 && mod.select === SelectType.Choice
                 && !mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files } satisfies FileChoiceData}
+                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files, num: mod.numChoices } satisfies FileChoiceData}
             } else if (mod.type === ModifierType.Add 
                 && [ModifierAddRemoveTypeProperty.Advantage, ModifierAddRemoveTypeProperty.Disadvantage, ModifierAddRemoveTypeProperty.CONImmunity, ModifierAddRemoveTypeProperty.DMGImmunity, ModifierAddRemoveTypeProperty.Resistance, ModifierAddRemoveTypeProperty.Vulnerability].includes(mod.addRemoveProperty)
                 && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts } satisfies TextChoiceData}
+                return {  ...prev,  [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData}
             } else if (mod.type === ModifierType.Bonus 
                 && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
                 && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes } satisfies EnumChoiceData}
+                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData}
             }
             return prev
         }, {})
@@ -156,10 +155,9 @@ class ModifierCollection implements IModifierCollection {
                 return prev + mod.value
             } else if (mod.type === ModifierType.Bonus 
              && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
-             && mod.select === SelectType.Choice
-             && this.storage?.classData
-             && this.storage.classData[mod.id] === attribute) {
-                return prev + mod.value
+             && mod.select === SelectType.Choice) {
+                let choices: Attribute[] = this.storage.classData?.[mod.id]
+                return choices?.reduce((prev, value) => value === attribute ? prev + mod.value : prev, prev) ?? prev
             } else {
                 return prev
             }
@@ -182,9 +180,8 @@ class ModifierCollection implements IModifierCollection {
                 } else if (mod.type === ModifierType.Add 
                     && filter(mod)
                     && mod.select === SelectType.Choice
-                    && this.storage?.classData
-                    && this.storage.classData[mod.id]) {
-                        return { ...prev, add: [...prev.add, this.storage.classData[mod.id] ] }
+                    && this.storage.classData?.[mod.id]) {
+                        return { ...prev, add: [...prev.add, ...this.storage.classData[mod.id] ] }
                 } else if (mod.type === ModifierType.Remove && filter(mod)) {
                     return { ...prev, remove: [...prev.remove, mod[key] as T]}
                 }
@@ -271,8 +268,7 @@ class ModifierCollection implements IModifierCollection {
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
-                && this.storage?.classData
-                && this.storage.classData[mod.id]) {
+                && this.storage.classData?.[mod.id]) {
                 return [...prev, this.storage.classData[mod.id]]
             }
             return prev
@@ -287,8 +283,7 @@ class ModifierCollection implements IModifierCollection {
             } else if (mod.type === ModifierType.Add 
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
                 && mod.select === SelectType.Choice
-                && this.storage?.classData
-                && this.storage.classData[mod.id]) {
+                && this.storage.classData?.[mod.id]) {
                 return [...prev, this.storage.classData[mod.id]]
             }
             return prev
