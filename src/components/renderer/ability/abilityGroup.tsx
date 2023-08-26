@@ -73,7 +73,7 @@ const AbilityGroups = ({ abilityIds, stats, values, expendedCharges, setExpended
         if (!loading && onLoaded) {
             onLoaded(abilities)
         }
-    }, [abilities, loading, stats])
+    }, [abilities, loading, stats, expendedCharges])
     
     return !loading && Object.keys(categories)
         .filter((type: ActionType) => categories[type].content.length > 0)

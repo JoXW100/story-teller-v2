@@ -54,7 +54,7 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
 
     return (
         <div className={styles.editOption}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <DropdownMenu
                 className={styles.dropdown}
                 itemClassName={styles.dropdownItem}

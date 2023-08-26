@@ -8,7 +8,7 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const TextComponent = ({ params }: TemplateComponentProps<TextTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const value: string = (metadata && metadata[params.key]) ?? params.default ?? ''
+    const value: string = metadata?.[params.key] ?? params.default ?? ''
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch.setMetadata(params.key, e.target.value);
@@ -16,7 +16,7 @@ const TextComponent = ({ params }: TemplateComponentProps<TextTemplateParams>): 
 
     return (
         <div className={styles.editGroupItem}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <input 
                 className={styles.editInput}
                 value={value} 

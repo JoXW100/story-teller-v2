@@ -11,7 +11,7 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const selection: string[] = (metadata && metadata[params.key]) ?? params.default ?? []
+    const selection: string[] = metadata?.[params.key] ?? params.default ?? []
     const option = getOptionType(params.enum);
         
     const handleChange = (selected: string[]) => {
@@ -36,7 +36,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
                 className={styles.editSelectionMenu}
                 values={values}

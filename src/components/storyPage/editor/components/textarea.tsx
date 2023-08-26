@@ -10,13 +10,13 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const TextareaComponent = ({ params }: TemplateComponentProps<TextareaTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const value: string = (metadata && metadata[params.key]) ?? params.default ?? ''
+    const value: string = metadata?.[params.key] ?? params.default ?? ''
 
     const handleInput = (value: string) => {
         dispatch.setMetadata(params.key, value);
     }
 
-    const variables = ((context.file?.metadata as IParserMetadata)?.$vars ?? {})[params.key] ?? {}
+    const variables = (context.file?.metadata as IParserMetadata)?.$vars?.[params.key] ?? {}
 
     return (
         <div 

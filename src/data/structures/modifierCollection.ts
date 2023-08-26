@@ -35,7 +35,7 @@ class ModifierCollectionData implements IModifierCollection {
              && storage?.classData 
              && storage.classData[mod.id]) {
                 let value = mod.choices.find(choice => choice.id === storage.classData[mod.id])
-                return [...prev, mod, ...(value?.modifiers ?? [])]
+                return [...prev, mod, ...value?.modifiers ?? []]
             }
             return [...prev, mod]
         }, []);

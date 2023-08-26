@@ -72,7 +72,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
         let data = Object.keys(value).reduce<Record<string,ICharacterAbilityStorageData>>((prev, key) => (
             abilities.includes(key)
-            ? { ...prev, [key]: { ...file.storage.abilityData[key], expendedCharges: value[key] }} 
+            ? { ...prev, [key]: { ...file.storage.abilityData?.[key], expendedCharges: value[key] }} 
             : prev
         ), {})
         dispatch.setStorage("abilityData", data)

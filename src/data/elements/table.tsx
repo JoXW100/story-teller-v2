@@ -97,7 +97,7 @@ const GetTableItems = (content: IParserObject[], metadata: IFileMetadata, key: s
 const TableElement = ({ options = {}, content, metadata, variablesKey }: ElementParams<TableOptions>): JSX.Element => {
     const optionsTable = new Options(options)
     const style = { maxWidth: optionsTable.width } as Record<string, string | number>
-    const { headers, cells } = GetTableItems(content, metadata, variablesKey) ?? { headers: [], cells: [] };
+    const { headers, cells } = GetTableItems(content, metadata, variablesKey);
     const columns = headers.length;
     const rows = cells.reduce((rows, cell, index) => {
         let i = index % columns;

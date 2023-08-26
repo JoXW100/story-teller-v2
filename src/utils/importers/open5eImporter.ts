@@ -510,9 +510,9 @@ export const open5eCreatureImporter = async (id: string): Promise<ICreatureMetad
         description: res.desc,
         abilities: [
             ...res.actions, 
-            ...(res.special_abilities as Open5eMonsterAction[]),
-            ...(res.legendary_actions as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Legendary}: ${val.name}` })),
-            ...(res.reactions  as Open5eMonsterAction[])?.map((val) => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
+            ...res.special_abilities as Open5eMonsterAction[],
+            ...(res.legendary_actions as Open5eMonsterAction[])?.map(val => ({ ...val, name: `${ActionType.Legendary}: ${val.name}` })),
+            ...(res.reactions as Open5eMonsterAction[])?.map(val => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
         ].map((x) => `${x.name}. ${x.desc}`),
         challenge: res.cr,
         // xp: 

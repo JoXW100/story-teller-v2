@@ -44,7 +44,7 @@ abstract class Parser
 
         // Initialize variables
         let splits = text.split(this.matchBodyExpr);
-        let variables: Variables = { ...(metadata.$vars ?? {})[variablesKey] ?? {} }
+        let variables: Variables = { ...metadata.$vars?.[variablesKey] ?? {} }
         for (var key in metadata) {
             if (typeof(metadata[key]) != typeof({}) && key !== "public" && key !== variablesKey) {
                 variables[key] = metadata[key]

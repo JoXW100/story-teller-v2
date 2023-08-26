@@ -11,7 +11,7 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: ObjectId[] = (metadata && metadata[params.key]) ?? []
+    const values: ObjectId[] = metadata?.[params.key] ?? []
         
     const handleChange = (values: ObjectId[]) => {
         dispatch.setMetadata(params.key, values)
@@ -23,7 +23,7 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
 
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <LinkListMenu
                 itemClassName={styles.editListItem}
                 values={Array.isArray(values) ? values : []}

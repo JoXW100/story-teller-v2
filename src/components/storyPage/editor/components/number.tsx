@@ -16,7 +16,7 @@ const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams
 
     useEffect(() => {
         const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-        const value: number = (metadata && metadata[params.key]) ?? params.default ?? 0
+        const value: number = metadata?.[params.key] ?? params.default ?? 0
         setState({ text: value.toString(), error: false })
     }, [context.file?.metadata, context.editFilePages, params])
 
@@ -42,7 +42,7 @@ const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams
 
     return (
         <div className={styles.editGroupItem}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <input 
                 className={styles.editInput}
                 type="number" 

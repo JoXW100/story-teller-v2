@@ -7,7 +7,6 @@ import { asEnum } from "utils/helpers";
 import { Attribute, DiceType, Gender, OptionalAttribute } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { ICharacterMetadata, ICharacterStorage } from "types/database/files/character";
-import { IClassMetadata } from "types/database/files/class";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId, ObjectIdText } from "types/database";
@@ -95,9 +94,9 @@ class CharacterData extends CreatureData implements Required<ICharacterMetadata>
         let spells = this.metadata.spells ?? []
         if ((this.characterClass.spellAttribute !== OptionalAttribute.None && this.characterClass.preparationAll )
          || (this.characterSubClass.spellAttribute !== OptionalAttribute.None && this.characterSubClass.preparationAll)) {
-            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.learnedSpells ?? [])]
+            spells = [...spells, ...this.storage.cantrips ?? [], ...this.storage.learnedSpells ?? []]
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None || this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
-            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.preparedSpells ?? [])]
+            spells = [...spells, ...this.storage.cantrips ?? [], ...this.storage.preparedSpells ?? []]
         }
         return this.modifiers.modifySpells(spells)
     }
