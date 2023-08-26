@@ -18,7 +18,7 @@ type SelectionItemElementProps = React.PropsWithChildren<{
 const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInputTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const selection: Record<string, string | number> = metadata ? metadata[params.key] ?? {} : {};
+    const selection: Record<string, string | number> = metadata?.[params.key] ?? {}
     const option = getOptionType(params.enum);
         
     const handleChange = (selected: string[]) => {
@@ -53,7 +53,7 @@ const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInp
     
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
                 className={styles.editSelectionMenu}
                 values={values}

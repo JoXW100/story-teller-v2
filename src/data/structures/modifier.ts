@@ -134,7 +134,7 @@ class ModifierData implements Required<IModifier>  {
     // Choices
 
     public get choices(): ChoiceData[] {
-        return (this.metadata.choices ?? []).map((choice) => new ChoiceData(choice, this.id))
+        return this.metadata.choices?.map((choice) => new ChoiceData(choice, this.id)) ?? []
     }
 }
 

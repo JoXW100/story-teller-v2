@@ -16,7 +16,7 @@ const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): 
         return null;
     }
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const value: string = (metadata && metadata[params.key]) ?? type.default
+    const value: string = metadata?.[params.key] ?? type.default
 
     const handleInput = (value: string) => {
         dispatch.setMetadata(params.key, value);
@@ -24,7 +24,7 @@ const EnumComponent = ({ params }: TemplateComponentProps<EnumTemplateParams>): 
 
     return (
         <div className={styles.editGroupItem}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <DropdownMenu 
                 className={styles.dropdown}
                 itemClassName={styles.dropdownItem}

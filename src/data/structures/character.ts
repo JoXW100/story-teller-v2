@@ -108,9 +108,9 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
         let spells = this.metadata.spells ?? []
         if ((this.characterClass.spellAttribute !== OptionalAttribute.None && this.characterClass.preparationAll )
          || (this.characterSubClass.spellAttribute !== OptionalAttribute.None && this.characterSubClass.preparationAll)) {
-            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.learnedSpells ?? [])]
+            spells = [...spells, ...this.storage.cantrips ?? [], ...this.storage.learnedSpells ?? []]
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None || this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
-            spells = [...spells, ...(this.storage.cantrips ?? []), ...(this.storage.preparedSpells ?? [])]
+            spells = [...spells, ...this.storage.cantrips ?? [], ...this.storage.preparedSpells ?? []]
         }
         return this.modifiers.modifySpells(spells)
     }

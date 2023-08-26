@@ -16,7 +16,7 @@ const NavigationComponent = ({ params }: TemplateComponentProps<NavigationTempla
 
     return (
         <div className={styles.navigation}>
-            <label> {page ?? "Missing page name"}</label>
+            <label>{page ?? "Missing page name"}</label>
             <button 
                 className={styles.navigationButton} 
                 onClick={handleClick}

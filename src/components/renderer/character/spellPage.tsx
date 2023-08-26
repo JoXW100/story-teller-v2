@@ -31,9 +31,9 @@ const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPa
                 if (res.success && res.result.type === FileType.Spell) {
                     let spell: ISpellMetadata = res.result.metadata
                     if (spell.level === 0) {
-                        setStorage("cantrips", [ ...(storage.cantrips ?? []), value ])
+                        setStorage("cantrips", [ ...storage.cantrips ?? [], value ])
                     } else {
-                        setStorage("learnedSpells", [ ...(storage.learnedSpells ?? []), value ])
+                        setStorage("learnedSpells", [ ...storage.learnedSpells ?? [], value ])
                     }
                 }
             })

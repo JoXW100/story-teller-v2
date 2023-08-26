@@ -17,7 +17,7 @@ const PublishComponent = ({ params }: TemplateComponentProps<IFileTemplateParams
 
     return (
         <div className={styles.editBoolean}>
-            <b> {`${params.label ?? "Publish"}:`} </b>
+            <b>{`${params.label ?? "Publish"}:`}</b>
             <Checkbox value={context.file?.content.public} onChange={handleChange} />
             { context.file?.content.public &&
                 <Link href={href}>

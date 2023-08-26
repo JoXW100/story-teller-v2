@@ -52,7 +52,7 @@ const ToggleElement = ({ options = {}, metadata, variablesKey }: ElementParams<T
             ? toggleOptions.alt 
             : toggleOptions.content;
         if (key) {
-            let data = (metadata.$vars[variablesKey] ?? {})[key];
+            let data = metadata.$vars?.[variablesKey]?.[key];
             Parser.parse(data, metadata, variablesKey)
             .then((res) => setContent(res))
             .catch(() => setContent(null))

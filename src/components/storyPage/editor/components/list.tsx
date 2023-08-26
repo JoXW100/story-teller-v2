@@ -9,7 +9,7 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: (string | number)[] = (metadata && metadata[params.key]) ?? []
+    const values: (string | number)[] = metadata?.[params.key] ?? []
         
     const handleChange = (values: string[]) => {
         dispatch.setMetadata(params.key, values.map(value => parseInt(value)))
@@ -21,7 +21,7 @@ const ListComponent = ({ params }: TemplateComponentProps<ListTemplateParams>): 
 
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <ListMenu
                 itemClassName={styles.editListItem}
                 values={Array.isArray(values) ? values : []}

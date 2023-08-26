@@ -10,7 +10,7 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const StaticListComponent = ({ params }: TemplateComponentProps<StaticListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: (number | number[])[] = (metadata && metadata[params.key]) ?? []
+    const values: (number | number[])[] = metadata?.[params.key] ?? []
     const valueData = params.labels?.reduce<StaticListMenuItemData[]>((prev, label, index) => (
         [...prev, { 
             label: label, 
@@ -59,7 +59,7 @@ const StaticListComponent = ({ params }: TemplateComponentProps<StaticListTempla
 
     return (
         <div className={styles.editList} data="fill">
-            <b> {`${ params.label ?? "label"}:`} </b>
+            <b>{`${ params.label ?? "label"}:`}</b>
             <StaticListMenu
                 itemClassName={styles.editListItem}
                 values={valueData}

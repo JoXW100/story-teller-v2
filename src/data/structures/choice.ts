@@ -19,7 +19,7 @@ class ChoiceData implements Required<IChoice>  {
     }
 
     public get modifiers(): ModifierData[] {
-        return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id))
+        return this.metadata.modifiers?.map((modifier) => new ModifierData(modifier, this.id)) ?? []
     }
 }
 

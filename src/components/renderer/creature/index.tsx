@@ -45,7 +45,6 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const expendedAbilityCharges = file.storage?.abilityData ?? {}
     const expendedSpellSlots = file.storage?.spellData ?? []
 
-
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollection(modifiersList, null)

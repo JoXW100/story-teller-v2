@@ -12,7 +12,7 @@ const EditorComponent = ({}: TemplateComponentProps<IFileTemplateParams>): JSX.E
         dispatch.setText(value);
     }
 
-    const variables = ((context.file?.metadata as IParserMetadata)?.$vars ?? {}).$content ?? {}
+    const variables = (context.file?.metadata as IParserMetadata)?.$vars?.$content ?? {}
 
     return (
         <TextEditor
