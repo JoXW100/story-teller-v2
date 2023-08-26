@@ -26,7 +26,7 @@ class ItemCollection implements IItemCollection {
     }
 
     public get maxDex(): number {
-        return this.items.reduce<number>((prev, item) => item.type === ItemType.Armor && item.limitsDex ? Math.min(prev, item.maxDex) : prev, 0)
+        return this.items.reduce<number>((prev, item) => item.type === ItemType.Armor && item.limitsDex ? Math.min(prev, item.maxDex) : prev, Number.MAX_VALUE)
     }
 
     public get abilities(): IAbilityMetadata[] {

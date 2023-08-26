@@ -253,7 +253,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                 return this.acBase + this.acScalingValue + value + this.modifiers.bonusAC;
             case CalculationMode.Auto:
             default:
-                return this.acBase + this.acScalingValue + value + this.modifiers.bonusAC;
+                return this.acBase + this.acScalingValue + this.modifiers.bonusAC;
         }
     }
 
