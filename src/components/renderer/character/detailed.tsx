@@ -2,19 +2,21 @@ import { useContext, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
-import { useFile } from 'utils/handlers/files';
+import { useFile, useFiles } from 'utils/handlers/files';
 import CharacterBackgroundPage from './backgroundPage';
 import CharacterSpellPage from './spellPage';
 import CharacterClassPage from './classPage';
+import ItemsPage from './itemsPage';
 import AbilityGroups from '../ability/abilityGroup';
 import SpellGroups from '../spell/spellGroups';
 import AttributesBox from '../creature/attributesBox';
 import ProficienciesPage from '../creature/proficienciesPage';
+import PageSelector from '../pageSelector';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import CharacterData from 'data/structures/character';
 import AbilityData from 'data/structures/ability';
-import ModifierCollectionData from 'data/structures/modifierCollection';
+import ModifierCollection from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/class';
 import Logger from 'utils/logger';
 import CharacterFile, { ICharacterAbilityStorageData } from 'types/database/files/character';
@@ -24,6 +26,8 @@ import { OptionalAttribute } from 'types/database/dnd';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
+import { IItemMetadata } from 'types/database/files/item';
+import ItemCollection from 'data/structures/itemCollection';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -35,10 +39,12 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const [page, setPage] = useState<typeof Pages[number]>("Background")
     const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
     const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
+    const [items] = useFiles<IItemMetadata>(file.storage?.inventory);
 
+    const itemsData = useMemo(() => new ItemCollection(items.map(item => item.metadata), file.storage), [items, file.storage])
     const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
     const subclassData = useMemo(() => new ClassData(classData.subclasses.includes(subclassFile?.id) ? subclassFile?.metadata : null, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile, classData])
-    const character =  useMemo(() => new CharacterData(file.metadata, modifiers, classData, subclassData), [file.metadata, modifiers, classData, subclassData])
+    const character =  useMemo(() => new CharacterData(file.metadata, file.storage, itemsData, modifiers, classData, subclassData), [file.metadata, file.storage, itemsData, modifiers, classData, subclassData])
     const abilities = useMemo(() => character.abilities, [character])
     const spells = useMemo(() => character.spells, [character])
     const stats = useMemo(() => character.getStats(), [character])
@@ -52,7 +58,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
 
     const Pages = [
         "Background", 
-        "Proficiencies", 
+        "Proficiencies",
+        "Items",
         character.spellAttribute !== OptionalAttribute.None && character.classFile ? "Spells" : null, 
         character.classFile ? "Class" : null]
 
@@ -63,7 +70,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-        let collection = new ModifierCollectionData(modifiersList, file.storage)
+        let collection = new ModifierCollection(modifiersList, file.storage)
         if (!collection.equals(modifiers)) {
             setModifiers(collection);
         }
@@ -90,13 +97,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                 <Elements.Block>
                     <Elements.Header1>{character.name}</Elements.Header1>
                     <Elements.Line/>
-                    <div className={styles.pageSelector}>
-                        { Object.values(Pages).filter(x => x !== null).map((p, index) => (
-                            <button key={index} disabled={page === p} onClick={() => setPage(p)}>
-                                {p}
-                            </button>
-                        ))}
-                    </div>
+                    <PageSelector pages={Pages} page={page} setPage={setPage}/>
                     <Elements.Line/>
                     <div className={styles.pageItem} data={page === "Background" ? "show" : "hide"}>
                         <CharacterBackgroundPage
@@ -109,6 +110,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
                         <ProficienciesPage data={character}/>
                     </div>
+                    <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
+                        <ItemsPage character={character} storage={file.storage} setStorage={dispatch.setStorage}/>
+                    </div>
                     <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
                         <CharacterSpellPage 
                             character={character} 
@@ -119,6 +123,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <CharacterClassPage 
                             character={character} 
                             classData={classData} 
+                            storage={file.storage}
                             setStorage={dispatch.setStorage}/>
                     </div>
                 </Elements.Block>

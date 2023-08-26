@@ -1,5 +1,5 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
-import { ObjectId } from ".."
+import type { ObjectId } from ".."
 import type { DiceType, OptionalAttribute } from "../dnd"
 import type { IModifier } from "./modifier"
 

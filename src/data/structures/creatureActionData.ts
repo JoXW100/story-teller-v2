@@ -2,7 +2,7 @@ import { getOptionType } from "data/optionData";
 import FileData from "./file";
 import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
-import IEffect from "types/database/files/effect";
+import IEffect from "types/database/files/iEffect";
 import { getScalingValue } from "utils/calculations";
 import { Attribute, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";

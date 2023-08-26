@@ -133,18 +133,19 @@ const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = null
         case FileType.Character:
         case FileType.Class:
         case FileType.Creature:
-        case FileType.Spell:
         case FileType.Encounter:
+        case FileType.Item:
+        case FileType.Spell:
             return {
                 type: type,
-                content: { name: data.name, public: false, text: "" }, 
-                metadata: metadata ?? { name: "", description: "" },
+                content: { name: data.name ?? "", public: false, text: "" }, 
+                metadata: metadata ?? { name: data.name ?? "", description: "" },
                 storage: {}
             } satisfies IFileData
         case FileType.Folder:
             return {
                 type: type,
-                content: { name: data.name, open: false }
+                content: { name: data.name ?? "", open: false }
             } satisfies IFolderData
         default:
             throw new Error("File type not supported")

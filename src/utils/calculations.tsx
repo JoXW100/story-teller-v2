@@ -5,7 +5,7 @@ import CreatureData from 'data/structures/creature';
 import SpellData from 'data/structures/spell';
 import { asEnum } from './helpers';
 import ICreatureStats from 'types/database/files/iCreatureStats';
-import IEffect from 'types/database/files/effect';
+import IEffect from 'types/database/files/iEffect';
 import { ISpellMetadata } from 'types/database/files/spell';
 import { AreaType, Attribute, OptionalAttribute, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";

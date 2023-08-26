@@ -1,6 +1,6 @@
 import type { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
 import type { ObjectId } from ".."
-import { IItemMetadata } from "."
+import type { ISubPageItemMetadata } from "."
 
 export enum ModifierBonusTypeProperty {
     AC = "ac",
@@ -51,7 +51,7 @@ export enum ModifierSetMethod {
     Min = "min"
 }
 
-interface IModifier extends IItemMetadata {
+interface IModifier extends ISubPageItemMetadata {
     condition?: ModifierCondition
     type?: ModifierType
     select?: SelectType
@@ -87,7 +87,7 @@ interface IModifier extends IItemMetadata {
     choices?: IChoice[]
 }
 
-interface IChoice extends IItemMetadata {
+interface IChoice extends ISubPageItemMetadata {
     label?: string
     modifiers?: IModifier[]
 }

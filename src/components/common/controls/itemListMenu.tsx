@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from "react";
 import useAutoCompleteDialog from "../autoCompleteDialog";
-import { IItemMetadata } from "types/database/files";
+import { ISubPageItemMetadata } from "types/database/files";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import styles from 'styles/components/listMenu.module.scss';
 
-type ItemListMenuProps<T extends IItemMetadata> = React.PropsWithRef<{
+type ItemListMenuProps<T extends ISubPageItemMetadata> = React.PropsWithRef<{
     className?: string
     itemClassName?: string
     values: T[]
@@ -20,7 +20,7 @@ type ItemListMenuProps<T extends IItemMetadata> = React.PropsWithRef<{
 
 const dialogShowExpression = /^\$([a-z0-9]*)$/i
 
-const ItemListMenu = <T extends IItemMetadata>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast = true }: ItemListMenuProps<T>): JSX.Element => { 
+const ItemListMenu = <T extends ISubPageItemMetadata>({ className, itemClassName, onChange, onClick, validateInput, values = [], templates, prompt = "Edit", defaultValue = "", placeholder, addLast = true }: ItemListMenuProps<T>): JSX.Element => { 
     const handleValidate = (value: T): value is T => {
         return validateInput(value.id, values)
     }

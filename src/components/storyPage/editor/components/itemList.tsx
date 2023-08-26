@@ -7,7 +7,7 @@ import { ItemListTemplateParams } from 'types/templates';
 import { EditFilePage } from 'types/context/fileContext';
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, ModifierType, SelectType } from 'types/database/files/modifier';
 import { Attribute } from 'types/database/dnd';
-import { IItemMetadata } from 'types/database/files';
+import { ISubPageItemMetadata } from 'types/database/files';
 import styles from 'styles/pages/storyPage/editor.module.scss';
 
 const Templates: Record<string, IModifier> = {
@@ -61,19 +61,19 @@ const Templates: Record<string, IModifier> = {
 const ItemListComponent = ({ params }: TemplateComponentProps<ItemListTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: IItemMetadata[] = (metadata && metadata[params.key]) ?? []
+    const values: ISubPageItemMetadata[] = (metadata && metadata[params.key]) ?? []
         
-    const handleChange = (values: IItemMetadata[]) => {
+    const handleChange = (values: ISubPageItemMetadata[]) => {
         dispatch.setMetadata(params.key, values)
     }
 
-    const handleValidate = (value: string, values: IItemMetadata[]): boolean => {
+    const handleValidate = (value: string, values: ISubPageItemMetadata[]): boolean => {
         return value?.length > 0 
            && !value.startsWith('$') 
            && !values.some(x => x.id.toLocaleLowerCase().localeCompare(value.toLowerCase()) == 0);
     }
 
-    const handleCLick = (item: IItemMetadata, index: number) => {
+    const handleCLick = (item: ISubPageItemMetadata, index: number) => {
         dispatch.openTemplatePage({
             template: params.template,
             rootKey: params.key,

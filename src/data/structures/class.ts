@@ -1,14 +1,13 @@
 import { ObjectId } from "mongodb";
 import FileData from "./file";
 import ModifierData from "./modifier";
-import ModifierCollectionData from "./modifierCollection";
+import ModifierCollection from "./modifierCollection";
 import { getOptionType } from "data/optionData";
 import { DiceType, OptionalAttribute } from "types/database/dnd";
 import { ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata, IClassMetadataProperties } from "types/database/files/class";
 import { IModifier } from "types/database/files/modifier";
 import { IModifierCollection } from "types/database/files/modifierCollection";
-import { ObjectIdText } from "types/database";
 
 class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage
@@ -79,7 +78,7 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
         for (let index = 1; index <= Math.min(20, level); index++) {
             let modifiers: IModifier[] = this.metadata[index] ?? []
             if (modifiers.length > 0) {
-                let newCollection = new ModifierCollectionData(modifiers.map((modifier) => new ModifierData(modifier, this.id)), this.storage)
+                let newCollection = new ModifierCollection(modifiers.map((modifier) => new ModifierData(modifier, this.id)), this.storage)
                 collection = newCollection.join(collection)
             }
         }

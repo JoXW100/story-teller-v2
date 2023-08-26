@@ -6,8 +6,9 @@ import CreatureRenderer from './creature';
 import SpellRenderer from './spell';
 import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
-import { ParseError } from 'utils/parser';
+import ItemRenderer from './item';
 import Logger from 'utils/logger';
+import { ParseError } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
 import { FileType, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
@@ -33,6 +34,8 @@ const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element =
                 return DocumentRenderer
             case FileType.Encounter:
                 return EncounterRenderer
+            case FileType.Item:
+                return ItemRenderer
             default:
                 Logger.throw("useRenderer", new Error("No renderer for template type exists: " + template.type))
                 return DocumentRenderer

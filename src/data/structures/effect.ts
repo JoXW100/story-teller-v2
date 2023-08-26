@@ -4,7 +4,7 @@ import CreatureStats from "./creatureStats";
 import { getScalingValue } from "utils/calculations";
 import { ScalingType, DiceType, DamageType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";
-import IEffect from "types/database/files/effect";
+import IEffect from "types/database/files/iEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
 

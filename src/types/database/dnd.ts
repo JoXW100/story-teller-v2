@@ -165,6 +165,15 @@ export enum AbilityType {
     ThrownWeapon = 'thrownWeapon'
 }
 
+export enum ItemType {
+    Armor = 'armor',
+    Trinket = 'trinket',
+    Consumable = 'consumable',
+    MeleeWeapon = 'meleeWeapon',
+    RangedWeapon = 'rangedWeapon',
+    ThrownWeapon = 'thrownWeapon',
+}
+
 export enum ActionType {
     None = "none",
     Action = "action",
@@ -257,4 +266,14 @@ export enum RestType {
     None = "none",
     ShortRest = "short",
     LongRest = "long"
+}
+
+export enum Rarity {
+    Mundane = 'mundane',
+    Common = 'common',
+    Uncommon = 'uncommon',
+    Rare = 'rare',
+    VeryRare = 'veryRare',
+    Legendary = 'legendary',
+    Artifact = 'artifact'
 }

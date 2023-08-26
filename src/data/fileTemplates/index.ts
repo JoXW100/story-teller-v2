@@ -6,8 +6,8 @@ import DocumentTemplate from './doc.json';
 import EncounterTemplate from './enc.json';
 import SpellTemplate from './spe.json';
 import StoryTemplate from './sto.json';
+import ItemTemplate from './ite.json';
 import SubTemplates from './subTemplates';
-import rSubTemplates from './subTemplates';
 import { FileType, RenderedFileTypes } from "types/database/files";
 import { FileTemplate, RootTemplateComponent } from 'types/templates';
 
@@ -19,7 +19,8 @@ export {
     DocumentTemplate,
     EncounterTemplate,
     SpellTemplate,
-    StoryTemplate
+    StoryTemplate,
+    ItemTemplate
 }
 
 const Templates = {
@@ -29,6 +30,7 @@ const Templates = {
     [FileType.Creature]: CreatureTemplate as FileTemplate,
     [FileType.Document]: DocumentTemplate as FileTemplate,
     [FileType.Encounter]: EncounterTemplate as FileTemplate,
+    [FileType.Item]: ItemTemplate as FileTemplate,
     [FileType.Spell]: SpellTemplate as FileTemplate
 } satisfies Record<RenderedFileTypes, FileTemplate>
 
@@ -39,6 +41,7 @@ export const CreateFileOptions = {
     [FileType.Creature]: "Creature",
     [FileType.Document]: 'Document',
     [FileType.Encounter]: "Encounter",
+    [FileType.Item]: "Item",
     [FileType.Spell]: "Spell"
 } satisfies Record<RenderedFileTypes, string>
 

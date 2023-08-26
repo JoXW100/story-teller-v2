@@ -1,5 +1,5 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, RestType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
@@ -135,6 +135,18 @@ const OptionTypes = {
             [AbilityType.ThrownWeapon]: "Thrown Weapon"
         }
     } satisfies IOptionType<typeof AbilityType>,
+    "itemType": {
+        enum: ItemType,
+        default: ItemType.Armor,
+        options: {
+            [ItemType.Armor]: "Armor",
+            [ItemType.Trinket]: "Trinket",
+            [ItemType.Consumable]: "Consumable",
+            [ItemType.MeleeWeapon]: "Melee Weapon",
+            [ItemType.RangedWeapon]: "Ranged Weapon",
+            [ItemType.ThrownWeapon]: "Thrown Weapon"
+        }
+    } satisfies IOptionType<typeof ItemType>,
     "effectCondition": {
         enum: EffectCondition,
         default: EffectCondition.Hit,
@@ -417,7 +429,20 @@ const OptionTypes = {
             [RestType.ShortRest]: "Short Rest",
             [RestType.LongRest]: "Long Rest"
         }
-    },
+    } satisfies IOptionType<typeof RestType>,
+    "rarity": {
+        enum: Rarity,
+        default: Rarity.Mundane,
+        options: {
+            [Rarity.Mundane]: "Mundane",
+            [Rarity.Common]: "Common",
+            [Rarity.Uncommon]: "Uncommon",
+            [Rarity.Rare]: "Rare",
+            [Rarity.VeryRare]: "Very Rare",
+            [Rarity.Legendary]: "Legendary",
+            [Rarity.Artifact]: "Artifact"
+        }
+    } satisfies IOptionType<typeof Rarity>,
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,
@@ -428,9 +453,10 @@ const OptionTypes = {
             [RenderedFileType.Class]: "Class",
             [RenderedFileType.Document]: "Document",
             [RenderedFileType.Encounter]: "Encounter",
+            [RenderedFileType.Item]: "Item",
             [RenderedFileType.Spell]: "Spell"
         }
-    }
+    } satisfies IOptionType<typeof RenderedFileType>
 } satisfies Record<string, IOptionType<Record<string, string | number>>>
 
 type OptionTypeKey = keyof typeof OptionTypes;

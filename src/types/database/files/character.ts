@@ -28,6 +28,10 @@ interface ICharacterAbilityStorageData {
 }
 
 interface ICharacterStorage extends IFileStorage {
+    inventory?: ObjectId[]
+    equipped?: ObjectId[]
+    attuned?: ObjectId[]
+
     classData?: Record<string, any>
     cantrips?: ObjectId[]
     learnedSpells?: ObjectId[]

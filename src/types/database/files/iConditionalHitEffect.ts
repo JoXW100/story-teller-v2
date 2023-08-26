@@ -1,6 +1,6 @@
 import type { ScalingType, Attribute, EffectCondition, TargetType } from "../dnd"
 import type { IOptionType } from "../editor"
-import type IEffect from "./effect"
+import type IEffect from "./iEffect"
 
 interface ICreatureActionData {
     notes?: string

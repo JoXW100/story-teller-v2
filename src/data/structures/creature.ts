@@ -12,9 +12,9 @@ import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
 
-class CreatureData extends FileData<ICreatureMetadata> implements Required<ICreatureMetadata> {
+class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection
-    public constructor(metadata: ICreatureMetadata, modifiers?: IModifierCollection) {
+    public constructor(metadata: T, modifiers?: IModifierCollection) {
         super(metadata)
         this.modifiers = modifiers ?? new ModifierCollectionData([], {});
     }
@@ -236,17 +236,24 @@ class CreatureData extends FileData<ICreatureMetadata> implements Required<ICrea
         return this.metadata.ac ?? OptionTypeAuto
     }
 
+    public get acBase(): number {
+        return 10
+    }
+
+    public get acScalingValue(): number {
+        return this.getAttributeModifier(Attribute.DEX)
+    }
+
     public get acValue(): number {
         let value = this.ac.value ?? 0;
         switch (this.ac.type) {
             case CalculationMode.Override:
                 return value + this.modifiers.bonusAC;
             case CalculationMode.Modify:
-                var mod: number = this.getAttributeModifier(Attribute.DEX);
-                return 10 + mod + value + this.modifiers.bonusAC;
+                return this.acBase + this.acScalingValue + value + this.modifiers.bonusAC;
             case CalculationMode.Auto:
             default:
-                return 10 + this.getAttributeModifier(Attribute.DEX) + this.modifiers.bonusAC;
+                return this.acBase + this.acScalingValue + value + this.modifiers.bonusAC;
         }
     }
 

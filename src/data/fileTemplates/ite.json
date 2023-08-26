@@ -1,0 +1,184 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true },
+                "content": [
+                    {
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name", "default": "Item name" }
+                    },
+                    { 
+                        "type": "publish", 
+                        "params": { "label": "Publish" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Item Type", "key": "type", "type": "itemType", "default": "armor" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Rarity", "key": "rarity", "type": "rarity", "default": "mundane" }
+                    },
+                    { 
+                        "type": "boolean", 
+                        "params": { "label": "Attunement", "key": "requiresAttunement", "default": "false" }
+                    },
+                    { 
+                        "type": "text", 
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeWeapon", "rangedWeapon", "thrownWeapon"] }] }],
+                        "params": { "label": "Notes", "key": "notes" }
+                    },
+                    {
+                        "type": "group",
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "armor"] }],
+                        "params": { "label": "Armor", "open": true },
+                        "content": [
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Type", "key": "armorType", "type": "armor", "default": "light" }
+                            },
+                            { 
+                                "type": "number", 
+                                "params": { "label": "AC Bonus", "key": "ac", "default": 0 }
+                            },
+                            { 
+                                "type": "boolean", 
+                                "params": { "label": "Limits DEX", "key": "limitsDex", "default": false }
+                            },
+                            { 
+                                "type": "number",
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "limitsDex" }, true] }],
+                                "params": { "label": "Max DEX Bonus", "key": "maxDex", "default": 0 }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Condition", "open": true },
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeWeapon", "rangedWeapon", "thrownWeapon"] }] }],
+                        "content": [
+                            { 
+                                "type": "enum", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "condition" }, "save"] }],
+                                "params": { "label": "Save Attribute", "key": "saveAttr", "type": "attr", "default": "str" }
+                            },
+                            { 
+                                "type": "enum", 
+                                "params": { "label": "Scaling", "key": "conditionScaling", "type": "scaling", "default": "none" }
+                            },
+                            { 
+                                "type": "boolean", 
+                                "params": { "label": "Add Proficiency", "key": "conditionProficiency", "default": false }
+                            },
+                            { 
+                                "type": "option", 
+                                "params": { "label": "Modifier", "key": "conditionModifier", "type": "number" }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Effect", "open": true },
+                        "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeWeapon", "rangedWeapon", "thrownWeapon"] }] }],
+                        "content": [
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["meleeWeapon", "thrownWeapon"] }] }],
+                                "params": { "label": "Reach", "key": "range" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "thrownWeapon"] }],
+                                "params": { "label": "Range", "key": "rangeThrown" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "rangedWeapon"] }],
+                                "params": { "label": "Range", "key": "range" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedWeapon", "thrownWeapon"] }] }],
+                                "params": { "label": "Range (Long)", "key": "rangeLong" }
+                            },
+                            {
+                                "type": "itemList",
+                                "params": { 
+                                    "label": "Effects", 
+                                    "key": "effects", 
+                                    "prompt": "Edit",
+                                    "placeholder": "Name...", 
+                                    "template": "effect" 
+                                }  
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "conditions": [false],
+                        "params": { "label": "Charges", "open": true },
+                        "content": [
+                            {
+                                "type": "number",
+                                "params": { "label": "Charges", "key": "charges", "default": 0 }
+                            },
+                            {
+                                "type": "enum",
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "charges" }, 0] }],
+                                "params": { "label": "Reset", "key": "chargesReset", "type": "restType", "default": "none" }
+                            },
+                            { 
+                                "type": "number", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "charges" }, 0] }],
+                                "params": { "label": "Reset Modifier", "key": "chargesModifier", "default": 0 }
+                            },
+                            {
+                                "type": "enum",
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "charges" }, 0] }],
+                                "params": { "label": "Reset Dice", "key": "chargesDice", "type": "dice", "default": 0 }
+                            },
+                            {
+                                "type": "number",
+                                "conditions": [
+                                    { "type": "notEquals", "value": [{ "type": "metadata", "value": "charges" }, 0] },
+                                    { "type": "notEquals", "value": [{ "type": "metadata", "value": "chargesDice" }, { "type": "all", "value": [0, "0"] }] }
+                                ],
+                                "params": { "label": "Reset Dice Num", "key": "chargesDiceNum", "default": 1 }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "group",
+                        "params": { "label": "Modifiers", "open": true },
+                        "content": [
+                            {
+                                "type": "itemList",
+                                "params": { 
+                                    "label": "Modifiers", 
+                                    "key": "modifiers", 
+                                    "prompt": "Edit",
+                                    "placeholder": "Name...",
+                                    "template": "modifier"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Content", "open": true, "fill": true },
+                "content": [
+                    {
+                        "type": "textarea",
+                        "params": { "label": "Description", "key": "description", "fill": true  }
+                    }
+                ]
+            }
+        ]
+    },
+    "renderer": { "type": "ite" }
+}

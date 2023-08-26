@@ -2,13 +2,14 @@ import React, { useContext, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import AbilityGroups from '../ability/abilityGroup';
 import SpellGroups from '../spell/spellGroups';
+import PageSelector from '../pageSelector';
 import AttributesBox from './attributesBox';
 import ProficienciesPage from './proficienciesPage';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import CreatureData from 'data/structures/creature';
 import AbilityData from 'data/structures/ability';
-import ModifierCollectionData from 'data/structures/modifierCollection';
+import ModifierCollection from 'data/structures/modifierCollection';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
@@ -27,7 +28,7 @@ type CreatureLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<ICreatureMetadata>
 }>
 
-const Pages = ["Actions", "Proficiencies"] as const
+const Pages = ["Actions", "Proficiencies"]
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
@@ -47,7 +48,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-        let collection = new ModifierCollectionData(modifiersList, null)
+        let collection = new ModifierCollection(modifiersList, null)
         if (!collection.equals(modifiers)) {
             setModifiers(collection);
         }
@@ -139,13 +140,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <div className={styles.pageSelector}>
-                        { Object.values(Pages).map((p, index) => (
-                            <button key={index} disabled={page === p} onClick={() => setPage(p)}>
-                                { p }
-                            </button>
-                        ))}
-                    </div>
+                    <PageSelector pages={Pages} page={page} setPage={setPage}/>
                     <Elements.Line/>
                     <div className={styles.pageItem} data={page === "Actions" ? "show" : "hide"}>
                         <AbilityGroups 

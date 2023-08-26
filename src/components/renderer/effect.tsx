@@ -2,7 +2,7 @@ import Elements from 'data/elements';
 import Effect from 'data/structures/effect';
 import { DamageType, DiceType } from 'types/database/dnd';
 import { RollMode } from 'types/elements';
-import IEffect from 'types/database/files/effect';
+import IEffect from 'types/database/files/iEffect';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
 import { useMemo } from 'react';

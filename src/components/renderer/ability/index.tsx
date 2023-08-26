@@ -41,39 +41,10 @@ type AbilityProps = React.PropsWithRef<{
     variablesKey: string
 }>
 
-export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, setExpendedCharges, open = false }: AbilityToggleRendererProps): JSX.Element => {
-    const [isOpen, setOpen] = useState(open);
-    const canClose =  metadata?.type && metadata?.type !== AbilityType.Feature
-    const data = canClose && metadata?.description?.length > 0
-        ? isOpen ? "open" : "closed"
-        : "none"
-
-    const handleClick = () => {
-        if (canClose) {
-            setOpen(!isOpen)
-        }
-    }
-
-    return (
-        <div 
-            className={styles.ability} 
-            data={data} 
-            onClick={handleClick}>
-            <Ability 
-                metadata={metadata} 
-                stats={stats} 
-                open={isOpen} 
-                variablesKey='description'
-                expendedCharges={expendedCharges}
-                setExpendedCharges={setExpendedCharges}/>
-        </div>
-    )
-}
-
 const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpendedCharges }: AbilityProps): JSX.Element => {
     const ability = useMemo(() => new AbilityData(metadata, stats), [metadata, stats])
     const description = useParser(ability.description, ability, variablesKey)
-    Logger.log("Ability", "Ability")
+    Logger.log("Ability", ability)
 
     switch(ability.type) {
         case AbilityType.Feature:
@@ -173,6 +144,35 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
             expendedCharges={expended}
             setExpendedCharges={setExpended}
             open={true}/>
+    )
+}
+
+export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, setExpendedCharges, open = false }: AbilityToggleRendererProps): JSX.Element => {
+    const [isOpen, setOpen] = useState(open);
+    const canClose =  metadata?.type && metadata?.type !== AbilityType.Feature
+    const data = canClose && metadata?.description?.length > 0
+        ? isOpen ? "open" : "closed"
+        : "none"
+
+    const handleClick = () => {
+        if (canClose) {
+            setOpen(!isOpen)
+        }
+    }
+
+    return (
+        <div 
+            className={styles.ability} 
+            data={data} 
+            onClick={handleClick}>
+            <Ability 
+                metadata={metadata} 
+                stats={stats} 
+                open={isOpen} 
+                variablesKey='description'
+                expendedCharges={expendedCharges}
+                setExpendedCharges={setExpendedCharges}/>
+        </div>
     )
 }
 

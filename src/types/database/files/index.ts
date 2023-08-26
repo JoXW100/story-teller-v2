@@ -16,7 +16,7 @@ interface IFileMetadata {
     description: string
 }
 
-interface IItemMetadata {
+interface ISubPageItemMetadata {
     id: string
 }
 
@@ -64,6 +64,7 @@ export enum FileType {
     Creature = "cre",
     Document = "doc",
     Encounter = "enc",
+    Item = "ite",
     Spell = "spe",
 }
 
@@ -72,7 +73,7 @@ export type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root|F
 export type File<T extends IFileData> = IFile & T
 
 export type {
-    IItemMetadata,
+    ISubPageItemMetadata,
     IFolderContent,
     IFileContent,
     IFileMetadata,

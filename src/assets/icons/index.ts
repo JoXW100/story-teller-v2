@@ -46,6 +46,7 @@ import CharacterIcon from '@mui/icons-material/PersonSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import SpellIcon from '@mui/icons-material/AutoAwesomeSharp';
 import ClassIcon from '@mui/icons-material/SchoolSharp';
+import ShieldIcon from '@mui/icons-material/ShieldSharp';
 
 export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {
     [FileType.Ability]: HandIcon,
@@ -54,8 +55,9 @@ export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttrib
     [FileType.Creature]: DragonIcon,
     [FileType.Document]: DocumentIcon,
     [FileType.Encounter]: CrossedSwords,
-    [FileType.Folder]: FolderIcon,
+    [FileType.Item]: ShieldIcon,
     [FileType.Spell]: SpellIcon,
+    [FileType.Folder]: FolderIcon,
     [FileType.Root]: null,
     [FileType.Empty]: null
 }

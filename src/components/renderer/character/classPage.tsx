@@ -8,11 +8,13 @@ import ClassData from 'data/structures/class';
 import { getOptionType } from 'data/optionData';
 import { ChoiceChoiceData, EnumChoiceData } from 'types/database/files/modifierCollection';
 import { FileContextDispatch } from 'types/context/fileContext';
+import { ICharacterStorage } from 'types/database/files/character';
 import styles from 'styles/renderer.module.scss';
 
 type CharacterClassPageProps = React.PropsWithRef<{
     character: CharacterData 
     classData: ClassData
+    storage: ICharacterStorage
     setStorage: FileContextDispatch["setStorage"]
 }>
 
@@ -28,9 +30,9 @@ const reduceChoiceOptions = (value: ChoiceChoiceData) => (
     ), { null: "Unset" })
 )
 
-const CharacterClassPage = ({ character, classData, setStorage }: CharacterClassPageProps): JSX.Element => {
+const CharacterClassPage = ({ character, classData, storage, setStorage }: CharacterClassPageProps): JSX.Element => {
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
-    const storage = classData.storage?.classData ?? {}
+    const classStorage = storage?.classData ?? {}
     
     const handleChange = (value: any, key: string) => {
         let validStorage = Object.keys(storage).reduce((prev, key) => (
@@ -45,7 +47,7 @@ const CharacterClassPage = ({ character, classData, setStorage }: CharacterClass
                 <div className={styles.modifierChoice}>
                     <Elements.Bold>{`Subclass:`} </Elements.Bold>
                     <LinkDropdownMenu
-                        value={storage.$subclass ?? null}
+                        value={classStorage.$subclass ?? null}
                         itemClassName={styles.dropdownItem}
                         values={classData.subclasses}
                         allowNull={true}
@@ -58,21 +60,21 @@ const CharacterClassPage = ({ character, classData, setStorage }: CharacterClass
                         <Elements.Bold>{`${value.label}:`} </Elements.Bold>
                         { value.type === "choice" &&
                             <DropdownMenu
-                                value={storage[key] ?? null}
+                                value={classStorage[key] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={reduceChoiceOptions(value)}
                                 onChange={(value) => handleChange(value, key)}/>
                         }
                         { value.type === "enum" &&
                             <DropdownMenu
-                                value={storage[key] ?? null}
+                                value={classStorage[key] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={reduceEnumOptions(value)}
                                 onChange={(value) => handleChange(value, key)}/>
                         }
                         { value.type === "file" && value.allowAny === false &&
                             <LinkDropdownMenu
-                                value={storage[key] ?? null}
+                                value={classStorage[key] ?? null}
                                 itemClassName={styles.dropdownItem}
                                 values={value.options}
                                 allowNull={true}
@@ -80,7 +82,7 @@ const CharacterClassPage = ({ character, classData, setStorage }: CharacterClass
                         }
                         { value.type === "file" && value.allowAny &&
                             <LinkInput
-                                value={storage[key] ?? null}
+                                value={classStorage[key] ?? null}
                                 fileTypes={value.options}
                                 placeholder="File ID..."
                                 onChange={(value) => handleChange(value, key)}/>

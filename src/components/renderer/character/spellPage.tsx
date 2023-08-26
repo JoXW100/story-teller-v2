@@ -25,7 +25,7 @@ const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPa
     const MaxLevel = character.maxSpellLevel
 
     const handleChange = (value: ObjectId) => {
-        if (!spells.some(spell => spell.id === value) && !cantrips.some(cantrip => cantrip.id === value)) {
+        if (spells.every(spell => spell.id !== value) && cantrips.every(cantrip => cantrip.id !== value)) {
             Communication.getMetadata(value)
             .then((res) => {
                 if (res.success && res.result.type === FileType.Spell) {

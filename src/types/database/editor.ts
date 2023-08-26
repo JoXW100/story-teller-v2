@@ -15,6 +15,7 @@ export enum RenderedFileType {
     Creature =  "cre",
     Document = "doc",
     Encounter = "enc",
+    Item = "ite",
     Spell = "spe",
 }
 

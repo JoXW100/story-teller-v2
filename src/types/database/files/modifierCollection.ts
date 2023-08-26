@@ -1,6 +1,6 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
-import { IChoice } from "./modifier"
+import type { IChoice } from "./modifier"
 import type { ArmorType, Attribute, Language, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[] }

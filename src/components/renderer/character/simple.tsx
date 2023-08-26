@@ -4,7 +4,6 @@ import Elements from 'data/elements';
 import CharacterData from 'data/structures/character';
 import Logger from 'utils/logger';
 import CharacterFile from 'types/database/files/character';
-import styles from 'styles/renderer.module.scss';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
