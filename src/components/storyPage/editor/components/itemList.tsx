@@ -47,6 +47,11 @@ const Templates: Record<string, IModifier> = {
                 ]
             }
         ]
+    } satisfies IModifier,
+    "ability": {
+        id: "$ability",
+        type: ModifierType.Add,
+        addRemoveProperty: ModifierAddRemoveTypeProperty.Ability
     } satisfies IModifier
 }
 

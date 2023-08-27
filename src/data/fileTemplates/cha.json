@@ -211,7 +211,7 @@
                             },
                             { 
                                 "type": "selection", 
-                                "params": { "label": "Weapons", "key": "proficienciesWeapon", "enum": "weapon" }
+                                "params": { "label": "Weapons", "key": "proficienciesWeapon", "enum": "weaponProficiency" }
                             },
                             { 
                                 "type": "selection", 
@@ -233,14 +233,16 @@
                                 "params": { "label": "Attribute", "key": "spellAttribute", "type": "optionalAttr", "default": "none" }
                             },
                             {
-                                "type": "list",
+                                "type": "staticList",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spell slots", "key": "spellSlots", "type": "number", "default": 1, "editEnabled": true, "reverse": true }
+                                "params": { "label": "Spell Slots", "key": "spellSlots", "type": "number", "default": 0, "labels": [
+                                    "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"
+                                ]}
                             },
                             {
                                 "type": "linkList",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
-                                "params": { "label": "Spells", "key": "spells", "fileTypes": ["spe"], "placeholder": "Spell file ID ..." }
+                                "params": { "label": "Spells", "key": "spells", "fileTypes": ["spe"], "placeholder": "Spell file ID ...", "fill": true }
                             }
                         ]
                     }

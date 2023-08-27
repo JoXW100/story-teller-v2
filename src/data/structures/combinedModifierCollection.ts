@@ -22,7 +22,13 @@ class CombinedModifierCollection implements IModifierCollection {
     }
 
     public join(other: IModifierCollection): CombinedModifierCollection {
-        return other ? new CombinedModifierCollection(this, other, this.storage) : this;
+        return other && other.length() > 0 
+            ? new CombinedModifierCollection(this, other, this.storage)
+            : this;
+    }
+
+    public length(): number {
+        return this.c1.length() + this.c2.length()
     }
 
     public getChoices(): Record<string, ChoiceData> {
@@ -53,6 +59,16 @@ class CombinedModifierCollection implements IModifierCollection {
 
     public get critRange(): number {
         return this.c1.critRange ?? this.c2.critRange 
+    }
+
+    public get maxDEXBonus(): number {
+        if (this.c1.maxDEXBonus === null) {
+            return this.c2.maxDEXBonus
+        }
+        if (this.c2.maxDEXBonus === null) {
+            return this.c1.maxDEXBonus
+        }
+        return Math.min(this.c1.maxDEXBonus, this.c2.maxDEXBonus )
     }
 
     public get spellAttribute(): Attribute {

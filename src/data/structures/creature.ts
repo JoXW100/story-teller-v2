@@ -241,7 +241,9 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get acScalingValue(): number {
-        return this.getAttributeModifier(Attribute.DEX)
+        let max = this.modifiers.maxDEXBonus
+        let dex = this.getAttributeModifier(Attribute.DEX)
+        return max !== null ? Math.min(dex, max) : dex
     }
 
     public get acValue(): number {
@@ -400,7 +402,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get proficienciesWeaponText(): string {
-        let weapon = getOptionType('weapon').options;
+        let weapon = getOptionType('weaponProficiency').options;
         return this.proficienciesWeapon.map((key) => weapon[key]).join(', ')
     }
     

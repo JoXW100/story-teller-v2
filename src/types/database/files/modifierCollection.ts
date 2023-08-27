@@ -15,6 +15,7 @@ interface IModifierCollection {
     equals(other: IModifierCollection): boolean
     join: (other: IModifierCollection) => IModifierCollection
     getChoices: () => Record<string, ChoiceData>
+    length: () => number
 
     // Bonus
     bonusAC: number
@@ -27,6 +28,7 @@ interface IModifierCollection {
 
     // Set
     critRange: number
+    maxDEXBonus: number
     spellAttribute: Attribute
 
     // Add / Remove

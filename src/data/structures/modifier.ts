@@ -96,7 +96,7 @@ class ModifierData implements Required<IModifier>  {
     }
 
     public get weapon(): WeaponType {
-        return this.metadata.weapon ?? getOptionType('weapon').default
+        return this.metadata.weapon ?? getOptionType('weaponProficiency').default
     }
 
     public get weapons(): WeaponType[] {

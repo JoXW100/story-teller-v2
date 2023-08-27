@@ -25,9 +25,9 @@ import { IClassMetadata } from 'types/database/files/class';
 import { OptionalAttribute } from 'types/database/dnd';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
-import styles from 'styles/renderer.module.scss';
 import { IItemMetadata } from 'types/database/files/item';
-import ItemCollection from 'data/structures/itemCollection';
+import styles from 'styles/renderer.module.scss';
+import ItemData from 'data/structures/item';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -41,10 +41,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
     const [items] = useFiles<IItemMetadata>(file.storage?.inventory);
 
-    const itemsData = useMemo(() => new ItemCollection(items.map(item => item.metadata), file.storage), [items, file.storage])
     const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
     const subclassData = useMemo(() => new ClassData(classData.subclasses.includes(subclassFile?.id) ? subclassFile?.metadata : null, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile, classData])
-    const character =  useMemo(() => new CharacterData(file.metadata, file.storage, itemsData, modifiers, classData, subclassData), [file.metadata, file.storage, itemsData, modifiers, classData, subclassData])
+    const character =  useMemo(() => new CharacterData(file.metadata, file.storage, modifiers, classData, subclassData), [file.metadata, file.storage, modifiers, classData, subclassData])
     const abilities = useMemo(() => character.abilities, [character])
     const spells = useMemo(() => character.spells, [character])
     const stats = useMemo(() => character.getStats(), [character])
@@ -69,8 +68,10 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const expendedSpellSlots = file.storage?.spellData ?? []
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let modifiersList = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
-        let collection = new ModifierCollection(modifiersList, file.storage)
+        let equipped = new Set(file.storage?.equipped ?? [])
+        let itemModifiers = items.flatMap(item => equipped.has(item.id) ? new ItemData(item.metadata, String(item.id)).modifiers : [])
+        let abilityModifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], file.storage)
         if (!collection.equals(modifiers)) {
             setModifiers(collection);
         }

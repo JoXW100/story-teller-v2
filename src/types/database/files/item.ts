@@ -1,8 +1,6 @@
 import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
 import type { IModifier } from "./modifier"
-import type { ArmorType, DiceType, ItemType, Rarity, RestType, ScalingType } from "../dnd"
-import type { IOptionType } from "../editor"
-import type IEffect from "./iEffect"
+import type { ArmorType, ItemType, MeleeWeaponType, RangedWeaponType, Rarity, ThrownWeaponType } from "../dnd"
 
 interface IItemContent extends IFileContent {
     text: string
@@ -13,31 +11,14 @@ interface IItemMetadata extends IFileMetadata {
     rarity?: Rarity
     requiresAttunement?: boolean
 
-    // Armor
+    // Subtype
     armorType?: ArmorType
-    ac?: number
-    limitsDex?: boolean
-    maxDex?: number
-    
-    // Weapons
-    conditionScaling?: ScalingType
-    conditionProficiency?: boolean
-    conditionModifier?: IOptionType<number>
-
-    range?: number
-    rangeLong?: number
-    rangeThrown?: number
-
-    // Hit effect 
-    effects?: IEffect[]
+    meleeWeaponType?: MeleeWeaponType
+    rangedWeaponType?: RangedWeaponType
+    thrownWeaponType?: ThrownWeaponType
 
     // Modifiers
     modifiers?: IModifier[]
-    charges?: number
-    chargesReset?: RestType
-    chargesDice?: DiceType
-    chargesDiceNum?: number
-    chargesModifier?: number
 }
 
 interface IItemStorage extends IFileStorage {

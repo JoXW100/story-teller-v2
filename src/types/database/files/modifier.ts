@@ -25,7 +25,8 @@ export enum ModifierAddRemoveTypeProperty {
 
 export enum ModifierSetTypeProperty {
     CritRange = "critRange",
-    SpellAttribute = "spellAttribute"
+    SpellAttribute = "spellAttribute",
+    MaxDexBonus = "maxDexBonus"
 }
 
 export enum ModifierType {

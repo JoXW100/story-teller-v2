@@ -1,5 +1,5 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MovementType, OptionalAttribute, ProficiencyType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 
@@ -309,23 +309,109 @@ const OptionTypes = {
             [ArmorType.Shields]: "Shields",
         }
     } satisfies IOptionType<typeof ArmorType>,
-    "weapon": {
+    "weaponProficiency": {
         enum: WeaponType,
         default: WeaponType.Simple,
         options: {
             [WeaponType.Simple]: "Simple Weapons",
             [WeaponType.Martial]: "Martial Weapons",
-            [WeaponType.Daggers]: "Daggers",
-            [WeaponType.Darts]: "Darts",
-            [WeaponType.HandCrossbows]: "Hand Crossbows",
-            [WeaponType.Longswords]: "Longswords",
-            [WeaponType.LightCrossbows]: "Light Crossbow",
-            [WeaponType.Rapiers]: "Rapiers",
-            [WeaponType.Quarterstaffs]: "Quarterstaffs",
-            [WeaponType.Shortswords]: "Shortswords",
-            [WeaponType.Slings]: "Slings"
+            [WeaponType.Club]: "Clubs",
+            [WeaponType.Battleaxe]: "Battleaxes",
+            [WeaponType.Blowgun]: "Blowguns",
+            [WeaponType.Dagger]: "Daggers",
+            [WeaponType.Dart]: "Darts",
+            [WeaponType.Flail]: "Flails",
+            [WeaponType.Greataxe]: "Greataxes",
+            [WeaponType.Greatclub]: "Greatclubs",
+            [WeaponType.Greatsword]: "Greatsword",
+            [WeaponType.Halberd]: "Halberds",
+            [WeaponType.Handaxe]: "Handaxes",
+            [WeaponType.HandCrossbow]: "HandCrossbows",
+            [WeaponType.HeavyCrossbow]: "Heavy Crossbows",
+            [WeaponType.Javelin]: "Javelins",
+            [WeaponType.Lance]: "Lances",
+            [WeaponType.LightHammer]: "Light Hammers",
+            [WeaponType.LightCrossbow]: "Light Crossbows",
+            [WeaponType.Longbow]: "Longbows",
+            [WeaponType.Longsword]: "Longswords",
+            [WeaponType.Mace]: "Maces",
+            [WeaponType.Maul]: "Mauls",
+            [WeaponType.Net]: "Nets",
+            [WeaponType.Morningstar]: "Morningstars",
+            [WeaponType.Pike]: "Pikes",
+            [WeaponType.Quarterstaff]: "Quarterstaffs",
+            [WeaponType.Rapier]: "Rapiers",
+            [WeaponType.Scimitar]: "Scimitars",
+            [WeaponType.Shortsword]: "Shortswords",
+            [WeaponType.Shortbow]: "Shortbows",
+            [WeaponType.Sling]: "Slings",
+            [WeaponType.Sickle]: "Sickles",
+            [WeaponType.Spear]: "Spears",
+            [WeaponType.Trident]: "Tridents",
+            [WeaponType.WarPick]: "War Picks",
+            [WeaponType.Warhammer]: "Warhammers",
+            [WeaponType.Whip]: "Whips"
         }
     } satisfies IOptionType<typeof WeaponType>,
+    "meleeWeapon": {
+        enum: MeleeWeaponType,
+        default: MeleeWeaponType.Battleaxe,
+        options: {
+            [MeleeWeaponType.Battleaxe]: "Battleaxe",
+            [MeleeWeaponType.Club]: "Club",
+            [MeleeWeaponType.Dagger]: "Dagger",
+            [MeleeWeaponType.Flail]: "Flail",
+            [MeleeWeaponType.Greataxe]: "Greataxe",
+            [MeleeWeaponType.Greatclub]: "Greatclub",
+            [MeleeWeaponType.Greatsword]: "Greatsword",
+            [MeleeWeaponType.Halberd]: "Halberd",
+            [MeleeWeaponType.Handaxe]: "Handaxe",
+            [MeleeWeaponType.Javelin]: "Javelin",
+            [MeleeWeaponType.Lance]: "Lance",
+            [MeleeWeaponType.LightHammer]: "Light Hammer",
+            [MeleeWeaponType.Longsword]: "Longsword",
+            [MeleeWeaponType.Mace]: "Mace",
+            [MeleeWeaponType.Maul]: "Maul",
+            [MeleeWeaponType.Morningstar]: "Morningstar",
+            [MeleeWeaponType.Pike]: "Pike",
+            [MeleeWeaponType.Quarterstaff]: "Quarterstaff",
+            [MeleeWeaponType.Rapier]: "Rapier",
+            [MeleeWeaponType.Scimitar]: "Scimitar",
+            [MeleeWeaponType.Shortsword]: "Shortsword",
+            [MeleeWeaponType.Sickle]: "Sickle",
+            [MeleeWeaponType.Spear]: "Spear",
+            [MeleeWeaponType.Trident]: "Trident",
+            [MeleeWeaponType.WarPick]: "War Pick",
+            [MeleeWeaponType.Warhammer]: "Warhammer",
+            [MeleeWeaponType.Whip]: "Whip"
+        }
+    } satisfies IOptionType<typeof MeleeWeaponType>,
+    "thrownWeapon": {
+        enum: ThrownWeaponType,
+        default: ThrownWeaponType.Dagger,
+        options: {
+            [ThrownWeaponType.Dagger]: "Dagger",
+            [ThrownWeaponType.Handaxe]: "Handaxe",
+            [ThrownWeaponType.Javelin]: "Javelin",
+            [ThrownWeaponType.LightHammer]: "Light Hammer",
+            [ThrownWeaponType.Trident]: "Trident",
+            [ThrownWeaponType.Spear]: "Spear"
+        }
+    } satisfies IOptionType<typeof ThrownWeaponType>,
+    "rangedWeapon": {
+        enum: RangedWeaponType,
+        default: RangedWeaponType.Blowgun,
+        options: {
+            [RangedWeaponType.Blowgun]: "Blowgun",
+            [RangedWeaponType.HandCrossbow]: "Hand Crossbow",
+            [RangedWeaponType.HeavyCrossbow]: "Heavy Crossbow",
+            [RangedWeaponType.LightCrossbow]: "Light Crossbow",
+            [RangedWeaponType.Longbow]: "Longbow",
+            [RangedWeaponType.Net]: "Net",
+            [RangedWeaponType.Shortbow]: "Shortbow",
+            [RangedWeaponType.Sling]: "Sling",
+        }
+    } satisfies IOptionType<typeof RangedWeaponType>,
     "language": {
         enum: Language,
         default: Language.Common,
@@ -423,7 +509,8 @@ const OptionTypes = {
         default: ModifierSetTypeProperty.CritRange,
         options: {
             [ModifierSetTypeProperty.CritRange]: "Critical Range",
-            [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute"
+            [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
+            [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus"
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "restType": {

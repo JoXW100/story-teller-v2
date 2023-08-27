@@ -1,7 +1,6 @@
 import Dice from "utils/data/dice";
 import CreatureData from "./creature";
 import ClassData from "./class";
-import ItemCollection from "./itemCollection";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
 import { asEnum } from "utils/helpers";
@@ -9,24 +8,21 @@ import { Attribute, DiceType, Gender, OptionalAttribute } from "types/database/d
 import { CalculationMode } from "types/database/editor";
 import { ICharacterMetadata, ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection } from "types/database/files/modifierCollection";
-import { IItemCollection } from "types/database/files/itemCollection";
 import { ObjectId, ObjectIdText } from "types/database";
+import ModifierCollection from "./modifierCollection";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
     private readonly storage: ICharacterStorage
     private readonly characterClass: ClassData
     private readonly characterSubClass: ClassData
-    private readonly items: IItemCollection
     
-    public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, items?: IItemCollection, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
+    public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
+        let mods: IModifierCollection = new ModifierCollection([], storage)
         if (characterClass) {
-            let collection = characterClass.getModifiers(metadata?.level ?? 0, characterSubclass);
-            super(metadata, collection?.join(modifiers) ?? modifiers)
-        } else {
-            super(metadata, modifiers)
+            mods = mods.join(characterClass.getModifiers(metadata?.level ?? 0, characterSubclass))
         }
+        super(metadata, mods.join(modifiers))
         this.storage = storage ?? {}
-        this.items = items ?? new ItemCollection([], storage)
         this.characterClass = characterClass ?? new ClassData()
         this.characterSubClass = characterSubclass ?? new ClassData()
     }
@@ -90,18 +86,6 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                     } as RollOptions
                 }
         }
-    }
-
-    public override get acBase(): number {
-        return 10 + this.items.ac
-    }
-
-    public override get acScalingValue(): number {
-        let value = this.getAttributeModifier(Attribute.DEX)
-        if (this.items.limitsDex) {
-            return Math.min(value, this.items.maxDex)
-        }
-        return value
     }
 
     public override get spells(): ObjectIdText[] {

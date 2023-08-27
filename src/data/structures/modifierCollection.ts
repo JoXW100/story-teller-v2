@@ -51,7 +51,13 @@ class ModifierCollection implements IModifierCollection {
     }
 
     public join(other: IModifierCollection): IModifierCollection {
-        return other ? new CombinedModifierCollection(this, other, this.storage) : this;
+        if (this.length() > 0 && other && other.length() > 0) {
+            return new CombinedModifierCollection(this, other, this.storage)
+        }
+        if (other && other.length() > 0) {
+            return other
+        }
+        return this
     }
 
     public getChoices(): Record<string, ChoiceData> {
@@ -88,6 +94,10 @@ class ModifierCollection implements IModifierCollection {
             }
             return prev
         }, {})
+    }
+
+    public length(): number {
+        return this.modifiers.length
     }
 
     public get bonusAC(): number {
@@ -138,6 +148,14 @@ class ModifierCollection implements IModifierCollection {
         , null)
     }
 
+    public get maxDEXBonus(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.MaxDexBonus && modifier.value !== null
+                ? (prev === null ? modifier.value : Math.min(prev, modifier.value)) 
+                : prev
+        , null)
+    }
+
     public get spellAttribute(): Attribute {
         return this.modifiers.reduce<Attribute>((prev, modifier) => 
             modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.SpellAttribute && modifier.attribute !== null
@@ -157,7 +175,10 @@ class ModifierCollection implements IModifierCollection {
              && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
              && mod.select === SelectType.Choice) {
                 let choices: Attribute[] = this.storage.classData?.[mod.id]
-                return choices?.reduce((prev, value) => value === attribute ? prev + mod.value : prev, prev) ?? prev
+                if (typeof choices !== typeof []) {
+                    choices = []
+                }
+                return choices.reduce((prev, value) => value === attribute ? prev + mod.value : prev, prev) ?? prev
             } else {
                 return prev
             }
@@ -188,8 +209,8 @@ class ModifierCollection implements IModifierCollection {
                 return prev
             }, { add: [], remove: [] })
             
-            values = groups.add.reduce<T[]>((prev, armor) => (
-                prev.includes(armor) ? prev : [...prev, armor]
+            values = groups.add.reduce<T[]>((prev, value) => (
+                prev.includes(value) ? prev : [...prev, value]
             ), values)
 
             exclude = new Set(groups.remove);

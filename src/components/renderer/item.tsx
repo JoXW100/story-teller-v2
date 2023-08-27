@@ -25,7 +25,7 @@ type ItemLinkRendererProps = React.PropsWithRef<{
 }>
 
 const Item = ({ metadata, stats, variablesKey }: ItemRendererProps): JSX.Element => {
-    const item = useMemo(() => new ItemData(metadata, stats), [metadata, stats])
+    const item = useMemo(() => new ItemData(metadata), [metadata, stats])
     const description = useParser(item.description, item, variablesKey)
     Logger.log("Item", item)
     
@@ -33,7 +33,7 @@ const Item = ({ metadata, stats, variablesKey }: ItemRendererProps): JSX.Element
         <Elements.Header1 options={{ underline: 'true' }}> 
             {item.name} 
         </Elements.Header1>
-        {`${item.armorTypeName}, ${item.rarityName}${item.requiresAttunement ? " (Requires Attunement)" : ''}`}
+        {`${item.subTypeName}, ${item.rarityName}${item.requiresAttunement ? " (Requires Attunement)" : ''}`}
         <Elements.Line/>
         {description}
     </>

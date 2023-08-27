@@ -38,7 +38,7 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
         let validStorage = Object.keys(classStorage).reduce<Record<string, any[]>>((prev, key) => (
             Object.keys(choices).includes(key) || key === "$subclass" ? { ...prev, [key]: classStorage[key] } : prev
         ), {})
-        let newValue = validStorage[key] ?? []
+        let newValue = validStorage[key] && typeof validStorage[key] === typeof [] ? validStorage[key] : []
         if (index < 0) {
             newValue = value
         } else {
