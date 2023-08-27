@@ -21,7 +21,7 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     const values = useMemo<{[key: string]: ReactNode }>(() => (
         Object.keys(option?.options ?? {}).reduce((prev, key) => 
             ({ ...prev, [key]: (
-                <div key={key} className={styles.editGroupItem}>
+                <div key={key} className={styles.editSelectionItem}>
                     <b>{option.options[key]}</b>
                 </div>
             )})
@@ -38,7 +38,6 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
         <div className={styles.editList} data={params.fill && "fill"}>
             <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
-                className={styles.editSelectionMenu}
                 values={values}
                 selection={Array.isArray(selection) ? selection : params.default ?? []}
                 alternate={option.options}

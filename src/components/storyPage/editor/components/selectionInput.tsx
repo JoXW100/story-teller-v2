@@ -55,7 +55,6 @@ const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInp
         <div className={styles.editList} data={params.fill && "fill"}>
             <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
-                className={styles.editSelectionMenu}
                 values={values}
                 selection={Object.keys(selection)}
                 alternate={option.options}
@@ -66,7 +65,7 @@ const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInp
 
 const SelectionItemElement = ({ item, value, onChange, inputType }: SelectionItemElementProps): JSX.Element => {
     return (
-        <div className={styles.editGroupItem}>
+        <div className={styles.editSelectionItem}>
             <b>{item}</b>
             { inputType !== "none" &&
                 <input 

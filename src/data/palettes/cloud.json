@@ -1,7 +1,7 @@
 {
     "name": "Cloud",
     "colors": {
-        "background": "#547590",
+        "background": "#396eb9",
         "accents": "#9df4ff",
 
         "good": "#01ae01",
@@ -18,6 +18,7 @@
         "doc": "#ffffff",
         "enc": "#ff0000",
         "spe": "#e48eff",
+        "ite": "#9df4ff",
 
         "syntax-function-name": "#1440ff",
         "syntax-function-option": "#0872f5",
@@ -37,7 +38,7 @@
         "input-border": "#00143c",
         "input-icons": "#00143c",
 
-        "interactive-background": "#d2f0fa",
+        "interactive-background": "#8dd9ff",
         "interactive-text": "#00143c",
         "interactive-border": "#00143c",
         "interactive-icons": "#00143c",

@@ -18,6 +18,7 @@
         "cre": "#a20000",
         "enc": "#a20000",
         "spe": "#ff0045",
+        "ite": "#ff0040",
 
         "syntax-function-name": "#920021",
         "syntax-function-option": "#ff7120",

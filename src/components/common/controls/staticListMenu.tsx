@@ -42,7 +42,7 @@ const StaticListMenu = ({ className, itemClassName, type, onChange, validate, va
 
 const StaticComponent = ({ value, className, type, onUpdate, validate }: StaticComponentProps): JSX.Element => {
     const [state, setState] = useState({ display: "", error: false })
-    const style = className ? `${className} ${styles.input}` : styles.input;
+    const style = className ? `${className} ${styles.inputRow}` : styles.inputRow;
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         let input = e.target.value
@@ -63,10 +63,10 @@ const StaticComponent = ({ value, className, type, onUpdate, validate }: StaticC
     }, [value])
 
     return (
-        <div className={styles.inputRow}>
-            <label>{value.label}</label>
+        <div className={style}>
+            <b>{value.label}</b>
             <input 
-                className={style}
+                className={styles.input}
                 value={state.display}
                 type={type}
                 error={String(state.error)}

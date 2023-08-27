@@ -27,6 +27,7 @@ $size: 20px;
     & > .content {
         @include colorDefaultBackground;
         @include scroll;
+        color: colorInGroup(main, text);
         display: block;
         flex: 1;
         overflow-x: auto;
@@ -94,9 +95,9 @@ $size: 20px;
 
 .itemComponent {
     display: flex;
-    gap: 5px;
     margin-right: 2px;
     height: 100%;
+    flex: 1;
 
     & > label {
         display: flex;

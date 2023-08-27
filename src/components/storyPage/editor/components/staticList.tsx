@@ -61,7 +61,7 @@ const StaticListComponent = ({ params }: TemplateComponentProps<StaticListTempla
         <div className={styles.editList} data="fill">
             <b>{`${ params.label ?? "label"}:`}</b>
             <StaticListMenu
-                itemClassName={styles.editListItem}
+                itemClassName={styles.editSelectionItem}
                 values={valueData}
                 type={params.type === "number" ? "number" : "text"}
                 onChange={handleChange}

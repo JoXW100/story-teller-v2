@@ -73,6 +73,7 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 }
 
 .editGroupItem {
+    @include colorDecoration(second);
     display: grid;
     gap: 5px;
     height: $size;
@@ -117,6 +118,7 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 
     & > input {
         @extend .editInput;
+        height: $size;
     }
 }
 
@@ -201,16 +203,13 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 }
 
 .editListItem {
-    @include colorBackground(input);
     max-height: $size;
-    flex: 1;
     min-width: 0;
 }
 
-.editSelectionMenu {
-    & > *:last-child {
-        @include colorDecoration(second);
-    }
+.editSelectionItem {
+    @extend .editGroupItem;
+    margin: 0;
 }
 
 .editOption {
