@@ -162,7 +162,7 @@ export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, s
 
     return (
         <div 
-            className={styles.ability} 
+            className={styles.rendererBox} 
             data={data} 
             onClick={handleClick}>
             <Ability 

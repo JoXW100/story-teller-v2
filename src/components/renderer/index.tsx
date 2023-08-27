@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import AbilityRenderer from './ability';
 import CharacterRenderer from './character';
 import ClassRenderer from './class';
@@ -7,56 +6,55 @@ import SpellRenderer from './spell';
 import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
 import ItemRenderer from './item';
-import Logger from 'utils/logger';
 import { ParseError } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
 import { FileType, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
+import { asEnum } from 'utils/helpers';
 
-const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
+const Renderers: Record<FileType, RendererObject> = {
+    [FileType.Ability]: AbilityRenderer,
+    [FileType.Character]: CharacterRenderer,
+    [FileType.Class]: ClassRenderer,
+    [FileType.Creature]: CreatureRenderer,
+    [FileType.Spell]: SpellRenderer,
+    [FileType.Document]: DocumentRenderer,
+    [FileType.Encounter]: EncounterRenderer,
+    [FileType.Item]: ItemRenderer,
+    [FileType.Empty]: null,
+    [FileType.Root]: null,
+    [FileType.Folder]: null
+}
+
+export const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
     if (!file)
         throw Error("File was null in useRenderer: " + String(file?.id))
 
-    const Renderer = useMemo<RendererObject>(() => {
-        switch (template?.type) {
-            case FileType.Ability:
-                return AbilityRenderer
-            case FileType.Character:
-                return CharacterRenderer
-            case FileType.Class:
-                return ClassRenderer
-            case FileType.Creature:
-                return CreatureRenderer
-            case FileType.Spell:
-                return SpellRenderer
-            case FileType.Document:
-                return DocumentRenderer
-            case FileType.Encounter:
-                return EncounterRenderer
-            case FileType.Item:
-                return ItemRenderer
-            default:
-                Logger.throw("useRenderer", new Error("No renderer for template type exists: " + template.type))
-                return DocumentRenderer
-        }
-    }, [template])
+    const Renderer = Renderers[asEnum(template?.type, FileType)] ?? DocumentRenderer
     
     try {
         return <Renderer.fileRenderer file={file}/>
-    } catch (error) {
-        if (!(error instanceof ParseError)) {
-            throw error;
+    } catch (error: unknown) {
+        if (error instanceof ParseError) {
+            return (
+                <div className={styles.error}>
+                    {error.message}
+                </div>
+            )
         }
-        return <div className={styles.error}>{error.message}</div>;
+        throw error;
     }
 }
 
-export default useRenderer;
+export default Renderers
 export {
     AbilityRenderer,
     CharacterRenderer,
+    ClassRenderer,
     CreatureRenderer,
+    EncounterRenderer,
     DocumentRenderer,
-    SpellRenderer
+    SpellRenderer,
+    ItemRenderer
 }

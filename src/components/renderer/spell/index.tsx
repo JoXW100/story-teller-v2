@@ -3,9 +3,9 @@ import { RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import SpellFile, { ISpellMetadata } from 'types/database/files/spell';
 import { FileMetadataQueryResult } from 'types/database/responses';
-import styles from 'styles/renderer.module.scss';
 import DetailedSpell from './detailed';
 import SimpleSpell from './simple';
+import styles from 'styles/renderer.module.scss';
 
 type SpellFileRendererProps = React.PropsWithRef<{
     file: SpellFile
@@ -39,14 +39,14 @@ export const SpellToggleRenderer = ({ metadata, stats, isOpen = false }: SpellTo
         : SimpleSpell
 
     return (
-        <div className={styles.spell} onClick={handleClick}>
+        <div className={styles.rendererBox} onClick={handleClick}>
             <SpellRenderer metadata={metadata} stats={stats} variablesKey="description"/>
         </div>
     )
 }
 
 const SpellLinkRenderer = ({ file, stats }: SpellLinkRendererProps): JSX.Element => {
-    return <SimpleSpell metadata={file.metadata} stats={stats} variablesKey={`$${file.id}.description`}/>
+    return <DetailedSpell metadata={file.metadata} stats={stats} variablesKey={`$${file.id}.description`}/>
 }
 
 const SpellRenderer: RendererObject<SpellFile> = {

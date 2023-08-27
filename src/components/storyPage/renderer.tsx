@@ -3,7 +3,7 @@ import ZoomInIcon from '@mui/icons-material/ZoomInSharp';
 import ZoomOutIcon from '@mui/icons-material/ZoomOutSharp';
 import Loading from 'components/common/loading';
 import { Context } from 'components/contexts/fileContext';
-import useRenderer from 'components/renderer';
+import { useRenderer } from 'components/renderer';
 import Localization from 'utils/localization';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';

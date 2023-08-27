@@ -1,12 +1,8 @@
-import { useMemo } from 'react';
 import Link from 'next/link';
 import { ParseError } from 'utils/parser';
 import Navigation from 'utils/navigation';
-import EncounterRenderer from 'components/renderer/encounter';
-import { AbilityRenderer, CharacterRenderer, CreatureRenderer, SpellRenderer, DocumentRenderer } from 'components/renderer';
+import Renderers, { DocumentRenderer } from 'components/renderer';
 import { Queries, QueryType, IElementObject, ElementParams, Variables } from 'types/elements';
-import { FileType } from 'types/database/files';
-import { RendererObject } from 'types/database/editor';
 import styles from 'styles/elements.module.scss';
 import Logger from 'utils/logger';
 import { isObjectId } from 'utils/helpers';
@@ -132,24 +128,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
     const linkOptions = new Options(options)
     const href = linkOptions.fileURL
     const file = metadata.$queries[linkOptions.fileId]
-
-    const Content = useMemo<RendererObject>(() => {
-        switch (file?.type) {
-            case FileType.Ability:
-                return AbilityRenderer
-            case FileType.Creature:
-                return CreatureRenderer
-            case FileType.Character:
-                return CharacterRenderer
-            case FileType.Spell:
-                return SpellRenderer
-            case FileType.Encounter:
-                return EncounterRenderer
-            case FileType.Document:
-            default:
-                return DocumentRenderer
-        }
-    }, [file])
+    const Renderer = Renderers[file.type] ?? DocumentRenderer
 
     return href && file ? (
         <LinkComponent 
@@ -157,7 +136,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
             href={href} 
             newTab={linkOptions.newTabValue}>
             <div data={linkOptions.border}>
-                <Content.linkRenderer file={file}/>
+                { Renderer && <Renderer.linkRenderer file={file}/> }
             </div>
         </LinkComponent>
     ) : <LinkError/>;

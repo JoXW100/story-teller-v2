@@ -76,7 +76,9 @@ const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExpendedSl
                                 setExpended={(value) => handleSetExpended(value, level)}/>
                         }
                     </Elements.Row>
+                    <Elements.Space/>
                     { categories[level] ?? <Elements.Space/> }
+                    <Elements.Space/>
                 </React.Fragment>
             ))}
         </>

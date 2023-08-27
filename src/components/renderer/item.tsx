@@ -4,47 +4,48 @@ import ItemData from 'data/structures/item';
 import Logger from 'utils/logger';
 import { useParser } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
-import ICreatureStats from 'types/database/files/iCreatureStats';
 import ItemFile, { IItemMetadata } from 'types/database/files/item';
 import { FileMetadataQueryResult } from 'types/database/responses';
+import styles from 'styles/renderer.module.scss';
 
 type ItemRendererProps = React.PropsWithRef<{
     metadata: IItemMetadata
-    stats: ICreatureStats
     variablesKey?: string
 }>
 
 type ItemFileRendererProps = React.PropsWithRef<{
     file: ItemFile
-    stats?: ICreatureStats
 }>
 
 type ItemLinkRendererProps = React.PropsWithRef<{
     file: FileMetadataQueryResult<IItemMetadata>
-    stats?: ICreatureStats
 }>
 
-const Item = ({ metadata, stats, variablesKey }: ItemRendererProps): JSX.Element => {
-    const item = useMemo(() => new ItemData(metadata), [metadata, stats])
+const Item = ({ metadata, variablesKey }: ItemRendererProps): JSX.Element => {
+    const item = useMemo(() => new ItemData(metadata), [metadata])
     const description = useParser(item.description, item, variablesKey)
     Logger.log("Item", item)
     
     return <>
-        <Elements.Header1 options={{ underline: 'true' }}> 
+        <Elements.Header2 options={{ underline: 'true' }}> 
             {item.name} 
-        </Elements.Header1>
+        </Elements.Header2>
         {`${item.subTypeName}, ${item.rarityName}${item.requiresAttunement ? " (Requires Attunement)" : ''}`}
         <Elements.Line/>
         {description}
     </>
 }
 
-const ItemFileRenderer = ({ file, stats = {} }: ItemFileRendererProps): JSX.Element => {
-    return <Item metadata={file.metadata} stats={stats}/>
+const ItemFileRenderer = ({ file }: ItemFileRendererProps): JSX.Element => {
+    return (
+        <div className={styles.rendererBox}>
+            <Item metadata={file.metadata}/>
+        </div>
+    )
 }
 
-const ItemLinkRenderer = ({ file, stats = {} }: ItemLinkRendererProps): JSX.Element => {
-    return <Item metadata={file.metadata} stats={stats} variablesKey={`$${file.id}.description`}/>
+const ItemLinkRenderer = ({ file }: ItemLinkRendererProps): JSX.Element => {
+    return <Item metadata={file.metadata} variablesKey={`$${file.id}.description`}/>
 }
 
 const ItemRenderer: RendererObject<ItemFile> = {
