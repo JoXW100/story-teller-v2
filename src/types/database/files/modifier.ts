@@ -1,4 +1,4 @@
-import type { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import type { ObjectId } from ".."
 import type { ISubPageItemMetadata } from "."
 
@@ -26,7 +26,8 @@ export enum ModifierAddRemoveTypeProperty {
 export enum ModifierSetTypeProperty {
     CritRange = "critRange",
     SpellAttribute = "spellAttribute",
-    MaxDexBonus = "maxDexBonus"
+    MaxDexBonus = "maxDexBonus",
+    Sense = "sense"
 }
 
 export enum ModifierType {
@@ -82,6 +83,7 @@ interface IModifier extends ISubPageItemMetadata {
     tools?: Tool[]
     language?: Language
     languages?: Language[]
+    sense?: Sense
     save?: Attribute
     saves?: Attribute[]
     skill?: Skill

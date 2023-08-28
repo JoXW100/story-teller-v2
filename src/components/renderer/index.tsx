@@ -8,7 +8,7 @@ import EncounterRenderer from './encounter';
 import ItemRenderer from './item';
 import { ParseError } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
-import { FileType, IFile } from 'types/database/files';
+import { File, FileType, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 import { asEnum } from 'utils/helpers';
@@ -27,7 +27,7 @@ const Renderers: Record<FileType, RendererObject> = {
     [FileType.Folder]: null
 }
 
-export const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
+export const useRenderer = (template: FileRendererTemplate, file: File<any>): JSX.Element => {
     if (!file)
         throw Error("File was null in useRenderer: " + String(file?.id))
 

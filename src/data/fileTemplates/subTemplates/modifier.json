@@ -275,6 +275,33 @@
                 }, 
                 
                 { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "spellAttribute"] }
+                    ],
+                    "params": { "label": "Spell Attribute", "key": "attribute", "default": "str", "type": "attr" }
+                },
+                
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "sense"] }
+                    ],
+                    "params": { "label": "Sense", "key": "sense", "default": "darkVision", "type": "sense" }
+                },
+                
+                {
+                    "type": "number", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "sense"] }
+                    ],
+                    "params": { "label": "Range", "key": "value" }
+                },
+                
+                { 
                     "type": "text", 
                     "conditions": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
@@ -292,16 +319,7 @@
                     "params": { "label": "Options", "key": "texts", "fill": true, "type": "text", "placeholder": "..." }
                 }, 
                 
-                { 
-                    "type": "enum", 
-                    "conditions": [
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "spellAttribute"] }
-                    ],
-                    "params": { "label": "Spell Attribute", "key": "attribute", "default": "str", "type": "attr" }
-                },
-                
-                { 
+                {
                     "type": "number", 
                     "conditions": [{ "type": "any", "value": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },

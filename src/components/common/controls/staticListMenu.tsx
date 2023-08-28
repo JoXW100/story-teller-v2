@@ -7,40 +7,31 @@ export type StaticListMenuItemData = { label: string, value: string }
 type StaticListMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string
-    type: string
     values: StaticListMenuItemData[]
+    type: string
     onChange: (selection: StaticListMenuItemData[]) => void
     validate: (value: string) => boolean
 }>
 
-type StaticComponentProps = React.PropsWithoutRef<{
-    value: StaticListMenuItemData
+type StaticComponentParams = {
     className: string
     type: string
-    onUpdate: (value: StaticListMenuItemData) => void
     validate: (value: string) => boolean
-}>
+}
 
-const StaticListMenu = ({ className, itemClassName, type, onChange, validate, values = [] }: StaticListMenuProps): JSX.Element => {
-    const Component = useCallback(({ value, onUpdate }: ListTemplateComponent<StaticListMenuItemData>): JSX.Element => (
-        <StaticComponent 
-            value={value} 
-            type={type} 
-            className={itemClassName} 
-            onUpdate={onUpdate}
-            validate={validate}/>
-    ), [type, itemClassName, validate])
-
+const StaticListMenu = ({ className, itemClassName, values = [], type, onChange, validate }: StaticListMenuProps): JSX.Element => {
     return (
         <ListTemplateMenu<StaticListMenuItemData>
             className={className}
             onChange={onChange}
-            Component={Component}
+            Component={StaticComponent}
+            params={{ className: itemClassName, type: type, validate: validate }}
             values={values}/>
     )
 }
 
-const StaticComponent = ({ value, className, type, onUpdate, validate }: StaticComponentProps): JSX.Element => {
+const StaticComponent = ({ value, onUpdate, params }: ListTemplateComponent<StaticListMenuItemData, StaticComponentParams>): JSX.Element => {
+    const { className, type, validate } = params
     const [state, setState] = useState({ display: "", error: false })
     const style = className ? `${className} ${styles.inputRow}` : styles.inputRow;
 

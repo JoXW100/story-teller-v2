@@ -203,13 +203,15 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 }
 
 .editListItem {
-    max-height: $size;
-    min-width: 0;
+    @extend .editGroupItem;
+    margin: 0;
+    align-items: center;
 }
 
 .editSelectionItem {
     @extend .editGroupItem;
     margin: 0;
+    align-items: center;
 }
 
 .editOption {

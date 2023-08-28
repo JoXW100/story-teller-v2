@@ -1,7 +1,7 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
 import type { IChoice } from "./modifier"
-import type { ArmorType, Attribute, Language, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { ArmorType, Attribute, Language, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
 export type TextChoiceData = { type: "text", label: string, text: string, options: string[], num: number }
@@ -30,6 +30,7 @@ interface IModifierCollection {
     critRange: number
     maxDEXBonus: number
     spellAttribute: Attribute
+    getSenseRange: (sense: Sense) => number
 
     // Add / Remove
     modifyProficienciesArmor: (proficiencies: ArmorType[], onlyRemove?: boolean) => ArmorType[]

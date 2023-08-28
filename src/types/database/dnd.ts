@@ -326,6 +326,7 @@ export enum Tool {
 
 export enum Language {
     Common = "common",
+    ThievesCant = "thieves"
 }
 
 export enum Sense {

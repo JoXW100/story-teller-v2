@@ -168,27 +168,27 @@
                         "content": [
                             { 
                                 "type": "number", 
-                                "params": { "label": "STR", "key": "str" }
+                                "params": { "label": "STR", "key": "str", "default": 10 }
                             },
                             { 
                                 "type": "number", 
-                                "params": { "label": "DEX", "key": "dex" }
+                                "params": { "label": "DEX", "key": "dex", "default": 10 }
                             },
                             { 
                                 "type": "number", 
-                                "params": { "label": "CON", "key": "con" }
+                                "params": { "label": "CON", "key": "con", "default": 10 }
                             },
                             { 
                                 "type": "number", 
-                                "params": { "label": "INT", "key": "int" }
+                                "params": { "label": "INT", "key": "int", "default": 10 }
                             },
                             { 
                                 "type": "number", 
-                                "params": { "label": "WIS", "key": "wis" }
+                                "params": { "label": "WIS", "key": "wis", "default": 10 }
                             },
                             { 
                                 "type": "number", 
-                                "params": { "label": "CHA", "key": "cha" }
+                                "params": { "label": "CHA", "key": "cha", "default": 10 }
                             }
                         ]
                     },

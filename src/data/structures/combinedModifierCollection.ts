@@ -1,5 +1,5 @@
 import { ObjectIdText } from "types/database";
-import { ArmorType, Attribute, Language, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
@@ -77,6 +77,9 @@ class CombinedModifierCollection implements IModifierCollection {
 
     public getAttributeBonus(attribute: Attribute): number {
         return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
+    }
+    public getSenseRange(sense: Sense): number {
+        return Math.max(this.c1.getSenseRange(sense), this.c2.getSenseRange(sense))
     }
     
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {

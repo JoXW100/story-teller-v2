@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import { Context } from 'components/contexts/fileContext';
 import SelectionMenu from 'components/common/controls/selectionMenu';
 import { getOptionType } from 'data/optionData';
@@ -14,33 +14,26 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     const selection: string[] = metadata?.[params.key] ?? params.default ?? []
     const option = getOptionType(params.enum);
         
-    const handleChange = (selected: string[]) => {
-        dispatch.setMetadata(params.key, selected)
+    const handleChange = (values: string[]) => {
+        dispatch.setMetadata(params.key, values)
     }
-
-    const values = useMemo<{[key: string]: ReactNode }>(() => (
-        Object.keys(option?.options ?? {}).reduce((prev, key) => 
-            ({ ...prev, [key]: (
-                <div key={key} className={styles.editSelectionItem}>
-                    <b>{option.options[key]}</b>
-                </div>
-            )})
-        , {})
-    ), [params.enum, selection, context.file?.metadata, context.editFilePages])
     
     // UseMemo above must not be used conditionally
     if (!option){
         Logger.throw("selectionComponent", new Error("No option type of enum: " + params.enum))
         return null;
     }
+
+    console.log("SelectionComponent", selection)
     
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
             <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
-                values={values}
-                selection={Array.isArray(selection) ? selection : params.default ?? []}
-                alternate={option.options}
+                values={selection}
+                options={option.options}
+                defaultValue={null}
+                componentClassName={styles.editSelectionItem}
                 onChange={handleChange}/>
         </div>
     )

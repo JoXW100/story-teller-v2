@@ -3,25 +3,27 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import styles from 'styles/components/listMenu.module.scss';
 
-type ListTemplateComponent<T> = React.PropsWithoutRef<{
+type ListTemplateComponent<T, P = any> = React.PropsWithoutRef<{
     value: T
     values: T[]
     index: number
+    params: P
     onUpdate: (value: T) => void
 }>
 
-type ListTemplateMenuProps<E, T extends E> = React.PropsWithoutRef<{
+type ListTemplateMenuProps<E, P, T extends E> = React.PropsWithoutRef<{
     className: string
+    values: T[]
+    defaultValue?: E
+    params?: P
+    addLast?: boolean
     onChange: (items: T[]) => void
     validateInput?: (value: E, values: T[]) => value is T
-    Component: (props: ListTemplateComponent<T>) => React.ReactNode
-    EditComponent?: (props: ListTemplateComponent<E>) => React.ReactNode
-    defaultValue?: E
-    values: T[]
-    addLast?: boolean
+    Component: (props: ListTemplateComponent<T, P>) => React.ReactNode
+    EditComponent?: (props: ListTemplateComponent<E, P>) => React.ReactNode
 }>
 
-const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInput, Component, EditComponent, defaultValue, values = [], addLast = true }: ListTemplateMenuProps<E, T>): JSX.Element => {
+const ListTemplateMenu = <E, P = any, T extends E = E>({ className, defaultValue, values = [], params, addLast = true, onChange, validateInput, Component, EditComponent}: ListTemplateMenuProps<E, P, T>): JSX.Element => {
     const [value, setValue] = useState<E>(defaultValue);
 
     const handleEditChange = (value: E) => {
@@ -48,15 +50,23 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
     useEffect(() => {
         setValue(defaultValue)
     }, [defaultValue])
-    
+
     return (
         <div className={className ? `${styles.main} ${className}` : styles.main}>
             { EditComponent &&
                 <div className={styles.addRow}>
                     <div className={styles.collection}>
-                        <EditComponent value={value} values={values} index={-1} onUpdate={(value) => handleEditChange(value)}/>
+                        <EditComponent 
+                            value={value} 
+                            values={values} 
+                            index={-1} 
+                            params={params} 
+                            onUpdate={(value) => handleEditChange(value)}/>
                     </div>
-                    <button className={styles.button} onClick={handleAdd} disabled={validateInput && !validateInput(value, values ?? [])}>
+                    <button 
+                        className={styles.button} 
+                        onClick={handleAdd} 
+                        disabled={validateInput && !validateInput(value, values ?? [])}>
                         <AddIcon sx={{ width: '100%' }}/>
                     </button>
                 </div>
@@ -67,7 +77,12 @@ const ListTemplateMenu = <E, T extends E = E>({ className, onChange, validateInp
                         key={index} 
                         removable={EditComponent !== undefined} 
                         onClick={() => handleRemove(index)}> 
-                        <Component value={value} values={values} index={index} onUpdate={(value) => handleChange(value, index)}/>
+                        <Component 
+                            value={value} 
+                            values={values} 
+                            index={index} 
+                            params={params} 
+                            onUpdate={(value) => handleChange(value, index)}/>
                     </TemplateListRow>
                 ))}
             </div>

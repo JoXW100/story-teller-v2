@@ -416,7 +416,8 @@ const OptionTypes = {
         enum: Language,
         default: Language.Common,
         options: {
-            [Language.Common]: "Common"
+            [Language.Common]: "Common",
+            [Language.ThievesCant]: "Thieves' Cant"
         }
     } satisfies IOptionType<typeof Language>,
     "sense": {
@@ -436,7 +437,7 @@ const OptionTypes = {
             [Tool.AlchemistsSupplies]: "Alchemist's Supplies",
             [Tool.HerbalismKit]: "Herbalism Kit",
             [Tool.PoisonersKit]: "Poisoner's Kit",
-            [Tool.ThievesTools]: "Thieve's Tools"
+            [Tool.ThievesTools]: "Thieves' Tools"
         }
     } satisfies IOptionType<typeof Tool>,
     "proficiencyType": {
@@ -510,7 +511,8 @@ const OptionTypes = {
         options: {
             [ModifierSetTypeProperty.CritRange]: "Critical Range",
             [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
-            [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus"
+            [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus",
+            [ModifierSetTypeProperty.Sense]: "Sense"
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "restType": {

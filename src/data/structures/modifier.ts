@@ -1,5 +1,5 @@
 import { getOptionType } from "data/optionData"
-import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice, ModifierCondition } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 import ChoiceData from "./choice";
@@ -117,6 +117,10 @@ class ModifierData implements Required<IModifier>  {
 
     public get languages(): Language[] {
         return this.metadata.languages ?? []
+    }
+
+    public get sense(): Sense {
+        return this.metadata.sense ?? getOptionType('sense').default
     }
 
     public get save(): Attribute {

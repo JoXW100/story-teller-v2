@@ -337,13 +337,22 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return Object.keys(this.speed).map((key) => `${movement[key]} ${this.speed[key]}ft`).join(', ')
     }
 
-    public get senses(): Partial<Record<Sense, number>> {
-        return this.metadata.senses ?? {}
+    public get senses(): Record<Sense, number> {
+        return Object.values(Sense).reduce<Record<Sense, number>>((prev, sense) => (
+            { ...prev, [sense]: this.getSenseRange(sense) }
+        ), {} as any)
     }
 
     public get sensesAsText(): string {
-        let senses = getOptionType("sense").options;
-        return Object.keys(this.senses).map((key) => `${senses[key]} ${this.senses[key]}ft`).join(', ')
+        let options = getOptionType("sense").options;
+        return Object.values(Sense).reduce<string[]>((prev, sense: Sense) => {
+            let range = this.getSenseRange(sense);
+            return range > 0 ? [...prev, `${options[sense]} ${range}ft`] : prev
+        }, []).join(', ')
+    }
+
+    public getSenseRange(sense: Sense) {
+        return Math.max(this.modifiers.getSenseRange(sense), this.metadata.senses?.[sense] ?? 0)
     }
 
     public get passivePerceptionValue(): number {

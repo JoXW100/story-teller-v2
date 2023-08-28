@@ -1,6 +1,6 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { ArmorType, Attribute, Language, ProficiencyType, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
@@ -183,6 +183,14 @@ class ModifierCollection implements IModifierCollection {
                 return prev
             }
         }, 0)
+    }
+
+    public getSenseRange(sense: Sense): number {
+        return this.modifiers.reduce<number>((prev, modifier) => (
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.Sense && modifier.sense === sense
+                ? Math.max(modifier.value, prev)
+                : prev
+        ), 0)
     }
 
     private modifyCollection<T>(values: T[], key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): T[] {
