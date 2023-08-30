@@ -25,8 +25,8 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
     const [handleChange, handleKey, handlePreInput] = useTextHandling(onChange)
     const codeRef = useRef<HTMLTextAreaElement>()
     const highlightRef = useRef<HTMLPreElement>()
-    const name = className ? `${className} ${styles.holder}` : styles.holder
     const elements = Object.keys(ElementDictionary);
+    const name = className ? `${className} ${styles.holder}` : styles.holder
 
     const handleApply = (e: React.KeyboardEvent<HTMLTextAreaElement>, option: string, type: DialogType) => {
         const target: HTMLTextAreaElement = e.currentTarget;
@@ -112,9 +112,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
 
     useEffect(() => {
         if (codeRef.current) {
-            codeRef.current.innerHTML = text
-                .replace(new RegExp("&", "g"), "&amp;")
-                .replace(new RegExp("<", "g"), "&lt;")
+            codeRef.current.innerHTML = text.replace("&", "&amp;").replace("<", "&lt;")
             Prism.highlightElement(codeRef.current)
             Prism.plugins
         }
@@ -125,8 +123,13 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             'function': {
                 pattern: Parser.matchFunctionExpr,
                 inside: {
-                    'name': new RegExp(`\\\\(?:${elements.join('|')})(?![a-z0-9]+)`, "i"),
-                    'name error': /\\[a-z0-9]+/i,
+                    'name': {
+                        pattern: /\\[a-z0-9]+/i,
+                        inside: {
+                            'valid': new RegExp(`^\\\\(?:${elements.join('|')})$`),
+                            'error': /.*/
+                        }
+                    },
                     'bracket': /\[|\]/,
                     'option': /[a-z0-9]+(?=:)(?!:\/)/i,
                     'calc': {
@@ -147,22 +150,25 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             'calc': {
                 pattern: Parser.matchCalcExpr,
                 inside: {
-                    'variable': /\$/,
+                    'variable': /^\$/,
                     'bracket': /[\{\}]/,
                     'number': /-?[0-9]+/,
                     'value': /[a-z0-9]+/i
                 }
             },
             'bracket': /[\{\}]/,
-            'variable': variables?.length ?? 0 > 0 
-                ? new RegExp(`\\$(?:${variables.join('|')})(?![a-z0-9]+)`, "i")
-                : Parser.matchVarsExpr,
-            'variable error': Parser.matchVarsExpr,
+            'variable': {
+                pattern: Parser.matchVarsExpr,
+                inside: variables?.length > 0 && {
+                    'valid': new RegExp(`\\$(?:${variables.join('|')})(?![a-z0-9]+)`, "i"),
+                    'error': /.*/
+                }
+            },
             'line': /\n|\r/,
             'tab': /\t/,
             'text': / *\S+/
         }
-    }, [variables, elements])
+    }, [variables, ElementDictionary])
 
     return (
         <div className={name}>

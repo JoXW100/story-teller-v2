@@ -83,6 +83,14 @@ $indent: calc(6ch - 15px);
 }
 
 .dialog {
+    @include mobile {
+        display: none;
+    }
+
+    @include mobile-landscape {
+        display: none;
+    }
+
     &[data=show] {
         margin-left: $indent;
     }

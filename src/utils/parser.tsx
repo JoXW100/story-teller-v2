@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Communication from "./communication";
 import { arrayUnique, isEnum, isNumber, isObjectId } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
-import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
-import styles from 'styles/renderer.module.scss';
-import { ObjectId } from "types/database";
 import FileData from "data/structures/file";
+import { Variables, Queries, IParserMetadata, QueryCollection, IParserObject, IParserOption } from "types/elements";
+import { ObjectId } from "types/database";
+import styles from 'styles/renderer.module.scss';
 
 export class ParseError extends Error {
     constructor(message: string) {
@@ -22,13 +22,14 @@ enum CalcOperation {
     DivideDown = '>/',
     DivideUp = '</'
 }
+
 const OperationsOrder: CalcOperation[] = [CalcOperation.Multiply, CalcOperation.DivideDown, CalcOperation.DivideUp, CalcOperation.Subtract, CalcOperation.Add]
 
 abstract class Parser
 {
     public static readonly matchVarsExpr = /\$([a-z0-9]+)/gi
     public static readonly matchCalcExpr = /\$\{([^\}]*)\}/g
-    public static readonly splitCalcExpr = / *(-(?![0-9]+)|\+|\*|\<\/|\>\/) */g
+    public static readonly splitCalcExpr = / *(-(?![0-9])|\+|\*|\<\/|\>\/) */g
     public static readonly matchBodyExpr = /([\{\}])/
     public static readonly matchOptionsExpr = /,? *(?:([a-z0-9]+):(?!\/) *)?([^\n\r,]+ *)/gi
     public static readonly splitFunctionExpr = /(\\[0-9a-z]+[\n\r]*(?: *\[[ \n\r]*[^\]\n\r]*\])?)/gi
