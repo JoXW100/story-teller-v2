@@ -16,18 +16,27 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    
+    @include desktop {
+        margin-right: 2px;
+    }
+
+    @include mobile-landscape {
+        padding-right: 2px;
+    }
 
     & > .editGroup[data=default]:last-child  {
         margin-bottom: $bottomMargin;
     }
+    
 }
 
 .editGroup {
     @include colorDecoration(second);
     display: flex;
     flex-direction: column;
-    padding: 2px;
     white-space: nowrap;
+    margin-bottom: 2px;
 
     &[data=fill] {
         flex: 1;

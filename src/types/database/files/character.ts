@@ -2,9 +2,9 @@ import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } f
 import type { ICreatureMetadata } from "./creature"
 import type { Gender } from "../dnd"
 import type { ObjectId } from ".."
+import type InventoryItemData from "./inventoryItem"
 
 interface ICharacterContent extends IFileContent {
-    text: string
 }
 
 interface ICharacterMetadata extends IFileMetadata, ICreatureMetadata {
@@ -28,10 +28,8 @@ interface ICharacterAbilityStorageData {
 }
 
 interface ICharacterStorage extends IFileStorage {
-    inventory?: ObjectId[]
-    equipped?: ObjectId[]
-    attuned?: ObjectId[]
-
+    inventory?: Record<string, InventoryItemData>
+    attunement?: [ObjectId, ObjectId, ObjectId]
     classData?: Record<string, any>
     cantrips?: ObjectId[]
     learnedSpells?: ObjectId[]

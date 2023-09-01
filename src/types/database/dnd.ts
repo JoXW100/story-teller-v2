@@ -295,6 +295,8 @@ export enum MeleeWeaponType {
     WarPick = "warPick",
     Warhammer = "warhammer",
     Whip = "whip",
+    Grenade = "grenade",
+    Improvised = "improvised"
 }
 
 export enum ThrownWeaponType {
@@ -304,6 +306,8 @@ export enum ThrownWeaponType {
     LightHammer = "lightHammer",
     Trident = "trident",
     Spear = "spear",
+    Grenade = "grenade",
+    Improvised = "improvised"
 }
 
 export enum RangedWeaponType {
@@ -315,6 +319,7 @@ export enum RangedWeaponType {
     Net = "net",
     Shortbow = "shortbow",
     Sling = "sling",
+    Improvised = "improvised"
 }
 
 export enum Tool {

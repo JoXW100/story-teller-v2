@@ -3,12 +3,14 @@ import type { IModifier } from "./modifier"
 import type { ArmorType, ItemType, MeleeWeaponType, RangedWeaponType, Rarity, ThrownWeaponType } from "../dnd"
 
 interface IItemContent extends IFileContent {
-    text: string
 }
 
 interface IItemMetadata extends IFileMetadata {
     type?: ItemType
     rarity?: Rarity
+    weight?: number
+    value?: number
+    notes?: string
     requiresAttunement?: boolean
 
     // Subtype

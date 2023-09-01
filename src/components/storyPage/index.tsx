@@ -17,8 +17,8 @@ const StoryPage = (): JSX.Element => {
     return (
         <div className={styles.main}>
             <div className={styles.header}>
-                <label className={styles.headerLabel}>
-                    <Logo/>
+                <Logo/>
+                <label>
                     {String(context.story.name)}
                 </label>
                 <HelpMenuButton/>

@@ -12,7 +12,7 @@ const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams
     const value: number = metadata?.[params.key] ?? params.default ?? 0
 
     const handleChange = (value: number) => {
-        dispatch.setMetadata(params.key, isNaN(value) ? params.default ?? 0 : value)
+        dispatch.setMetadata(params.key, isNaN(value) ? params.default ?? 0 : Math.abs(value))
     }
 
     return (
@@ -20,7 +20,8 @@ const NumberComponent = ({ params }: TemplateComponentProps<NumberTemplateParams
             <b>{`${ params.label ?? "label"}:`}</b>
             <NumberInput
                 className={styles.editInput}
-                value={value} 
+                value={value}
+                decimal={params.allowFloat}
                 setValue={handleChange}/>
         </div>
     )

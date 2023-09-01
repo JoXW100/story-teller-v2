@@ -5,7 +5,6 @@ import type { IOptionType } from "../editor"
 import type ICreatureStats from "./iCreatureStats"
 
 interface ICreatureContent extends IFileContent {
-    text: string
 }
 
 interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "proficiency"> {

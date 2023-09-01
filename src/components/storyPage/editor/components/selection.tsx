@@ -23,8 +23,6 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
         Logger.throw("selectionComponent", new Error("No option type of enum: " + params.enum))
         return null;
     }
-
-    console.log("SelectionComponent", selection)
     
     return (
         <div className={styles.editList} data={params.fill && "fill"}>

@@ -7,14 +7,15 @@ type DropdownMenuProps = React.PropsWithRef<{
     className?: string
     itemClassName?: string,
     values: Record<string, ReactNode>
+    exclude?: string[]
     value: string, 
     showButton?: boolean,
     onChange: (value: string) => void
 }>
 
-const DropdownMenu = ({ className, itemClassName, values, value, showButton = true, onChange }: DropdownMenuProps): JSX.Element => {
+const DropdownMenu = ({ className, itemClassName, values, exclude, value, showButton = true, onChange }: DropdownMenuProps): JSX.Element => {
     const [open, setOpen] = useState(false);
-    const disabled = !values || Object.values(values).length <= 1
+    const disabled = !values || Object.keys(values).filter(x => !exclude?.includes(x)).length <= 1
     const style = className ? `${styles.dropdown} ${className}` : styles.dropdown;
     const itemStyle = itemClassName ? `${styles.dropdownItem} ${itemClassName}` : styles.dropdownItem;
     const { [value]: _, ...rest } = values
@@ -50,7 +51,7 @@ const DropdownMenu = ({ className, itemClassName, values, value, showButton = tr
             data={showButton ? "button" : "nobutton"}>
             <div className={styles.content} onMouseLeave={clickHandler}> 
                 <div className={styles.menu} data={open ? "open" : "close"} >
-                    { [value, ...keys].map((key, index) => (
+                    { [value, ...keys].map((key, index) => !exclude?.includes(key) && (
                         <button key={index} className={itemStyle} onClick={() => handleClick(key)}>  
                             { values[key] }
                         </button>   

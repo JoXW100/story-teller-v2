@@ -3,12 +3,18 @@ import FileData from "./file";
 import ModifierData from "./modifier";
 import { ArmorType, ItemType, MeleeWeaponType, RangedWeaponType, Rarity, ThrownWeaponType } from "types/database/dnd";
 import { IItemMetadata } from "types/database/files/item";
+import { ObjectId } from "types/database";
+import InventoryItemData from "types/database/files/inventoryItem";
 
 class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata> {
-    private readonly id?: string;
-    constructor(metadata: IItemMetadata, id?: string) {
+    private readonly data?: InventoryItemData
+    private readonly id?: ObjectId
+    public readonly attuned: boolean
+    constructor(metadata: IItemMetadata, data?: InventoryItemData, id?: ObjectId, attuned?: boolean) {
         super(metadata)
-        this.id = id;
+        this.data = data;
+        this.id = id
+        this.attuned = attuned ?? false
     }
 
     public get type(): ItemType {
@@ -25,6 +31,26 @@ class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata
 
     public get rarityName(): string {
         return getOptionType('rarity').options[this.rarity] ?? String(this.rarity)
+    }
+
+    public get weight(): number {
+        return this.metadata.weight ?? 0
+    }
+
+    public get totalWeight(): number {
+        return this.weight * this.quantity
+    }
+
+    public get value(): number {
+        return this.metadata.value ?? 0
+    }
+
+    public get totalValue(): number {
+        return this.value * this.quantity
+    }
+
+    public get notes(): string {
+        return this.metadata.notes ?? ""
     }
 
     public get requiresAttunement(): boolean {
@@ -62,14 +88,27 @@ class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata
             case ItemType.Trinket:
             case ItemType.Consumable:
             default:
-                return null
+                return this.typeName
         }
     }
 
     // Modifiers
 
     public get modifiers(): ModifierData[] {
-        return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id))
+        if (this.equipped && (!this.requiresAttunement || this.attuned)) {
+            return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id?.toString()))
+        }
+        return []
+    }
+
+    // Data
+
+    public get equipped(): boolean {
+        return this.data?.equipped ?? false
+    }
+
+    public get quantity(): number {
+        return this.data?.quantity ?? 1
     }
 }
 

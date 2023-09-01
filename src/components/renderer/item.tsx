@@ -28,9 +28,12 @@ const Item = ({ metadata, variablesKey }: ItemRendererProps): JSX.Element => {
     
     return <>
         <Elements.Header2 options={{ underline: 'true' }}> 
-            {item.name} 
+            <span className={styles.rarityLabel} data={item.rarity}>{item.name}</span>
         </Elements.Header2>
-        {`${item.subTypeName}, ${item.rarityName}${item.requiresAttunement ? " (Requires Attunement)" : ''}`}
+        {`${item.subTypeName}, ${item.rarityName}`}
+        {item.requiresAttunement && 
+            " (Requires Attunement)"
+        }
         <Elements.Line/>
         {description}
     </>

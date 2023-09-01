@@ -383,7 +383,9 @@ const OptionTypes = {
             [MeleeWeaponType.Trident]: "Trident",
             [MeleeWeaponType.WarPick]: "War Pick",
             [MeleeWeaponType.Warhammer]: "Warhammer",
-            [MeleeWeaponType.Whip]: "Whip"
+            [MeleeWeaponType.Whip]: "Whip",
+            [MeleeWeaponType.Grenade]: "Grenade",
+            [MeleeWeaponType.Improvised]: "Improvised"
         }
     } satisfies IOptionType<typeof MeleeWeaponType>,
     "thrownWeapon": {
@@ -395,7 +397,9 @@ const OptionTypes = {
             [ThrownWeaponType.Javelin]: "Javelin",
             [ThrownWeaponType.LightHammer]: "Light Hammer",
             [ThrownWeaponType.Trident]: "Trident",
-            [ThrownWeaponType.Spear]: "Spear"
+            [ThrownWeaponType.Spear]: "Spear",
+            [ThrownWeaponType.Grenade]: "Grenade",
+            [ThrownWeaponType.Improvised]: "Improvised"
         }
     } satisfies IOptionType<typeof ThrownWeaponType>,
     "rangedWeapon": {
@@ -410,6 +414,7 @@ const OptionTypes = {
             [RangedWeaponType.Net]: "Net",
             [RangedWeaponType.Shortbow]: "Shortbow",
             [RangedWeaponType.Sling]: "Sling",
+            [RangedWeaponType.Improvised]: "Improvised"
         }
     } satisfies IOptionType<typeof RangedWeaponType>,
     "language": {

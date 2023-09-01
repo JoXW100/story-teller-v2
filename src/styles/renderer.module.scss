@@ -4,6 +4,17 @@
 @import 'prefabs.scss';
 @import 'animations.scss';
 
+@mixin colorByRarity {
+    @include colorIcon(second);
+    &[data=mundane] { color: #d1d1d1; }
+    &[data=common] { color: #ffffff; }
+    &[data=uncommon] { color: #5cbe3e; }
+    &[data=rare] { color: #5991dc; }
+    &[data=veryRare] { color: #8759dc; }
+    &[data=legendary] { color: #f2a546; }
+    &[data=artifact] { color: #8d5e25; }
+}
+
 .main {
     @include colorDefaultBackground;
     @include fontNormal;
@@ -490,4 +501,91 @@
             height: 100%;
         }
     }
+}
+
+.inventoryItem {
+    @include colorDecoration(second);
+    display: grid;
+    grid-template-columns: $iconNormalSize 1fr 1.5 * $iconNormalSize 1.5 * $iconNormalSize 1.5 * $iconNormalSize $iconNormalSize;
+    font-size: smaller;
+    height: $iconNormalSize;
+    margin-bottom: 1px;
+    align-items: center;
+
+    &[data=true] {
+        @include colorDecoration(main);
+    }
+
+    & > div {
+        @include fontNoLineBreak;
+        display: grid;
+        text-indent: 10px;
+
+        & > label {
+            font-size: small;
+        }
+    }
+
+    & > label {
+        justify-self: center;
+    }
+
+    & > button {
+        padding: 5px;
+        width: $iconNormalSize;
+        height: $iconNormalSize;
+        margin-left: 1px;
+        & > svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+.inventoryHeader {
+    display: grid;
+    grid-template-columns: $iconNormalSize 1fr 1.5 * $iconNormalSize 1.5 * $iconNormalSize 1.5 * $iconNormalSize;
+    font-size: small;
+    border-bottom: 2px solid;
+    padding-right: $iconNormalSize;
+    justify-items: center;
+
+    & > b:nth-child(2) {
+        justify-self: start;
+        text-indent: 10px;
+    }
+}
+
+.inventoryAttunementDropdown {
+    background-color: colorInGroup(second, decoration) !important;
+    color: colorInGroup(second, text) !important;
+    height: $iconSmallSize !important;
+    max-height: $iconSmallSize;
+    border-radius: $iconSmallSize / 2;
+    margin-bottom: 5px;
+
+    & > :first-child > * {
+        border-radius: $iconSmallSize / 2;
+    }
+
+    & > :last-child {
+        border-radius: 50%;
+        margin-left: 2px;
+    }
+}
+
+.inventoryAttunementDropdownItem {
+    background-color: colorInGroup(second, decoration) !important;
+    color: colorInGroup(second, text) !important;
+    height: $iconSmallSize !important;
+    text-indent: 5px;
+    font-weight: bold;
+
+    &:hover {
+        background-color: colorInGroup(interactive, background) !important;
+    }
+}
+
+.rarityLabel {
+    @include colorByRarity();
 }

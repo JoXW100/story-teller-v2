@@ -14,8 +14,6 @@ const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInp
     const values: Record<string, string | number> = metadata?.[params.key] ?? {}
     const option = getOptionType(params.enum);
 
-    console.log("SelectionInputComponent", values)
-
     const handleChange = (values: Record<string, string | number>) => {
         dispatch.setMetadata(params.key, values)
     }

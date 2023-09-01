@@ -1,7 +1,6 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
 
 interface IEncounterContent extends IFileContent {
-    text: string
 }
 
 interface IEncounterCardData {

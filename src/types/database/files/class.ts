@@ -4,7 +4,6 @@ import type { DiceType, OptionalAttribute } from "../dnd"
 import type { IModifier } from "./modifier"
 
 interface IClassContent extends IFileContent {
-    text: string
 }
 
 interface IClassLevels {

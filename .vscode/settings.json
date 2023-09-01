@@ -6,6 +6,8 @@
     "dndbeyond",
     "dunamancy",
     "DXSVG",
+    "equiped",
+    "equippable",
     "greatclub",
     "icontains",
     "iexact",
@@ -18,6 +20,7 @@
     "svgr",
     "tremorsense",
     "truesight",
+    "Unequip",
     "upserted"
 ],
   "svg.preview.background": "dark-transparent",

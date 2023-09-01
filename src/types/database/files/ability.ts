@@ -4,7 +4,6 @@ import type ICreatureActionData from "./iConditionalHitEffect"
 import type { AbilityType, ActionType, RestType } from "../dnd"
 
 interface IAbilityContent extends IFileContent {
-    text: string
 }
 
 interface IAbilityMetadata extends IFileMetadata, ICreatureActionData {

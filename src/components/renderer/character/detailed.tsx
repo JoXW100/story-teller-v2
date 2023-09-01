@@ -39,7 +39,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const [page, setPage] = useState<typeof Pages[number]>("Background")
     const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
     const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
-    const [items] = useFiles<IItemMetadata>(file.storage?.inventory);
+    const itemIds = useMemo(() => Object.keys(file.storage?.inventory ?? {}), [file.storage?.inventory])
+    const [items] = useFiles<IItemMetadata>(itemIds);
 
     const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
     const subclassData = useMemo(() => new ClassData(classData.subclasses.includes(subclassFile?.id) ? subclassFile?.metadata : null, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile, classData])
@@ -68,8 +69,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const expendedSpellSlots = file.storage?.spellData ?? []
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let equipped = new Set(file.storage?.equipped ?? [])
-        let itemModifiers = items.flatMap(item => equipped.has(item.id) ? new ItemData(item.metadata, String(item.id)).modifiers : [])
+        let itemModifiers = items.flatMap((item) => new ItemData(item.metadata, file.storage.inventory?.[String(item.id)], item.id, file.storage.attunement.some(x => String(x) === String(item.id))).modifiers)
         let abilityModifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], file.storage)
         if (!collection.equals(modifiers)) {

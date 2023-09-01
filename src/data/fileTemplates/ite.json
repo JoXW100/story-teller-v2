@@ -43,6 +43,14 @@
                         "params": { "label": "Rarity", "key": "rarity", "type": "rarity", "default": "mundane" }
                     },
                     { 
+                        "type": "number", 
+                        "params": { "label": "Weight (lbs)", "key": "weight", "allowFloat": true, "default": 0 }
+                    },
+                    { 
+                        "type": "number", 
+                        "params": { "label": "Value (gp)", "key": "value", "allowFloat": true, "default": 0 }
+                    },
+                    { 
                         "type": "boolean", 
                         "params": { "label": "Attunement", "key": "requiresAttunement", "default": false }
                     },

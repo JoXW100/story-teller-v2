@@ -1,7 +1,6 @@
 import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
 
 interface IDocumentContent extends IFileContent {
-    
 }
 
 interface IDocumentMetadata extends IFileMetadata {
