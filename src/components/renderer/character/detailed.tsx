@@ -69,7 +69,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const expendedSpellSlots = file.storage?.spellData ?? []
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let itemModifiers = items.flatMap((item) => new ItemData(item.metadata, file.storage.inventory?.[String(item.id)], item.id, file.storage.attunement.some(x => String(x) === String(item.id))).modifiers)
+        let itemModifiers = items.flatMap((item) => item ? new ItemData(item.metadata, file.storage.inventory?.[String(item.id)], item.id, file.storage.attunement?.some(x => String(x) === String(item.id))).modifiers : [])
         let abilityModifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
         let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], file.storage)
         if (!collection.equals(modifiers)) {

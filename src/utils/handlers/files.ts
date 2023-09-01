@@ -20,7 +20,7 @@ export const useFiles = <T extends IFileMetadata = IFileMetadata>(fileIDs: Objec
                     let res = await Communication.getManyMetadata(arrayUnique(rest))
                     if (res.success) {
                         let result = res.result
-                        let values = rest.map((id) => result.find((x) => String(x.id) == String(id)))
+                        let values = rest.map((id) => result.find((x) => String(x?.id) == String(id)))
                         resolve([...results, ...values])
                     } else {
                         Logger.warn("useFiles", res.result);
