@@ -13,11 +13,12 @@ import ItemData from 'data/structures/item';
 import { FileContextDispatch } from 'types/context/fileContext';
 import { ICharacterStorage } from 'types/database/files/character';
 import { IItemMetadata } from 'types/database/files/item';
-import { ObjectIdText } from 'types/database';
+import { ObjectId, ObjectIdText } from 'types/database';
 import { FileType } from 'types/database/files';
 import { ItemType } from 'types/database/dnd';
 import InventoryItemData from 'types/database/files/inventoryItem';
 import styles from 'styles/renderer.module.scss';
+import Communication from 'utils/communication';
 
 type ItemsPageProps = React.PropsWithRef<{
     character: CharacterData
@@ -29,14 +30,15 @@ const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.Range
 
 const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const ids = useMemo(() => Object.keys(storage.inventory ?? {}), [storage.inventory])
-    const [items, loading] = useFiles<IItemMetadata>(ids)
+    const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
+    const [items] = useFiles<IItemMetadata>(ids, [FileType.Item])
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
         item && storage.inventory[String(item.id)]?.equipped && item.metadata?.requiresAttunement
         ? {...prev, [String(item.id)]: items?.[index]?.metadata?.name ?? "-"} 
         : prev, { null: "None" })
     , [items])
 
-    const handleChange = (value: ObjectIdText) => {
+    const handleChange = (value: ObjectId) => {
         if (!value) return;
         let key = String(value)
         if (storage.inventory && key in storage.inventory) {
@@ -45,7 +47,14 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
                 [key]: { ...storage.inventory[key], quantity: (storage.inventory[key].quantity ?? 1) + 1 }
             } satisfies InventoryItemData)
         } else {
-            setStorage("inventory", { ...storage.inventory, [key]: {} satisfies InventoryItemData })
+            Communication.getMetadata(value, [FileType.Item])
+            .then((res) => {
+                if (res.success && res.result.type === FileType.Item && res.result?.id) {
+                    setStorage("inventory", { ...storage.inventory, [String(res.result.id)]: {} satisfies InventoryItemData })
+                } else {
+                    // TODO
+                }
+            })
         }
     }
 
@@ -71,8 +80,7 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
     }
 
     const handleAttunementChanged = (index: number, value: string) => {
-        let items = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
-        setStorage("attunement", [...items.slice(0, index), value == "null" ? null : value, ...items.slice(index + 1)])
+        setStorage("attunement", [...attunement.slice(0, index), value == "null" ? null : value, ...attunement.slice(index + 1)])
     }
 
     useEffect(() => {
@@ -85,13 +93,13 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
             })
             setStorage("inventory", inventory)
         }
-        if (storage.attunement?.some(id => id && !(isObjectId(id) && ids.includes(String(id))))) {
+        if (attunement.some(id => id && !(isObjectId(id) && ids.includes(String(id))))) {
             setStorage("attunement", undefined)
         }
     }, [ids])
 
     useEffect(() => {
-        let invalidIds = items.reduce((prev, item) => item?.type !== FileType.Item ? [...prev, item.id] : prev, [])
+        let invalidIds = items.reduce((prev, item, index) => item?.type !== FileType.Item ? [...prev, ids[index]] : prev, [])
         if (invalidIds.length > 0) {
             let inventory = { ...storage.inventory }
             invalidIds.forEach(id => {
@@ -111,22 +119,21 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
                     <b tooltips='Total Value'>VAL</b>
                 </div>
                 { items.map((data) => {
-                    console.log("items", data)
                     if (!data) return null
                     const item = new ItemData(data.metadata, storage.inventory?.[String(data.id)])
                     const isEquippable = equippable.has(item.type)
-                    const equiped = isEquippable && item.equipped
-                    const isAttuned = storage.attunement?.some(x => String(x) === String(data.id))
+                    const isEquiped = isEquippable && item.equipped
+                    const isAttuned = attunement.some(x => String(x) === String(data.id))
                     return (
                         <div 
                             key={String(data.id)} 
                             className={styles.inventoryItem}
-                            data={String(equiped)}>
+                            data={String(isEquiped)}>
                             <button
-                                tooltips={equiped ? "Unequip" : "Equip"}
-                                onClick={() => handleEquip(data.id, !equiped)}
+                                tooltips={isEquiped ? "Unequip" : "Equip"}
+                                onClick={() => handleEquip(data.id, !isEquiped)}
                                 disabled={!isEquippable || isAttuned}>
-                                {equiped ? <UnequipIcon/> : isEquippable && <EquipIcon/>}
+                                {isEquiped ? <UnequipIcon/> : isEquippable && <EquipIcon/>}
                             </button>
                             <div>
                                 <b className={styles.rarityLabel} data={item.rarity}>
@@ -139,8 +146,8 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
                             <label>{String(item.totalValue)}</label>
                             <button 
                                 tooltips="Remove"
-                                onClick={() => handleRemove(data.id)}
-                                disabled={isAttuned}>
+                                disabled={isAttuned}
+                                onClick={() => handleRemove(data.id)}>
                                 <RemoveIcon/>
                             </button>
                         </div>
@@ -148,12 +155,12 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
                 })}
             </CollapsibleGroup>
             <CollapsibleGroup header="Attunement">
-                {(storage.attunement ?? [null, null, null]).map((value, index) => (
+                {attunement.map((value, index) => (
                     <DropdownMenu
                         key={index}
                         className={styles.inventoryAttunementDropdown}
                         itemClassName={styles.inventoryAttunementDropdownItem}
-                        exclude={storage.attunement?.map(x => String(x))?.filter(x => x !== "null" && x !== String(value))}
+                        exclude={attunement.map(x => String(x))?.filter(x => x !== "null" && x !== String(value))}
                         value={value ? String(value) : null}
                         values={attunementOptions}
                         onChange={(value) => handleAttunementChanged(index, value)}/>

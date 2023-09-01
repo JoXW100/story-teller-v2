@@ -23,25 +23,24 @@ interface EditLinkInputState {
 
 const LinkInput = ({ className, value, placeholder, fileTypes, allowRemove = true, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
-    const [file, loading] = useFile(value)
+    const [file, loading] = useFile(value, fileTypes)
     const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
     const valid: boolean = value && !loading && file !== null;
     const name: string = file?.metadata?.name
-    const allowedFiles = new Set<FileType>(fileTypes ?? Object.values(FileType))
 
     const handleRemove: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         onChange(null);
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!fileTypes || fileTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
         }
     }
 
     const handleDragEnter = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!fileTypes || fileTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
             setState({ ...state, highlight: true });
@@ -49,14 +48,14 @@ const LinkInput = ({ className, value, placeholder, fileTypes, allowRemove = tru
     }
 
     const handleDragLeave = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!fileTypes || fileTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             setState({ ...state, highlight: false });
         }
     }
 
     const handleDrop = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!fileTypes || fileTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
             let id = window.dragData.file.id;

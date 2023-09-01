@@ -19,21 +19,21 @@ type CharacterSpellPageProps = React.PropsWithRef<{
 }>
 
 const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPageProps): JSX.Element => {
-    const [cantrips] = useFiles<ISpellMetadata>(storage.cantrips)
-    const [spells] = useFiles<ISpellMetadata>(storage.learnedSpells)
+    const [cantrips] = useFiles<ISpellMetadata>(storage.cantrips, [FileType.Spell])
+    const [spells] = useFiles<ISpellMetadata>(storage.learnedSpells, [FileType.Spell])
     const prepared = spells.filter(spell => storage.preparedSpells?.includes(spell.id) ?? false)
     const MaxLevel = character.maxSpellLevel
 
     const handleChange = (value: ObjectId) => {
         if (spells.every(spell => spell.id !== value) && cantrips.every(cantrip => cantrip.id !== value)) {
-            Communication.getMetadata(value)
+            Communication.getMetadata(value, [FileType.Spell])
             .then((res) => {
-                if (res.success && res.result.type === FileType.Spell) {
+                if (res.success && res.result.type === FileType.Spell && res.result?.id) {
                     let spell: ISpellMetadata = res.result.metadata
                     if (spell.level === 0) {
-                        setStorage("cantrips", [ ...storage.cantrips ?? [], value ])
+                        setStorage("cantrips", [ ...storage.cantrips ?? [], res.result.id ])
                     } else {
-                        setStorage("learnedSpells", [ ...storage.learnedSpells ?? [], value ])
+                        setStorage("learnedSpells", [ ...storage.learnedSpells ?? [], res.result.id ])
                     }
                 }
             })

@@ -135,12 +135,12 @@ class FilesInterface
     }
 
     /** Gets the metadata from a file in the database */
-    async getMetadata(userId: string, fileId: string): Promise<DBResponse<FileGetMetadataResult>> {
+    async getMetadata(userId: string, fileId: string, allowedTypes: FileType[]): Promise<DBResponse<FileGetMetadataResult>> {
         try {
             let result = (await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
                     _id: new ObjectId(fileId),
-                    type: { $nin: [FileType.Folder, FileType.Root] },
+                    type: allowedTypes ? { $nin: [FileType.Folder, FileType.Root] } : { $in: allowedTypes },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
@@ -159,7 +159,7 @@ class FilesInterface
     }
 
     /** Gets the metadata from a file in the database */
-    async getManyMetadata(userId: string, fileIds: string): Promise<DBResponse<FileGetManyMetadataResult>> {
+    async getManyMetadata(userId: string, fileIds: string, allowedTypes: FileType[]): Promise<DBResponse<FileGetManyMetadataResult>> {
         try {
             let ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
             if (ids.length < 1)
@@ -167,7 +167,7 @@ class FilesInterface
             let result = await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
                     _id: { $in: ids },
-                    type: { $nin: [FileType.Folder, FileType.Root] },
+                    type: allowedTypes ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {

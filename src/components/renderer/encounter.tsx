@@ -13,7 +13,7 @@ import EncounterFile, { IEncounterCardData, IEncounterMetadata } from 'types/dat
 import { Attribute } from 'types/database/dnd';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { ICreatureMetadata } from 'types/database/files/creature';
-import { File } from 'types/database/files';
+import { File, FileType } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import styles from 'styles/renderer.module.scss';
 import Logger from 'utils/logger';
@@ -59,7 +59,7 @@ const cardsAreEqual = (a: IEncounterCardData[], b: IEncounterCardData[]): boolea
 
 const useEncounterCards = (file: File<EncounterFile>): [IEncounterCard[], CardDispatch] => {
     const [_, dispatch] = useContext(Context)
-    const [creatures, loading] = useFiles<ICreatureMetadata>(file?.metadata?.creatures)
+    const [creatures, loading] = useFiles<ICreatureMetadata>(file?.metadata?.creatures, [FileType.Character, FileType.Creature])
     const [state, setState] = useState<IEncounterCard[]>([])
     const cards = file?.storage?.cards ?? []
 

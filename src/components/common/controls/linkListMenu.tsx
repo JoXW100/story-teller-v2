@@ -13,7 +13,7 @@ type ListMenuPropsType<T, A extends boolean> = {
     onChange: (selection: T[]) => void
     validateInput?: (value: T, values: T[]) => value is T
     values: T[]
-    fileTypes: FileType[]
+    allowedTypes: FileType[]
     allowText: A
     placeholder?: string
 }
@@ -21,7 +21,7 @@ type ListMenuPropsType<T, A extends boolean> = {
 type ListMenuComponent = {
     className: string
     files: FileGetManyMetadataResult
-    allowedFiles: Set<FileType>
+    allowedTypes: FileType[]
     allowText: boolean
     placeholder: string
     onChange: (selection: ObjectIdText[]) => void
@@ -31,13 +31,12 @@ type ListMenuProps = React.PropsWithRef<ListMenuPropsType<ObjectId, false> | Lis
 
 type IDCollection = { results: string[], rest: ObjectId[] } 
 
-const LinkListMenu = ({ className, itemClassName, onChange, validateInput, values = [], fileTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
-    if (fileTypes == undefined || fileTypes.length === 0) {
+const LinkListMenu = ({ className, itemClassName, onChange, validateInput, values = [], allowedTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
+    if (allowedTypes == undefined || allowedTypes.length === 0) {
         throw new Error("LinkListMenu with no accepted filetypes, expected at least one")
     }
     
-    const allowedFiles = new Set(fileTypes)
-    const [files, loading] = useFiles(values, (values) => (
+    const [files, loading] = useFiles(values, allowedTypes, (values) => (
         new Promise((resolve) => {
             let ids = values.reduce<IDCollection>((prev, value) => {
                 if (isObjectId(value)) {
@@ -59,18 +58,18 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
             EditComponent={EditComponent}
             defaultValue={""}
             values={loading ? [] : values}
-            params={{ className: itemClassName, files: files, allowedFiles: allowedFiles, allowText: allowText, placeholder: placeholder, onChange: onChange }}/>
+            params={{ className: itemClassName, files: files, allowedTypes: allowedTypes, allowText: allowText, placeholder: placeholder, onChange: onChange }}/>
     )
 }
 
 
 const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuComponent>): JSX.Element => {
-    const { files, allowedFiles, allowText, className } = params
+    const { files, allowedTypes, allowText, className } = params
     const file = files.find((file) => file.id == value)
     const valid = isObjectId(value)
-        ? allowedFiles.has(file?.type)
+        ? allowedTypes.includes(file?.type)
         : allowText
-    const name = valid && allowedFiles.has(file?.type)
+    const name = valid && allowedTypes.includes(file?.type)
         ? file?.metadata?.name ?? String(value)
         : String(value)
     return (
@@ -81,19 +80,19 @@ const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuCo
 }
 
 const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponent<string, ListMenuComponent>): JSX.Element => {
-    const { allowedFiles, className, placeholder, onChange } = params
+    const { allowedTypes, className, placeholder, onChange } = params
     const style = className ? `${className} ${styles.input}` : styles.input;
     const [highlight, setHighlight] = useState<boolean>(false)
 
     const handleDragOver = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
         }
     }
 
     const handleDragEnter = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
             setHighlight(true);
@@ -101,14 +100,14 @@ const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponen
     }
 
     const handleDragLeave = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             setHighlight(false);
         }
     }
 
     const handleDrop = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && allowedFiles.has(window.dragData.file.type)) {
+        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
             e.preventDefault();
             e.stopPropagation();
             let id = window.dragData.file.id;

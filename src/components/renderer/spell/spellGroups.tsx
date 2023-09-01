@@ -38,7 +38,7 @@ const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExpendedSl
     useEffect(() => {
         if (spellIds && spellIds.length > 0) {
             let ids = spellIds.filter(spell => isObjectId(spell)) as ObjectId[]
-            Communication.getManyMetadata(ids)
+            Communication.getManyMetadata(ids, [FileType.Spell])
             .then((res: DBResponse<FileGetManyMetadataResult<ISpellMetadata>>) => {
                 if (res.success) {
                     setSpells(res.result)

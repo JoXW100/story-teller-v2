@@ -111,11 +111,16 @@ abstract class Communication {
         })
     }
 
-    public static async getMetadata(fileId: ObjectId): Promise<DBResponse<FileGetMetadataResult>> {
-        if (this.cache[String(fileId)]) return { success: true, result: this.cache[String(fileId)] }
+    public static async getMetadata(fileId: ObjectId, allowedTypes: FileType[] = null): Promise<DBResponse<FileGetMetadataResult>> {
+        if (this.cache[String(fileId)] && (!allowedTypes || allowedTypes.includes(this.cache[String(fileId)].type))) {
+            return { success: true, result: this.cache[String(fileId)] }
+        } else if (this.cache[String(fileId)]) {
+            return { success: false, result: "Invalid file type" }
+        }
 
         let result = await this.databaseFetch<FileGetMetadataResult>('getMetadata', 'GET', {
-            fileId: fileId
+            fileId: fileId,
+            allowedTypes: allowedTypes
         })
 
         if (result.success) {
@@ -125,18 +130,21 @@ abstract class Communication {
         return result
     }
 
-    public static async getManyMetadata(fileIds: ObjectId[]): Promise<DBResponse<FileGetManyMetadataResult>> {
-        const { rest } = fileIds.reduce<{ cached: ObjectId[], rest: ObjectId[] }>((prev, value) => (
-            this.cache[String(value)] 
-            ? { cached: [...prev.cached, value], rest: prev.rest }
-            : { cached: prev.cached, rest: [...prev.rest, value] }
-        ), { cached: [], rest: [] }) 
+    public static async getManyMetadata(fileIds: ObjectId[], allowedTypes: FileType[] = null): Promise<DBResponse<FileGetManyMetadataResult>> {
+        const { rest, invalid } = fileIds.reduce<{ cached: ObjectId[], invalid: ObjectId[], rest: ObjectId[] }>((prev, value) => (
+            this.cache[String(value)] && (!allowedTypes || allowedTypes.includes(this.cache[String(value)].type))
+            ? { cached: [...prev.cached, value], invalid: prev.invalid, rest: prev.rest }
+            : this.cache[String(value)] 
+            ? { cached: prev.cached, invalid: [...prev.invalid, value], rest: prev.rest }
+            : { cached: prev.cached, invalid: prev.invalid, rest: [...prev.rest, value] }
+        ), { cached: [], invalid: [], rest: [] }) 
         
 
         let cache = this.cache
         if (rest.length > 0) {
             let result = await this.databaseFetch<FileGetManyMetadataResult>('getManyMetadata', 'GET', {
-                fileIds: rest
+                fileIds: rest,
+                allowedTypes: allowedTypes
             })
 
             if (result.success) {
@@ -149,7 +157,7 @@ abstract class Communication {
             }
         }
         
-        return { success: true, result: fileIds.map(id => cache[String(id)]) }
+        return { success: true, result: fileIds.map(id => invalid.includes(id) ? null : cache[String(id)] ) }
     }
 
     public static async addFile(storyId: ObjectId, holderId: ObjectId, name: string, type: FileType): Promise<DBResponse<FileAddResult>> {

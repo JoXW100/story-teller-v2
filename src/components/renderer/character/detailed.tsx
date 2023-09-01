@@ -18,6 +18,7 @@ import CharacterData from 'data/structures/character';
 import AbilityData from 'data/structures/ability';
 import ModifierCollection from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/class';
+import ItemData from 'data/structures/item';
 import Logger from 'utils/logger';
 import CharacterFile, { ICharacterAbilityStorageData } from 'types/database/files/character';
 import { FileGetManyMetadataResult } from 'types/database/responses';
@@ -26,8 +27,8 @@ import { OptionalAttribute } from 'types/database/dnd';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import { IItemMetadata } from 'types/database/files/item';
+import { FileType } from 'types/database/files';
 import styles from 'styles/renderer.module.scss';
-import ItemData from 'data/structures/item';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -37,8 +38,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>("Background")
-    const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile)
-    const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass);
+    const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile, [FileType.Class])
+    const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass, [FileType.Class]);
     const itemIds = useMemo(() => Object.keys(file.storage?.inventory ?? {}), [file.storage?.inventory])
     const [items] = useFiles<IItemMetadata>(itemIds);
 

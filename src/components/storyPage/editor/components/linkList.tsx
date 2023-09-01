@@ -30,7 +30,7 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
                 onChange={handleChange}
                 validateInput={handleValidate}
                 placeholder={params.placeholder} 
-                fileTypes={params.fileTypes?.map((fileType) => asEnum(fileType, FileType)) ?? []}
+                allowedTypes={params.fileTypes?.map((fileType) => asEnum(fileType, FileType))}
                 allowText={params.allowText}/>
         </div>
     )

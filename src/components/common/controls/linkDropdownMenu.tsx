@@ -3,6 +3,7 @@ import { useFiles } from "utils/handlers/files"
 import { isObjectId } from "utils/helpers"
 import Logger from "utils/logger"
 import { ObjectId } from "types/database"
+import { FileType } from "types/database/files"
 
 type LinkDropdownMenuProps = React.PropsWithRef<{
     className?: string
@@ -10,12 +11,13 @@ type LinkDropdownMenuProps = React.PropsWithRef<{
     values: ObjectId[]
     value: ObjectId, 
     showButton?: boolean,
-    allowNull?: boolean
+    allowNull?: boolean,
+    allowedTypes?: FileType[]
     onChange: (value: ObjectId) => void
 }>
 
-const LinkDropdownMenu = ({ value, values, onChange, allowNull, showButton, className, itemClassName }: LinkDropdownMenuProps) => {
-    const [files, loading] = useFiles(values)
+const LinkDropdownMenu = ({ value, values, onChange, allowNull, showButton, allowedTypes, className, itemClassName }: LinkDropdownMenuProps) => {
+    const [files, loading] = useFiles(values, allowedTypes)
 
     return (
         <DropdownMenu

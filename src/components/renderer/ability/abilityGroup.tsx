@@ -46,7 +46,7 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
 } 
 
 const AbilityGroups = ({ abilityIds, stats, values, expendedCharges, setExpendedCharges, onLoaded }: AbilityGroupsProps): React.ReactNode => {
-    const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, processFunction)
+    const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, [FileType.Ability], processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
     Logger.log("Ability", "AbilityGroups")
 
