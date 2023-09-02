@@ -1,16 +1,18 @@
+import { useEffect, useState } from 'react';
 import LinkInput from 'components/common/controls/linkInput';
 import CollapsibleGroup from 'components/common/collapsibleGroup';
 import SpellList from '../spell/spellList';
 import Elements from 'data/elements';
 import CharacterData from 'data/structures/character';
 import { useFiles } from 'utils/handlers/files';
-import Communication from 'utils/communication';
 import { ICharacterStorage } from 'types/database/files/character';
 import { FileContextDispatch } from 'types/context/fileContext';
 import { ObjectId } from 'types/database';
 import { FileType } from 'types/database/files';
 import { ISpellMetadata } from 'types/database/files/spell';
+import { FileGetMetadataResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
+
 
 type CharacterSpellPageProps = React.PropsWithRef<{
     character: CharacterData 
@@ -19,24 +21,22 @@ type CharacterSpellPageProps = React.PropsWithRef<{
 }>
 
 const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPageProps): JSX.Element => {
+    const [state, setState] = useState(null);
     const [cantrips] = useFiles<ISpellMetadata>(storage.cantrips, [FileType.Spell])
     const [spells] = useFiles<ISpellMetadata>(storage.learnedSpells, [FileType.Spell])
     const prepared = spells.filter(spell => storage.preparedSpells?.includes(spell.id) ?? false)
     const MaxLevel = character.maxSpellLevel
 
-    const handleChange = (value: ObjectId) => {
-        if (spells.every(spell => spell.id !== value) && cantrips.every(cantrip => cantrip.id !== value)) {
-            Communication.getMetadata(value, [FileType.Spell])
-            .then((res) => {
-                if (res.success && res.result.type === FileType.Spell && res.result?.id) {
-                    let spell: ISpellMetadata = res.result.metadata
-                    if (spell.level === 0) {
-                        setStorage("cantrips", [ ...storage.cantrips ?? [], res.result.id ])
-                    } else {
-                        setStorage("learnedSpells", [ ...storage.learnedSpells ?? [], res.result.id ])
-                    }
-                }
-            })
+    const handleChange = (value: FileGetMetadataResult<ISpellMetadata>) => {
+        if (value?.type === FileType.Spell 
+         && spells.every(spell => spell.id !== value.id) 
+         && cantrips.every(cantrip => cantrip.id !== value.id)) {
+            if (value.metadata.level === 0) {
+                setStorage("cantrips", [ ...storage.cantrips ?? [], value.id ])
+            } else {
+                setStorage("learnedSpells", [ ...storage.learnedSpells ?? [],value.id ])
+            }
+            setState(value.id)
         }
     }
 
@@ -69,6 +69,12 @@ const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPa
         }
     }
 
+    useEffect(() => {
+        if (state) {
+            setState(null)
+        }
+    }, [state])
+
     return (
         <>
             { !character.learnedAll &&
@@ -99,10 +105,9 @@ const CharacterSpellPage = ({ character, storage, setStorage }: CharacterSpellPa
                 <div className={styles.modifierChoice}>
                     <Elements.Bold>Spell: </Elements.Bold>
                     <LinkInput
-                        value={null}
-                        fileTypes={[FileType.Spell]}
+                        value={state}
                         placeholder="Spell ID..."
-                        allowRemove={false}
+                        allowedTypes={[FileType.Spell]}
                         onChange={handleChange}/>
                 </div>
             </CollapsibleGroup>

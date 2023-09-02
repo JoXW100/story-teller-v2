@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CollapsibleGroup from 'components/common/collapsibleGroup';
 import LinkInput from 'components/common/controls/linkInput';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
@@ -7,15 +7,15 @@ import EquipIcon from '@mui/icons-material/AddModeratorSharp';
 import UnequipIcon from '@mui/icons-material/RemoveModeratorSharp';
 import { useFiles } from 'utils/handlers/files';
 import { isObjectId } from 'utils/helpers';
-import Communication from 'utils/communication';
 import Elements from 'data/elements';
 import ItemData from 'data/structures/item';
 import { FileContextDispatch } from 'types/context/fileContext';
 import { ICharacterStorage } from 'types/database/files/character';
 import { IItemMetadata } from 'types/database/files/item';
-import { ObjectId, ObjectIdText } from 'types/database';
+import { ObjectIdText } from 'types/database';
 import { FileType } from 'types/database/files';
 import { ItemType } from 'types/database/dnd';
+import { FileGetMetadataResult } from 'types/database/responses';
 import InventoryItemData from 'types/database/files/inventoryItem';
 import styles from 'styles/renderer.module.scss';
 
@@ -28,6 +28,7 @@ type ItemsPageProps = React.PropsWithRef<{
 const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.RangedWeapon, ItemType.ThrownWeapon, ItemType.Trinket])
 
 const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element => {
+    const [state, setState] = useState(null);
     const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const [items] = useFiles<IItemMetadata>(ids, [FileType.Item])
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
@@ -36,23 +37,17 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
         : prev, { null: "None" })
     , [items])
 
-    const handleChange = (value: ObjectId) => {
+    const handleChange = (value: FileGetMetadataResult<IItemMetadata>) => {
         if (!value) return;
-        let key = String(value)
+        let key = String(value.id)
+        setState(value.id)
         if (storage.inventory && key in storage.inventory) {
             setStorage("inventory", {
                 ...storage.inventory,
                 [key]: { ...storage.inventory[key], quantity: (storage.inventory[key].quantity ?? 1) + 1 }
             } satisfies InventoryItemData)
-        } else {
-            Communication.getMetadata(value, [FileType.Item])
-            .then((res) => {
-                if (res.success && res.result.type === FileType.Item && res.result?.id) {
-                    setStorage("inventory", { ...storage.inventory, [String(res.result.id)]: {} satisfies InventoryItemData })
-                } else {
-                    // TODO
-                }
-            })
+        } else if (value.type === FileType.Item && value.id) {
+            setStorage("inventory", { ...storage.inventory, [String(value.id)]: {} satisfies InventoryItemData })
         }
     }
 
@@ -82,6 +77,13 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
     }
 
     useEffect(() => {
+        if (state) {
+            setState(null)
+        }
+    }, [state])
+    
+    /*
+    useEffect(() => {
         // This should be handled server-side
         let invalidIds = ids.filter(id => id === undefined || !isObjectId(id))
         if (invalidIds.length > 0) {
@@ -95,6 +97,7 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
             setStorage("attunement", undefined)
         }
     }, [ids])
+    */
     
     return (
         <>
@@ -158,10 +161,9 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
                 <div className={styles.modifierChoice}>
                     <Elements.Bold>Item: </Elements.Bold>
                     <LinkInput
-                        value={null}
-                        fileTypes={[FileType.Item]}
+                        value={state}
+                        allowedTypes={[FileType.Item]}
                         placeholder="Item ID..."
-                        allowRemove={false}
                         onChange={handleChange}/>
                 </div>
             </CollapsibleGroup>

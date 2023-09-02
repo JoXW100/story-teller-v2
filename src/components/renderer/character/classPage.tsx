@@ -89,7 +89,7 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
                         { value.type === "file" && value.allowAny &&
                             <LinkInput
                                 value={classStorage[key]?.[i] ?? null}
-                                fileTypes={value.options}
+                                allowedTypes={value.options}
                                 placeholder="File ID..."
                                 onChange={(value) => handleChange(value, key, i)}/>
                         }

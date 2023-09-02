@@ -298,10 +298,20 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 }
 
 .editLinkItemHolder {
-    & > button > svg {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-auto-rows: 100%;
+    height: inherit;
+    width: 100%;
+
+    & > button {
+        display: flex;
         height: $size;
         width: $size;
-    }
 
-    & > input { @extend .editInput; }
+        & > svg {
+            height: 100%;
+            width: 100%;
+        }
+    }
 }

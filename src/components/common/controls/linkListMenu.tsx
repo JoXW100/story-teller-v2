@@ -1,11 +1,10 @@
-import { useState } from "react";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
 import { useFiles } from "utils/handlers/files";
 import { isObjectId } from "utils/helpers";
 import { FileType } from "types/database/files";
 import { ObjectId, ObjectIdText } from "types/database";
-import { FileGetManyMetadataResult } from "types/database/responses";
-import styles from 'styles/components/listMenu.module.scss';
+import { FileGetManyMetadataResult, FileGetMetadataResult } from "types/database/responses";
+import LinkInput from "./linkInput";
 
 type ListMenuPropsType<T, A extends boolean> = {
     className?: string
@@ -79,57 +78,21 @@ const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuCo
     )
 }
 
-const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponent<string, ListMenuComponent>): JSX.Element => {
+const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponent<ObjectId, ListMenuComponent>): JSX.Element => {
     const { allowedTypes, className, placeholder, onChange } = params
-    const style = className ? `${className} ${styles.input}` : styles.input;
-    const [highlight, setHighlight] = useState<boolean>(false)
 
-    const handleDragOver = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    }
-
-    const handleDragEnter = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
-            e.preventDefault();
-            e.stopPropagation();
-            setHighlight(true);
-        }
-    }
-
-    const handleDragLeave = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
-            e.preventDefault();
-            setHighlight(false);
-        }
-    }
-
-    const handleDrop = (e: React.DragEvent<HTMLInputElement>) => {
-        if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
-            e.preventDefault();
-            e.stopPropagation();
-            let id = window.dragData.file.id;
-            window.dragData.target = null;
-            window.dragData.file = null;
-            onUpdate('')
-            onChange([...values, id])
-        }
+    const handleChange = (value: FileGetMetadataResult) => {
+        onChange([...values, value.id])
+        onUpdate(value.id)
     }
 
     return (
-        <input 
-            className={style} 
-            value={String(value)}
-            type="text"
+        <LinkInput
+            className={className} 
             placeholder={placeholder}
-            onChange={(e) => onUpdate(e.target.value)}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDragEnter={handleDragEnter}
-            onDrop={handleDrop}
-            data={highlight ? "highlight" : undefined}/>
+            allowedTypes={allowedTypes}
+            value={value}
+            onChange={handleChange}/>
     )
 }
 

@@ -29,6 +29,7 @@ interface ICharacterAbilityStorageData {
 
 interface ICharacterStorage extends IFileStorage {
     inventory?: Record<string, InventoryItemData>
+    inventoryOther?: string
     attunement?: [ObjectId, ObjectId, ObjectId]
     classData?: Record<string, any>
     cantrips?: ObjectId[]

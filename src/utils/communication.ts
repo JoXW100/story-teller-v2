@@ -4,6 +4,7 @@ import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, S
 import { Open5eFetchType } from "types/open5eCompendium"
 import { FileType, IFileData, IFileMetadata, IFileStorage } from "types/database/files"
 import { IStory } from "types/database/stories"
+import { isObjectId } from "./helpers"
 
 type FetchMethod = 'GET' | 'PUT' | 'DELETE'
 type FetchParams = Record<string, string | number | Object>
@@ -116,6 +117,8 @@ abstract class Communication {
             return { success: true, result: this.cache[String(fileId)] }
         } else if (this.cache[String(fileId)]) {
             return { success: false, result: "Invalid file type" }
+        } else if (!isObjectId(fileId)) {
+            return  { success: false, result: "Invalid id" }
         }
 
         let result = await this.databaseFetch<FileGetMetadataResult>('getMetadata', 'GET', {
@@ -134,7 +137,7 @@ abstract class Communication {
         const { rest, invalid } = fileIds.reduce<{ cached: ObjectId[], invalid: ObjectId[], rest: ObjectId[] }>((prev, value) => (
             this.cache[String(value)] && (!allowedTypes || allowedTypes.includes(this.cache[String(value)].type))
             ? { cached: [...prev.cached, value], invalid: prev.invalid, rest: prev.rest }
-            : this.cache[String(value)] 
+            : this.cache[String(value)] || !isObjectId(value)
             ? { cached: prev.cached, invalid: [...prev.invalid, value], rest: prev.rest }
             : { cached: prev.cached, invalid: prev.invalid, rest: [...prev.rest, value] }
         ), { cached: [], invalid: [], rest: [] }) 
