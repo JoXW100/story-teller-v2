@@ -590,6 +590,21 @@
     }
 }
 
+.inventoryInput {
+    @include colorDecoration(second);
+    @include scroll;
+    @include fontNormal;
+    width: 100%;
+    resize: vertical;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: none;
+    border: none;
+    border-radius: $iconSmallSize / 2;
+    padding: $iconSmallSize / 2;
+    min-height: 28px + $iconSmallSize / 2;
+}
+
 .rarityLabel {
     @include colorByRarity();
 }

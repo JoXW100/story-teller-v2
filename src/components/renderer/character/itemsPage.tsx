@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { ChangeEventHandler, useEffect, useMemo, useState } from 'react';
 import CollapsibleGroup from 'components/common/collapsibleGroup';
 import LinkInput from 'components/common/controls/linkInput';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
@@ -29,8 +29,8 @@ const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.Range
 
 const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const [state, setState] = useState(null);
-    const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const [items] = useFiles<IItemMetadata>(ids, [FileType.Item])
+    const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
         item && storage.inventory[String(item.id)]?.equipped && item.metadata?.requiresAttunement
         ? {...prev, [String(item.id)]: items?.[index]?.metadata?.name ?? "-"} 
@@ -74,6 +74,10 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
 
     const handleAttunementChanged = (index: number, value: string) => {
         setStorage("attunement", [...attunement.slice(0, index), value == "null" ? null : value, ...attunement.slice(index + 1)])
+    }
+
+    const handleTextChanged: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+        setStorage("inventoryOther", e.target.value)
     }
 
     useEffect(() => {
@@ -156,6 +160,12 @@ const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element =>
                         values={attunementOptions}
                         onChange={(value) => handleAttunementChanged(index, value)}/>
                 ))}
+            </CollapsibleGroup>
+            <CollapsibleGroup header="Other">
+                <textarea
+                    className={styles.inventoryInput}
+                    value={storage.inventoryOther ?? ""}
+                    onChange={handleTextChanged}/>
             </CollapsibleGroup>
             <CollapsibleGroup header="Add Item">
                 <div className={styles.modifierChoice}>
