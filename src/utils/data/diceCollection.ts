@@ -1,17 +1,25 @@
 
 import Dice from 'utils/data/dice';
-import { DiceResult, RollMethod, RollResult, RollValue } from 'types/dice';
+import { DiceResult, RollMethod, RollResult, RollType, RollValue } from 'types/dice';
 
 
 class DiceCollection {
-    private collection: Record<string, number>;
-    public modifier: number;
-    public desc: string;
+    private readonly collection: Record<string, number>;
+    public readonly modifier: number;
+    public readonly description: string;
+    public readonly details: string;
+    public readonly type: RollType;
+    public readonly canCritAndFail: boolean
+    public readonly critRange: number
 
-    constructor(modifier: number | null = 0, desc: string | null = 'Rolled') {
+    constructor(modifier: number | null = 0, description: string = 'Rolled', details: string = null, type: RollType = RollType.General, canCritAndFail: boolean = false, critRange: number = 20) {
         this.collection = {};
         this.modifier = modifier;
-        this.desc = desc;
+        this.description = description;
+        this.details = details;
+        this.type = type;
+        this.canCritAndFail = canCritAndFail
+        this.critRange = critRange
     }
 
     /** Adds a number of dice to the collection */
@@ -21,7 +29,7 @@ class DiceCollection {
     }
 
     /** Rolls the dice in the collection */
-    roll(method: RollMethod = RollMethod.Normal, canCritAndFail: boolean = false, critRange: number = 20): RollResult {
+    roll(method: RollMethod = RollMethod.Normal, source: string): RollResult {
         let results: RollValue[] = [];
         let selectedIndex = 0;
         switch (method) {
@@ -32,14 +40,14 @@ class DiceCollection {
                     result: value.dice.roll(value.num * 2)
                 }));
                 let critSum = critResult.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                results = [{ values: critResult, sum: critSum }];
+                results = [{ values: critResult, sum: critSum, isCritical: true, isFail: false }];
                 selectedIndex = 0;
                 break;
 
             case RollMethod.Disadvantage:
             case RollMethod.Advantage:
-                let roll1 = this.roll(RollMethod.Normal);
-                let roll2 = this.roll(RollMethod.Normal);
+                let roll1 = this.roll(RollMethod.Normal, source);
+                let roll2 = this.roll(RollMethod.Normal, source);
                 let res1 = roll1.results[roll1.selectedIndex];
                 let res2 = roll2.results[roll2.selectedIndex]
                 results = [res1, res2];
@@ -54,7 +62,9 @@ class DiceCollection {
                     result: value.dice.roll(value.num)
                 } as DiceResult));
                 let sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                results = [{ values: result, sum: sum }];
+                let isCritical = result.length === 1 && result[0].dice.num === 20 && result[0].sum >= this.critRange
+                let isFail = !isCritical && result.length === 1 && result[0].dice.num === 20 && sum === 1
+                results = [{ values: result, sum: sum, isCritical: isCritical, isFail: isFail }];
                 selectedIndex = 0;
                 break;
         }
@@ -63,10 +73,11 @@ class DiceCollection {
             method: method,
             results: results,
             selectedIndex: selectedIndex,
-            desc: this.desc,
             modifier: this.modifier,
-            canCritAndFail: canCritAndFail,
-            critRange: critRange
+            type: this.type,
+            description: this.description,
+            details: this.details,
+            source: source
         }
     }
 

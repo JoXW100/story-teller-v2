@@ -1,11 +1,11 @@
 import Head from 'next/head';
+import { UserProvider } from '@auth0/nextjs-auth0';
 import ContextMenu from 'components/common/contextMenu'
 import PopupHolder from 'components/common/popupHolder'
 import AppContext from 'components/contexts/appContext'
-import { UserProvider } from '@auth0/nextjs-auth0';
+import Navigation from 'utils/navigation';
 import 'styles/globals.scss'
 import 'styles/language.scss';
-import Navigation from 'utils/navigation';
 
 function MyApp({ Component, pageProps, router }) {
     return (

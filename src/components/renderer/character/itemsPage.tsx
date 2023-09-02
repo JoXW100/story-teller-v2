@@ -7,8 +7,8 @@ import EquipIcon from '@mui/icons-material/AddModeratorSharp';
 import UnequipIcon from '@mui/icons-material/RemoveModeratorSharp';
 import { useFiles } from 'utils/handlers/files';
 import { isObjectId } from 'utils/helpers';
+import Communication from 'utils/communication';
 import Elements from 'data/elements';
-import CharacterData from 'data/structures/character';
 import ItemData from 'data/structures/item';
 import { FileContextDispatch } from 'types/context/fileContext';
 import { ICharacterStorage } from 'types/database/files/character';
@@ -18,18 +18,16 @@ import { FileType } from 'types/database/files';
 import { ItemType } from 'types/database/dnd';
 import InventoryItemData from 'types/database/files/inventoryItem';
 import styles from 'styles/renderer.module.scss';
-import Communication from 'utils/communication';
 
 type ItemsPageProps = React.PropsWithRef<{
-    character: CharacterData
+    ids: string[]
     storage: ICharacterStorage
     setStorage: FileContextDispatch["setStorage"]
 }>
 
 const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.RangedWeapon, ItemType.ThrownWeapon, ItemType.Trinket])
 
-const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Element => {
-    const ids = useMemo(() => Object.keys(storage.inventory ?? {}), [storage.inventory])
+const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const [items] = useFiles<IItemMetadata>(ids, [FileType.Item])
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
@@ -89,7 +87,7 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
         if (invalidIds.length > 0) {
             let inventory = { ...storage.inventory }
             invalidIds.forEach(id => {
-                delete inventory[id]
+                delete inventory[String(id)]
             })
             setStorage("inventory", inventory)
         }
@@ -97,16 +95,6 @@ const ItemsPage = ({ character, storage, setStorage }: ItemsPageProps): JSX.Elem
             setStorage("attunement", undefined)
         }
     }, [ids])
-
-    useEffect(() => {
-        let invalidIds = items.reduce((prev, item, index) => item?.type !== FileType.Item ? [...prev, ids[index]] : prev, [])
-        if (invalidIds.length > 0) {
-            let inventory = { ...storage.inventory }
-            invalidIds.forEach(id => {
-                delete inventory[id]
-            })
-        }
-    }, [items])
     
     return (
         <>

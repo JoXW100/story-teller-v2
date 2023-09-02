@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
+import { D20Icon } from 'assets/dice';
+import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
+import { Context } from 'components/contexts/storyContext';
+import { Context as FileContext } from 'components/contexts/fileContext';
+import { openContext } from 'components/common/contextMenu';
+import Localization from 'utils/localization';
 import Dice from 'utils/data/dice';
 import DiceCollection from 'utils/data/diceCollection';
 import { ParseError } from 'utils/parser';
-import { D20Icon } from 'assets/dice';
-import { Context } from 'components/contexts/storyContext';
-import { openContext } from 'components/common/contextMenu';
-import { CritIcon, AdvantageIcon, DisadvantageIcon } from 'assets/icons';
-import Localization from 'utils/localization';
-import { RollMethod } from 'types/dice';
+import { RollMethod, RollType } from 'types/dice';
 import { Queries, IElementObject, ElementParams, Variables, RollMode } from 'types/elements';
 import styles from 'styles/elements.module.scss';
 
@@ -16,7 +17,9 @@ interface RollOptions extends Variables {
     num?: string
     mod?: string
     mode?: RollMode
+    type?: RollType
     desc?: string
+    details?: string
     critRange?: string
     tooltips?: string
 }
@@ -67,7 +70,7 @@ class Options implements Required<RollOptions> {
 
     public get mode(): RollMode {
         if (validModes.has(this.options.mode)) {
-            return this.options.mode as RollMode
+            return this.options.mode
         }
         if (this.numValue == 0 || this.diceValue.num == 0 || (this.numValue == 1 && this.diceValue.num == 20)) {
             return RollMode.Mod
@@ -75,8 +78,19 @@ class Options implements Required<RollOptions> {
         return RollMode.Dice
     }
 
+    public get type(): RollType {
+        if (validTypes.has(this.options.type)) {
+            return this.options.type
+        }
+        return RollType.General
+    }
+
     public get desc(): string {
         return this.options.desc ?? "Rolled"
+    }
+
+    public get details(): string {
+        return this.options.details ?? null
     }
     
     public get tooltips(): string {
@@ -84,8 +98,7 @@ class Options implements Required<RollOptions> {
     }
 
     public get show(): boolean {
-        return this.mode === RollMode.Dice 
-            || this.mode === RollMode.DMG
+        return this.mode === RollMode.Dice
     }
 
     public get modText(): string {
@@ -108,6 +121,7 @@ class Options implements Required<RollOptions> {
 }
 
 const validModes = new Set(Object.values(RollMode));
+const validTypes = new Set(Object.values(RollType));
 const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'desc', 'tooltips', 'critRange']);
 const validateOptions = (options: RollOptions): Queries => {
     Object.keys(options).forEach((key) => {
@@ -134,8 +148,13 @@ const validateOptions = (options: RollOptions): Queries => {
     }
 
     if (options.mode) {
-        if (!validModes.has(options.mode as RollMode))
-            throw new ParseError(`Invalid roll option value. mode: '${options.mode}', valid values: ${Array(validModes).join(', ')}`);
+        if (!validModes.has(options.mode))
+            throw new ParseError(`Invalid roll option value. mode: '${options.mode}', valid values: ${Object.values(RollMode).join(', ')}`);
+    }
+
+    if (options.type) {
+        if (!validTypes.has(options.type))
+            throw new ParseError(`Invalid roll option value. type: '${options.type}', valid values: ${Object.values(RollType).join(', ')}`);
     }
 
     if (options.critRange) {
@@ -148,18 +167,20 @@ const validateOptions = (options: RollOptions): Queries => {
 
 const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Element => {
     const [_, dispatch] = useContext(Context);
+    const [context] = useContext(FileContext);
     const rollOptions = new Options(options);
 
     const roll = (method: RollMethod) => {
-        let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc);
+        let canCritAndFail = rollOptions.type === RollType.Attack || options.type === RollType.Save
+        let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc, rollOptions.details, rollOptions.type, canCritAndFail, rollOptions.critRangeValue);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
-        dispatch.roll(collection, method, rollOptions.mode === RollMode.Attack, rollOptions.critRangeValue);
+        dispatch.roll(collection, method, context?.file?.metadata?.name ?? null);
     }
 
     const handleContext: React.MouseEventHandler<HTMLSpanElement> = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openContext(options.mode === RollMode.DMG 
+        openContext(options.type === RollType.Attack || options.type === RollType.Save
             ? [
                 {
                     text: Localization.toText('roll-normal'), 

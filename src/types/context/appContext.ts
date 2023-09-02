@@ -13,6 +13,7 @@ interface AppContextState extends ContextState {
     enableRowNumbers: boolean
     enableColorFileByType: boolean
     automaticLineBreak: number
+    hideRolls: boolean
 }
 
 interface AppContextDispatch extends ContextDispatch {
@@ -22,6 +23,7 @@ interface AppContextDispatch extends ContextDispatch {
     setEnableRowNumbers: (isEnabled: boolean) => void
     setEnableColorFileByType: (isEnabled: boolean) => void
     setAutomaticLineBreak: (count: number) => void
+    setHideRolls: (value: boolean) => void
     clearCommunicationCache: () => void
 }
 
@@ -33,6 +35,7 @@ type AppContextDispatchAction =
     | DispatchAction<"setEnableRowNumbers", boolean, AppContextDispatchAction>
     | DispatchAction<"setEnableColorFileByType", boolean, AppContextDispatchAction>
     | DispatchAction<"setAutomaticLineBreak", number, AppContextDispatchAction>
+    | DispatchAction<"setHideRolls", boolean, AppContextDispatchAction>
 
 
 type AppContextProvider = ContextProvider<AppContextState, AppContextDispatch>

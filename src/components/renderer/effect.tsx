@@ -6,14 +6,17 @@ import IEffect from 'types/database/files/iEffect';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
 import { useMemo } from 'react';
+import { RollType } from 'types/dice';
 
 type EffectProps = React.PropsWithRef<{
     data: IEffect
     stats: ICreatureStats
+    desc: string
+    tooltips: string
     id: string
 }>
 
-const EffectRenderer = ({ data, stats, id }: EffectProps): JSX.Element => {
+const EffectRenderer = ({ data, stats, desc, tooltips, id }: EffectProps): JSX.Element => {
     const effect = useMemo(() => new Effect(data, stats, id), [data, stats, id])
     return (
         <div className={styles.iconRow}>
@@ -26,9 +29,11 @@ const EffectRenderer = ({ data, stats, id }: EffectProps): JSX.Element => {
                         dice: String(effect.dice), 
                         num: String(effect.diceNum), 
                         mod: String(effect.modifierValue),
-                        mode: effect.dice == DiceType.None 
-                            ? RollMode.Mod 
-                            : RollMode.DMG
+                        desc: desc,
+                        tooltips: tooltips,
+                        details: `${effect.damageTypeName} Damage`,
+                        mode: effect.dice == DiceType.None ? RollMode.Mod : RollMode.Dice,
+                        type: RollType.Damage
                     }}>
                     <Elements.Icon 
                         options={{ 

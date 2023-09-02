@@ -1,14 +1,26 @@
 import Dice from "utils/data/dice"
-import { DateValue } from "./database"
+
+export enum RollType {
+    General = 'general',
+    Attack = 'attack',
+    Damage = 'dmg',
+    Save = 'save',
+    Check = 'check',
+    Initiative = 'initiative',
+    Health = 'health'
+}
 
 interface DiceResult {
     dice: Dice
     num: number
+    sum: number
     result: number[]
 }
 
 interface RollValue {
     sum: number
+    isCritical: boolean
+    isFail: boolean
     values: DiceResult[]
 }
 
@@ -16,15 +28,11 @@ interface RollResult {
     method: RollMethod
     results: RollValue[]
     selectedIndex: number
-    desc: string
     modifier: number
-    canCritAndFail: boolean
-    critRange: number
-}
-
-interface RollEvent {
-    result: RollResult
-    time: DateValue
+    type: RollType
+    description: string
+    details: string
+    source: string
 }
 
 export enum RollMethod {
@@ -37,6 +45,5 @@ export enum RollMethod {
 export type {
     DiceResult,
     RollValue,
-    RollResult,
-    RollEvent
+    RollResult
 }

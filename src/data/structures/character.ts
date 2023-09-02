@@ -10,6 +10,7 @@ import { ICharacterMetadata, ICharacterStorage } from "types/database/files/char
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId, ObjectIdText } from "types/database";
 import ModifierCollection from "./modifierCollection";
+import { RollType } from "types/dice";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
     private readonly storage: ICharacterStorage
@@ -63,6 +64,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                     dice: "0",
                     num: "0",
                     mod: String(value + this.modifiers.bonusHealth),
+                    type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions;
             default:
@@ -75,6 +77,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                         dice: String(this.hitDice),
                         num: String(this.numHitDice - 1),
                         mod: String(this.hitDiceValue + mod * this.level + value + this.modifiers.bonusHealth),
+                        type: RollType.Health,
                         desc: "Max health"
                     } as RollOptions
                 } else {
@@ -82,6 +85,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                         dice: String(this.hitDice),
                         num: String(this.numHitDice),
                         mod: String(mod * this.level + value + this.modifiers.bonusHealth),
+                        type: RollType.Health,
                         desc: "Max health"
                     } as RollOptions
                 }

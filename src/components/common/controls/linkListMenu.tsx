@@ -4,8 +4,8 @@ import { useFiles } from "utils/handlers/files";
 import { isObjectId } from "utils/helpers";
 import { FileType } from "types/database/files";
 import { ObjectId, ObjectIdText } from "types/database";
-import styles from 'styles/components/listMenu.module.scss';
 import { FileGetManyMetadataResult } from "types/database/responses";
+import styles from 'styles/components/listMenu.module.scss';
 
 type ListMenuPropsType<T, A extends boolean> = {
     className?: string

@@ -12,6 +12,7 @@ import { IParserMetadata, RollMode } from 'types/elements';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { AbilityType, Attribute, EffectCondition } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
+import { RollType } from 'types/dice';
 
 
 type AbilityFileRendererProps = React.PropsWithRef<{
@@ -100,10 +101,12 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                                 <Elements.Bold>HIT/DC </Elements.Bold>
                                 <Elements.Roll 
                                     options={{ 
-                                        mode: RollMode.Attack,
-                                        mod: String(ability.conditionModifierValue), 
+                                        mode: RollMode.Mod,
+                                        mod: String(ability.conditionModifierValue),
+                                        type: RollType.Attack, 
                                         desc: `${ability.name} Attack`,
-                                        critRange: String(ability.stats.critRange),
+                                        tooltips: `Roll ${ability.name} Attack`,
+                                        critRange: String(ability.stats.critRange)
                                     }}
                                 />
                             </div>
@@ -118,7 +121,13 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                                 />
                             </div>
                         }{ ability.effects.map((effect) => (
-                            <EffectRenderer key={effect.id} data={effect} stats={stats} id={variablesKey} />
+                            <EffectRenderer 
+                                key={effect.id} 
+                                data={effect}
+                                stats={stats}
+                                desc={`${ability.name} ${effect.label}`}
+                                tooltips={`Roll ${ability.name} ${effect.label}`}
+                                id={variablesKey} />
                         ))}{ ability.notes.length > 0 && 
                             <div> 
                                 <Elements.Bold>Notes </Elements.Bold> 

@@ -64,6 +64,10 @@ class Dice {
     public rollOnce(): number {
         return Math.ceil(Dice.random.random() * this.type);
     }
+
+    public toString() {
+        return this.text
+    }
 }
 
 

@@ -81,9 +81,8 @@ const LinkInput = ({ className, value, placeholder, fileTypes, allowRemove = tru
 
     return (
         <div className={style}>
-            <input 
-                type="text" 
-                value={valid ? name : state.text as string} 
+            <input
+                value={valid ? name : state.text as string}
                 onChange={handleChange}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}

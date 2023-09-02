@@ -9,6 +9,7 @@ import EffectRenderer from '../effect';
 import { Attribute, EffectCondition, TargetType } from 'types/database/dnd';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { ISpellMetadata } from 'types/database/files/spell';
+import { RollType } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
 
 type SpellProps = React.PropsWithRef<{
@@ -83,23 +84,26 @@ const DetailedSpell = ({ metadata, stats, variablesKey }: SpellProps) => {
                 <div className={styles.iconRow}>
                     <Elements.Bold>HIT/DC </Elements.Bold>
                     {spell.condition == EffectCondition.Hit && 
-                        <Elements.Roll 
-                            options={{ 
-                                mod: spell.conditionModifierValue as any, 
-                                desc: `${spell.name} Attack` 
-                            }}
-                        />
+                        <Elements.Roll options={{ 
+                            mod: spell.conditionModifierValue.toString(), 
+                            desc: `${spell.name} Attack`,
+                            type: RollType.Attack
+                        }}/>
                     }{spell.condition == EffectCondition.Save &&
-                        <Elements.Save
-                            options={{
-                                attr: spell.saveAttr ?? Attribute.STR,
-                                dc: String(8 + spell.conditionModifierValue)
-                            }}
-                        />
+                        <Elements.Save options={{
+                            attr: spell.saveAttr ?? Attribute.STR,
+                            dc: String(8 + spell.conditionModifierValue)
+                        }}/>
                     }{spell.condition == EffectCondition.None && '-'}
                 </div>
                 {spell.effects.map((effect) => (
-                    <EffectRenderer key={effect.id} data={effect} stats={stats} id={variablesKey}/>
+                    <EffectRenderer 
+                        key={effect.id} 
+                        data={effect} 
+                        stats={stats}
+                        desc={`${spell.name} ${effect.label}`}
+                        tooltips={`Roll ${spell.name} ${effect.label}`}
+                        id={variablesKey}/>
                 ))}
             </Elements.Align>
         </Elements.Align>

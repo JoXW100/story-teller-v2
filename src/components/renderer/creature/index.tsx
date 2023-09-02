@@ -19,6 +19,7 @@ import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/databa
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import styles from 'styles/renderer.module.scss';
+import { RollType } from 'types/dice';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: CreatureFile
@@ -83,8 +84,9 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     <div>
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
-                            mod: creature.initiativeValue as any, 
-                            desc: "Initiative" 
+                            mod: String(creature.initiativeValue), 
+                            desc: "Initiative",
+                            type: RollType.Initiative
                         }}/>
                     </div>
                     <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
@@ -165,7 +167,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Modifier</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: creature.getAttributeModifier(stats.spellAttribute) as any, 
+                                    mod: creature.getAttributeModifier(stats.spellAttribute).toString(), 
                                     desc: Localization.toText('spell-spellModifier')
                                 }}/>
                             </Elements.Align>
@@ -173,7 +175,8 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Attack</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: creature.spellAttackModifier as any, 
+                                    mod: creature.spellAttackModifier.toString(),
+                                    type: RollType.Attack,
                                     desc: Localization.toText('spell-spellAttack')
                                 }}/>
                             </Elements.Align>
@@ -181,7 +184,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Save</Elements.Bold>
                                 <Elements.Save options={{
-                                    dc: creature.spellSaveModifier as any
+                                    dc: creature.spellSaveModifier.toString()
                                 }}/>
                             </Elements.Align>
                     </Elements.Align>

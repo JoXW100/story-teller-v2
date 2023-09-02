@@ -1,10 +1,14 @@
 import type DiceCollection from "utils/data/diceCollection";
 import type Queue from "utils/data/queue";
 import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } from ".";
-import type { DBResponse, ObjectId } from "types/database";
-import type { RollEvent, RollMethod } from "types/dice";
+import type { DBResponse, DateValue, ObjectId } from "types/database";
+import type { RollMethod, RollResult } from "types/dice";
 import type { IStoryData } from "types/database/stories";
 
+interface RollEvent {
+    result: RollResult
+    time: DateValue
+}
 
 interface StoryContextState extends ContextState {
     loading: boolean
@@ -17,7 +21,7 @@ interface StoryContextState extends ContextState {
 }
 
 interface StoryContextDispatch extends ContextDispatch {
-    roll: (collection: DiceCollection, method?: RollMethod, canCritAndFail?: boolean, critRange?: number) => void
+    roll: (collection: DiceCollection, method: RollMethod, source: string) => void
     clearRolls: () => void
     collapseSidePanel: () => void
     expandSidePanel: () => void
@@ -37,6 +41,7 @@ type StoryContextProvider = ContextProvider<StoryContextState, StoryContextDispa
 export type {
     StoryContextState,
     StoryContextDispatch,
+    RollEvent,
     StoryContextProvider,
     StoryContextDispatchAction
 }

@@ -5,6 +5,7 @@ import DiceCollection from 'utils/data/diceCollection';
 import Localization from 'utils/localization';
 import styles from 'styles/pages/storyPage/dicePanel.module.scss';
 import DiceItem from './diceItem';
+import { RollMethod } from 'types/dice';
 
 type DicePanelProps = React.PropsWithRef<{ open: boolean }>
 
@@ -28,7 +29,7 @@ const DicePanel = ({ open }: DicePanelProps): JSX.Element => {
     }
 
     const handleRoll = () => {
-        dispatch.roll(state.collection)
+        dispatch.roll(state.collection, RollMethod.Normal, null)
         setState({ ...state, collection: new DiceCollection() })
     }
 

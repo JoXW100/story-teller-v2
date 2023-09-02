@@ -1,13 +1,15 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useMemo, useReducer } from 'react'
 import { useRouter } from 'next/router'
 import HelpMenu from 'components/storyPage/helpMenu';
 import Queue from 'utils/data/queue';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
-import { StoryContextProvider, StoryContextState, StoryContextDispatchAction } from 'types/context/storyContext';
+import Beyond20, { WhisperType } from 'utils/beyond20';
+import { RollEvent, StoryContextProvider, StoryContextState, StoryContextDispatchAction, StoryContextDispatch } from 'types/context/storyContext';
 import { DBResponse, ObjectId } from 'types/database';
-import { RollEvent, RollMethod } from 'types/dice';
-import { IStoryData } from 'types/database/stories';;
+import { RollMethod } from 'types/dice';
+import { IStoryData } from 'types/database/stories';
+;
 
 export const Context: React.Context<StoryContextProvider> = React.createContext([null, null])
 
@@ -15,10 +17,11 @@ type StoryContextProps = React.PropsWithChildren<{
     storyId: ObjectId,
     fileId: ObjectId,
     editMode: boolean,
+    hideRolls: boolean,
     viewMode: boolean
 }>
 
-const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryContextProps) => {
+const StoryContext = ({ storyId, fileId, editMode, viewMode, hideRolls, children }: StoryContextProps) => {
     const router = useRouter()
     
     const reducer = (state: StoryContextState, action: StoryContextDispatchAction): StoryContextState => {
@@ -91,17 +94,21 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         }
     }, [storyId, fileId, editMode]);
 
+    const provider: StoryContextDispatch = useMemo(() => ({ 
+        roll: (collection, method = RollMethod.Normal, source: string) => {
+            let result = collection.roll(method, source)
+            let event: RollEvent = { result: result, time: Date.now() }
+            state.rollHistory.add(event)
+            Beyond20.sendRoll(result, hideRolls ? WhisperType.YES : WhisperType.NO)
+            dispatch({ type: 'roll', data: event });
+        },
+        clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
+        collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),
+        expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true })
+    }), [state.rollHistory, hideRolls, dispatch])
+
     return (
-        <Context.Provider value={[state, { 
-            roll: (collection, method = RollMethod.Normal, canCritAndFail = false, critRange = 20) => {
-                let event: RollEvent = { result: collection.roll(method, canCritAndFail, critRange), time: Date.now() }
-                state.rollHistory.add(event)
-                dispatch({ type: 'roll', data: event });
-            },
-            clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
-            collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),
-            expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true })
-        }]}>
+        <Context.Provider value={[state, provider]}>
             { !state.loading && state.story && children }
             { state.helpMenuOpen && <HelpMenu/>}
         </Context.Provider>

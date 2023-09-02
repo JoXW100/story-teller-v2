@@ -501,6 +501,10 @@
             height: 100%;
         }
     }
+
+    & > label {
+        align-self: center;
+    }
 }
 
 .inventoryItem {

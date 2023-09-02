@@ -24,7 +24,7 @@ const TextareaComponent = ({ params }: TemplateComponentProps<TextareaTemplatePa
             data={params.fill ? 'fill' : undefined}>
             <b>{`${params.label ?? "label"}:`}</b>
             <TextEditor 
-                className={styles.editor}
+                className={styles.editTextEditor}
                 text={value} 
                 useSyntaxEditor={params.useSyntaxEditor} 
                 variables={Object.keys(variables)} 

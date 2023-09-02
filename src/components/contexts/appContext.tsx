@@ -36,7 +36,8 @@ const appReducer = (state: AppContextState, action: AppContextDispatchAction): A
                     enableSyntaxHighlighting: Storage.getBoolean("enableSyntaxHighlighting") ?? true,
                     enableRowNumbers: Storage.getBoolean("enableRowNumbers") ?? true,
                     enableColorFileByType: Storage.getBoolean("enableColorFileByType") ?? true,
-                    automaticLineBreak: Storage.getInt("automaticLineBreak") ?? 0
+                    automaticLineBreak: Storage.getInt("automaticLineBreak") ?? 0,
+                    hideRolls: Storage.getBoolean("hideRolls") ?? false,
                 } satisfies AppContextState : state
         case 'setPalette':
             Storage.setString("palette", action.data)
@@ -56,6 +57,9 @@ const appReducer = (state: AppContextState, action: AppContextDispatchAction): A
         case 'setAutomaticLineBreak':
             Storage.setInt("automaticLineBreak", action.data)
             return { ...state, automaticLineBreak: action.data }
+        case 'setHideRolls':
+            Storage.setBoolean("hideRolls", action.data)
+            return { ...state, hideRolls: action.data }
         default:
             return state
     }
@@ -88,7 +92,8 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         enableSyntaxHighlighting: true,
         enableRowNumbers: true,
         enableColorFileByType: true,
-        automaticLineBreak: 0
+        automaticLineBreak: 0,
+        hideRolls: false
     })
 
     useEffect(() => { 
@@ -114,6 +119,7 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         setEnableRowNumbers: (isEnabled: boolean) => dispatch({ type: 'setEnableRowNumbers', data: isEnabled }),
         setEnableColorFileByType: (isEnabled: boolean) => dispatch({ type: 'setEnableColorFileByType', data: isEnabled }),
         setAutomaticLineBreak: (count: number) => dispatch({ type: 'setAutomaticLineBreak', data: count }),
+        setHideRolls: (value: boolean) => dispatch({ type: 'setHideRolls', data: value }),
         clearCommunicationCache: () => setCommunicationCache({})
     }), [dispatch])
 

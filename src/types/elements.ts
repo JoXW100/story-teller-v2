@@ -14,8 +14,6 @@ export enum QueryType {
 export enum RollMode {
     Dice = 'dice',
     Mod = 'mod',
-    Attack = 'attack',
-    DMG = 'dmg'
 }
 
 export enum AlignDirection {

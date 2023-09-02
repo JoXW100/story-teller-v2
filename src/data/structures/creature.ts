@@ -11,6 +11,7 @@ import ICreatureStats from "types/database/files/iCreatureStats";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
+import { RollType } from "types/dice";
 
 class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection
@@ -216,6 +217,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                     dice: "0",
                     num: "0",
                     mod: String(value + this.modifiers.bonusHealth),
+                    type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions;
             default:
@@ -227,6 +229,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                     dice: String(this.hitDice),
                     num: String(this.numHitDice),
                     mod: String(mod * this.level + value + this.modifiers.bonusHealth),
+                    type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions
         }

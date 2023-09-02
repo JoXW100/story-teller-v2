@@ -85,6 +85,7 @@
             "settingsPage-automaticLineBreak": "Line break at character count:",
             "settingsPage-cashedEntries": "Cached files: @0",
             "settingsPage-clearCache": "Clear Cache",
+            "settingsPage-hideRolls": "Hide Rolls (Beyond20 Integration)",
             "helpMenu-close": "Close help menu",
             "helpMenu-title": "Help Menu",
             "helpMenu-prompt": "Search: ",

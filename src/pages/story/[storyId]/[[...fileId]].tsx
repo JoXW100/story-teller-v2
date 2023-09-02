@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+import { Context } from 'components/contexts/appContext'
 import StoryPage from 'components/storyPage'
 import StoryContext from 'components/contexts/storyContext'
 import { useValidation } from 'utils/handlers/validation'
@@ -10,6 +12,7 @@ type LoginPageProps = {
 }
 
 const Page = ({ props }: { props: LoginPageProps }): JSX.Element => {
+    const [context] = useContext(Context)
     const fileId = props.fileId?.find(() => true)
     const valid = useValidation();
     
@@ -18,7 +21,8 @@ const Page = ({ props }: { props: LoginPageProps }): JSX.Element => {
             editMode={props.edit === 'true'}
             storyId={props.storyId} 
             fileId={isObjectId(fileId) ? fileId : null}
-            viewMode={false}>
+            viewMode={false}
+            hideRolls={context.hideRolls}>
             <StoryPage/>
         </StoryContext>
     )

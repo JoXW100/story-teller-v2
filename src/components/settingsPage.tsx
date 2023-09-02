@@ -94,6 +94,13 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         onChange={(value) => dispatch.setAutomaticLineBreak(value ? 80 : 0)}/>
                 </div>
                 <div className={styles.row}>
+                    <label>{Localization.toText("settingsPage-hideRolls")}</label> 
+                    <Checkbox
+                        className={styles.checkbox}
+                        value={context.hideRolls}
+                        onChange={(value) => dispatch.setHideRolls(value)}/>
+                </div>
+                <div className={styles.row}>
                     <label>{Localization.toText("settingsPage-cashedEntries", Communication.cachedEntries.length)}</label> 
                     <button 
                         className={styles.button} 

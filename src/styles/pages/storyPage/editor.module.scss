@@ -178,14 +178,14 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
         text-indent: 5px;
         margin: 0;
     }
+}
 
-    & > .editor {
-        overflow: hidden;
-        max-height: inherit;
+.editTextEditor {
+    overflow: hidden;
+    max-height: inherit;
 
-        & > pre, & > textarea {
-            padding-bottom: 50px !important;
-        }
+    & > pre, & > textarea {
+        padding-bottom: 50px !important;
     }
 }
 
@@ -213,6 +213,7 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
 
 .editListItem {
     @extend .editGroupItem;
+    grid-template-columns: 1fr;
     margin: 0;
     align-items: center;
 }

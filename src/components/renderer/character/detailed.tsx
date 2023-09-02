@@ -29,6 +29,7 @@ import { IAbilityMetadata } from 'types/database/files/ability';
 import { IItemMetadata } from 'types/database/files/item';
 import { FileType } from 'types/database/files';
 import styles from 'styles/renderer.module.scss';
+import { RollType } from 'types/dice';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -113,7 +114,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <ProficienciesPage data={character}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
-                        <ItemsPage character={character} storage={file.storage} setStorage={dispatch.setStorage}/>
+                        <ItemsPage ids={itemIds} storage={file.storage} setStorage={dispatch.setStorage}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
                         <CharacterSpellPage 
@@ -142,7 +143,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <Elements.Bold>Initiative </Elements.Bold>
                         <Elements.Roll options={{ 
                             mod: character.initiativeValue.toString(), 
-                            desc: "Initiative" 
+                            desc: "Initiative",
+                            type: RollType.Initiative
                         }}/>
                     </div>
                     <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
@@ -216,7 +218,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Attack</Elements.Bold>
                                 <Elements.Roll options={{ 
-                                    mod: character.spellAttackModifier.toString(), 
+                                    mod: character.spellAttackModifier.toString(),
+                                    type: RollType.Attack,
                                     desc: Localization.toText('spell-spellAttack')
                                 }}/>
                             </Elements.Align>

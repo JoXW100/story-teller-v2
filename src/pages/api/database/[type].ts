@@ -20,8 +20,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                 return res.status(400).json(failure("Not connected to database"));
             }
         }
-
-        Logger.log(`handler.${req.method}`, params)
     
         switch (req.method) {
             case 'GET':
