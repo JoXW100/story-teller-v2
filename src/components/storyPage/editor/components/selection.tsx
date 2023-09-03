@@ -14,8 +14,8 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
     const selection: string[] = metadata?.[params.key] ?? params.default ?? []
     const option = getOptionType(params.enum);
         
-    const handleChange = (values: string[]) => {
-        dispatch.setMetadata(params.key, values)
+    const handleChange = (values: string[] | Record<string, null>) => {
+        dispatch.setMetadata(params.key, Array.isArray(values) ? values : Object.keys(values))
     }
     
     // UseMemo above must not be used conditionally
