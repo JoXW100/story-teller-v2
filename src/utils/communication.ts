@@ -112,7 +112,7 @@ abstract class Communication {
         })
     }
 
-    public static async getMetadata(fileId: ObjectId, allowedTypes: FileType[] = null): Promise<DBResponse<FileGetMetadataResult>> {
+    public static async getMetadata(fileId: ObjectId, allowedTypes: FileType[] = undefined): Promise<DBResponse<FileGetMetadataResult>> {
         if (this.cache[String(fileId)] && (!allowedTypes || allowedTypes.includes(this.cache[String(fileId)].type))) {
             return { success: true, result: this.cache[String(fileId)] }
         } else if (this.cache[String(fileId)]) {
@@ -133,7 +133,7 @@ abstract class Communication {
         return result
     }
 
-    public static async getManyMetadata(fileIds: ObjectId[], allowedTypes: FileType[] = null): Promise<DBResponse<FileGetManyMetadataResult>> {
+    public static async getManyMetadata(fileIds: ObjectId[], allowedTypes: FileType[] = undefined): Promise<DBResponse<FileGetManyMetadataResult>> {
         const { rest, invalid } = fileIds.reduce<{ cached: ObjectId[], invalid: ObjectId[], rest: ObjectId[] }>((prev, value) => (
             this.cache[String(value)] && (!allowedTypes || allowedTypes.includes(this.cache[String(value)].type))
             ? { cached: [...prev.cached, value], invalid: prev.invalid, rest: prev.rest }
@@ -293,7 +293,7 @@ abstract class Communication {
                 case 'GET':
                 default:
                     let url: string = Object.keys(params ?? []).reduce((prev, key, index) => (
-                        prev + `${index == 0 ? '?' : '&'}${key}=${params[key]}`
+                        params[key] !== undefined ? prev + `${index == 0 ? '?' : '&'}${key}=${params[key]}` : prev
                     ), this._databaseRootURL + type)
                     data = await fetch(url, { method: method })
                     break

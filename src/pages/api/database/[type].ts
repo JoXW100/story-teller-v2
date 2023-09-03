@@ -37,10 +37,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(200).json(await Database.files.get(userId, params.fileId as string));
                     
                     case 'getMetadata':
-                        return res.status(200).json(await Database.files.getMetadata(userId, params.fileId as string, params.allowedTypes as FileType[]));
+                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        return res.status(200).json(await Database.files.getMetadata(userId, params.fileId as string, types));
     
                     case 'getManyMetadata':
-                        return res.status(200).json(await Database.files.getManyMetadata(userId, params.fileIds as string, params.allowedTypes as FileType[]));
+                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        return res.status(200).json(await Database.files.getManyMetadata(userId, params.fileIds as string, types));
     
                     case 'getFileStructure':
                         return res.status(200).json(await Database.files.getStructure(userId, params.storyId as string));

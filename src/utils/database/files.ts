@@ -140,7 +140,7 @@ class FilesInterface
             let result = (await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
                     _id: new ObjectId(fileId),
-                    type: allowedTypes ? { $nin: [FileType.Folder, FileType.Root] } : { $in: allowedTypes },
+                    type: allowedTypes.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
@@ -151,7 +151,7 @@ class FilesInterface
                 } satisfies KeysOfTwo<FileGetMetadataResult, DBFile> },
                 { $limit: 1 }
             ]).toArray())[0];
-            Logger.log('files.getMetadata', fileId);
+            Logger.log('files.getMetadata', fileId, allowedTypes);
             return result ? success(result) : failure("Could not find any matching file");
         } catch (error) {
             return failure(error.message);
@@ -167,7 +167,7 @@ class FilesInterface
             let result = await this.collection.aggregate<FileGetMetadataResult>([
                 { $match: {
                     _id: { $in: ids },
-                    type: allowedTypes ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
+                    type: allowedTypes.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
@@ -177,7 +177,7 @@ class FilesInterface
                     metadata: '$metadata'
                 } satisfies KeysOfTwo<FileGetMetadataResult, DBFile>}
             ]).toArray();
-            Logger.log('files.getManyMetadata', result?.length ?? 0);
+            Logger.log('files.getManyMetadata', result?.length ?? 0, allowedTypes);
             return result
                 ? success(result)
                 : failure("Could not find any matching file");
