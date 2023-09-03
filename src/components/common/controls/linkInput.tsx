@@ -25,7 +25,7 @@ const LinkInput = ({ className, value, placeholder, disabled, allowedTypes, onCh
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
     const [file, loading] = useFile(state.text as any, allowedTypes)
     const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
-    const name: string = file?.metadata?.name
+    const name: string = file?.metadata?.name ?? "..."
 
     const handleDragOver = (e: React.DragEvent<HTMLInputElement>) => {
         if (window.dragData?.file && (!allowedTypes || allowedTypes.includes(window.dragData.file.type))) {
@@ -71,7 +71,6 @@ const LinkInput = ({ className, value, placeholder, disabled, allowedTypes, onCh
 
     useEffect(() => {
         if (file && !loading && String(file.id) !== String(value)) {
-            console.log("LinkInput.file.onChange")
             onChange(file)
         }
     }, [file, loading])
@@ -85,7 +84,7 @@ const LinkInput = ({ className, value, placeholder, disabled, allowedTypes, onCh
     return (
         <input
             className={style}
-            value={disabled ? name : state.text}
+            value={disabled ? name : state.text ?? "" }
             placeholder={placeholder}
             onChange={handleChange}
             onDragOver={handleDragOver}

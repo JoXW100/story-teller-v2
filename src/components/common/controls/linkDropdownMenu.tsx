@@ -26,7 +26,7 @@ const LinkDropdownMenu = ({ value, values, onChange, allowNull, showButton, allo
             value={String(value)}
             showButton={showButton}
             values={values.reduce((prev, option) => (
-                { ...prev, [String(option)]: loading ? '...' : files.find(x => x.id === option)?.metadata?.name ?? "error"}
+                { ...prev, [String(option)]: loading ? '...' : files.find(x => x?.id === option)?.metadata?.name ?? "error"}
             ), allowNull ? { null: "Unset" } : {})}
             onChange={(value) => {
                 if (isObjectId(value) || (allowNull && value === "null")) {
