@@ -169,9 +169,9 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const [_, dispatch] = useContext(Context);
     const [context] = useContext(FileContext);
     const rollOptions = new Options(options);
+    const canCritAndFail = !(rollOptions.type === RollType.Attack || options.type === RollType.Save)
 
     const roll = (method: RollMethod) => {
-        let canCritAndFail = rollOptions.type === RollType.Attack || options.type === RollType.Save
         let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc, rollOptions.details, rollOptions.type, canCritAndFail, rollOptions.critRangeValue);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
         dispatch.roll(collection, method, context?.file?.metadata?.name ?? null);
@@ -180,7 +180,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const handleContext: React.MouseEventHandler<HTMLSpanElement> = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openContext(options.type === RollType.Attack || options.type === RollType.Save
+        openContext(canCritAndFail
             ? [
                 {
                     text: Localization.toText('roll-normal'), 
@@ -192,7 +192,8 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
                     icon: CritIcon, 
                     action: () => roll(RollMethod.Crit)
                 }
-            ] : [
+            ]
+            : [
                 {
                     text: Localization.toText('roll-normal'), 
                     icon: D20Icon, 

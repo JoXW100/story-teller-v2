@@ -138,7 +138,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
          || this.characterClass.hasLeveledHitDice) {
             return this.characterClass.getHitDiceCollection(this.level)
         } else if (this.level > 0 && this.hitDice !== DiceType.None) {
-            let collection = new DiceCollection(this.hitDice)
+            let collection = new DiceCollection(this.hitDiceValue)
             collection.add(new Dice(this.hitDice), this.level - 1)
             return collection
         } else {

@@ -21,14 +21,14 @@ const AttributesBox = ({ data }: DataProps): JSX.Element => {
                     <Elements.Bold>{data[attr] ?? 0}</Elements.Bold>
                     <Elements.Roll options={{ 
                         mod: data.getAttributeModifier(attr).toString(), 
-                        desc: `${attr} Check`,
-                        tooltips: `${attr} Check`
+                        desc: `${attr.toUpperCase()} Check`,
+                        tooltips: `${attr.toUpperCase()} Check`
                     }}/>
                     <div/>
                     <Elements.Roll options={{ 
                         mod: data.getSaveModifier(attr).toString(), 
-                        desc: `${attr} Save`,
-                        tooltips: `${attr} Save`
+                        desc: `${attr.toUpperCase()} Save`,
+                        tooltips: `${attr.toUpperCase()} Save`
                     }}/>
                     <span className={styles.iconHolder}>
                         <span 

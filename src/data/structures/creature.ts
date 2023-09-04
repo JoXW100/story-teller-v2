@@ -203,11 +203,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                 return value + this.modifiers.bonusHealth;
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Math.ceil(Dice.average(this.hitDice)) * this.numHitDice + mod * this.level + value + this.modifiers.bonusHealth
+                return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
             case CalculationMode.Auto:
             default:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Math.ceil(Dice.average(this.hitDice)) * this.numHitDice + mod * this.level + this.modifiers.bonusHealth
+                return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + this.modifiers.bonusHealth
         }
     }
 
