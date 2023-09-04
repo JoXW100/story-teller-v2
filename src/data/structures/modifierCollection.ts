@@ -1,6 +1,6 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
@@ -10,6 +10,7 @@ import { getMaxProficiencyLevel } from "utils/calculations";
 type AddRemoveGroup<T> = { add: T, remove: T }
 
 type ProficiencyRecord<T extends string> = Partial<Record<T, ProficiencyLevel>>
+type AdvantageRecord = Partial<Record<AdvantageBinding, string[]>>
 
 const ModifierMap = {
     [ProficiencyType.Armor]: "armor",
@@ -29,6 +30,8 @@ const ModifierCollectionMap = {
     [ProficiencyType.Save]: "saves",
 } satisfies Record<ProficiencyType, keyof IModifier>
 
+const splitAdvantagesExpr = / *[\.\;] */
+
 class ModifierCollection implements IModifierCollection {
     protected readonly modifiers: IModifier[]
     protected readonly storage: ICharacterStorage
@@ -42,7 +45,7 @@ class ModifierCollection implements IModifierCollection {
             }
             return [...prev, mod]
         }, []);
-        this.storage = storage;
+        this.storage = storage ?? {};
     }
 
     public equals(other: IModifierCollection): boolean {
@@ -257,10 +260,12 @@ class ModifierCollection implements IModifierCollection {
     }
 
     private modifyProficiencyRecord<T extends string>(values: ProficiencyRecord<T>, key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): ProficiencyRecord<T> {
-        let exclude: Partial<Record<T, ProficiencyLevel>>
+        let exclude: ProficiencyRecord<T>
         if (onlyRemove) {
             exclude = this.modifiers.reduce((prev, mod) => (
-                mod.type === ModifierType.Remove && filter(mod) ? {...prev, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev[mod[key]]) }  : prev
+                mod.type === ModifierType.Remove && filter(mod) 
+                    ? {...prev, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev[mod[key]]) }  
+                    : prev
             ), {})
         } else {
             let groups = this.modifiers.reduce<AddRemoveGroup<ProficiencyRecord<T>>>((prev, mod) => {
@@ -294,6 +299,40 @@ class ModifierCollection implements IModifierCollection {
         ), {})
     }
 
+    private modifyAdvantageRecord(values: AdvantageRecord, onlyRemove: boolean, filter: (mod: IModifier) => boolean): AdvantageRecord {
+        let exclude: AdvantageRecord
+        if (onlyRemove) {
+            exclude = this.modifiers.reduce((prev, mod) => (
+                mod.type === ModifierType.Remove && filter(mod) 
+                    ? { ...prev, remove: {...prev, [mod.binding]: [...prev[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}  
+                    : prev
+            ), {})
+        } else {
+            let groups = this.modifiers.reduce<AddRemoveGroup<AdvantageRecord>>((prev, mod) => {
+                if (mod.type === ModifierType.Add 
+                    && filter(mod)
+                    && mod.select === SelectType.Value) {
+                    return { ...prev, add: {...prev.add, [mod.binding]: [...prev.add[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}
+                } else if (mod.type === ModifierType.Add 
+                    && filter(mod)
+                    && mod.select === SelectType.Choice
+                    && this.storage.classData?.[mod.id]) {
+                    return { ...prev, add: {...prev.add, [mod.binding]: [...prev.add[mod.binding] ?? [], ...this.storage.classData[mod.id] ?? []] }}
+                } else if (mod.type === ModifierType.Remove && filter(mod)) {
+                    return { ...prev, remove: {...prev.remove, [mod.binding]: [...prev.remove[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}
+                }
+                return prev
+            }, { add: values, remove: {} })
+
+            exclude = groups.remove
+            values = groups.add
+        }
+        
+        return Object.keys(values).reduce<AdvantageRecord>((prev, binding: AdvantageBinding) => (
+            { ...prev, [binding]: values[binding].filter(x => !exclude[binding]?.includes(x)) }
+        ), {})
+    }
+
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {
         const type = ProficiencyType.Armor
         const key = ModifierMap[type];
@@ -306,12 +345,6 @@ class ModifierCollection implements IModifierCollection {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
         return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
-        const type = ProficiencyType.Tool
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
-    }
     public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove: boolean = false): Language[] {
         const type = ProficiencyType.Language
         const key = ModifierMap[type];
@@ -323,6 +356,12 @@ class ModifierCollection implements IModifierCollection {
         const key = ModifierMap[type];
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
         return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+    }
+    public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
+        const type = ProficiencyType.Tool
+        const key = ModifierMap[type];
+        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
+        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
     }
     public modifyProficienciesSkill(proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Skill, ProficiencyLevel>> {
         const type = ProficiencyType.Skill
@@ -339,13 +378,25 @@ class ModifierCollection implements IModifierCollection {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Vulnerability
         return this.modifyCollection(vulnerabilities, "text", onlyRemove, filter)
     }
-    public modifyAdvantages(advantages: string[], onlyRemove: boolean = false): string[] {
+    public modifyAdvantages(advantages: Partial<Record<AdvantageBinding, string>>, onlyRemove: boolean = false): Partial<Record<AdvantageBinding, string>> {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Advantage
-        return this.modifyCollection(advantages, "text", onlyRemove, filter)
+        const value = Object.keys(advantages).reduce<AdvantageRecord>((prev, key: AdvantageBinding) => (
+            { ...prev, [key]: advantages[key]?.split(splitAdvantagesExpr) ?? [] }
+        ), {})
+        const result = this.modifyAdvantageRecord(value, onlyRemove, filter)
+        return Object.keys(result).reduce<Partial<Record<AdvantageBinding, string>>>((prev, key: AdvantageBinding) => (
+            { ...prev, [key]: result[key].join('; ') }
+        ), {})
     }
-    public modifyDisadvantages(disadvantages: string[], onlyRemove: boolean = false): string[] {
+    public modifyDisadvantages(disadvantages: Partial<Record<AdvantageBinding, string>>, onlyRemove: boolean = false): Partial<Record<AdvantageBinding, string>> {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Disadvantage
-        return this.modifyCollection(disadvantages, "text", onlyRemove, filter)
+        const value = Object.keys(disadvantages).reduce<AdvantageRecord>((prev, key: AdvantageBinding) => (
+            { ...prev, [key]: disadvantages[key]?.split(splitAdvantagesExpr) ?? [] }
+        ), {})
+        const result = this.modifyAdvantageRecord(value, onlyRemove, filter)
+        return Object.keys(result).reduce<Partial<Record<AdvantageBinding, string>>>((prev, key: AdvantageBinding) => (
+            { ...prev, [key]: result[key].join('; ') }
+        ), {})
     }
     public modifyDMGImmunities(immunities: string[], onlyRemove: boolean = false): string[] {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.DMGImmunity

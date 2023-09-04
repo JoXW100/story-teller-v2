@@ -1,4 +1,4 @@
-import type { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import type { ObjectId } from ".."
 import type { ISubPageItemMetadata } from "."
 
@@ -69,6 +69,7 @@ interface IModifier extends ISubPageItemMetadata {
     numChoices?: number
 
     proficiency?: ProficiencyType
+    binding?: AdvantageBinding
     proficiencyLevel?: ProficiencyLevel
 
     // Values

@@ -1,7 +1,7 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
 import type { IChoice } from "./modifier"
-import type { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
 export type TextChoiceData = { type: "text", label: string, text: string, options: string[], num: number }
@@ -45,8 +45,8 @@ interface IModifierCollection {
 
     modifyResistances: (resistances: string[], onlyRemove?: boolean) => string[]
     modifyVulnerabilities: (vulnerabilities: string[], onlyRemove?: boolean) => string[]
-    modifyAdvantages: (advantages: string[], onlyRemove?: boolean) => string[]
-    modifyDisadvantages: (disadvantages: string[], onlyRemove?: boolean) => string[]
+    modifyAdvantages: (advantages: Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean) => Partial<Record<AdvantageBinding, string>>
+    modifyDisadvantages: (disadvantages:Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean) => Partial<Record<AdvantageBinding, string>>
     modifyDMGImmunities: (dmgImmunities: string[], onlyRemove?: boolean) => string[]
     modifyCONImmunities: (conImmunities: string[], onlyRemove?: boolean) => string[]
 

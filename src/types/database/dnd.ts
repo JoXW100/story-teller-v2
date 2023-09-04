@@ -373,3 +373,33 @@ export enum Rarity {
     Legendary = 'legendary',
     Artifact = 'artifact'
 }
+
+export enum AdvantageBinding {
+    General = "general",
+    
+    StrengthSave = "strSave",
+    DexteritySave = "dexSave",
+    ConstitutionSave = "conSave",
+    IntelligenceSave = "intSave",
+    WisdomSave = "wisSave",
+    CharismaSave = "chaSave",
+
+    AcrobaticsCheck = "acrobaticsCheck",
+    AnimalHandlingCheck = "animalCheck",
+    ArcanaCheck = "arcanaCheck",
+    AthleticsCheck = "athleticsCheck",
+    DeceptionCheck = "deceptionCheck",
+    HistoryCheck = "historyCheck",
+    InsightCheck = "insightCheck",
+    IntimidationCheck = "intimidationCheck",
+    InvestigationCheck = "investigationCheck",
+    MedicineCheck = "medicineCheck",
+    NatureCheck = "natureCheck",
+    PerceptionCheck = "perceptionCheck",
+    PerformanceCheck = "performanceCheck",
+    PersuasionCheck = "persuasionCheck",
+    ReligionCheck = "religionCheck",
+    SleightOfHandCheck = "sleightCheck",
+    StealthCheck = "stealthCheck",
+    SurvivalCheck = "survivalCheck",
+}

@@ -1,9 +1,11 @@
+import { AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Elements from 'data/elements';
 import Localization from 'utils/localization';
 import CreatureData from 'data/structures/creature';
 import { getOptionType } from 'data/optionData';
 import { Skill } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
+import { SkillAdvantageBindingMap } from 'utils/calculations';
 
 type DataProps = React.PropsWithRef<{
     data: CreatureData 
@@ -12,23 +14,39 @@ type DataProps = React.PropsWithRef<{
 const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
     const skills = getOptionType("skill").options
     const attributes = getOptionType("attr").options;
+    const advantages = data.advantages
+    const disadvantages = data.disadvantages
     return (
         <>
             <div className={styles.skillTable}>
                 <div>
                     <b>Mod</b>
-                    <br/>
+                    <span/>
                     <b>Skill</b>
+                    <span/>
                     <b>Bonus</b>
                 </div>
                 { Object.keys(skills).map((skill: Skill) => {
                     return (
                         <div key={skill}>
                             <b>{attributes[data.getSkillAttribute(skill)]}</b>
-                            <div 
+                            <div
+                                className={styles.proficiencyMarker}
                                 data={data.proficienciesSkill[skill] ?? "none"}
                                 tooltips={Localization.toText('creature-Proficient')}/>
                             <label>{skills[skill]}</label>
+                            <div className={styles.iconHolder}>
+                                { SkillAdvantageBindingMap[skill] in advantages &&
+                                    <span tooltips={advantages[SkillAdvantageBindingMap[skill]]}>
+                                        <AdvantageIcon/>
+                                    </span>
+                                }
+                                { SkillAdvantageBindingMap[skill] in disadvantages &&
+                                    <span tooltips={disadvantages[SkillAdvantageBindingMap[skill]]}>
+                                        <DisadvantageIcon/>
+                                    </span>
+                                }
+                            </div>
                             <Elements.Roll options={{
                                 mod: data.getSkillModifier(skill).toString(),
                                 desc: `${skills[skill]} Check`,

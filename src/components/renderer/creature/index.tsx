@@ -13,7 +13,7 @@ import ModifierCollection from 'data/structures/modifierCollection';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
-import { OptionalAttribute } from 'types/database/dnd';
+import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/database/responses';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
@@ -107,13 +107,13 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             <Elements.Bold>Resistances </Elements.Bold>
                             {creature.resistances}
                         </div> 
-                    }{ creature.advantages.length > 0 && 
+                    }{ creature.advantages[AdvantageBinding.General]?.length > 0 && 
                         <div><Elements.Bold>Advantages </Elements.Bold>
-                            {creature.advantages}
+                            {creature.advantages[AdvantageBinding.General]}
                         </div> 
-                    }{ creature.disadvantages.length > 0 && 
+                    }{ creature.disadvantages[AdvantageBinding.General]?.length > 0 && 
                         <div><Elements.Bold>Disadvantages </Elements.Bold>
-                            {creature.disadvantages}
+                            {creature.disadvantages[AdvantageBinding.General]}
                         </div> 
                     }{ creature.vulnerabilities.length > 0 && 
                         <div><Elements.Bold>Vulnerabilities </Elements.Bold>

@@ -514,13 +514,10 @@
 }
 
 .skillTable {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 3px;
     font-family: $fontNormal;
     & > div {
         display: grid;
-        grid-template-columns: auto 10px minmax(0, 1fr) 55px;
+        grid-template-columns: auto 10px minmax(0, 1fr) $iconSmallSize * 2 55px;
         gap: 5px;
         height: $iconSmallSize;
 
@@ -528,13 +525,14 @@
             font-family: $fontDocument;
         }
 
-        & > div {
+        & > .proficiencyMarker {
             @include colorBorder(document);
             height: 9px;
             width: 9px;
             margin-bottom: 3px;
             align-self: center;
             justify-self: center;
+
             &[data=proficient] {
                 border: 2px solid;
                 border-radius: 100%;
@@ -568,6 +566,21 @@
 
     & > div:not(:first-child,:last-child) {
         border-bottom: 1px solid;
+    }
+}
+
+.iconHolder {
+    height: $iconSmallSize;
+    display: flex;
+    justify-content: space-evenly;
+    height: fit-content;
+    & > span {
+        height: $iconSmallSize;
+        width: $iconSmallSize;
+        padding: 2px;
+        &[data=false] {
+            filter: opacity(60%) grayscale(0.8)
+        }
     }
 }
 

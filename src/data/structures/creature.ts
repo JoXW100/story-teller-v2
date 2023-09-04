@@ -5,7 +5,7 @@ import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
-import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
+import { AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { ICreatureMetadata } from "types/database/files/creature";
@@ -316,14 +316,12 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return this.modifiers.modifyResistances(splits).join(', ')
     }
 
-    public get advantages(): string {
-        let splits = (this.metadata.advantages ?? "").split(/ *, */)
-        return this.modifiers.modifyAdvantages(splits).join(', ')
+    public get advantages(): Partial<Record<AdvantageBinding, string>> {
+        return this.modifiers.modifyAdvantages(this.metadata.advantages ?? {})
     }
 
-    public get disadvantages(): string {
-        let splits = (this.metadata.disadvantages ?? "").split(/ *, */)
-        return this.modifiers.modifyDisadvantages(splits).join(', ')
+    public get disadvantages(): Partial<Record<AdvantageBinding, string>> {
+        return this.modifiers.modifyDisadvantages(this.metadata.disadvantages ?? {})
     }
 
     public get vulnerabilities(): string {

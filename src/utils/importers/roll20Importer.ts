@@ -1,6 +1,6 @@
 import Logger from "utils/logger";
 import { asEnum, isEnum } from "utils/helpers";
-import { Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
+import { AdvantageBinding, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
 import { CalculationMode, IOptionType } from "types/database/editor"
 import { FileType, IFileMetadata } from "types/database/files";
 import { ICreatureMetadata } from "types/database/files/creature";
@@ -361,7 +361,7 @@ const toCreature = (results: {[key: string]: string}): ICreatureMetadata => {
             ? { type: CalculationMode.Auto } as IOptionType<number>
             : { type: CalculationMode.Auto, value: ac } ,
         resistances: results['resistances'] ?? "",
-        advantages: results['advantages'] ?? "", // @todo confirm 
+        advantages: results['advantages'] ? { [AdvantageBinding.General]: results['advantages'] } : {}, // @todo confirm 
         dmgImmunities: results['immunities'] ?? "",
         conImmunities: results['condition immunities'] ?? "",
         speed: getSpeed(results['speed']),

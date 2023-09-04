@@ -1,5 +1,5 @@
 import { ObjectIdText } from "types/database";
-import { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
@@ -143,12 +143,12 @@ class CombinedModifierCollection implements IModifierCollection {
         vulnerabilities = this.c2.modifyVulnerabilities(vulnerabilities, onlyRemove)
         return this.c1.modifyVulnerabilities(vulnerabilities, true) // Remove those added by c2
     }
-    public modifyAdvantages(advantages: string[], onlyRemove?: boolean): string[] {
+    public modifyAdvantages(advantages: Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean): Partial<Record<AdvantageBinding, string>> {
         if (!onlyRemove) { advantages = this.c1.modifyAdvantages(advantages) }
         advantages = this.c2.modifyAdvantages(advantages, onlyRemove)
         return this.c1.modifyAdvantages(advantages, true) // Remove those added by c2
     }
-    public modifyDisadvantages(disadvantages: string[], onlyRemove?: boolean): string[] {
+    public modifyDisadvantages(disadvantages: Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean): Partial<Record<AdvantageBinding, string>> {
         if (!onlyRemove) { disadvantages = this.c1.modifyDisadvantages(disadvantages) }
         disadvantages = this.c2.modifyDisadvantages(disadvantages, onlyRemove)
         return this.c1.modifyDisadvantages(disadvantages, true) // Remove those added by c2

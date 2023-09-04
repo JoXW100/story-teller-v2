@@ -1,5 +1,5 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, AdvantageBinding, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 import { EffectType } from 'types/database/files/iEffect';
@@ -567,6 +567,37 @@ const OptionTypes = {
             [EffectType.Condition]: "Condition"
         }
     } satisfies IOptionType<typeof EffectType>,
+    "advantageBinding": {
+        enum: AdvantageBinding,
+        default: AdvantageBinding.General,
+        options: {
+            [AdvantageBinding.General]: "General",
+            [AdvantageBinding.StrengthSave]: "Strength Save",
+            [AdvantageBinding.DexteritySave]: "Dexterity Save",
+            [AdvantageBinding.ConstitutionSave]: "Constitution Save",
+            [AdvantageBinding.IntelligenceSave]: "Intelligence Save",
+            [AdvantageBinding.WisdomSave]: "Wisdom Save",
+            [AdvantageBinding.CharismaSave]: "Charisma Save",
+            [AdvantageBinding.AcrobaticsCheck]: "Acrobatics Check",
+            [AdvantageBinding.AnimalHandlingCheck]: "Animal Handling Check",
+            [AdvantageBinding.ArcanaCheck]: "Arcana Check",
+            [AdvantageBinding.AthleticsCheck]: "Athletics Check",
+            [AdvantageBinding.DeceptionCheck]: "Deception Check",
+            [AdvantageBinding.HistoryCheck]: "History Check",
+            [AdvantageBinding.InsightCheck]: "Insight Check",
+            [AdvantageBinding.IntimidationCheck]: "Intimidation Check",
+            [AdvantageBinding.InvestigationCheck]: "Investigation Check",
+            [AdvantageBinding.MedicineCheck]: "Medicine Check",
+            [AdvantageBinding.NatureCheck]: "Nature Check",
+            [AdvantageBinding.PerceptionCheck]: "Perception Check",
+            [AdvantageBinding.PerformanceCheck]: "Performance Check",
+            [AdvantageBinding.PersuasionCheck]: "Persuasion Check",
+            [AdvantageBinding.ReligionCheck]: "Religion Check",
+            [AdvantageBinding.SleightOfHandCheck]: "Sleight of Hand Check",
+            [AdvantageBinding.StealthCheck]: "Stealth Check",
+            [AdvantageBinding.SurvivalCheck]: "Survival Check",
+        }
+    } satisfies IOptionType<typeof AdvantageBinding>,
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,

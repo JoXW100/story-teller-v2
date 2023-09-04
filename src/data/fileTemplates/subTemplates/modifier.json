@@ -106,6 +106,15 @@
                     "params": { "label": "Allow Any", "key": "allowAny", "default": false }
                 },
 
+                { 
+                    "type": "enum",
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, { "type": "any", "value": ["disadvantage", "advantage"] }] }
+                    ],
+                    "params": { "label": "Binding", "key": "binding", "type":  "advantageBinding", "default": "general" }
+                },
+
                 {
                     "type": "enum", 
                     "conditions": [

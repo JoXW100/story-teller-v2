@@ -1,8 +1,9 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
 import type { ObjectIdText } from ".."
-import type{ Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
+import type{ AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
 import type { IOptionType } from "../editor"
 import type ICreatureStats from "./iCreatureStats"
+
 
 interface ICreatureContent extends IFileContent {
 }
@@ -27,10 +28,10 @@ interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "profici
 
     resistances?: string
     vulnerabilities?: string
-    advantages?: string
-    disadvantages?: string
     dmgImmunities?: string
     conImmunities?: string
+    advantages?: Partial<Record<AdvantageBinding, string>>
+    disadvantages?: Partial<Record<AdvantageBinding, string>>
     
     speed?: Partial<Record<MovementType, number>>
     senses?: Partial<Record<Sense, number>>

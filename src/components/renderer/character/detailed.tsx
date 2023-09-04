@@ -23,13 +23,13 @@ import Logger from 'utils/logger';
 import CharacterFile, { ICharacterAbilityStorageData, ICharacterStorage } from 'types/database/files/character';
 import { FileGetManyMetadataResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
-import { OptionalAttribute } from 'types/database/dnd';
+import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { IModifierCollection } from 'types/database/files/modifierCollection';
 import { IAbilityMetadata } from 'types/database/files/ability';
 import { IItemMetadata } from 'types/database/files/item';
 import { FileType } from 'types/database/files';
-import styles from 'styles/renderer.module.scss';
 import { RollType } from 'types/dice';
+import styles from 'styles/renderer.module.scss';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -123,13 +123,13 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             <Elements.Bold>Resistances </Elements.Bold>
                             {character.resistances}
                         </div> 
-                    }{ character.disadvantages.length > 0 && 
+                    }{ character.disadvantages[AdvantageBinding.General]?.length > 0 && 
                         <div><Elements.Bold>Disadvantages </Elements.Bold>
-                            {character.disadvantages}
+                            {character.disadvantages[AdvantageBinding.General]}
                         </div> 
-                    }{ character.advantages.length > 0 && 
+                    }{ character.advantages[AdvantageBinding.General]?.length > 0 && 
                         <div><Elements.Bold>Advantages </Elements.Bold>
-                            {character.advantages}
+                            {character.advantages[AdvantageBinding.General]}
                         </div> 
                     }{ character.vulnerabilities.length > 0 && 
                         <div><Elements.Bold>Vulnerabilities </Elements.Bold>

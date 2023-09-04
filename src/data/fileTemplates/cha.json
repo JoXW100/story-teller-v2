@@ -132,12 +132,12 @@
                                 "params": { "label": "Resistances", "key": "resistances", "type": "string" }
                             },
                             { 
-                                "type": "text", 
-                                "params": { "label": "Advantages", "key": "advantages", "type": "string" }
+                                "type": "selectionInput", 
+                                "params": { "label": "Advantages", "key": "advantages", "enum":  "advantageBinding", "type": "string" }
                             },
                             { 
-                                "type": "text", 
-                                "params": { "label": "Disadvantages", "key": "disadvantages", "type": "string" }
+                                "type": "selectionInput", 
+                                "params": { "label": "Disadvantages", "key": "disadvantages", "enum":  "advantageBinding", "type": "string" }
                             },
                             { 
                                 "type": "text", 

@@ -2,7 +2,7 @@ import SpellData from 'data/structures/spell';
 import { asEnum } from './helpers';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { ISpellMetadata } from 'types/database/files/spell';
-import { AreaType, Attribute, OptionalAttribute, ProficiencyLevel, ScalingType, TargetType } from "types/database/dnd";
+import { AdvantageBinding, AreaType, Attribute, OptionalAttribute, ProficiencyLevel, ScalingType, Skill, TargetType } from "types/database/dnd";
 
 export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
     return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
@@ -86,4 +86,34 @@ export const getMaxProficiencyLevel = (...proficiencies: ProficiencyLevel[]): Pr
         }
     }
     return max_proficiency
+}
+
+export const SkillAdvantageBindingMap: Record<Skill, AdvantageBinding> = {
+    [Skill.Acrobatics]: AdvantageBinding.AcrobaticsCheck,
+    [Skill.AnimalHandling]: AdvantageBinding.AnimalHandlingCheck,
+    [Skill.Arcana]: AdvantageBinding.ArcanaCheck,
+    [Skill.Athletics]: AdvantageBinding.AthleticsCheck,
+    [Skill.Deception]: AdvantageBinding.DeceptionCheck,
+    [Skill.History]: AdvantageBinding.HistoryCheck,
+    [Skill.Insight]: AdvantageBinding.InsightCheck,
+    [Skill.Intimidation]: AdvantageBinding.IntimidationCheck,
+    [Skill.Investigation]: AdvantageBinding.InvestigationCheck,
+    [Skill.Medicine]: AdvantageBinding.MedicineCheck,
+    [Skill.Nature]: AdvantageBinding.NatureCheck,
+    [Skill.Perception]: AdvantageBinding.PerceptionCheck,
+    [Skill.Performance]: AdvantageBinding.PerformanceCheck,
+    [Skill.Persuasion]: AdvantageBinding.PersuasionCheck,
+    [Skill.Religion]: AdvantageBinding.ReligionCheck,
+    [Skill.SleightOfHand]: AdvantageBinding.SleightOfHandCheck,
+    [Skill.Stealth]: AdvantageBinding.StealthCheck,
+    [Skill.Survival]: AdvantageBinding.SurvivalCheck
+}
+
+export const AttributeAdvantageBindingMap: Record<Attribute, AdvantageBinding> = {
+    [Attribute.STR]: AdvantageBinding.StrengthSave,
+    [Attribute.DEX]: AdvantageBinding.DexteritySave,
+    [Attribute.CON]: AdvantageBinding.ConstitutionSave,
+    [Attribute.INT]: AdvantageBinding.IntelligenceSave,
+    [Attribute.WIS]: AdvantageBinding.WisdomSave,
+    [Attribute.CHA]: AdvantageBinding.CharismaSave
 }
