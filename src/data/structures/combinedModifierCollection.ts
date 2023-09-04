@@ -1,5 +1,5 @@
 import { ObjectIdText } from "types/database";
-import { ArmorType, Attribute, Language, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
@@ -57,6 +57,10 @@ class CombinedModifierCollection implements IModifierCollection {
         return this.c1.bonusInitiative + this.c2.bonusInitiative
     }
 
+    public get bonusDamage(): number {
+        return this.c1.bonusDamage + this.c2.bonusDamage
+    }
+
     public get critRange(): number {
         return this.c1.critRange ?? this.c2.critRange 
     }
@@ -75,9 +79,24 @@ class CombinedModifierCollection implements IModifierCollection {
         return this.c1.spellAttribute ?? this.c2.spellAttribute 
     }
 
+    public get multiAttack(): number {
+        if (this.c1.multiAttack === null) {
+            return this.c2.multiAttack
+        }
+        if (this.c2.multiAttack === null) {
+            return this.c1.multiAttack
+        }
+        return Math.max(this.c1.multiAttack, this.c2.multiAttack )
+    }
+
     public getAttributeBonus(attribute: Attribute): number {
         return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
     }
+
+    public getMovementBonus(movement: MovementType): number {
+        return this.c1.getMovementBonus(movement) + this.c2.getMovementBonus(movement)
+    }
+    
     public getSenseRange(sense: Sense): number {
         return Math.max(this.c1.getSenseRange(sense), this.c2.getSenseRange(sense))
     }
@@ -92,7 +111,7 @@ class CombinedModifierCollection implements IModifierCollection {
         proficiencies = this.c2.modifyProficienciesWeapon(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesWeapon(proficiencies, true) // Remove those added by c2
     }
-    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove: boolean = false): Tool[] {
+    public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesTool(proficiencies) }
         proficiencies = this.c2.modifyProficienciesTool(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesTool(proficiencies, true) // Remove those added by c2
@@ -108,7 +127,7 @@ class CombinedModifierCollection implements IModifierCollection {
         return this.c1.modifyProficienciesSave(proficiencies, true) // Remove those added by c2
 
     }
-    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove: boolean = false): Skill[] {
+    public modifyProficienciesSkill(proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Skill, ProficiencyLevel>> {
         if (!onlyRemove) { proficiencies = this.c1.modifyProficienciesSkill(proficiencies) }
         proficiencies = this.c2.modifyProficienciesSkill(proficiencies, onlyRemove)
         return this.c1.modifyProficienciesSkill(proficiencies, true) // Remove those added by c2

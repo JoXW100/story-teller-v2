@@ -5,13 +5,14 @@ import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
-import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
+import { Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
 import { RollType } from "types/dice";
+import { getProficiencyLevelValue } from "utils/calculations";
 
 class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection
@@ -22,16 +23,19 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public getStats(): CreatureStats {
         return new CreatureStats({
+            level: this.level,
             str: this.str,
             dex: this.dex,
             con: this.con,
             int: this.int,
             wis: this.wis,
             cha: this.cha,
+            multiAttack: this.multiAttack,
+            bonusDamage: this.bonusDamage,
             proficiency: this.proficiencyValue,
             spellAttribute: this.spellAttribute,
             critRange: this.critRange
-        } as ICreatureStats)
+        } satisfies Required<ICreatureStats>)
     }
 
     public getValues(): Record<string, number> {
@@ -115,9 +119,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public getSkillModifier(skill: Skill): number {
         let attr = this.getSkillAttribute(skill)
-        let mod = this.proficienciesSkill.includes(skill) 
-            ? this.proficiencyValue 
-            : 0;
+        let mod = Math.ceil(this.proficiencyValue * getProficiencyLevelValue(this.proficienciesSkill[skill]))
         return this.getAttributeModifier(attr) + mod
     }
 
@@ -201,11 +203,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                 return value + this.modifiers.bonusHealth;
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Dice.average(this.hitDice, this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
+                return Math.ceil(Dice.average(this.hitDice)) * this.numHitDice + mod * this.level + value + this.modifiers.bonusHealth
             case CalculationMode.Auto:
             default:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Dice.average(this.hitDice, this.numHitDice) + mod * this.level + this.modifiers.bonusHealth
+                return Math.ceil(Dice.average(this.hitDice)) * this.numHitDice + mod * this.level + this.modifiers.bonusHealth
         }
     }
 
@@ -297,6 +299,14 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         }
     }
 
+    public get multiAttack(): number {
+        return this.modifiers.multiAttack ?? 1
+    }
+
+    public get bonusDamage(): number {
+        return this.modifiers.bonusDamage ?? 0
+    }
+
     public get critRange(): number {
         return this.modifiers.critRange ?? this.metadata.critRange ?? 20
     }
@@ -331,13 +341,18 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return this.modifiers.modifyCONImmunities(splits).join(', ')
     }
 
-    public get speed(): Partial<Record<MovementType, number>> {
-        return this.metadata.speed ?? {}
+    public get speed(): Record<MovementType, number> {
+        return Object.values(MovementType).reduce<Record<MovementType, number>>((prev, type) => (
+            { ...prev, [type]: (this.metadata.speed?.[type] ?? 0) + this.modifiers.getMovementBonus(type) }
+        ), {} as any)
     }
 
     public get speedAsText(): string {
-        let movement = getOptionType("movement").options;
-        return Object.keys(this.speed).map((key) => `${movement[key]} ${this.speed[key]}ft`).join(', ')
+        let options = getOptionType("movement").options;
+        let speed = this.speed
+        return Object.keys(speed).reduce<string[]>((prev, type: MovementType) => (
+            speed[type] > 0 ? [...prev, `${options[type]} ${speed[type]}ft`] : prev
+        ), []).join(', ')
     }
 
     public get senses(): Record<Sense, number> {
@@ -348,10 +363,10 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public get sensesAsText(): string {
         let options = getOptionType("sense").options;
-        return Object.values(Sense).reduce<string[]>((prev, sense: Sense) => {
-            let range = this.getSenseRange(sense);
-            return range > 0 ? [...prev, `${options[sense]} ${range}ft`] : prev
-        }, []).join(', ')
+        let senses = this.senses
+        return Object.keys(senses).reduce<string[]>((prev, sense: Sense) => (
+            senses[sense] > 0 ? [...prev, `${options[sense]} ${senses[sense]}ft`] : prev
+        ), []).join(', ')
     }
 
     public getSenseRange(sense: Sense) {
@@ -359,17 +374,17 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get passivePerceptionValue(): number {
-        let proficiency = this.proficienciesSkill.includes(Skill.Perception) ? this.proficiencyValue : 0
+        let proficiency = Skill.Perception in this.proficienciesSkill ? this.proficiencyValue : 0
         return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
     }
 
     public get passiveInvestigationValue(): number {
-        let proficiency = this.proficienciesSkill.includes(Skill.Investigation) ? this.proficiencyValue : 0
+        let proficiency = Skill.Investigation in this.proficienciesSkill ? this.proficiencyValue : 0
         return 10 + this.getAttributeModifier(Attribute.INT) + proficiency
     }
 
     public get passiveInsightValue(): number {
-        let proficiency = this.proficienciesSkill.includes(Skill.Insight) ? this.proficiencyValue : 0
+        let proficiency = Skill.Insight in this.proficienciesSkill ? this.proficiencyValue : 0
         return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
     }
 
@@ -405,8 +420,8 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return this.modifiers.modifyProficienciesSave(this.metadata.proficienciesSave ?? [])
     }
     
-    public get proficienciesSkill(): Skill[] {
-        return this.modifiers.modifyProficienciesSkill(this.metadata.proficienciesSkill ?? [])
+    public get proficienciesSkill(): Partial<Record<Skill, ProficiencyLevel>> {
+        return this.modifiers.modifyProficienciesSkill(this.metadata.proficienciesSkill ?? {})
     }
     
     public get proficienciesWeapon(): WeaponType[] {
@@ -427,13 +442,13 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return this.proficienciesArmor.map((key) => armor[key]).join(', ')
     }
     
-    public get proficienciesTool(): Tool[] {
-        return this.modifiers.modifyProficienciesTool(this.metadata.proficienciesTool ?? [])
+    public get proficienciesTool(): Partial<Record<Tool, ProficiencyLevel>> {
+        return this.modifiers.modifyProficienciesTool(this.metadata.proficienciesTool ?? {})
     }
 
     public get proficienciesToolText(): string {
         let tool = getOptionType('tool').options;
-        return this.proficienciesTool.map((key) => tool[key]).join(', ')
+        return Object.keys(this.proficienciesTool).map((key) => tool[key]).join(', ')
     }
     
     public get proficienciesLanguage(): Language[] {

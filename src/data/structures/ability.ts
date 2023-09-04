@@ -44,8 +44,8 @@ class AbilityData extends CreatureActionData<IAbilityMetadata> implements Requir
         return this.metadata.modifiers?.map((modifier) => new ModifierData(modifier, this.id)) ?? []
     }
     
-    public get charges(): number {
-        return this.metadata.charges ?? 0
+    public get charges(): number[] {
+        return Array.isArray(this.metadata.charges) ? this.metadata.charges : []
     }
     
     public get chargesReset(): RestType {

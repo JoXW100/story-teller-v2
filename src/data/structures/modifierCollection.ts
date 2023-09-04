@@ -1,12 +1,15 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData, EnumChoiceData, AnyFileChoiceData, FileChoiceData, ChoiceChoiceData, TextChoiceData } from "types/database/files/modifierCollection";
+import { getMaxProficiencyLevel } from "utils/calculations";
 
-type AddRemoveGroup<T> = { add: T[], remove: T[] }
+type AddRemoveGroup<T> = { add: T, remove: T }
+
+type ProficiencyRecord<T extends string> = Partial<Record<T, ProficiencyLevel>>
 
 const ModifierMap = {
     [ProficiencyType.Armor]: "armor",
@@ -46,6 +49,7 @@ class ModifierCollection implements IModifierCollection {
         if (other instanceof ModifierCollection) {
             return this.modifiers.length === other.modifiers.length 
                 && this.modifiers.every(mod => other.modifiers.some(x => mod.id === x.id))
+                && Object.keys(this.storage).every(key => key in other.storage && this.storage[key] === other.storage[key])
         }
         return false
     }
@@ -132,6 +136,14 @@ class ModifierCollection implements IModifierCollection {
         , 0)
     }
 
+    public get bonusDamage(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Damage
+                ? prev + modifier.value 
+                : prev
+        , 0)
+    }
+
     public get bonusInitiative(): number {
         return this.modifiers.reduce<number>((prev, modifier) => 
             modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Initiative
@@ -162,6 +174,24 @@ class ModifierCollection implements IModifierCollection {
                 ? modifier.attribute 
                 : prev
         , null)
+    }
+
+    public get multiAttack(): number {
+        return this.modifiers.reduce<number>((prev, modifier) => 
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.MultiAttack
+                ? (prev === null ? modifier.value : Math.max(prev, modifier.value))
+                : prev
+        , null)
+    }
+
+    public getMovementBonus(movement: MovementType): number {
+        return this.modifiers.reduce<number>((prev, mod) => (
+            mod.type === ModifierType.Bonus 
+            && mod.bonusProperty === ModifierBonusTypeProperty.Movement
+            && mod.movement === movement
+            ? prev + mod.value 
+            : prev
+        ), 0)
     }
 
     public getAttributeBonus(attribute: Attribute): number {
@@ -201,7 +231,7 @@ class ModifierCollection implements IModifierCollection {
             ), [])
             exclude = new Set(remove);
         } else {
-            let groups = this.modifiers.reduce<AddRemoveGroup<T>>((prev, mod) => {
+            let groups = this.modifiers.reduce<AddRemoveGroup<T[]>>((prev, mod) => {
                 if (mod.type === ModifierType.Add 
                     && filter(mod)
                     && mod.select === SelectType.Value) {
@@ -226,6 +256,44 @@ class ModifierCollection implements IModifierCollection {
         return values.filter(x => !exclude.has(x))
     }
 
+    private modifyProficiencyRecord<T extends string>(values: ProficiencyRecord<T>, key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): ProficiencyRecord<T> {
+        let exclude: Partial<Record<T, ProficiencyLevel>>
+        if (onlyRemove) {
+            exclude = this.modifiers.reduce((prev, mod) => (
+                mod.type === ModifierType.Remove && filter(mod) ? {...prev, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev[mod[key]]) }  : prev
+            ), {})
+        } else {
+            let groups = this.modifiers.reduce<AddRemoveGroup<ProficiencyRecord<T>>>((prev, mod) => {
+                if (mod.type === ModifierType.Add 
+                    && filter(mod)
+                    && mod.select === SelectType.Value) {
+                    return { ...prev, add: {...prev.add, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev.add[mod[key]]) }}
+                } else if (mod.type === ModifierType.Add 
+                    && filter(mod)
+                    && mod.select === SelectType.Choice
+                    && this.storage.classData?.[mod.id]) {
+                    let add = {...prev.add }
+                    for (let proficiency of this.storage.classData[mod.id] as ProficiencyType[]) {
+                        add[proficiency] = getMaxProficiencyLevel(mod.proficiencyLevel, add[proficiency])
+                    }
+                    return { ...prev, add: add }
+                } else if (mod.type === ModifierType.Remove && filter(mod)) {
+                    return { ...prev, remove: {...prev.remove, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev.remove[mod[key]]) }}
+                }
+                return prev
+            }, { add: values, remove: {} })
+
+            exclude = groups.remove
+            values = groups.add
+        }
+        
+        return Object.keys(values).reduce<ProficiencyRecord<T>>((prev, proficiency) => (
+            getMaxProficiencyLevel(values[proficiency], exclude[proficiency]) === exclude[proficiency] 
+                ? prev
+                : { ...prev, [proficiency]: values[proficiency] }
+        ), {})
+    }
+
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {
         const type = ProficiencyType.Armor
         const key = ModifierMap[type];
@@ -238,11 +306,11 @@ class ModifierCollection implements IModifierCollection {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
         return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesTool(proficiencies: Tool[], onlyRemove: boolean = false): Tool[] {
+    public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
         const type = ProficiencyType.Tool
         const key = ModifierMap[type];
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
     }
     public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove: boolean = false): Language[] {
         const type = ProficiencyType.Language
@@ -256,11 +324,11 @@ class ModifierCollection implements IModifierCollection {
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
         return this.modifyCollection(proficiencies, key, onlyRemove, filter)
     }
-    public modifyProficienciesSkill(proficiencies: Skill[], onlyRemove: boolean = false): Skill[]{
+    public modifyProficienciesSkill(proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Skill, ProficiencyLevel>> {
         const type = ProficiencyType.Skill
         const key = ModifierMap[type];
         const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
     }
 
     public modifyResistances(resistances: string[], onlyRemove: boolean = false): string[] {
@@ -298,7 +366,7 @@ class ModifierCollection implements IModifierCollection {
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
                 && mod.select === SelectType.Choice
                 && this.storage.classData?.[mod.id]) {
-                return [...prev, this.storage.classData[mod.id]]
+                return [...prev, ...this.storage.classData[mod.id]]
             }
             return prev
         }, abilities)
@@ -313,7 +381,7 @@ class ModifierCollection implements IModifierCollection {
                 && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
                 && mod.select === SelectType.Choice
                 && this.storage.classData?.[mod.id]) {
-                return [...prev, this.storage.classData[mod.id]]
+                return [...prev, ...this.storage.classData[mod.id]]
             }
             return prev
         }, spells)

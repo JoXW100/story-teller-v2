@@ -8,6 +8,8 @@ import { ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata, IClassMetadataProperties } from "types/database/files/class";
 import { IModifier } from "types/database/files/modifier";
 import { IModifierCollection } from "types/database/files/modifierCollection";
+import DiceCollection from "utils/data/diceCollection";
+import Dice from "utils/data/dice";
 
 class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage
@@ -23,8 +25,39 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
         return this.metadata.isSubclass ?? false;
     }
 
+    public get hasLeveledHitDice(): boolean {
+        return this.metadata.hasLeveledHitDice ?? false;
+    }
+
     public get hitDice(): DiceType {
         return this.metadata.hitDice ?? getOptionType("dice").default
+    }
+
+    public get hitDiceValue(): number {
+        let value = parseInt(String(this.hitDice))
+        return isNaN(value) ? 0 : value
+    }
+
+    public get leveledHitDice(): DiceType[] {
+        return this.metadata.leveledHitDice ?? []
+    }
+
+    public getHitDiceCollection(level: number): DiceCollection {
+        if (level > 0 && this.hasLeveledHitDice) {
+            let mod = parseInt(String(this.leveledHitDice[0]))
+            mod = isNaN(mod) ? 0 : mod
+            let collection = new DiceCollection(mod)
+            for (let l = 1; l < level; l++) {
+                collection.add(new Dice(this.leveledHitDice[l]))
+            }
+            return collection
+        } else if (level > 0 && this.hitDice !== DiceType.None) {
+            let collection = new DiceCollection(this.hitDiceValue)
+            collection.add(new Dice(this.hitDice), level - 1)
+            return collection
+        } else {
+            return new DiceCollection()
+        }
     }
 
     public get subclassLevel(): number {
@@ -78,7 +111,7 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
         for (let index = 1; index <= Math.min(20, level); index++) {
             let modifiers: IModifier[] = this.metadata[index] ?? []
             if (modifiers.length > 0) {
-                let newCollection = new ModifierCollection(modifiers.map((modifier) => new ModifierData(modifier, this.id)), this.storage)
+                let newCollection = new ModifierCollection(modifiers.map((modifier) => new ModifierData(modifier, `${this.id}-${index}`)), this.storage)
                 collection = newCollection.join(collection)
             }
         }

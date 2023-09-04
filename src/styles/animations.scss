@@ -10,7 +10,21 @@
     transform-origin: top;
     animation-duration: $duration;
     transition: $duration ease-out;
-    animation-name: contentSlideIn;
+    animation-name: contentSlideOut;
+}
+
+@mixin contentSlideInFromRight($duration) {
+    transform-origin: right;
+    animation-duration: $duration;
+    transition: $duration ease-in;
+    animation-name: contentSlideInX;
+}
+
+@mixin contentSlideOutFromRight($duration) {
+    transform-origin: right;
+    animation-duration: $duration;
+    transition: $duration ease-out;
+    animation-name: contentSlideOutX;
 }
 
 @keyframes contentSlideIn {
@@ -42,6 +56,40 @@
     }
     to {
         transform: scaleY(0);
+        display: none;
+        visibility: hidden;
+    }
+}
+
+@keyframes contentSlideInX {
+    from {
+        display: none;
+        visibility: hidden;
+        transform: scaleX(0);
+    }
+    10% {
+        display: inherit;
+        visibility: visible;
+    }
+    to {
+        display: inherit;
+        visibility: visible;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes contentSlideOutX {
+    from {
+        transform: scaleX(1);
+        display: inherit;
+        visibility: visible;
+    }
+    90% {
+        display: inherit;
+        visibility: visible;
+    }
+    to {
+        transform: scaleX(0);
         display: none;
         visibility: hidden;
     }

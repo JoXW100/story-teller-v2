@@ -8,6 +8,7 @@ import LinkInput from "./linkInput";
 
 type ListMenuPropsType<T, A extends boolean> = {
     className?: string
+    editClassName?: string
     itemClassName?: string
     onChange: (selection: T[]) => void
     validateInput?: (value: T, values: T[]) => value is T
@@ -19,6 +20,7 @@ type ListMenuPropsType<T, A extends boolean> = {
 
 type ListMenuComponent = {
     className: string
+    editClassName: string
     files: FileGetManyMetadataResult
     allowedTypes: FileType[]
     allowText: boolean
@@ -30,7 +32,8 @@ type ListMenuProps = React.PropsWithRef<ListMenuPropsType<ObjectId, false> | Lis
 
 type IDCollection = { results: string[], rest: ObjectId[] } 
 
-const LinkListMenu = ({ className, itemClassName, onChange, validateInput, values = [], allowedTypes, allowText, placeholder }: ListMenuProps): JSX.Element => {
+const LinkListMenu = (props: ListMenuProps): JSX.Element => {
+    const { className, itemClassName, editClassName, onChange, validateInput, values = [], allowedTypes, allowText, placeholder } = props
     if (allowedTypes == undefined || allowedTypes.length === 0) {
         throw new Error("LinkListMenu with no accepted filetypes, expected at least one")
     }
@@ -57,7 +60,7 @@ const LinkListMenu = ({ className, itemClassName, onChange, validateInput, value
             EditComponent={EditComponent}
             defaultValue={""}
             values={loading ? [] : values}
-            params={{ className: itemClassName, files: files, allowedTypes: allowedTypes, allowText: allowText, placeholder: placeholder, onChange: onChange }}/>
+            params={{ className: itemClassName, editClassName: editClassName,  files: files, allowedTypes: allowedTypes, allowText: allowText, placeholder: placeholder, onChange: onChange }}/>
     )
 }
 
@@ -79,7 +82,7 @@ const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuCo
 }
 
 const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponent<ObjectId, ListMenuComponent>): JSX.Element => {
-    const { allowedTypes, className, placeholder, onChange } = params
+    const { allowedTypes, editClassName, placeholder, onChange } = params
 
     const handleChange = (value: FileGetMetadataResult) => {
         onChange([...values, value.id])
@@ -88,7 +91,7 @@ const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponen
 
     return (
         <LinkInput
-            className={className} 
+            className={editClassName} 
             placeholder={placeholder}
             allowedTypes={allowedTypes}
             value={value}

@@ -15,6 +15,10 @@
                     "params": { "label": "Damage Type", "key": "damageType", "type": "damageType", "default": "none" }
                 },
                 { 
+                    "type": "enum", 
+                    "params": { "label": "Effect Type", "key": "type", "type": "effectType", "default": "other" }
+                },
+                { 
                     "type": "text", 
                     "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "damageType" }, "none"] }],
                     "params": { "label": "Effect", "key": "text" }

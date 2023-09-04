@@ -331,6 +331,8 @@ export enum Tool {
 
 export enum Language {
     Common = "common",
+    Giant = "giant",
+    Leonin = "leonin",
     ThievesCant = "thieves"
 }
 
@@ -348,6 +350,12 @@ export enum ProficiencyType {
     Language = "language",
     Save = "save",
     Skill = "skill",
+}
+
+export enum ProficiencyLevel {
+    Proficient = "proficient",
+    HalfProficient = "halfProficient",
+    Expert = "expert",
 }
 
 export enum RestType {

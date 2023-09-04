@@ -8,12 +8,24 @@ class CreatureStats implements Required<ICreatureStats> {
         this.data = stats ?? {}
     }
 
+    public get level(): number {
+        return this.data.level ?? 0
+    }
+
     public get proficiency(): number {
         return this.data.proficiency ?? 2
     }
 
     public get spellAttribute(): OptionalAttribute {
         return this.data.spellAttribute ?? getOptionType("optionalAttr").default
+    }
+
+    public get multiAttack(): number {
+        return this.data.multiAttack ?? 1
+    }
+
+    public get bonusDamage(): number {
+        return this.data.bonusDamage ?? 0
     }
 
     public get critRange(): number {

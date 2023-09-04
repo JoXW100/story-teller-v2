@@ -23,13 +23,13 @@ class DiceCollection {
     }
 
     /** Adds a number of dice to the collection */
-    add(dice: Dice, num: number = 1) {
+    public add(dice: Dice, num: number = 1) {
         let value = this.collection[dice.num] ?? 0;
         this.collection[dice.num] = value + num;
     }
 
     /** Rolls the dice in the collection */
-    roll(method: RollMethod = RollMethod.Normal, source: string): RollResult {
+    public roll(method: RollMethod = RollMethod.Normal, source: string): RollResult {
         let results: RollValue[] = [];
         let selectedIndex = 0;
         switch (method) {
@@ -81,6 +81,10 @@ class DiceCollection {
         }
     }
 
+    public get average(): number {
+        return Object.keys(this.collection).reduce((prev, key) => prev + Dice.average(key) * this.collection[key], this.modifier)
+    }
+
     /** Gets the number of a type of dice in the collection */
     getNum(dice: Dice) {
         return this.collection[dice.num] ?? 0;
@@ -98,6 +102,12 @@ class DiceCollection {
         return Object.keys(this.collection).some((key, index) => 
             action({ dice: new Dice(key), num: this.collection[key] }, index)
         );
+    }
+
+    reduce<T>(action: (prev: T, value: { dice: Dice; num: number; }, index: number) => T, init: T) {
+        return Object.keys(this.collection).reduce((prev, key, index) => 
+        action(prev, { dice: new Dice(key), num: this.collection[key] }, index)
+    , init);
     }
 }
 

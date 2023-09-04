@@ -11,6 +11,7 @@ type SelectionComponentParams = {
     dropdownItemClassName?: String
     values: Record<string, string | number> | string[]
     options: Record<string, React.ReactNode>
+    editOptions?: Record<string, React.ReactNode>
     editType?: string
     addLast?: boolean
     defaultValue?: string | number
@@ -32,8 +33,8 @@ const SelectionMenu = (props: SelectionMenuProps) => {
         return value != undefined;
     }
 
-    const handleChange = (values: string[]) => {
-        onChange(valuesIsList ? values : values.reduce((prev, value) => (
+    const handleChange = (newValues: string[]) => {
+        onChange(valuesIsList ? newValues : newValues.reduce((prev, value) => (
             { ...prev, [value]: values[value] ?? defaultValue }
         ), {}))
     }
@@ -53,13 +54,14 @@ const SelectionMenu = (props: SelectionMenuProps) => {
 }
 
 const EditComponent = ({ value, params }: ListTemplateComponent<string, SelectionComponentParams>) => {
-    const { dropdownClassName, dropdownItemClassName, values, options, defaultValue, onChange } = params
+    const { dropdownClassName, dropdownItemClassName, values, options, defaultValue = null, addLast = true, onChange } = params
     const style = dropdownClassName ? `${styles.dropdown} ${dropdownClassName}` : styles.dropdown;
     const itemStyle = dropdownItemClassName ? `${styles.dropdownItem} ${dropdownItemClassName}` : styles.dropdownItem
 
     const handleChange = (newValue: string) => {
-        let { value, ...rest } = values as Record<string, string | number>
-        onChange({ ...rest, [newValue]: defaultValue })
+        onChange(Array.isArray(values) 
+            ? addLast ? [ ...values, newValue] : [newValue, ...values]
+            : { ...values, [newValue]: defaultValue })
     }
 
     return (
@@ -72,27 +74,34 @@ const EditComponent = ({ value, params }: ListTemplateComponent<string, Selectio
     )
 }
 
-const Component = ({ value, params }: ListTemplateComponent<string, SelectionComponentParams>): React.ReactNode => {
-    const { componentClassName, values, options, editType = "none", onChange } = params
+const Component = ({ value, index, params }: ListTemplateComponent<string, SelectionComponentParams>): React.ReactNode => {
+    const { componentClassName, values, options, editOptions, editType = "none", onChange, defaultValue } = params
+
     const handleChange = (newValue: string) => {
         let res: string | number = newValue
         if (editType === "number") {
             res = parseInt(res)
-            if (isNaN(res)) { res = 0 }
+            res = isNaN(res) ? 0 : res
         }
         onChange(Array.isArray(values) 
-            ? [ ...values, res as string ] 
+            ? [ ...values.slice(0, index), res as string, ...values.slice(index + 1)] 
             : { ...values, [value]: res })
     }
 
     return (
         <div className={componentClassName}>
             <b>{options[value]}</b>
-            {editType !== "none" &&
+            {editType !== "none" && editType !== "enum" &&
                 <input 
                     type={editType} 
                     value={values[value]} 
                     onChange={(e) => handleChange(e.target.value)}/>
+            }
+            {editType === "enum" &&
+                <DropdownMenu
+                    value={values[value] ?? defaultValue}
+                    values={editOptions}
+                    onChange={handleChange}/>
             }
         </div>
     )

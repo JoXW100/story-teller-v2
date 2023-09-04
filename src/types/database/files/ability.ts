@@ -15,7 +15,7 @@ interface IAbilityMetadata extends IFileMetadata, ICreatureActionData {
     rangeThrown?: number
     // Modifiers
     modifiers?: IModifier[]
-    charges?: number
+    charges?: number[]
     chargesReset?: RestType
 }
 

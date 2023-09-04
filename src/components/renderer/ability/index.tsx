@@ -11,8 +11,8 @@ import { RendererObject } from 'types/database/editor';
 import { IParserMetadata, RollMode } from 'types/elements';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { AbilityType, Attribute, EffectCondition } from 'types/database/dnd';
-import styles from 'styles/renderer.module.scss';
 import { RollType } from 'types/dice';
+import styles from 'styles/renderer.module.scss';
 
 
 type AbilityFileRendererProps = React.PropsWithRef<{
@@ -45,6 +45,7 @@ type AbilityProps = React.PropsWithRef<{
 const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpendedCharges }: AbilityProps): JSX.Element => {
     const ability = useMemo(() => new AbilityData(metadata, stats), [metadata, stats])
     const description = useParser(ability.description, ability, variablesKey)
+    const charges = ability.charges.slice(0, Math.max(stats.level ?? 1, 1)).findLast(c => c != 0) ?? 0
     Logger.log("Ability", ability)
 
     switch(ability.type) {
@@ -55,11 +56,11 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                     <Elements.Header3>{ ability.name }</Elements.Header3>
                     <Elements.Fill/>
                     <ChargesRenderer 
-                        charges={ability.charges}
+                        charges={charges}
                         expended={expendedCharges} 
                         setExpended={setExpendedCharges}/>
                 </Elements.Align>
-                { description }
+                { open && description }
             </>
         case AbilityType.RangedAttack:
         case AbilityType.RangedWeapon:
@@ -73,7 +74,7 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                         {ability.typeName}<br/>
                         <Elements.Align>
                             <ChargesRenderer 
-                                charges={ability.charges} 
+                                charges={charges} 
                                 expended={expendedCharges} 
                                 setExpended={setExpendedCharges}/>
                         </Elements.Align>
@@ -120,13 +121,14 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                                     }}
                                 />
                             </div>
-                        }{ ability.effects.map((effect) => (
+                        }
+                        { ability.effects.map((effect) => (
                             <EffectRenderer 
                                 key={effect.id} 
                                 data={effect}
                                 stats={stats}
-                                desc={`${ability.name} ${effect.label}`}
-                                tooltips={`Roll ${ability.name} ${effect.label}`}
+                                desc={`${ability.name} ${effect.label ?? "Effect"}`}
+                                tooltips={`Roll ${ability.name} ${effect.label ?? "Effect"}`}
                                 id={variablesKey} />
                         ))}{ ability.notes.length > 0 && 
                             <div> 
@@ -158,15 +160,12 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
 
 export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, setExpendedCharges, open = false }: AbilityToggleRendererProps): JSX.Element => {
     const [isOpen, setOpen] = useState(open);
-    const canClose =  metadata?.type && metadata?.type !== AbilityType.Feature
-    const data = canClose && metadata?.description?.length > 0
+    const data = (metadata?.description?.length ?? 0) > 0
         ? isOpen ? "open" : "closed"
         : "none"
 
     const handleClick = () => {
-        if (canClose) {
-            setOpen(!isOpen)
-        }
+        setOpen(!isOpen)
     }
 
     return (

@@ -1,7 +1,7 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
 import type { IChoice } from "./modifier"
-import type { ArmorType, Attribute, Language, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
 export type TextChoiceData = { type: "text", label: string, text: string, options: string[], num: number }
@@ -23,22 +23,25 @@ interface IModifierCollection {
     bonusHealth: number
     bonusProficiency: number
     bonusInitiative: number
+    bonusDamage: number
 
+    getMovementBonus: (movement: MovementType) => number
     getAttributeBonus: (attribute: Attribute) => number
 
     // Set
     critRange: number
     maxDEXBonus: number
     spellAttribute: Attribute
+    multiAttack: number
     getSenseRange: (sense: Sense) => number
 
     // Add / Remove
     modifyProficienciesArmor: (proficiencies: ArmorType[], onlyRemove?: boolean) => ArmorType[]
     modifyProficienciesWeapon: (proficiencies: WeaponType[], onlyRemove?: boolean) => WeaponType[]
-    modifyProficienciesTool: (proficiencies: Tool[], onlyRemove?: boolean) => Tool[]
+    modifyProficienciesTool: (proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove?: boolean) => Partial<Record<Tool, ProficiencyLevel>>
     modifyProficienciesLanguage: (proficiencies: Language[], onlyRemove?: boolean) => Language[]
     modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
-    modifyProficienciesSkill: (proficiencies: Skill[], onlyRemove?: boolean) => Skill[]
+    modifyProficienciesSkill: (proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove?: boolean) => Partial<Record<Skill, ProficiencyLevel>>
 
     modifyResistances: (resistances: string[], onlyRemove?: boolean) => string[]
     modifyVulnerabilities: (vulnerabilities: string[], onlyRemove?: boolean) => string[]

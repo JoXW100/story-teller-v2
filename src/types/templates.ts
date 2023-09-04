@@ -61,13 +61,15 @@ type TemplateCondition =
     | boolean
     | null
 
+type TemplateValue = boolean | string | number
+
 // --------------
 // TemplateParams
 // --------------
 interface IFileTemplateParams {
     label: string
     key: string
-    default?: boolean | string | number | (boolean | string | number)[]
+    default?: TemplateValue | TemplateValue[] | Record<string, TemplateValue | TemplateValue[]>
 }
 
 interface BooleanTemplateParams extends IFileTemplateParams {
@@ -95,8 +97,9 @@ interface ListTemplateParams extends IFileTemplateParams {
 }
 
 interface StaticListTemplateParams extends IFileTemplateParams {
-    default?: number | number[]
-    type: "number" | "list"
+    default?: number | number[] | string
+    type: "number" | "list" | "enum"
+    enum?: string
     labels: string[]
 }
 
@@ -138,8 +141,10 @@ interface SelectionTemplateParams extends IFileTemplateParams {
 
 interface SelectionInputTemplateParams extends IFileTemplateParams {
     enum: string
-    default?: string | number
-    type?: "none" | "text" | "number"
+    editEnum?: string
+    default?: Record<string, string | number>
+    editDefault?: string
+    type?: "none" | "text" | "number" | "enum"
     fill?: boolean
 }
 

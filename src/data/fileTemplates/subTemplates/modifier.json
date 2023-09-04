@@ -89,6 +89,14 @@
                     "params": { "label": "Proficiency Type", "key": "proficiency", "type": "proficiencyType", "default": "armor" }
                 },
                 { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["add", "remove"] }] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "addRemoveProperty" }, "proficiency"] }
+                    ],
+                    "params": { "label": "Proficiency", "key": "proficiencyLevel", "type": "proficiencyLevel", "default": "proficient" }
+                },
+                { 
                     "type": "boolean", 
                     "conditions": [
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "add"] },
@@ -114,6 +122,16 @@
                         { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "choice"] }
                     ],
                     "params": { "label": "Options", "key": "attributes", "enum": "attr", "fill": true }
+                },
+
+                {
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "movement"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    ],
+                    "params": { "label": "Movement Type", "key": "movement", "type": "movement", "default": "walk" }
                 },
 
                 { 
@@ -325,7 +343,7 @@
                         { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
                         { "type": "all", "value": [
                             { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
-                            { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, { "type": "any", "value": ["critRange", "maxDexBonus"] }] }
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, { "type": "any", "value": ["critRange", "maxDexBonus", "multiAttack"] }] }
                         ]}
                     ]}],
                     "params": { "label": "Value", "key": "value" }

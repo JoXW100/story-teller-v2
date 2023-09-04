@@ -11,8 +11,12 @@ import styles from 'styles/pages/storyPage/editor.module.scss';
 const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInputTemplateParams>): JSX.Element => {
     const [context, dispatch] = useContext(Context)
     const metadata = getRelativeMetadata(context.file?.metadata, context.editFilePages)
-    const values: Record<string, string | number> = metadata?.[params.key] ?? {}
+    let values: Record<string, string | number> = metadata?.[params.key] ?? params.default ?? {}
+    if (Array.isArray(values)) {
+        values = values.reduce((prev, value) => ({ ...prev, [value]: params.default }), {})
+    }
     const option = getOptionType(params.enum);
+    const editOption = getOptionType(params.editEnum);
 
     const handleChange = (values: Record<string, string | number>) => {
         dispatch.setMetadata(params.key, values)
@@ -23,12 +27,19 @@ const SelectionInputComponent = ({ params }: TemplateComponentProps<SelectionInp
         return null;
     }
     
+    if (params.type === "enum" && !editOption){
+        Logger.throw("selectionComponent", new Error("No option type of enum: " + params.editEnum))
+        return null;
+    }
+    
     return (
         <div className={styles.editList} data={params.fill && "fill"}>
             <b>{`${ params.label ?? "label"}:`}</b>
             <SelectionMenu
                 values={values}
                 options={option.options}
+                editOptions={editOption?.options}
+                defaultValue={params.editDefault}
                 componentClassName={styles.editSelectionItem}
                 editType={params.type}
                 onChange={handleChange}/>

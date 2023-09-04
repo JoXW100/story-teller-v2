@@ -26,6 +26,7 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
             <b>{`${ params.label ?? "label"}:`}</b>
             <LinkListMenu
                 itemClassName={styles.editListItem}
+                editClassName={styles.itemListItem}
                 values={Array.isArray(values) ? values : []}
                 onChange={handleChange}
                 validateInput={handleValidate}

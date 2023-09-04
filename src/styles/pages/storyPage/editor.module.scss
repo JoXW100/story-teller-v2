@@ -224,6 +224,10 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     align-items: center;
 }
 
+.itemListItem {
+    height: $size;
+}
+
 .editOption {
     @extend .editGroupItem;
 

@@ -4,9 +4,8 @@ import CreatureStats from "./creatureStats";
 import { getScalingValue } from "utils/calculations";
 import { ScalingType, DiceType, DamageType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";
-import IEffect from "types/database/files/iEffect";
+import IEffect, { EffectType } from "types/database/files/iEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
-
 
 class Effect implements Required<IEffect> {
     private readonly metadata: IEffect;
@@ -21,6 +20,10 @@ class Effect implements Required<IEffect> {
 
     public get id(): string {
         return this._id ? `${this._id}-${this.metadata.id}` : this.metadata.id
+    }
+
+    public get type(): EffectType {
+        return this.metadata.type ?? getOptionType("effectType").default
     }
     
 
@@ -56,14 +59,15 @@ class Effect implements Required<IEffect> {
         let mod = this.modifier.value ?? 0;
         let useProf = this.proficiency;
         let prof = useProf ? this.stats.proficiency : 0;
+        let bonus = this.damageType !== DamageType.None && this.type === EffectType.MainDamage ? this.stats.bonusDamage : 0
         switch (this.modifier.type) {
             case CalculationMode.Modify:
-                return getScalingValue(this.scaling, this.stats) + mod + prof
+                return getScalingValue(this.scaling, this.stats) + mod + prof + bonus
             case CalculationMode.Override:
-                return mod + prof
+                return mod + prof + bonus
             case CalculationMode.Auto:
             default:
-                return getScalingValue(this.scaling, this.stats) + prof
+                return getScalingValue(this.scaling, this.stats) + prof + bonus
             
         }
     }

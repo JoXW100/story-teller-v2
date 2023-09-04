@@ -20,7 +20,7 @@ import ModifierCollection from 'data/structures/modifierCollection';
 import ClassData from 'data/structures/class';
 import ItemData from 'data/structures/item';
 import Logger from 'utils/logger';
-import CharacterFile, { ICharacterAbilityStorageData } from 'types/database/files/character';
+import CharacterFile, { ICharacterAbilityStorageData, ICharacterStorage } from 'types/database/files/character';
 import { FileGetManyMetadataResult } from 'types/database/responses';
 import { IClassMetadata } from 'types/database/files/class';
 import { OptionalAttribute } from 'types/database/dnd';
@@ -38,7 +38,7 @@ type CharacterFileRendererProps = React.PropsWithRef<{
 const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)
-    const [page, setPage] = useState<typeof Pages[number]>("Background")
+    const [page, setPage] = useState<typeof Pages[number]>("Abilities")
     const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile, [FileType.Class])
     const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass, [FileType.Class]);
     const itemIds = useMemo(() => Object.keys(file.storage?.inventory ?? {}), [file.storage?.inventory])
@@ -51,6 +51,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const spells = useMemo(() => character.spells, [character])
     const stats = useMemo(() => character.getStats(), [character])
     const values = useMemo(() => character.getValues(), [character])
+    const senses = character.sensesAsText
 
     const content = useParser(file.content.text, character, "$content");
     const appearance = useParser(character.appearance, character, "appearance")
@@ -59,9 +60,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const notes = useParser(character.notes, character, "notes")
 
     const Pages = [
-        "Background", 
-        "Proficiencies",
+        "Abilities",
         "Items",
+        "Background", 
         character.spellAttribute !== OptionalAttribute.None && character.classFile ? "Spells" : null, 
         character.classFile ? "Class" : null]
 
@@ -72,7 +73,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
 
     const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
         let itemModifiers = items.flatMap((item) => item ? new ItemData(item.metadata, file.storage.inventory?.[String(item.id)], item.id, file.storage.attunement?.some(x => String(x) === String(item.id))).modifiers : [])
-        let abilityModifiers = abilities.flatMap((ability) => new AbilityData(ability.metadata, null, String(ability.id)).modifiers);
+        let abilityModifiers = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
         let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], file.storage)
         if (!collection.equals(modifiers)) {
             setModifiers(collection);
@@ -98,62 +99,25 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         <>
             <Elements.Align>
                 <Elements.Block>
-                    <Elements.Header1>{character.name}</Elements.Header1>
+                    <div className={styles.namePlate}>
+                        <Elements.Image options={{href: character.portrait}}/>
+                        <div>
+                            <Elements.Header2>{character.name}</Elements.Header2>
+                            <div>{`${character.genderText} ${character.raceText} ${character.className}`}</div>
+                            <div>{`Level ${character.level}`}</div>
+                        </div>
+                    </div>
                     <Elements.Line/>
-                    <PageSelector pages={Pages} page={page} setPage={setPage}/>
-                    <Elements.Line/>
-                    <div className={styles.pageItem} data={page === "Background" ? "show" : "hide"}>
-                        <CharacterBackgroundPage
-                            character={character}
-                            appearance={appearance}
-                            description={description}
-                            history={history}
-                            notes={notes} />
-                    </div>
-                    <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>
-                        <ProficienciesPage data={character}/>
-                    </div>
-                    <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
-                        <ItemsPage ids={itemIds} storage={file.storage} setStorage={dispatch.setStorage}/>
-                    </div>
-                    <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
-                        <CharacterSpellPage 
-                            character={character} 
-                            storage={file.storage} 
-                            setStorage={dispatch.setStorage}/>
-                    </div>
-                    <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
-                        <CharacterClassPage 
-                            character={character} 
-                            classData={classData} 
-                            storage={file.storage}
-                            setStorage={dispatch.setStorage}/>
-                    </div>
-                </Elements.Block>
-                <Elements.Line/>
-                <Elements.Block>
                     <AttributesBox data={character}/>
-                    <Elements.Line/>
-                    <div><Elements.Bold>Armor Class </Elements.Bold>{character.acValue}</div>
-                    <div><Elements.Bold>Hit Points </Elements.Bold>
-                        {`${character.healthValue} `}
-                        <Elements.Roll options={character.healthRoll}/>
-                    </div>
+                    <Elements.Space/>
+                    <Elements.Space/>
                     <div>
-                        <Elements.Bold>Initiative </Elements.Bold>
-                        <Elements.Roll options={{ 
-                            mod: character.initiativeValue.toString(), 
-                            desc: "Initiative",
-                            type: RollType.Initiative
-                        }}/>
-                    </div>
-                    <div><Elements.Bold>Proficiency Bonus </Elements.Bold>
+                        <b>Proficiency </b>
                         <RollElement options={{ 
                             mod: String(character.proficiencyValue), 
                             desc: "Proficiency Check"
                         }}/>
                     </div>
-                    <Elements.Space/>
                     { character.resistances.length > 0 && 
                         <div>
                             <Elements.Bold>Resistances </Elements.Bold>
@@ -181,23 +145,57 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         </div>
                     }
                     <div><Elements.Bold>Speed </Elements.Bold>{character.speedAsText}</div>
-                    { Object.keys(character.senses).length > 0 &&
+                    { senses.length > 0 &&
                         <div><Elements.Bold>Senses </Elements.Bold>
-                            {character.sensesAsText}
+                            {senses}
                         </div>
                     }
                     <Elements.Space/>
                     <div><Elements.Bold>Passive Perception: </Elements.Bold>{character.passivePerceptionValue.toString()}</div>
                     <div><Elements.Bold>Passive Investigation: </Elements.Bold>{character.passiveInvestigationValue.toString()}</div>
                     <div><Elements.Bold>Passive Insight: </Elements.Bold>{character.passiveInsightValue.toString()}</div>
+                    <Elements.Space/>
+                    <ProficienciesPage data={character}/>
+                </Elements.Block>
+                <Elements.Line/>
+                <Elements.Block>
+                    <HealthBox character={character} storage={file.storage}/>
                     <Elements.Line/>
-                    <AbilityGroups 
-                        abilityIds={abilities} 
-                        stats={stats}
-                        expendedCharges={expendedAbilityCharges}
-                        setExpendedCharges={handleSetExpendedAbilityCharges}
-                        onLoaded={handleAbilitiesLoaded}
-                        values={values}/>
+                    <PageSelector pages={Pages} page={page} setPage={setPage}/>
+                    <Elements.Line/>
+                    <div className={styles.pageItem} data={page === "Background" ? "show" : "hide"}>
+                        <CharacterBackgroundPage
+                            character={character}
+                            appearance={appearance}
+                            description={description}
+                            history={history}
+                            notes={notes} />
+                    </div>
+                    <div className={styles.pageItem} data={page === "Abilities" ? "show" : "hide"}>
+                        <AbilityGroups 
+                            abilityIds={abilities} 
+                            stats={stats}
+                            expendedCharges={expendedAbilityCharges}
+                            setExpendedCharges={handleSetExpendedAbilityCharges}
+                            onLoaded={handleAbilitiesLoaded}
+                            values={values}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
+                        <ItemsPage ids={itemIds} storage={file.storage} setStorage={dispatch.setStorage}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
+                        <CharacterSpellPage 
+                            character={character} 
+                            storage={file.storage} 
+                            setStorage={dispatch.setStorage}/>
+                    </div>
+                    <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
+                        <CharacterClassPage 
+                            character={character} 
+                            classData={classData} 
+                            storage={file.storage}
+                            setStorage={dispatch.setStorage}/>
+                    </div>
                 </Elements.Block>
             </Elements.Align>
             { character.spellAttribute !== OptionalAttribute.None &&
@@ -242,6 +240,148 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
             {content && <Elements.Line/>}
             {content}
         </>
+    )
+}
+
+type HealthBoxProps = React.PropsWithRef<{
+    character: CharacterData
+    storage: ICharacterStorage
+}>
+
+interface HealthBoxState {
+    healDamageInput: string
+    hpInput: string
+    tempInput: string
+}
+
+const HealthBox = ({ character, storage }: HealthBoxProps): JSX.Element => {
+    const [context, dispatch] = useContext(Context)
+    const [state, setState] = useState<HealthBoxState>({
+        healDamageInput: "",
+        hpInput: null,
+        tempInput: null
+    }) 
+
+    const handleChangeHealthInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setState({ ...state, healDamageInput: e.target.value })
+    }
+
+    const changeHealth = (value: number) => {
+        let max = character.healthValue
+        let health = storage.health ?? 0
+        let temp = storage.tempHealth ?? 0
+        if (value < 0) {
+            if (-value > temp) {
+                let rest = value + temp
+                dispatch.setStorage("health", Math.max(health + rest, 0))
+            }
+            dispatch.setStorage("tempHealth", Math.max(temp + value, 0))
+        } else {
+            dispatch.setStorage("health", Math.min(health + value, max))
+        }
+    }
+
+    const handleHealClick = () => {
+        let value = parseInt(state.healDamageInput)
+        if (!isNaN(value)) {
+            changeHealth(value)
+        }
+        setState({ ...state, healDamageInput: "" })
+    }
+
+    const handleDamageClick = () => {
+        let value = parseInt(state.healDamageInput)
+        if (!isNaN(value)) {
+            changeHealth(-value)
+        }
+        setState({ ...state, healDamageInput: "" })
+    }
+
+    const handleHPClick = () =>{
+        setState({ ...state, hpInput: String(storage.health ?? character.healthValue)})
+    }
+
+    const handleHPChanged: React.ChangeEventHandler<HTMLInputElement> = (e) =>{
+        setState({ ...state, hpInput: e.target.value })
+    }
+
+    const handleHPFocusLost: React.FocusEventHandler<HTMLInputElement> = (e) =>{
+        let number = parseInt(e.target.value)
+        if (!isNaN(number)) {
+            dispatch.setStorage("health", Math.min(Math.max(number, 0), character.healthValue))
+        }
+        setState({ ...state, hpInput: null })
+    }
+
+    const handleTempClick = () =>{
+        setState({ ...state, tempInput: String(storage.tempHealth ?? 0)})
+    }
+
+    const handleTempChanged: React.ChangeEventHandler<HTMLInputElement> = (e) =>{
+        setState({ ...state, tempInput: e.target.value })
+    }
+
+    const handleTempFocusLost: React.FocusEventHandler<HTMLInputElement> = (e) =>{
+        let number = parseInt(e.target.value)
+        if (!isNaN(number)) {
+            dispatch.setStorage("tempHealth", Math.max(number, 0))
+        }
+        setState({ ...state, tempInput: null })
+    }
+
+    return (
+        <Elements.Align>
+            <div className={styles.armorBox}>
+                <b>AC</b>
+                <b>{character.acValue}</b>
+            </div>
+            <div className={styles.initiativeBox}>
+                <b>Initiative</b>
+                <Elements.Roll options={{ 
+                    mod: character.initiativeValue.toString(), 
+                    desc: "Initiative",
+                    type: RollType.Initiative,
+                    tooltips: "Roll Initiative"
+                }}/>
+            </div>
+            <div className={styles.healthBox}>
+                <div>
+                    <button 
+                        disabled={state.healDamageInput.length == 0} 
+                        onClick={handleHealClick}>
+                        Heal
+                    </button>
+                    <input 
+                        value={state.healDamageInput} 
+                        type='number' 
+                        onChange={handleChangeHealthInput}/>
+                    <button 
+                        disabled={state.healDamageInput.length == 0} 
+                        onClick={handleDamageClick}>
+                        Damage
+                    </button>
+                </div>
+                <div>
+                    <b>HP</b>
+                    <span/>
+                    <b>MAX</b>
+                    <b>TEMP</b>
+                    
+                    { state.hpInput === null 
+                        ? <span onClick={handleHPClick}>{storage.health ?? character.healthValue}</span>
+                        : <input type='number' autoFocus onChange={handleHPChanged} onBlur={handleHPFocusLost} value={state.hpInput}/>
+                    }
+                    <b>/</b>
+                    <span>{`${character.healthValue} `}</span>
+                    { state.tempInput === null 
+                        ? <span onClick={handleTempClick}>{(storage.tempHealth ?? 0) <= 0 ? '-' : storage.tempHealth}</span>
+                        : <input type='number' autoFocus onChange={handleTempChanged} onBlur={handleTempFocusLost} value={state.tempInput}/>
+                    }
+
+                    <b>Hit Points</b>
+                </div>
+            </div>
+        </Elements.Align>
     )
 }
 

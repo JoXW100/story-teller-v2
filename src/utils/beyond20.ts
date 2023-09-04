@@ -76,7 +76,6 @@ abstract class Beyond20 {
     private static readonly EventId = "Beyond20_SendMessage"
     
     public static sendRoll(roll: RollResult, whisper: WhisperType = WhisperType.NO) {
-        console.log("roll", roll)
         switch (roll.type) {
             case RollType.Attack:
                 return this.sendAttackRoll(roll, whisper)

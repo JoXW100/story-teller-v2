@@ -26,7 +26,7 @@ const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
                         <div key={skill}>
                             <b>{attributes[data.getSkillAttribute(skill)]}</b>
                             <div 
-                                data={data.proficienciesSkill.includes(skill) ? "proficient" : "none"}
+                                data={data.proficienciesSkill[skill] ?? "none"}
                                 tooltips={Localization.toText('creature-Proficient')}/>
                             <label>{skills[skill]}</label>
                             <Elements.Roll options={{

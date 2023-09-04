@@ -28,6 +28,8 @@ interface ICharacterAbilityStorageData {
 }
 
 interface ICharacterStorage extends IFileStorage {
+    health?: number
+    tempHealth?: number
     inventory?: Record<string, InventoryItemData>
     inventoryOther?: string
     attunement?: [ObjectId, ObjectId, ObjectId]

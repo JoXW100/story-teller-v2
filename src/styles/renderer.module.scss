@@ -27,46 +27,39 @@
 }
 
 .menu {
-    display: grid;
     position: sticky;
     top: 0;
-    right: 0;
-    height: 0;
+    left: 0;
     z-index: 1000;
-    width: fit-content;
-    justify-content: end;
 
-    & > span {
-        @include colorBackground(second);
-        @include fontNormal;
-        @include centerGrid;
-        padding: 2px 5px;
-        width: 45px;
-        border-radius: 15px;
-        font-weight: bold;
-        font-size: smaller;
-        margin: 1px;
-        user-select: none;
-    }
-
-    & > .zoomInButton {
-        height: $iconNormalSize;
-        width: $iconNormalSize;
-        border-radius: $iconNormalSize / 2;
-        justify-self: center;
-        margin: 1px;
-    }
+    & > div {
+        position: absolute;
+        display: grid;
+        justify-items: center;
+        & > span {
+            @include colorBackground(second);
+            @include fontNormal;
+            @include centerGrid;
+            padding: 2px 5px;
+            width: 45px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: small;
+            margin: 1px;
+            user-select: none;
+        }
     
-    & > .zoomOutButton {
-        @extend .zoomInButton;
-        margin-top: 1px;
+        & > button {
+            height: $iconNormalSize;
+            width: $iconNormalSize;
+            border-radius: $iconNormalSize / 2;
+        }
     }
 }
 
 .innerPage {
     @include colorBackground(document);
     font-family: $fontDocument;
-    flex-shrink: 0;
     min-width: 0;
     transform-origin: top left;
     width: $pageWidth;
@@ -74,6 +67,45 @@
     padding-bottom: 2cm;
     min-height: 100%;
     margin: auto;
+}
+
+.sidePanel {
+    position: sticky;
+    top: 0;
+    right: 0;
+    z-index: 999;
+    & > div {
+        @include colorWithShadow(document);
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 3in;
+        height: fit-content;
+        margin-left: auto;
+        flex-shrink: 0;
+
+        @include mobile {
+            width: 100%;
+        }
+
+        &[data=true] {
+            @include contentSlideInFromRight(400ms);
+        }
+        &[data=false] {
+            @include contentSlideOutFromRight(400ms);
+            display: none;
+        }
+    }
+}
+
+.sidePanelHeader {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) $iconNormalSize;
+    height: $iconNormalSize;
+    & > b {
+        align-self: center;
+        text-indent: 10px;
+    }
 }
 
 .contentHolder {
@@ -135,9 +167,12 @@
     box-shadow: inset colorInGroup(second, shadow) 0 0 5px -1px;
     height: 15px;
     width: 15px;
-    margin-left: 5px;
     content: " ";
     cursor: pointer;
+
+    &:not(:first-child) {
+        margin-left: 5px;
+    }
     
     &[data=active]::after {
         background: colorInGroup(second, text);
@@ -151,6 +186,32 @@
         width: auto;
         height: auto;
         content: " ";
+    }
+}
+
+.chargeToggleInputHolder {
+    @include colorBackground(input);
+    @include fontNoLineBreak;
+    display: flex;
+    height: $iconSmallSize - 1px;
+    border-radius: $iconSmallSize / 2;
+    align-items: center;
+    font-size: small;
+
+    & > :first-child {
+        width: 70px;
+        text-align: center;
+        padding-left: 10px;
+    }
+
+    & > :last-child {
+        padding-right: 10px;
+    }
+
+    & > input {
+        font-size: small;
+        padding: 0 !important;
+        font-weight: bold;
     }
 }
 
@@ -277,15 +338,21 @@
     }
 }
 
-.attributeBox {
+.sheetBox {
+    @include colorDecoration(second);
     display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
-    flex: 1;
     border: 2px solid;
-    border-radius: 10px;
-    padding: 5px 5px;
     margin: 0 1px;
+    padding: 3px;
+    flex: 1;
+    font-size: small;
+}
+
+.attributeBox {
+    @extend .sheetBox;
+    border-radius: 10px;
 
     & > div {
         position: relative;
@@ -296,6 +363,77 @@
 
     & > span {
         width: 100%;
+    }
+}
+
+
+.armorBox {
+    @extend .sheetBox;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    max-width: 55px;
+}
+
+.initiativeBox {
+    @extend .sheetBox;
+    border-radius: 15px;
+    max-width: 70px;
+
+    & > span {
+        width: 100%;
+    }
+}
+
+.healthBox {
+    @extend .sheetBox;
+    grid-template-columns: auto minmax(0, 1fr);
+    flex: 3;
+    padding: 0;
+    height: 60px;
+    overflow: hidden;
+
+    & > :first-child {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        width: 60px;
+        border-right: 2px solid;
+
+        & > button {
+            height: 19px;
+            font-size: small;
+        }
+
+        & > input {
+            font-weight: bold;
+            min-width: 0;
+            text-align: center;
+            padding-left: 15px;
+        }
+    }
+
+    & > :last-child {
+        display: grid;
+        grid-template-columns: 1fr 1ch 1fr 45px;
+        justify-content: center;
+        text-align: center;
+        gap: 1px;
+        width: 100%;
+        padding: 3px;
+
+        & > b {
+            font-size: small;
+            pointer-events: none;
+        }
+
+        & > input {
+            font-weight: bold;
+            min-width: 0;
+            text-align: center;
+        }
+
+        & > :last-child {
+            grid-column: span 3;
+        }
     }
 }
 
@@ -401,6 +539,10 @@
                 border: 2px solid;
                 border-radius: 100%;
             }
+            &[data=halfProficient] {
+                border: 1px solid;
+                border-radius: 100%;
+            }
             &[data=expert] {
                 border: 2px solid;
                 border-radius: 100%;
@@ -443,6 +585,11 @@
         font-size: smaller;
         text-indent: 4px;
         align-self: center;
+    }
+
+    & > .modifierChoiceItem {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) $iconSmallSize;
     }
 
     .dropdownItem {
@@ -603,6 +750,12 @@
     border-radius: $iconSmallSize / 2;
     padding: $iconSmallSize / 2;
     min-height: 28px + $iconSmallSize / 2;
+}
+
+.namePlate {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 5px;
 }
 
 .rarityLabel {

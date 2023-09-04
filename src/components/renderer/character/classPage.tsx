@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import RemoveIcon from '@mui/icons-material/Remove';
 import DropdownMenu from 'components/common/controls/dropdownMenu';
 import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
 import LinkInput from 'components/common/controls/linkInput';
@@ -87,11 +88,19 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
                                 onChange={(value) => handleChange(value, key, i)}/>
                         }
                         { value.type === "file" && value.allowAny &&
-                            <LinkInput
-                                value={classStorage[key]?.[i] ?? null}
-                                allowedTypes={value.options}
-                                placeholder="File ID..."
-                                onChange={(value) => handleChange(value, key, i)}/>
+                            <div className={styles.modifierChoiceItem}>
+                                <LinkInput
+                                    value={classStorage[key]?.[i] ?? null}
+                                    allowedTypes={value.options}
+                                    placeholder="File ID..."
+                                    onChange={(value) => handleChange(value.id, key, i)}
+                                    disabled={classStorage[key]?.[i]}/>
+                                { classStorage[key]?.[i] &&
+                                    <button onClick={() => handleChange(null, key, i)}>
+                                        <RemoveIcon/>
+                                    </button>
+                                }
+                            </div>
                         }
                     </div>
                 )

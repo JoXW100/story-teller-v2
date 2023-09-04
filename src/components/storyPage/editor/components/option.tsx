@@ -44,12 +44,7 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
     }
 
     const handleNumericInput = (value: number) => {
-        if (isNaN(value)) {
-            data.value = undefined
-        } else {
-            data.value = value
-        }
-        dispatch.setMetadata(params.key, data);
+        dispatch.setMetadata(params.key, { ...data, value: value });
     }
 
     return (

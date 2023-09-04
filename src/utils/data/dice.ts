@@ -42,12 +42,16 @@ class Dice {
         return this.type;
     }
 
+    public get average(): number {
+        return (this.type + 1) / 2.0
+    }
+
     /** Returns the average value of a given number of dice */
-    static average(type: number | string, num: number): number {
+    static average(type: number | string): number {
         let t: number = parseInt(String(type))
         return isNaN(t) || t <= 0
             ? 0 
-            : Math.floor((t + 1) / 2.0 * num)
+            : (t + 1) / 2.0
     }
 
     /** Returns a list of numbers of random values in the range [1..num] */

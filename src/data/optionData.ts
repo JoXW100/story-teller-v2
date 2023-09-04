@@ -1,7 +1,8 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
+import { EffectType } from 'types/database/files/iEffect';
 
 interface IOptionType<T extends Enum> {
     enum: T
@@ -422,6 +423,8 @@ const OptionTypes = {
         default: Language.Common,
         options: {
             [Language.Common]: "Common",
+            [Language.Giant]: "Giant",
+            [Language.Leonin]: "Leonin",
             [Language.ThievesCant]: "Thieves' Cant"
         }
     } satisfies IOptionType<typeof Language>,
@@ -457,6 +460,15 @@ const OptionTypes = {
             [ProficiencyType.Skill]: "Skill",
         }
     } satisfies IOptionType<typeof ProficiencyType>,
+    "proficiencyLevel": {
+        enum: ProficiencyLevel,
+        default: ProficiencyLevel.Proficient,
+        options: {
+            [ProficiencyLevel.HalfProficient]: "Half Proficient",
+            [ProficiencyLevel.Proficient]: "Proficient",
+            [ProficiencyLevel.Expert]: "Expert"
+        }
+    } satisfies IOptionType<typeof ProficiencyLevel>,
     "modifierType": {
         enum: ModifierType,
         default: ModifierType.Bonus,
@@ -492,7 +504,9 @@ const OptionTypes = {
             [ModifierBonusTypeProperty.NumHitDice]: "Number of hit dice",
             [ModifierBonusTypeProperty.Health]: "Health",
             [ModifierBonusTypeProperty.Proficiency]: "Proficiency",
-            [ModifierBonusTypeProperty.Initiative]: "Initiative"
+            [ModifierBonusTypeProperty.Initiative]: "Initiative",
+            [ModifierBonusTypeProperty.Damage]: "Damage",
+            [ModifierBonusTypeProperty.Movement]: "Movement"
         }
     } satisfies IOptionType<typeof ModifierBonusTypeProperty>,
     "modifierAddRemoveTypeProperty": {
@@ -517,7 +531,8 @@ const OptionTypes = {
             [ModifierSetTypeProperty.CritRange]: "Critical Range",
             [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
             [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus",
-            [ModifierSetTypeProperty.Sense]: "Sense"
+            [ModifierSetTypeProperty.Sense]: "Sense",
+            [ModifierSetTypeProperty.MultiAttack]: "Multi Attack"
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "restType": {
@@ -542,6 +557,16 @@ const OptionTypes = {
             [Rarity.Artifact]: "Artifact"
         }
     } satisfies IOptionType<typeof Rarity>,
+    "effectType": {
+        enum: EffectType,
+        default: EffectType.Other,
+        options: {
+            [EffectType.Other]: "Other",
+            [EffectType.MainDamage]: "Main Damage",
+            [EffectType.BonusDamage]: "Bonus Damage",
+            [EffectType.Condition]: "Condition"
+        }
+    } satisfies IOptionType<typeof EffectType>,
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,

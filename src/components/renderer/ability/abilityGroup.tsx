@@ -48,26 +48,28 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
 const AbilityGroups = ({ abilityIds, stats, values, expendedCharges, setExpendedCharges, onLoaded }: AbilityGroupsProps): React.ReactNode => {
     const [abilities, loading] = useFiles<IAbilityMetadata>(abilityIds, [FileType.Ability], processFunction)
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
-    Logger.log("Ability", "AbilityGroups")
+    Logger.log("AbilityGroups", abilities, stats)
 
     useEffect(() => {
         const categories = {
-            [ActionType.None]: { header: null, content: [] },
-            [ActionType.Action]: { header: "Actions", content: [] },
+            [ActionType.Action]: { header: `Actions (${(stats.multiAttack)} Attacks Per Action)`, content: [] },
             [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
             [ActionType.Reaction]: { header: "Reactions", content: [] },
             [ActionType.Special]: { header: "Special", content: [] },
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
+            [ActionType.None]: { header: "Other", content: [] },
         } satisfies Record<ActionType, AbilityCategory>
         abilities.forEach((file: FileMetadataQueryResult<IAbilityMetadata>, index) => {
-            categories[file.metadata?.action ?? ActionType.Action].content.push(
-                <AbilityToggleRenderer 
-                    key={index} 
-                    metadata={{ ...file.metadata, $values: values }} 
-                    stats={stats}
-                    expendedCharges={expendedCharges[String(file.id)]}
-                    setExpendedCharges={(value) => setExpendedCharges({ ...expendedCharges, [String(file.id)]: value })}/>
-            )
+            if (file) {
+                categories[file.metadata?.action ?? ActionType.Action].content.push(
+                    <AbilityToggleRenderer 
+                        key={index} 
+                        metadata={{ ...file.metadata, $values: values }} 
+                        stats={stats}
+                        expendedCharges={isNaN(expendedCharges[String(file.id)]) ? 0 : expendedCharges[String(file.id)]}
+                        setExpendedCharges={(value) => setExpendedCharges({ ...expendedCharges, [String(file.id)]: value })}/>
+                )
+            }
         })
         setCategories(categories)
         if (!loading && onLoaded) {

@@ -83,6 +83,7 @@ const ItemListComponent = ({ params }: TemplateComponentProps<ItemListTemplatePa
         <div className={styles.editList} data={params.fill && "fill"}>
             <b>{`${ params.label ?? "label"}:`}</b>
             <ItemListMenu
+                itemClassName={styles.itemListItem}
                 values={Array.isArray(values) ? values : []}
                 defaultValue={params.default}
                 prompt={params.prompt ?? "Edit"}

@@ -31,7 +31,9 @@ interface IClassLevels {
 
 interface IClassMetadataProperties {
     isSubclass?: boolean
+    hasLeveledHitDice?: boolean
     hitDice?: DiceType
+    leveledHitDice?: DiceType[]
     subclassLevel: number
     subclasses?: ObjectId[]
     // Spells

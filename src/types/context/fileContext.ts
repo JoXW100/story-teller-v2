@@ -11,14 +11,20 @@ interface EditFilePage {
     index: number
 }
 
+interface RendererSidePanelData {
+    header: string
+    content: React.ReactNode
+}
+
 interface FileContextState extends ContextState {
+    story: ObjectId
     loading: boolean
     fetching: boolean
     fileSelected: boolean
     viewMode: boolean
     file: IFile
     editFilePages: EditFilePage[]
-    story: ObjectId
+    rendererSidePanel: RendererSidePanelData
     queue: RequestQueue
 }
 
@@ -35,6 +41,7 @@ type FileContextDispatchAction =
     | DispatchAction<"setViewMode", boolean, FileContextDispatchAction>
     | DispatchAction<"openTemplatePage", EditFilePage, FileContextDispatchAction>
     | DispatchAction<"closeTemplatePage", number, FileContextDispatchAction>
+    | DispatchAction<"setSidePanel", RendererSidePanelData, FileContextDispatchAction>
 
 interface FileContextDispatch extends ContextDispatch {
     setText: (text: string) => void
@@ -44,6 +51,8 @@ interface FileContextDispatch extends ContextDispatch {
     setStorage: (key: string, value: any) => void
     openTemplatePage: (page: EditFilePage) => void
     closeTemplatePage: (num?: number) => void
+    openSidePanel: (data: RendererSidePanelData) => void
+    closeSidePanel: () => void
 }
 
 

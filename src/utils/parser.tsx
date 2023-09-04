@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Communication from "./communication";
+import Logger from "./logger";
 import { arrayUnique, isEnum, isNumber, isObjectId } from "./helpers";
 import { ElementDictionary, TableElementTypes, getElement } from "data/elements";
 import FileData from "data/structures/file";
@@ -265,7 +266,8 @@ abstract class Parser
         if (filtered.length > 0) {
             let response = await Communication.getManyMetadata(arrayUnique(filtered))
             if (!response.success) {
-                throw new ParseError("Failed to load some file out of files with ids: " + JSON.stringify(filtered))
+                Logger.throw("Parser.resolveQueries", response.result)
+                throw new ParseError("Failed to load some file out of files with ids: " + filtered.join(", "))
             } else {
                 response.result.forEach((res) => {
                     this.queries[String(res.id)] = res

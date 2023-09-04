@@ -1,4 +1,4 @@
-import type { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import type { ObjectId } from ".."
 import type { ISubPageItemMetadata } from "."
 
@@ -8,7 +8,9 @@ export enum ModifierBonusTypeProperty {
     NumHitDice = "numHitDice",
     Health = "health",
     Proficiency = "proficiency",
-    Initiative = "initiative"
+    Initiative = "initiative",
+    Damage = "damage",
+    Movement = "movement"
 }
 
 export enum ModifierAddRemoveTypeProperty {
@@ -27,7 +29,8 @@ export enum ModifierSetTypeProperty {
     CritRange = "critRange",
     SpellAttribute = "spellAttribute",
     MaxDexBonus = "maxDexBonus",
-    Sense = "sense"
+    Sense = "sense",
+    MultiAttack = "multiAttack"
 }
 
 export enum ModifierType {
@@ -66,6 +69,7 @@ interface IModifier extends ISubPageItemMetadata {
     numChoices?: number
 
     proficiency?: ProficiencyType
+    proficiencyLevel?: ProficiencyLevel
 
     // Values
     value?: number
@@ -75,6 +79,7 @@ interface IModifier extends ISubPageItemMetadata {
     files?: ObjectId[]
     attribute?: Attribute
     attributes?: Attribute[]
+    movement?: MovementType
     armor?: ArmorType
     armors?: ArmorType[]
     weapon?: WeaponType

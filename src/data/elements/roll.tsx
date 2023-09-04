@@ -122,7 +122,7 @@ class Options implements Required<RollOptions> {
 
 const validModes = new Set(Object.values(RollMode));
 const validTypes = new Set(Object.values(RollType));
-const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'desc', 'tooltips', 'critRange']);
+const validOptions = new Set(['dice', 'num', 'mod', 'mode', 'type', 'desc', 'details', 'tooltips', 'critRange']);
 const validateOptions = (options: RollOptions): Queries => {
     Object.keys(options).forEach((key) => {
         if (!validOptions.has(key))

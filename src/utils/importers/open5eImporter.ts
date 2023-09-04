@@ -1,7 +1,7 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
 import { asEnum, isEnum } from "utils/helpers";
-import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, OptionalAttribute, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
+import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
 import { CalculationMode, OptionType } from "types/database/editor";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
@@ -187,64 +187,64 @@ const getSaveProficiencies = (monster: Open5eMonster): Attribute[] => {
     return saves
 }
 
-const getSkillProficiencies = (skills: Record<string, number>): Skill[] => {
-    let res: Skill[] = []
+const getSkillProficiencies = (skills: Record<string, number>): Partial<Record<Skill, ProficiencyLevel>> => {
+    let res: Partial<Record<Skill, ProficiencyLevel>> = {}
     Object.keys(skills).forEach((key) => {
         if (skills[key] ?? null === null) return;
         switch (key.toLowerCase()) {
             case "acrobatics": // TODO: Verify
-                res.push(Skill.Acrobatics)
+                res[Skill.Acrobatics] = ProficiencyLevel.Proficient
                 break
             case "animal_handling": // TODO: Verify
-                res.push(Skill.AnimalHandling)
+                res[Skill.AnimalHandling] = ProficiencyLevel.Proficient
                 break
             case "arcana": // TODO: Verify
-                res.push(Skill.Arcana)
+                res[Skill.Arcana] = ProficiencyLevel.Proficient
                 break
             case "athletics": // TODO: Verify
-                res.push(Skill.Athletics)
+                res[Skill.Athletics] = ProficiencyLevel.Proficient
                 break
             case "deception": // TODO: Verify
-                res.push(Skill.Deception)
+                res[Skill.Deception] = ProficiencyLevel.Proficient
                 break
             case "history":
-                res.push(Skill.History)
+                res[Skill.History] = ProficiencyLevel.Proficient
                 break
             case "insight": // TODO: Verify
-                res.push(Skill.Insight)
+                res[Skill.Insight] = ProficiencyLevel.Proficient
                 break
             case "intimidation": // TODO: Verify
-                res.push(Skill.Intimidation)
+                res[Skill.Intimidation] = ProficiencyLevel.Proficient
                 break
             case "investigation": // TODO: Verify
-                res.push(Skill.Investigation)
+                res[Skill.Investigation] = ProficiencyLevel.Proficient
                 break
             case "medicine": // TODO: Verify
-                res.push(Skill.Medicine)
+            res[Skill.Medicine] = ProficiencyLevel.Proficient
                 break
             case "nature": // TODO: Verify
-                res.push(Skill.Nature)
+                res[Skill.Nature] = ProficiencyLevel.Proficient
                 break
             case "perception":
-                res.push(Skill.Perception)
+                res[Skill.Perception] = ProficiencyLevel.Proficient
                 break
             case "performance": // TODO: Verify
-                res.push(Skill.Performance)
+                res[Skill.Performance] = ProficiencyLevel.Proficient
                 break
             case "persuasion": // TODO: Verify
-                res.push(Skill.Persuasion)
+                res[Skill.Persuasion] = ProficiencyLevel.Proficient
                 break
             case "religion": // TODO: Verify
-                res.push(Skill.Religion)
+                res[Skill.Religion] = ProficiencyLevel.Proficient
                 break
             case "sleightOfHand": // TODO: Verify
-                res.push(Skill.SleightOfHand)
+                res[Skill.SleightOfHand] = ProficiencyLevel.Proficient
                 break
             case "stealth":
-                res.push(Skill.Stealth)
+                res[Skill.Stealth] = ProficiencyLevel.Proficient
                 break
             case "survival": // TODO: Verify
-                res.push(Skill.Survival)
+                res[Skill.Survival] = ProficiencyLevel.Proficient
                 break
             default:
                 break

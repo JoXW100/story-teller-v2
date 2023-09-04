@@ -18,7 +18,6 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
         dispatch.setMetadata(params.key, Array.isArray(values) ? values : Object.keys(values))
     }
     
-    // UseMemo above must not be used conditionally
     if (!option){
         Logger.throw("selectionComponent", new Error("No option type of enum: " + params.enum))
         return null;
@@ -30,7 +29,6 @@ const SelectionComponent = ({ params }: TemplateComponentProps<SelectionTemplate
             <SelectionMenu
                 values={selection}
                 options={option.options}
-                defaultValue={null}
                 componentClassName={styles.editSelectionItem}
                 onChange={handleChange}/>
         </div>

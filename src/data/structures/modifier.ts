@@ -1,5 +1,5 @@
 import { getOptionType } from "data/optionData"
-import { ArmorType, Attribute, Language, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice, ModifierCondition } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 import ChoiceData from "./choice";
@@ -57,6 +57,10 @@ class ModifierData implements Required<IModifier>  {
         return this.metadata.proficiency ?? getOptionType('proficiencyType').default
     }
 
+    public get proficiencyLevel(): ProficiencyLevel {
+        return this.metadata.proficiencyLevel ?? getOptionType('proficiencyLevel').default
+    }
+
     // Values
 
     public get value(): number {
@@ -85,6 +89,10 @@ class ModifierData implements Required<IModifier>  {
 
     public get attributes(): Attribute[] {
         return this.metadata.attributes ?? []
+    }
+
+    public get movement(): MovementType {
+        return this.metadata.movement ?? getOptionType('movement').default
     }
 
     public get armor(): ArmorType {

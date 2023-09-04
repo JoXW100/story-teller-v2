@@ -12,9 +12,7 @@ type CharacterBackgroundPageProps = React.PropsWithRef<{
 const CharacterBackgroundPage = ({ character, appearance, description, history, notes }: CharacterBackgroundPageProps): JSX.Element => {
     return (
         <>
-            {`${character.sizeText} ${character.typeText}, ${character.alignmentText}, ${character.className}`}
-            <Elements.Line/>
-            <Elements.Image options={{href: character.portrait}}/>
+            {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
             <Elements.Line/>
             <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
             <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>

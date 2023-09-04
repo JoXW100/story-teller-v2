@@ -175,6 +175,9 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                 return { ...state, editFilePages: state.editFilePages.slice(0, - action.data)}
             }
             return state;
+            
+        case 'setSidePanel':
+            return { ...state, rendererSidePanel: action.data };
 
         default:
             return state
@@ -190,6 +193,7 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
         file: null,
         editFilePages: [],
         story: storyId,
+        rendererSidePanel: null,
         queue: new RequestQueue()
     })
 
@@ -203,7 +207,9 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
         removeMetadata: (key) => dispatch({ type: 'removeMetadata', data: key }),
         setStorage: (key, value) => dispatch({ type: 'setStorage', data: { key: key, value: value } }),
         openTemplatePage: (page) => dispatch({ type: 'openTemplatePage', data: page }),
-        closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num })
+        closeTemplatePage: (num = 1) => dispatch({ type: 'closeTemplatePage', data: num }),
+        openSidePanel: (content) => dispatch({ type: 'setSidePanel', data: content }),
+        closeSidePanel: () => dispatch({ type: 'setSidePanel', data: null })
     }), [dispatch])
 
     return (

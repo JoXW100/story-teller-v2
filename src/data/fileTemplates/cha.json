@@ -202,8 +202,8 @@
                                 "params": { "label": "Saving throws", "key": "proficienciesSave", "enum": "attr" }
                             },
                             { 
-                                "type": "selection", 
-                                "params": { "label": "Skills", "key": "proficienciesSkill", "enum": "skill" }
+                                "type": "selectionInput", 
+                                "params": { "label": "Skills", "key": "proficienciesSkill", "type": "enum", "enum": "skill", "editEnum": "proficiencyLevel", "editDefault": "proficient" }
                             },
                             { 
                                 "type": "selection", 
@@ -214,8 +214,8 @@
                                 "params": { "label": "Weapons", "key": "proficienciesWeapon", "enum": "weaponProficiency" }
                             },
                             { 
-                                "type": "selection", 
-                                "params": { "label": "Tools", "key": "proficienciesTool", "enum": "tool" }
+                                "type": "selectionInput", 
+                                "params": { "label": "Tools", "key": "proficienciesTool", "type": "enum", "enum": "tool", "editEnum": "proficiencyLevel", "editDefault": "proficient" }
                             },
                             { 
                                 "type": "selection", 
