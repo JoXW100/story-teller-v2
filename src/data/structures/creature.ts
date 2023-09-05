@@ -13,6 +13,7 @@ import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
 import { RollType } from "types/dice";
 import { getProficiencyLevelValue } from "utils/calculations";
+import DiceCollection from "utils/data/diceCollection";
 
 class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection
@@ -192,6 +193,16 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return this.level + this.modifiers.bonusNumHealthDice
     }
 
+    public get hitDiceCollection(): DiceCollection {
+        if (this.level > 0 && this.hitDice !== DiceType.None) {
+            let collection = new DiceCollection(this.hitDiceValue)
+            collection.add(new Dice(this.hitDice), this.level)
+            return collection
+        } else {
+            return new DiceCollection()
+        }
+    }
+
     public get health(): IOptionType<number> {
         return this.metadata.health ?? OptionTypeAuto
     }
@@ -201,13 +212,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         switch (this.health.type) {
             case CalculationMode.Override:
                 return value + this.modifiers.bonusHealth;
+            case CalculationMode.Auto:
+                value = 0
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
                 return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
-            case CalculationMode.Auto:
-            default:
-                var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + this.modifiers.bonusHealth
         }
     }
 

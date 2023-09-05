@@ -5,7 +5,7 @@ import { isEnum } from "utils/helpers";
 import { FileType } from "types/database/files";
 import type { DBFile, DBFolder, DBItem, DBItemData, DBResponse, DBRoot } from "types/database";
 import type { IFile, IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
-import type { FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileDeleteResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses";
+import type { FileAddCopyResult, FileAddResult, FileConvertResult, FileDataQueryResult, FileDeleteFromResult, FileDeleteResult, FileGetManyDataResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMetadataQueryResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses";
 import { KeysOf, KeysOfTwo } from "types";
 
 interface StructureCollection {
@@ -137,10 +137,10 @@ class FilesInterface
     /** Gets the metadata from a file in the database */
     async getMetadata(userId: string, fileId: string, allowedTypes: FileType[]): Promise<DBResponse<FileGetMetadataResult>> {
         try {
-            let result = (await this.collection.aggregate<FileGetMetadataResult>([
+            let result = (await this.collection.aggregate<FileMetadataQueryResult>([
                 { $match: {
                     _id: new ObjectId(fileId),
-                    type: allowedTypes.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
+                    type: allowedTypes?.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
@@ -148,7 +148,7 @@ class FilesInterface
                     id: '$_id',
                     type: '$type',
                     metadata: '$metadata'
-                } satisfies KeysOfTwo<FileGetMetadataResult, DBFile> },
+                } satisfies KeysOfTwo<FileMetadataQueryResult, DBFile> },
                 { $limit: 1 }
             ]).toArray())[0];
             Logger.log('files.getMetadata', fileId, allowedTypes);
@@ -164,10 +164,10 @@ class FilesInterface
             let ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
             if (ids.length < 1)
                 return failure("No fileId's provided");
-            let result = await this.collection.aggregate<FileGetMetadataResult>([
+            let result = await this.collection.aggregate<FileMetadataQueryResult>([
                 { $match: {
                     _id: { $in: ids },
-                    type: allowedTypes.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
+                    type: allowedTypes?.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
                     $or: [ { _userId: userId}, { 'content.public': true } ],
                 } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
                 { $project: {
@@ -175,9 +175,38 @@ class FilesInterface
                     id: '$_id',
                     type: '$type',
                     metadata: '$metadata'
-                } satisfies KeysOfTwo<FileGetMetadataResult, DBFile>}
+                } satisfies KeysOfTwo<FileMetadataQueryResult, DBFile>}
             ]).toArray();
             Logger.log('files.getManyMetadata', result?.length ?? 0, allowedTypes);
+            return result
+                ? success(result)
+                : failure("Could not find any matching file");
+        } catch (error) {
+            return failure(error.message);
+        }
+    }
+
+    /** Gets the metadata from a file in the database */
+    async getManyData(userId: string, fileIds: string, allowedTypes: FileType[]): Promise<DBResponse<FileGetManyDataResult>> {
+        try {
+            let ids = fileIds?.split(',').map(x => new ObjectId(x)) ?? [];
+            if (ids.length < 1)
+                return failure("No fileId's provided");
+            let result = await this.collection.aggregate<FileDataQueryResult>([
+                { $match: {
+                    _id: { $in: ids },
+                    type: allowedTypes?.length > 0 ? { $in: allowedTypes } : { $nin: [FileType.Folder, FileType.Root] },
+                    $or: [ { _userId: userId}, { 'content.public': true } ],
+                } satisfies Partial<KeysOf<DBItem | { $or: [] }>> },
+                { $project: {
+                    _id: 0,
+                    id: '$_id',
+                    type: '$type',
+                    metadata: '$metadata',
+                    storage: '$storage'
+                } satisfies KeysOfTwo<FileDataQueryResult, DBFile>}
+            ]).toArray();
+            Logger.log('files.getManyData', result?.length ?? 0, allowedTypes);
             return result
                 ? success(result)
                 : failure("Could not find any matching file");

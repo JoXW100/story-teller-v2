@@ -15,8 +15,8 @@ import DiceCollection from "utils/data/diceCollection";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
     private readonly storage: ICharacterStorage
-    private readonly characterClass: ClassData
-    private readonly characterSubClass: ClassData
+    public readonly characterClass: ClassData
+    public readonly characterSubClass: ClassData
     
     public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
         let mods: IModifierCollection = new ModifierCollection([], storage)
@@ -38,13 +38,25 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
             return this.metadata.hitDice ?? getOptionType("dice").default
         }
     }
+
+    public override get hitDiceCollection(): DiceCollection {
+        if (this.characterClass.hitDice !== DiceType.None
+         || this.characterClass.hasLeveledHitDice) {
+            return this.characterClass.getHitDiceCollection(this.level)
+        } else if (this.level > 0 && this.hitDice !== DiceType.None) {
+            let collection = new DiceCollection(this.hitDiceValue)
+            collection.add(new Dice(this.hitDice), this.level - 1)
+            return collection
+        } else {
+            return new DiceCollection()
+        }
+    }
     
     public override get healthValue(): number {
         let value = this.health.value ?? 0;
         switch (this.health.type) {
             case CalculationMode.Override:
                 return value + this.modifiers.bonusHealth;
-            default:
             case CalculationMode.Auto:
                 value = 0;
             case CalculationMode.Modify:
@@ -131,19 +143,6 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
 
     public get simple(): boolean {
         return this.metadata.simple ?? false;
-    }
-
-    public get hitDiceCollection(): DiceCollection {
-        if (this.characterClass.hitDice !== DiceType.None
-         || this.characterClass.hasLeveledHitDice) {
-            return this.characterClass.getHitDiceCollection(this.level)
-        } else if (this.level > 0 && this.hitDice !== DiceType.None) {
-            let collection = new DiceCollection(this.hitDiceValue)
-            collection.add(new Dice(this.hitDice), this.level - 1)
-            return collection
-        } else {
-            return new DiceCollection()
-        }
     }
 
     // Details

@@ -1,23 +1,24 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
+import { ObjectId } from ".."
 
 interface IEncounterContent extends IFileContent {
 }
 
-interface IEncounterCardData {
-    initiative?: number,
-    maxHealth?: number,
-    health?: number,
+interface IEncounterCard {
+    initiative?: number
+    health?: number
+    maxHealth?: number
     notes?: string
 }
 
 interface IEncounterMetadata extends IFileMetadata {
-    creatures?: string[]
+    creatures?: ObjectId[]
     challenge?: number
     xp?: number
 }
 
 interface IEncounterStorage extends IFileStorage {
-    cards: IEncounterCardData[]
+    cards: IEncounterCard[]
 }
 
 abstract class EncounterFile implements IFileData {
@@ -32,5 +33,5 @@ export type {
     IEncounterContent,
     IEncounterMetadata,
     IEncounterStorage,
-    IEncounterCardData
+    IEncounterCard
 }

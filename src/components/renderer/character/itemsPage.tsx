@@ -5,8 +5,6 @@ import DropdownMenu from 'components/common/controls/dropdownMenu';
 import RemoveIcon from '@mui/icons-material/Remove';
 import EquipIcon from '@mui/icons-material/AddModeratorSharp';
 import UnequipIcon from '@mui/icons-material/RemoveModeratorSharp';
-import { useFiles } from 'utils/handlers/files';
-import { isObjectId } from 'utils/helpers';
 import Elements from 'data/elements';
 import ItemData from 'data/structures/item';
 import { FileContextDispatch } from 'types/context/fileContext';
@@ -15,21 +13,20 @@ import { IItemMetadata } from 'types/database/files/item';
 import { ObjectIdText } from 'types/database';
 import { FileType } from 'types/database/files';
 import { ItemType } from 'types/database/dnd';
-import { FileGetMetadataResult } from 'types/database/responses';
+import { FileGetManyMetadataResult, FileGetMetadataResult } from 'types/database/responses';
 import InventoryItemData from 'types/database/files/inventoryItem';
 import styles from 'styles/renderer.module.scss';
 
 type ItemsPageProps = React.PropsWithRef<{
-    ids: string[]
+    items: FileGetManyMetadataResult<IItemMetadata>
     storage: ICharacterStorage
     setStorage: FileContextDispatch["setStorage"]
 }>
 
 const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.RangedWeapon, ItemType.ThrownWeapon, ItemType.Trinket])
 
-const ItemsPage = ({ ids, storage, setStorage }: ItemsPageProps): JSX.Element => {
+const ItemsPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const [state, setState] = useState(null);
-    const [items] = useFiles<IItemMetadata>(ids, [FileType.Item])
     const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
         item && storage.inventory[String(item.id)]?.equipped && item.metadata?.requiresAttunement

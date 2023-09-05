@@ -106,8 +106,8 @@ class DiceCollection {
 
     reduce<T>(action: (prev: T, value: { dice: Dice; num: number; }, index: number) => T, init: T) {
         return Object.keys(this.collection).reduce((prev, key, index) => 
-        action(prev, { dice: new Dice(key), num: this.collection[key] }, index)
-    , init);
+            action(prev, { dice: new Dice(key), num: this.collection[key] }, index)
+        , init);
     }
 }
 

@@ -2,7 +2,6 @@ import { useContext, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
-import { useFile, useFiles } from 'utils/handlers/files';
 import CharacterBackgroundPage from './backgroundPage';
 import CharacterSpellPage from './spellPage';
 import CharacterClassPage from './classPage';
@@ -15,21 +14,12 @@ import PageSelector from '../pageSelector';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import CharacterData from 'data/structures/character';
-import AbilityData from 'data/structures/ability';
-import ModifierCollection from 'data/structures/modifierCollection';
-import ClassData from 'data/structures/class';
-import ItemData from 'data/structures/item';
 import Logger from 'utils/logger';
 import CharacterFile, { ICharacterAbilityStorageData, ICharacterStorage } from 'types/database/files/character';
-import { FileGetManyMetadataResult } from 'types/database/responses';
-import { IClassMetadata } from 'types/database/files/class';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
-import { IModifierCollection } from 'types/database/files/modifierCollection';
-import { IAbilityMetadata } from 'types/database/files/ability';
-import { IItemMetadata } from 'types/database/files/item';
-import { FileType } from 'types/database/files';
 import { RollType } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
+import useCharacterHandler from 'utils/handlers/characterHandler';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -37,17 +27,8 @@ type CharacterFileRendererProps = React.PropsWithRef<{
 
 const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
-    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
+    const [character, abilities, items] = useCharacterHandler(file)
     const [page, setPage] = useState<typeof Pages[number]>("Abilities")
-    const [classFile] = useFile<IClassMetadata>(file.metadata?.classFile, [FileType.Class])
-    const [subclassFile] = useFile<IClassMetadata>(file.storage?.classData?.$subclass, [FileType.Class]);
-    const itemIds = useMemo(() => Object.keys(file.storage?.inventory ?? {}), [file.storage?.inventory])
-    const [items] = useFiles<IItemMetadata>(itemIds);
-
-    const classData = useMemo(() => new ClassData(classFile?.metadata, file.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, file.storage])
-    const subclassData = useMemo(() => new ClassData(classData.subclasses.includes(subclassFile?.id) ? subclassFile?.metadata : null, file.storage, subclassFile?.id ? String(subclassFile?.id) : undefined), [subclassFile, classData])
-    const character =  useMemo(() => new CharacterData(file.metadata, file.storage, modifiers, classData, subclassData), [file.metadata, file.storage, modifiers, classData, subclassData])
-    const abilities = useMemo(() => character.abilities, [character])
     const spells = useMemo(() => character.spells, [character])
     const stats = useMemo(() => character.getStats(), [character])
     const values = useMemo(() => character.getValues(), [character])
@@ -71,18 +52,9 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     ), {})
     const expendedSpellSlots = file.storage?.spellData ?? []
 
-    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let itemModifiers = items.flatMap((item) => item ? new ItemData(item.metadata, file.storage.inventory?.[String(item.id)], item.id, file.storage.attunement?.some(x => String(x) === String(item.id))).modifiers : [])
-        let abilityModifiers = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
-        let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], file.storage)
-        if (!collection.equals(modifiers)) {
-            setModifiers(collection);
-        }
-    }
-
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
         let data = Object.keys(value).reduce<Record<string,ICharacterAbilityStorageData>>((prev, key) => (
-            abilities.includes(key)
+            character.abilities.includes(key)
             ? { ...prev, [key]: { ...file.storage.abilityData?.[key], expendedCharges: value[key] }} 
             : prev
         ), {})
@@ -173,15 +145,14 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     </div>
                     <div className={styles.pageItem} data={page === "Abilities" ? "show" : "hide"}>
                         <AbilityGroups 
-                            abilityIds={abilities} 
+                            abilities={abilities} 
                             stats={stats}
                             expendedCharges={expendedAbilityCharges}
                             setExpendedCharges={handleSetExpendedAbilityCharges}
-                            onLoaded={handleAbilitiesLoaded}
                             values={values}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
-                        <ItemsPage ids={itemIds} storage={file.storage} setStorage={dispatch.setStorage}/>
+                        <ItemsPage items={items} storage={file.storage} setStorage={dispatch.setStorage}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
                         <CharacterSpellPage 
@@ -191,8 +162,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     </div>
                     <div className={styles.pageItem} data={page === "Class" ? "show" : "hide"}>
                         <CharacterClassPage 
-                            character={character} 
-                            classData={classData} 
+                            character={character}
                             storage={file.storage}
                             setStorage={dispatch.setStorage}/>
                     </div>

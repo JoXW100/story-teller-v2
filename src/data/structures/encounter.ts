@@ -1,21 +1,16 @@
-import { IEncounterCardData, IEncounterMetadata } from "types/database/files/encounter";
-import EncounterCardData from "./encounterCardData";
+import Random from "utils/random";
 import FileData from "./file";
-
-
-type EncounterDispatch = React.Dispatch<React.SetStateAction<IEncounterCardData[]>>
+import { IEncounterMetadata } from "types/database/files/encounter";
+import { ObjectId } from "types/database";
 
 class EncounterData extends FileData<IEncounterMetadata> implements Required<IEncounterMetadata> {
-    protected readonly storage: IEncounterCardData[];
-    protected readonly dispatch: EncounterDispatch;
+    private static random = new Random()
 
-    public constructor(metadata: IEncounterMetadata, cards: IEncounterCardData[], dispatch: EncounterDispatch) {
+    public constructor(metadata: IEncounterMetadata) {
         super(metadata);
-        this.storage = cards ?? []
-        this.dispatch = dispatch
     }
 
-    public get creatures(): string[] {
+    public get creatures(): ObjectId[] {
         return this.metadata.creatures
     }
 
@@ -36,16 +31,8 @@ class EncounterData extends FileData<IEncounterMetadata> implements Required<IEn
         return `${fraction} (${this.xp} XP)`
     }
 
-    public get cards(): IEncounterCardData[] {
-        return this.storage.map((card, index) => new EncounterCardData(card, (c) => {
-            if (this.dispatch) {
-                this.dispatch((cards) => {
-                    let dupe = [...cards]
-                    dupe[index] = (c as CallableFunction)(dupe[index])
-                    return dupe
-                })
-            }
-        }))
+    public random(): number {
+        return EncounterData.random.random_int()
     }
 }
 

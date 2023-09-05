@@ -7,19 +7,15 @@ import AttributesBox from './attributesBox';
 import ProficienciesPage from './proficienciesPage';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
-import CreatureData from 'data/structures/creature';
-import AbilityData from 'data/structures/ability';
-import ModifierCollection from 'data/structures/modifierCollection';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
-import { FileMetadataQueryResult, FileGetManyMetadataResult } from 'types/database/responses';
-import { IModifierCollection } from 'types/database/files/modifierCollection';
-import { IAbilityMetadata } from 'types/database/files/ability';
+import { FileMetadataQueryResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
 import { RollType } from 'types/dice';
+import useCreatureHandler from 'utils/handlers/creatureHandler';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: CreatureFile
@@ -33,10 +29,8 @@ const Pages = ["Actions", "Proficiencies"]
 
 const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
-    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
-    const creature = useMemo(() => new CreatureData(file.metadata, modifiers), [file.metadata, modifiers])
-    const abilities = useMemo(() => creature.abilities, [creature])
+    const [creature, abilities] = useCreatureHandler(file)
     const stats = useMemo(() => creature.getStats(), [creature])
     const values = useMemo(() => creature.getValues(), [creature])
 
@@ -46,17 +40,9 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const expendedAbilityCharges = file.storage?.abilityData ?? {}
     const expendedSpellSlots = file.storage?.spellData ?? []
 
-    const handleAbilitiesLoaded = (abilities: FileGetManyMetadataResult<IAbilityMetadata>) => {
-        let modifiersList = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
-        let collection = new ModifierCollection(modifiersList, null)
-        if (!collection.equals(modifiers)) {
-            setModifiers(collection);
-        }
-    }
-
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
         let data = Object.keys(value).reduce<Record<string, number>>((prev, key) => (
-            abilities.includes(key)
+            creature.abilities.includes(key)
             ? { ...prev, [key]: value[key] } 
             : prev
         ), {})
@@ -71,7 +57,7 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
         <>
             <Elements.Align>
                 <Elements.Block>
-                    <Elements.Header1> {creature.name} </Elements.Header1>
+                    <Elements.Header1>{creature.name}</Elements.Header1>
                     {`${creature.sizeText} ${creature.typeText}, ${creature.alignmentText}`}
                     <Elements.Line/>
                     <Elements.Image options={{ href: creature.portrait }}/>
@@ -145,11 +131,10 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                     <Elements.Line/>
                     <div className={styles.pageItem} data={page === "Actions" ? "show" : "hide"}>
                         <AbilityGroups 
-                            abilityIds={abilities} 
+                            abilities={abilities} 
                             stats={stats} 
                             expendedCharges={expendedAbilityCharges}
                             setExpendedCharges={handleSetExpendedAbilityCharges}
-                            onLoaded={handleAbilitiesLoaded}
                             values={values}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Proficiencies" ? "show" : "hide"}>

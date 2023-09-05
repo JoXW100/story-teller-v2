@@ -1,4 +1,12 @@
 import type { ObjectId } from ".."
+import type AbilityFile from "./ability"
+import type CharacterFile from "./character"
+import type ClassFile from "./class"
+import type CreatureFile from "./creature"
+import type DocumentFile from "./document"
+import type EncounterFile from "./encounter"
+import type ItemFile from "./item"
+import type SpellFile from "./spell"
 
 interface IFileContent {
     name: string
@@ -45,6 +53,11 @@ interface IFileData {
     storage: IFileStorage
 }
 
+interface IFileQueryData<T extends IFileData = IFileData> {
+    metadata: T["metadata"]
+    storage: T["storage"]
+}
+
 interface IFolderData {
     type: FileType.Folder
     content: IFolderContent
@@ -81,6 +94,7 @@ export type {
     IFileStructure,
     IFile,
     IFileData,
+    IFileQueryData,
     IFolderData,
     IRootData
 }

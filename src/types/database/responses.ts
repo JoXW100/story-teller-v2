@@ -1,4 +1,4 @@
-import type { FileType, IFile, IFileMetadata, IFileStructure } from "types/database/files"
+import type { FileType, IFile, IFileData, IFileMetadata, IFileStructure } from "types/database/files"
 import type { IStory, IStoryData } from "./stories"
 import type { DateValue, ObjectId } from "."
 
@@ -7,6 +7,14 @@ export type FileMetadataQueryResult<Metadata extends IFileMetadata = IFileMetada
     id: ObjectId
     type: FileType
     metadata: Metadata
+    date?: DateValue
+}
+
+export type FileDataQueryResult<Data extends IFileData = IFileData> = {
+    id: ObjectId
+    type: FileType
+    metadata: Data["metadata"]
+    storage: Data["storage"]
     date?: DateValue
 }
 
@@ -29,4 +37,5 @@ export type FileMoveResult = boolean
 export type FileSetPropertyResult = boolean
 export type FileGetMetadataResult<T extends IFileMetadata = IFileMetadata> = FileMetadataQueryResult<T>
 export type FileGetManyMetadataResult<T extends IFileMetadata = IFileMetadata> = FileGetMetadataResult<T>[]
+export type FileGetManyDataResult<T extends IFileData = IFileData> = FileDataQueryResult<T>[]
 export type FileGetStructureResult = IFileStructure[]

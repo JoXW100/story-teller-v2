@@ -44,6 +44,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
                         return res.status(200).json(await Database.files.getManyMetadata(userId, params.fileIds as string, types));
     
+                    case 'getManyData':
+                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        return res.status(200).json(await Database.files.getManyData(userId, params.fileIds as string, types));
+    
                     case 'getFileStructure':
                         return res.status(200).json(await Database.files.getStructure(userId, params.storyId as string));
     

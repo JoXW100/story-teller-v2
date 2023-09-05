@@ -774,3 +774,45 @@
 .rarityLabel {
     @include colorByRarity();
 }
+
+.saveRollDialog {
+    @include colorBackground(second);
+    align-self: center;
+    height: fit-content;
+    width: fit-content;
+
+    & > .saveRollDialogHeader {
+        @include colorWithShadow(main);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) $menuItemHeaderHeight;
+        height: $menuItemHeaderHeight;
+        gap: 10px;
+        z-index: 100;
+        & > label {
+            @include fontNoLineBreak;
+            @include fontLargeBold;
+            align-self: center;
+            text-indent: 10px;
+        }
+    }
+
+    & > .saveRollDialogBody {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: $iconNormalSize;
+        padding: 5px;
+        gap: 5px;
+
+        & > .dropdown {
+            height: $iconNormalSize;
+        }
+
+        & > button {
+            height: $iconNormalSize;
+        }
+
+        .dropdownItem {
+            height: $iconNormalSize;
+        }
+    }
+}

@@ -54,6 +54,10 @@ class Dice {
             : (t + 1) / 2.0
     }
 
+    public static seed(seed: number) {
+        this.random.init_seed(seed)
+    }
+
     /** Returns a list of numbers of random values in the range [1..num] */
     public roll(num: number = 1): number[] {
         return [...Array(num)].map(() => this.rollOnce());

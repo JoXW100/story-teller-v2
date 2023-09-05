@@ -1,6 +1,6 @@
 import Logger from "./logger"
 import { DBResponse, ObjectId } from "types/database"
-import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileMetadataQueryResult } from "types/database/responses"
+import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileMetadataQueryResult, FileGetManyDataResult } from "types/database/responses"
 import { Open5eFetchType } from "types/open5eCompendium"
 import { FileType, IFileData, IFileMetadata, IFileStorage } from "types/database/files"
 import { IStory } from "types/database/stories"
@@ -133,7 +133,7 @@ abstract class Communication {
         return result
     }
 
-    public static async getManyMetadata(fileIds: ObjectId[], allowedTypes: FileType[] = undefined): Promise<DBResponse<FileGetManyMetadataResult>> {
+    public static async getManyMetadata(fileIds: ObjectId[], allowedTypes?: FileType[]): Promise<DBResponse<FileGetManyMetadataResult>> {
         const { rest, invalid } = fileIds.reduce<{ cached: ObjectId[], invalid: ObjectId[], rest: ObjectId[] }>((prev, value) => (
             this.cache[String(value)] && (!allowedTypes || allowedTypes.includes(this.cache[String(value)].type))
             ? { cached: [...prev.cached, value], invalid: prev.invalid, rest: prev.rest }
@@ -161,6 +161,30 @@ abstract class Communication {
         }
         
         return { success: true, result: fileIds.map(id => invalid.includes(id) ? null : cache[String(id)] ) }
+    }
+
+    public static async getManyData(fileIds: ObjectId[], allowedTypes?: FileType[]): Promise<DBResponse<FileGetManyDataResult>> {
+        const { rest } = fileIds.reduce<{ invalid: ObjectId[], rest: ObjectId[] }>((prev, value) => (
+            !isObjectId(value)
+            ? { invalid: [...prev.invalid, value], rest: prev.rest }
+            : { invalid: prev.invalid, rest: [...prev.rest, value] }
+        ), { invalid: [], rest: [] }) 
+        
+
+        let result: FileGetManyDataResult = []
+        if (rest.length > 0) {
+            let response = await this.databaseFetch<FileGetManyDataResult>('getManyData', 'GET', {
+                fileIds: rest,
+                allowedTypes: allowedTypes
+            })
+            if (response.success) {
+                result = response.result
+            } else {
+                return response
+            }
+        }
+        
+        return { success: true, result: fileIds.map(id => result.find(x => String(x.id) === String(id) ?? null)) }
     }
 
     public static async addFile(storyId: ObjectId, holderId: ObjectId, name: string, type: FileType): Promise<DBResponse<FileAddResult>> {

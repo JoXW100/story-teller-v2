@@ -14,7 +14,6 @@ import styles from 'styles/renderer.module.scss';
 
 type CharacterClassPageProps = React.PropsWithRef<{
     character: CharacterData 
-    classData: ClassData
     storage: ICharacterStorage
     setStorage: FileContextDispatch["setStorage"]
 }>
@@ -31,7 +30,7 @@ const reduceChoiceOptions = (value: ChoiceChoiceData) => (
     ), { null: "Unset" })
 )
 
-const CharacterClassPage = ({ character, classData, storage, setStorage }: CharacterClassPageProps): JSX.Element => {
+const CharacterClassPage = ({ character, storage, setStorage }: CharacterClassPageProps): JSX.Element => {
     const choices = useMemo(() => character.modifiers.getChoices(), [character])
     const classStorage = storage?.classData ?? {}
     
@@ -50,13 +49,13 @@ const CharacterClassPage = ({ character, classData, storage, setStorage }: Chara
 
     return (
         <>
-            { character.level >= classData.subclassLevel &&
+            { character.level >= character.characterClass.subclassLevel &&
                 <div className={styles.modifierChoice}>
                     <Elements.Bold>{`Subclass:`} </Elements.Bold>
                     <LinkDropdownMenu
                         value={classStorage.$subclass ?? null}
                         itemClassName={styles.dropdownItem}
-                        values={classData.subclasses}
+                        values={character.characterClass.subclasses}
                         allowNull={true}
                         onChange={(value) => handleChange(value, "$subclass")}/>
                 </div>
