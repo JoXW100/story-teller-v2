@@ -5,7 +5,6 @@ import LinkDropdownMenu from 'components/common/controls/linkDropdownMenu';
 import LinkInput from 'components/common/controls/linkInput';
 import Elements from 'data/elements';
 import CharacterData from 'data/structures/character';
-import ClassData from 'data/structures/class';
 import { getOptionType } from 'data/optionData';
 import { ChoiceChoiceData, EnumChoiceData } from 'types/database/files/modifierCollection';
 import { FileContextDispatch } from 'types/context/fileContext';

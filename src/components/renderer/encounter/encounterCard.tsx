@@ -1,7 +1,8 @@
 import { useContext, useMemo } from 'react';
 import Link from 'next/link';
+import RefreshIcon from '@mui/icons-material/Loop';
 import { Context } from 'components/contexts/fileContext';
-import { RollsState } from './encounter';
+import { RollsState } from '.';
 import Elements from 'data/elements';
 import CreatureData from 'data/structures/creature';
 import EncounterData from 'data/structures/encounter';
@@ -13,8 +14,10 @@ import useCharacterHandler from 'utils/handlers/characterHandler';
 import { ObjectId } from 'types/database';
 import { IEncounterCard, IEncounterStorage } from 'types/database/files/encounter';
 import { FileDataQueryResult } from 'types/database/responses';
-import { RollMethod } from 'types/dice';
+import { RollMethod, RollResult } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
+import Beyond20 from 'utils/beyond20';
+import DiceCollection from 'utils/data/diceCollection';
 
 type CreatureCardProps = React.PropsWithRef<{
     data: FileDataQueryResult
@@ -42,6 +45,8 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
     const num = encounter.creatures.slice(0, index + 1).reduce((prev, x) => String(x) === String(id) ? prev + 1 : prev, 0)
     const roll = rolls.rolls[index]
     const attrOptions = getOptionType("attr")
+    const attrModifier = rolls.type === "check" ? creature.getAttributeModifier(rolls.attr) : 0
+    const saveModifier = rolls.type === "save" ? creature.getSaveModifier(rolls.attr) : 0
 
     const maxHealth = useMemo<number>(() => {
         if (!isNaN(card.maxHealth)) {
@@ -69,6 +74,15 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
         dispatch.setStorage("cards", cards)
     }
 
+    const onRollInitiative = () => {
+        let collection = new DiceCollection(initiativeBonus, "Initiative")
+        collection.add(new Dice(20), 1)
+        let roll = collection.roll(RollMethod.Normal, creature.name)
+        let cards: IEncounterCard[] = [...storage.cards.slice(0, index), { ...storage.cards[index], initiative: roll.results[roll.selectedIndex].sum }, ...storage.cards.slice(index + 1)]
+        Beyond20.sendInitiativeRoll(roll)
+        dispatch.setStorage("cards", cards)
+    }
+
     const portrait = creature.portrait && creature.portrait.includes("http") 
         ? creature.portrait 
         : '/defaultImage.jpg'
@@ -87,11 +101,14 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
                 <img src={portrait} alt='/defaultImage.jpg'/>
             </div>
             <div className={styles.encounterCardRow}>
-                <Elements.Bold>Initiative: </Elements.Bold>
+                <Elements.Bold>Initiative:</Elements.Bold>
                 { `${initiative} (${initiativeBonus >= 0 ? `+${initiativeBonus}` : initiativeBonus})` }
+                <button tooltips="Re-Roll" onClick={onRollInitiative}>
+                    <RefreshIcon/>
+                </button>
             </div>
             <div className={styles.encounterCardInputRow}>
-                <Elements.Bold>HP: </Elements.Bold>
+                <Elements.Bold>HP:</Elements.Bold>
                 <input
                     className={styles.encounterCardInput} 
                     type="number" 
@@ -100,19 +117,21 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
                 {` / ${maxHealth}`}
             </div>
             <div className={styles.encounterCardRow}>
-                <Elements.Bold>AC: </Elements.Bold>
+                <Elements.Bold>AC:</Elements.Bold>
                 {creature.acValue}
             </div>
             { rolls.type === "save" &&
                 <div className={styles.encounterCardRow}>
                     <Elements.Bold>{`${attrOptions.options[rolls.attr]} Save: `}</Elements.Bold>
                     {Math.max(roll + creature.getSaveModifier(rolls.attr), 0)}
+                    {` (${saveModifier >= 0 ? `+${saveModifier}` : saveModifier})`}
                 </div>
             }
             { rolls.type === "check" &&
                 <div className={styles.encounterCardRow}>
                     <Elements.Bold>{`${attrOptions.options[rolls.attr]} Check: `}</Elements.Bold>
                     {Math.max(roll + creature.getAttributeModifier(rolls.attr), 0)}
+                    {` (${attrModifier >= 0 ? `+${attrModifier}` : attrModifier})`}
                 </div>
             }
             <textarea 

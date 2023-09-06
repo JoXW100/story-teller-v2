@@ -1,7 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
-import { openPopup } from 'components/common/popupHolder';
-import SaveRollDialog, { SaveRunData } from './spell/saveRollDialog';
 import Elements from 'data/elements';
 import EncounterData from 'data/structures/encounter';
 import { Attribute } from 'types/database/dnd';
@@ -16,6 +14,8 @@ import EncounterFile, { IEncounterMetadata } from 'types/database/files/encounte
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { File, FileType } from 'types/database/files';
 import styles from 'styles/renderer.module.scss';
+import { getOptionType } from 'data/optionData';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
 
 type EncounterFileRendererProps = React.PropsWithRef<{
     file: File<EncounterFile>
@@ -27,15 +27,25 @@ type EncounterLinkRendererProps = React.PropsWithRef<{
     stats?: ICreatureStats
 }>
 
-export interface RollsState extends SaveRunData {
+export interface RollsState {
+    type: "none" | "save" | "check"
+    attr: Attribute
     rolls: number[]
+}
+
+interface EncounterState {
+    open: boolean,
+    attr: Attribute
 }
 
 const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Element => {
     const [_, dispatch] = useContext(Context)
     const encounter = useMemo(() => new EncounterData(file.metadata), [file.metadata])
     const [data] = useDataFiles(encounter.creatures, [FileType.Character, FileType.Creature])
-    const [rolls, setRolls] = useState<RollsState>({ type: "none", attr: Attribute.STR, rolls: [] })
+    const [rolls, setRolls] = useState<RollsState>({ type: "none", attr: null, rolls: [] })
+    const [state, setState] = useState<EncounterState>({ open: false, attr: null })
+    const attr = state.attr ?? getOptionType("attr").default
+
     const content = useParser(file.content.text, encounter, "$content")
     const description = useParser(encounter.description, encounter, "description")
 
@@ -57,15 +67,24 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
         dispatch.setStorage("cards", file.storage?.cards?.map((card) => ({ ...card, maxHealth: undefined, health: undefined })))
     }
 
-    const onSetSaveRoll = () => {
+    const onOpenSaveRollPanel = () => {
+        setState({ ...state, open: !state.open })
+    }
+
+    const onAttrDropdownChange = (value: Attribute) => {
+        setState({ ...state, attr: value })
+    }
+
+    const onRollSaves = () => {
         let dice = new Dice(20)
-        openPopup((
-            <SaveRollDialog callback={(data) => {
-                if (data.type !== "none") {
-                    setRolls({ ...data, rolls: Array.from({ length: encounter.creatures.length }).map(() => dice.rollOnce()) })
-                }
-            }}/>
-        ), true)
+        setRolls({ type: "save", attr: attr, rolls: Array.from({ length: encounter.creatures.length }).map(() => dice.rollOnce()) })
+        setState({ ...state, open: false, attr: null  })
+    }
+
+    const onRollChecks = () => {
+        let dice = new Dice(20)
+        setRolls({ type: "check", attr: attr, rolls: Array.from({ length: encounter.creatures.length }).map(() => dice.rollOnce()) })
+        setState({ ...state, open: false, attr: null })
     }
 
     useEffect(() => {
@@ -95,9 +114,24 @@ const EncounterFileRenderer = ({ file }: EncounterFileRendererProps): JSX.Elemen
                 Set Default Health
             </button>
             <Elements.Space/>
-            <button className={styles.encounterButton} onClick={onSetSaveRoll}>
-                Roll Save/Check
-            </button>
+            <div className={styles.encounterCollapsedButtonHolder}>
+                <button className={styles.encounterButton} onClick={onOpenSaveRollPanel}>
+                    Roll Save/Check
+                </button>
+                <div data={String(state.open)}>
+                    <DropdownMenu 
+                        value={attr} 
+                        values={getOptionType("attr").options} 
+                        onChange={onAttrDropdownChange} 
+                        itemClassName={styles.dropdownItem}/>
+                    <button onClick={onRollSaves}>
+                        Roll Saves
+                    </button>
+                    <button onClick={onRollChecks}>
+                        Roll Checks
+                    </button>
+                </div>
+            </div>
         </Elements.Align>
         <Elements.Line/>
         { encounter.description && encounter.description.length > 0 && <> 

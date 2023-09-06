@@ -232,6 +232,44 @@
     font-size: 14px;
 }
 
+.encounterCollapsedButtonHolder {
+    display: block;
+    position: relative;
+    font-family: $fontNormal;
+    flex: 1;
+
+    & > button {
+        width: 100%;
+    }
+
+    & > div {
+        @include colorWithShadow(second);
+        position: absolute;
+        display: grid;
+        gap: 5px;
+        grid-template-columns: 1fr;
+        width: 100%;
+        padding: 5px;
+        z-index: 1000;
+
+        &[data=false] {
+            display: none;
+        }
+
+        .dropdownItem {
+            height: $iconSmallSize;
+        }
+
+        & > div {
+            height: $iconSmallSize;
+        }
+
+        & > button {
+            height: $iconNormalSize;
+        }
+    }
+}
+
 .encounterCardHolder {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -281,10 +319,21 @@
     .encounterCardRow {
         @include colorDecoration(second);
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 1fr auto auto;
         padding: 0 2px;
         align-items: center;
         margin: 0 3px;
+        gap: 5px;
+
+        & > button {
+            height: 15px;
+            width: 15px;
+            border-radius: 50%;
+            & > svg {
+                height: 100%;
+                width: 100%;
+            }
+        }
     }
 
     .encounterCardInputRow {
@@ -773,46 +822,4 @@
 
 .rarityLabel {
     @include colorByRarity();
-}
-
-.saveRollDialog {
-    @include colorBackground(second);
-    align-self: center;
-    height: fit-content;
-    width: fit-content;
-
-    & > .saveRollDialogHeader {
-        @include colorWithShadow(main);
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) $menuItemHeaderHeight;
-        height: $menuItemHeaderHeight;
-        gap: 10px;
-        z-index: 100;
-        & > label {
-            @include fontNoLineBreak;
-            @include fontLargeBold;
-            align-self: center;
-            text-indent: 10px;
-        }
-    }
-
-    & > .saveRollDialogBody {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: $iconNormalSize;
-        padding: 5px;
-        gap: 5px;
-
-        & > .dropdown {
-            height: $iconNormalSize;
-        }
-
-        & > button {
-            height: $iconNormalSize;
-        }
-
-        .dropdownItem {
-            height: $iconNormalSize;
-        }
-    }
 }
