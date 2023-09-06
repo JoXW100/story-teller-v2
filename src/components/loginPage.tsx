@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import LoginIcon from '@mui/icons-material/LoginSharp';
 import Localization from 'utils/localization';
-import styles from 'styles/pages/loginPage.module.scss';
 import Navigation from 'utils/navigation';
+import styles from 'styles/pages/loginPage.module.scss';
 
 type LoginPageProps = React.PropsWithRef<{
     returnURL?: string

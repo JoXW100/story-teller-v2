@@ -74,20 +74,25 @@ const interleave = (arr:any[], x: any) => arr.flatMap(e => [e, x]).slice(0, -1)
 
 abstract class Beyond20 {
     private static readonly EventId = "Beyond20_SendMessage"
+    private static whisper: WhisperType
+
+    public static initialize(whisper: WhisperType = WhisperType.NO) {
+        this.whisper = whisper
+    }
     
-    public static sendRoll(roll: RollResult, whisper: WhisperType = WhisperType.NO) {
+    public static sendRoll(roll: RollResult) {
         switch (roll.type) {
             case RollType.Attack:
-                return this.sendAttackRoll(roll, whisper)
+                return this.sendAttackRoll(roll)
             case RollType.Damage:
-                return this.sendDamageRoll(roll, whisper)
+                return this.sendDamageRoll(roll)
             case RollType.Initiative:
-                return this.sendInitiativeRoll(roll, whisper)
+                return this.sendInitiativeRoll(roll)
             case RollType.Health:
             case RollType.Check:
             case RollType.Save:
             default:
-                return this.sendAttackRoll(roll, whisper)
+                return this.sendAttackRoll(roll)
         }
     }
 
@@ -95,7 +100,7 @@ abstract class Beyond20 {
         return value.values.map(x => `${x.num}${x.dice.text}`).join(' + ') + (roll.modifier != 0 ? ` ${roll.modifier > 0 ? '+' : '-'} ${Math.abs(roll.modifier)}` : '')
     }
     
-    public static sendAttackRoll(roll: RollResult, whisper: WhisperType) {
+    public static sendAttackRoll(roll: RollResult) {
         this.sendMessage({ 
             action: "rendered-roll",
             request: { type: "attack", },
@@ -115,11 +120,11 @@ abstract class Beyond20 {
             })),
             damage_rolls: [],
             total_damages: {},
-            whisper: whisper
+            whisper: this.whisper
         } satisfies Beyond20RollRequest)
     }
     
-    public static sendDamageRoll(roll: RollResult, whisper: WhisperType) {
+    public static sendDamageRoll(roll: RollResult) {
         this.sendMessage({ 
             action: "rendered-roll",
             request: { type: "attack" },
@@ -143,11 +148,11 @@ abstract class Beyond20 {
                 } satisfies Beyond20Roll, 1]
             )),
             total_damages: {},
-            whisper: whisper
+            whisper: this.whisper
         } satisfies Beyond20RollRequest)
     }
     
-    public static sendInitiativeRoll(roll: RollResult, whisper: WhisperType) {
+    public static sendInitiativeRoll(roll: RollResult) {
         this.sendMessage({ 
             action: "rendered-roll",
             request: { 
@@ -173,7 +178,7 @@ abstract class Beyond20 {
             })),
             damage_rolls: [],
             total_damages: {},
-            whisper: whisper
+            whisper: this.whisper
         } satisfies Beyond20RollRequest)
     }
     

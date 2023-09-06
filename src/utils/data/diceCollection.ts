@@ -12,13 +12,13 @@ class DiceCollection {
     public readonly canCritAndFail: boolean
     public readonly critRange: number
 
-    constructor(modifier: number | null = 0, description: string = 'Rolled', details: string = null, type: RollType = RollType.General, canCritAndFail: boolean = false, critRange: number = 20) {
+    constructor(modifier: number | null = 0, description: string = 'Rolled', details: string = null, type: RollType = RollType.General, critRange: number = 20) {
         this.collection = {};
         this.modifier = modifier;
         this.description = description;
         this.details = details;
         this.type = type;
-        this.canCritAndFail = canCritAndFail
+        this.canCritAndFail = type === RollType.Attack || type === RollType.Save
         this.critRange = critRange
     }
 
@@ -34,36 +34,44 @@ class DiceCollection {
         let selectedIndex = 0;
         switch (method) {
             case RollMethod.Crit:
-                let critResult: DiceResult[] = this.map((value) => ({ 
-                    dice: value.dice, 
-                    num: value.num * 2, 
-                    result: value.dice.roll(value.num * 2)
-                }));
-                let critSum = critResult.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                results = [{ values: critResult, sum: critSum, isCritical: true, isFail: false }];
+                var result: DiceResult[] = this.map((value) => {
+                    let result = value.dice.roll(value.num * 2)
+                    return { 
+                        dice: value.dice, 
+                        num: value.num * 2, 
+                        result: result,
+                        sum: result.reduce((prev, val) => prev + val, 0)
+                    } satisfies DiceResult
+                });
+                var sum = result.reduce((prev, val) => prev + val.sum, 0)
+                results = [{ values: result, sum: sum, isCritical: false, isFail: false } satisfies RollValue];
                 selectedIndex = 0;
                 break;
 
             case RollMethod.Disadvantage:
             case RollMethod.Advantage:
-                let roll1 = this.roll(RollMethod.Normal, source);
-                let roll2 = this.roll(RollMethod.Normal, source);
-                let res1 = roll1.results[roll1.selectedIndex];
-                let res2 = roll2.results[roll2.selectedIndex]
+                var roll1 = this.roll(RollMethod.Normal, source);
+                var roll2 = this.roll(RollMethod.Normal, source);
+                var res1 = roll1.results[roll1.selectedIndex];
+                var res2 = roll2.results[roll2.selectedIndex]
                 results = [res1, res2];
                 selectedIndex = +((res1.sum < res2.sum) === (method === RollMethod.Advantage));
                 break;
 
             case RollMethod.Normal:
             default:
-                let result: DiceResult[] = this.map((value) => ({ 
-                    dice: value.dice, 
-                    num: value.num, 
-                    result: value.dice.roll(value.num)
-                } as DiceResult));
-                let sum = result.flatMap(x => x.result).reduce((prev, val) => prev + val, 0);
-                let isCritical = result.length === 1 && result[0].dice.num === 20 && result[0].sum >= this.critRange
-                let isFail = !isCritical && result.length === 1 && result[0].dice.num === 20 && sum === 1
+                var result: DiceResult[] = this.map((value) => {
+                    let result = value.dice.roll(value.num)
+                    return { 
+                        dice: value.dice, 
+                        num: value.num, 
+                        result: result,
+                        sum: result.reduce((prev, val) => prev + val, 0)
+                    } satisfies DiceResult
+                });
+                var sum = result.reduce((prev, val) => prev + val.sum, 0)
+                var isCritical = this.canCritAndFail && result.length === 1 && result[0].dice.num === 20 && result[0].sum >= this.critRange
+                var isFail = this.canCritAndFail && !isCritical && result.length === 1 && result[0].dice.num === 20 && sum === 1
                 results = [{ values: result, sum: sum, isCritical: isCritical, isFail: isFail }];
                 selectedIndex = 0;
                 break;

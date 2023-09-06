@@ -1,4 +1,4 @@
-import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import type { ObjectId } from ".."
 import type { ISubPageItemMetadata } from "."
 
@@ -27,6 +27,7 @@ export enum ModifierAddRemoveTypeProperty {
 
 export enum ModifierSetTypeProperty {
     CritRange = "critRange",
+    ACBase = "acBase",
     SpellAttribute = "spellAttribute",
     MaxDexBonus = "maxDexBonus",
     Sense = "sense",
@@ -71,6 +72,7 @@ interface IModifier extends ISubPageItemMetadata {
     proficiency?: ProficiencyType
     binding?: AdvantageBinding
     proficiencyLevel?: ProficiencyLevel
+    acBase?: ArmorClassBase
 
     // Values
     value?: number

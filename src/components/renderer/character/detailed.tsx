@@ -6,6 +6,7 @@ import CharacterBackgroundPage from './backgroundPage';
 import CharacterSpellPage from './spellPage';
 import CharacterClassPage from './classPage';
 import ItemsPage from './itemsPage';
+import HealthBox from './healthBox';
 import AbilityGroups from '../ability/abilityGroup';
 import SpellGroups from '../spell/spellGroups';
 import AttributesBox from '../creature/attributesBox';
@@ -13,13 +14,12 @@ import ProficienciesPage from '../creature/proficienciesPage';
 import PageSelector from '../pageSelector';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
-import CharacterData from 'data/structures/character';
 import Logger from 'utils/logger';
-import CharacterFile, { ICharacterAbilityStorageData, ICharacterStorage } from 'types/database/files/character';
+import useCharacterHandler from 'utils/handlers/characterHandler';
+import CharacterFile, { ICharacterAbilityStorageData } from 'types/database/files/character';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RollType } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
-import useCharacterHandler from 'utils/handlers/characterHandler';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
@@ -29,16 +29,15 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
     const [_, dispatch] = useContext(Context)
     const [character, abilities, items] = useCharacterHandler(file)
     const [page, setPage] = useState<typeof Pages[number]>("Abilities")
-    const spells = useMemo(() => character.spells, [character])
-    const stats = useMemo(() => character.getStats(), [character])
-    const values = useMemo(() => character.getValues(), [character])
-    const senses = character.sensesAsText
+    const spells = useMemo(() => character?.spells, [character])
+    const stats = useMemo(() => character?.getStats(), [character])
+    const values = useMemo(() => character?.getValues(), [character])
 
     const content = useParser(file.content.text, character, "$content");
-    const appearance = useParser(character.appearance, character, "appearance")
-    const description = useParser(character.description, character, "description")
-    const history = useParser(character.history, character, "history")
-    const notes = useParser(character.notes, character, "notes")
+    const appearance = useParser(character?.appearance, character, "appearance")
+    const description = useParser(character?.description, character, "description")
+    const history = useParser(character?.history, character, "history")
+    const notes = useParser(character?.notes, character, "notes")
 
     const Pages = [
         "Abilities",
@@ -51,6 +50,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         { ...prev, [value]: file.storage.abilityData[value].expendedCharges ?? 0 }
     ), {})
     const expendedSpellSlots = file.storage?.spellData ?? []
+    const senses = character?.sensesAsText
 
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
         let data = Object.keys(value).reduce<Record<string,ICharacterAbilityStorageData>>((prev, key) => (
@@ -210,148 +210,6 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
             {content && <Elements.Line/>}
             {content}
         </>
-    )
-}
-
-type HealthBoxProps = React.PropsWithRef<{
-    character: CharacterData
-    storage: ICharacterStorage
-}>
-
-interface HealthBoxState {
-    healDamageInput: string
-    hpInput: string
-    tempInput: string
-}
-
-const HealthBox = ({ character, storage }: HealthBoxProps): JSX.Element => {
-    const [context, dispatch] = useContext(Context)
-    const [state, setState] = useState<HealthBoxState>({
-        healDamageInput: "",
-        hpInput: null,
-        tempInput: null
-    }) 
-
-    const handleChangeHealthInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setState({ ...state, healDamageInput: e.target.value })
-    }
-
-    const changeHealth = (value: number) => {
-        let max = character.healthValue
-        let health = storage.health ?? 0
-        let temp = storage.tempHealth ?? 0
-        if (value < 0) {
-            if (-value > temp) {
-                let rest = value + temp
-                dispatch.setStorage("health", Math.max(health + rest, 0))
-            }
-            dispatch.setStorage("tempHealth", Math.max(temp + value, 0))
-        } else {
-            dispatch.setStorage("health", Math.min(health + value, max))
-        }
-    }
-
-    const handleHealClick = () => {
-        let value = parseInt(state.healDamageInput)
-        if (!isNaN(value)) {
-            changeHealth(value)
-        }
-        setState({ ...state, healDamageInput: "" })
-    }
-
-    const handleDamageClick = () => {
-        let value = parseInt(state.healDamageInput)
-        if (!isNaN(value)) {
-            changeHealth(-value)
-        }
-        setState({ ...state, healDamageInput: "" })
-    }
-
-    const handleHPClick = () =>{
-        setState({ ...state, hpInput: String(storage.health ?? character.healthValue)})
-    }
-
-    const handleHPChanged: React.ChangeEventHandler<HTMLInputElement> = (e) =>{
-        setState({ ...state, hpInput: e.target.value })
-    }
-
-    const handleHPFocusLost: React.FocusEventHandler<HTMLInputElement> = (e) =>{
-        let number = parseInt(e.target.value)
-        if (!isNaN(number)) {
-            dispatch.setStorage("health", Math.min(Math.max(number, 0), character.healthValue))
-        }
-        setState({ ...state, hpInput: null })
-    }
-
-    const handleTempClick = () =>{
-        setState({ ...state, tempInput: String(storage.tempHealth ?? 0)})
-    }
-
-    const handleTempChanged: React.ChangeEventHandler<HTMLInputElement> = (e) =>{
-        setState({ ...state, tempInput: e.target.value })
-    }
-
-    const handleTempFocusLost: React.FocusEventHandler<HTMLInputElement> = (e) =>{
-        let number = parseInt(e.target.value)
-        if (!isNaN(number)) {
-            dispatch.setStorage("tempHealth", Math.max(number, 0))
-        }
-        setState({ ...state, tempInput: null })
-    }
-
-    return (
-        <Elements.Align>
-            <div className={styles.armorBox}>
-                <b>AC</b>
-                <b>{character.acValue}</b>
-            </div>
-            <div className={styles.initiativeBox}>
-                <b>Initiative</b>
-                <Elements.Roll options={{ 
-                    mod: character.initiativeValue.toString(), 
-                    desc: "Initiative",
-                    type: RollType.Initiative,
-                    tooltips: "Roll Initiative"
-                }}/>
-            </div>
-            <div className={styles.healthBox}>
-                <div>
-                    <button 
-                        disabled={state.healDamageInput.length == 0} 
-                        onClick={handleHealClick}>
-                        Heal
-                    </button>
-                    <input 
-                        value={state.healDamageInput} 
-                        type='number' 
-                        onChange={handleChangeHealthInput}/>
-                    <button 
-                        disabled={state.healDamageInput.length == 0} 
-                        onClick={handleDamageClick}>
-                        Damage
-                    </button>
-                </div>
-                <div>
-                    <b>HP</b>
-                    <span/>
-                    <b>MAX</b>
-                    <b>TEMP</b>
-                    
-                    { state.hpInput === null 
-                        ? <span onClick={handleHPClick}>{storage.health ?? character.healthValue}</span>
-                        : <input type='number' autoFocus onChange={handleHPChanged} onBlur={handleHPFocusLost} value={state.hpInput}/>
-                    }
-                    <b>/</b>
-                    <span>{`${character.healthValue} `}</span>
-                    { state.tempInput === null 
-                        ? <span onClick={handleTempClick}>{(storage.tempHealth ?? 0) <= 0 ? '-' : storage.tempHealth}</span>
-                        : <input type='number' autoFocus onChange={handleTempChanged} onBlur={handleTempFocusLost} value={state.tempInput}/>
-                    }
-
-                    <b>Hit Points</b>
-                </div>
-            </div>
-        </Elements.Align>
     )
 }
 

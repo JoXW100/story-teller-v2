@@ -1,6 +1,6 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
-import type { IChoice } from "./modifier"
+import type { IChoice, ModifierBonusTypeProperty } from "./modifier"
 import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
@@ -18,13 +18,7 @@ interface IModifierCollection {
     length: () => number
 
     // Bonus
-    bonusAC: number
-    bonusNumHealthDice: number
-    bonusHealth: number
-    bonusProficiency: number
-    bonusInitiative: number
-    bonusDamage: number
-
+    getBonus: (type: ModifierBonusTypeProperty) => number
     getMovementBonus: (movement: MovementType) => number
     getAttributeBonus: (attribute: Attribute) => number
 
@@ -33,6 +27,7 @@ interface IModifierCollection {
     maxDEXBonus: number
     spellAttribute: Attribute
     multiAttack: number
+    getACBase: (values: Record<Attribute, number>) => number
     getSenseRange: (sense: Sense) => number
 
     // Add / Remove
@@ -43,15 +38,15 @@ interface IModifierCollection {
     modifyProficienciesSave: (proficiencies: Attribute[], onlyRemove?: boolean) => Attribute[]
     modifyProficienciesSkill: (proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove?: boolean) => Partial<Record<Skill, ProficiencyLevel>>
 
-    modifyResistances: (resistances: string[], onlyRemove?: boolean) => string[]
-    modifyVulnerabilities: (vulnerabilities: string[], onlyRemove?: boolean) => string[]
     modifyAdvantages: (advantages: Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean) => Partial<Record<AdvantageBinding, string>>
     modifyDisadvantages: (disadvantages:Partial<Record<AdvantageBinding, string>>, onlyRemove?: boolean) => Partial<Record<AdvantageBinding, string>>
+    modifyResistances: (resistances: string[], onlyRemove?: boolean) => string[]
+    modifyVulnerabilities: (vulnerabilities: string[], onlyRemove?: boolean) => string[]
     modifyDMGImmunities: (dmgImmunities: string[], onlyRemove?: boolean) => string[]
     modifyCONImmunities: (conImmunities: string[], onlyRemove?: boolean) => string[]
 
-    modifyAbilities: (abilities: ObjectIdText[]) => ObjectIdText[]
-    modifySpells: (spells: ObjectIdText[]) => ObjectIdText[]
+    modifyAbilities: (abilities: ObjectIdText[], onlyRemove?: boolean) => ObjectIdText[]
+    modifySpells: (spells: ObjectIdText[], onlyRemove?: boolean) => ObjectIdText[]
 }
 
 export type {

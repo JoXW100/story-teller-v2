@@ -6,6 +6,7 @@ import Logger from 'utils/logger'
 import Palettes from 'data/palettes'
 import { AppContextDispatch, AppContextDispatchAction, AppContextProvider, AppContextState, ViewMode } from 'types/context/appContext'
 import { FileMetadataQueryResult } from 'types/database/responses'
+import Beyond20, { WhisperType } from 'utils/beyond20'
 
 export const Context: React.Context<AppContextProvider> = React.createContext([null, null])
 
@@ -100,6 +101,10 @@ const AppContext = ({ children }: React.PropsWithChildren<{}>) => {
         Localization.initialize();
         state.loading && dispatch({ type: 'init', data: null, dispatch: dispatch }) 
     }, [])
+
+    useEffect(() => { 
+        Beyond20.initialize(state.hideRolls ? WhisperType.YES : WhisperType.NO);
+    }, [state.hideRolls])
 
     useEffect(() => { 
         if (communicationCache === null) {

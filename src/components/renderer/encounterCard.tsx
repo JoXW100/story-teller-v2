@@ -1,20 +1,20 @@
 import { useContext, useMemo } from 'react';
-import { Context } from 'components/contexts/fileContext';
 import Link from 'next/link';
+import { Context } from 'components/contexts/fileContext';
+import { RollsState } from './encounter';
 import Elements from 'data/elements';
 import CreatureData from 'data/structures/creature';
+import EncounterData from 'data/structures/encounter';
+import { getOptionType } from 'data/optionData';
+import Dice from 'utils/data/dice';
 import Navigation from 'utils/navigation';
 import useCreatureHandler from 'utils/handlers/creatureHandler';
 import useCharacterHandler from 'utils/handlers/characterHandler';
 import { ObjectId } from 'types/database';
 import { IEncounterCard, IEncounterStorage } from 'types/database/files/encounter';
 import { FileDataQueryResult } from 'types/database/responses';
-import styles from 'styles/renderer.module.scss';
-import EncounterData from 'data/structures/encounter';
 import { RollMethod } from 'types/dice';
-import Dice from 'utils/data/dice';
-import { RollsState } from './encounter';
-import { getOptionType } from 'data/optionData';
+import styles from 'styles/renderer.module.scss';
 
 type CreatureCardProps = React.PropsWithRef<{
     data: FileDataQueryResult

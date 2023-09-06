@@ -1,11 +1,11 @@
 import { AdvantageIcon, DisadvantageIcon } from 'assets/icons';
 import Elements from 'data/elements';
-import Localization from 'utils/localization';
 import CreatureData from 'data/structures/creature';
 import { getOptionType } from 'data/optionData';
+import { SkillAdvantageBindingMap } from 'utils/calculations';
+import Localization from 'utils/localization';
 import { Skill } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
-import { SkillAdvantageBindingMap } from 'utils/calculations';
 
 type DataProps = React.PropsWithRef<{
     data: CreatureData 
@@ -33,7 +33,7 @@ const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
                             <div
                                 className={styles.proficiencyMarker}
                                 data={data.proficienciesSkill[skill] ?? "none"}
-                                tooltips={Localization.toText('creature-Proficient')}/>
+                                tooltips={getOptionType("proficiencyLevel").options[data.proficienciesSkill[skill]]}/>
                             <label>{skills[skill]}</label>
                             <div className={styles.iconHolder}>
                                 { SkillAdvantageBindingMap[skill] in advantages &&

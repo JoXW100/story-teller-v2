@@ -403,3 +403,9 @@ export enum AdvantageBinding {
     StealthCheck = "stealthCheck",
     SurvivalCheck = "survivalCheck",
 }
+
+export enum ArmorClassBase {
+    DEX = "dex",
+    DEXAndAttribute = "dexAndAttr",
+    DEXAndFixed = "dexAndFixed"
+}

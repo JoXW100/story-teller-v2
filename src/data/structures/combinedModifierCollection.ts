@@ -1,6 +1,8 @@
 import { ObjectIdText } from "types/database";
 import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
+import { CreatureValue } from "types/database/files/creature";
+import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 
 class CombinedModifierCollection implements IModifierCollection {
@@ -37,28 +39,16 @@ class CombinedModifierCollection implements IModifierCollection {
         return {...choices1, ...choices2}
     }
 
-    public get bonusAC(): number {
-        return this.c1.bonusAC + this.c2.bonusAC
+    public getBonus(type: ModifierBonusTypeProperty): number {
+        return this.c1.getBonus(type) + this.c2.getBonus(type)
     }
 
-    public get bonusNumHealthDice(): number {
-        return this.c1.bonusNumHealthDice + this.c2.bonusNumHealthDice
+    public getAttributeBonus(attribute: Attribute): number {
+        return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
     }
 
-    public get bonusHealth(): number {
-        return this.c1.bonusHealth + this.c2.bonusHealth
-    }
-
-    public get bonusProficiency(): number {
-        return this.c1.bonusProficiency + this.c2.bonusProficiency
-    }
-
-    public get bonusInitiative(): number {
-        return this.c1.bonusInitiative + this.c2.bonusInitiative
-    }
-
-    public get bonusDamage(): number {
-        return this.c1.bonusDamage + this.c2.bonusDamage
+    public getMovementBonus(movement: MovementType): number {
+        return this.c1.getMovementBonus(movement) + this.c2.getMovementBonus(movement)
     }
 
     public get critRange(): number {
@@ -88,17 +78,13 @@ class CombinedModifierCollection implements IModifierCollection {
         }
         return Math.max(this.c1.multiAttack, this.c2.multiAttack )
     }
-
-    public getAttributeBonus(attribute: Attribute): number {
-        return this.c1.getAttributeBonus(attribute) + this.c2.getAttributeBonus(attribute)
-    }
-
-    public getMovementBonus(movement: MovementType): number {
-        return this.c1.getMovementBonus(movement) + this.c2.getMovementBonus(movement)
-    }
     
     public getSenseRange(sense: Sense): number {
         return Math.max(this.c1.getSenseRange(sense), this.c2.getSenseRange(sense))
+    }
+    
+    public getACBase(values: Record<Attribute, number>): number {
+        return Math.max(this.c1.getACBase(values), this.c2.getACBase(values))
     }
     
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {

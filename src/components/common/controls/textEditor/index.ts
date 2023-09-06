@@ -2,6 +2,7 @@ import { useContext } from "react"
 import { Context } from "components/contexts/appContext"
 import TextEditorWithSyntaxHighlighting from "./textEditorWithSyntaxHighlighting"
 import TextEditorSimple from "./textEditorSimple"
+import { FileType } from "types/database/files"
 
 
 export type TextEditorProps = React.PropsWithRef<{

@@ -1,41 +1,56 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData, EnumChoiceData, AnyFileChoiceData, FileChoiceData, ChoiceChoiceData, TextChoiceData } from "types/database/files/modifierCollection";
 import { getMaxProficiencyLevel } from "utils/calculations";
 
-type AddRemoveGroup<T> = { add: T, remove: T }
-
-type ProficiencyRecord<T extends string> = Partial<Record<T, ProficiencyLevel>>
-type AdvantageRecord = Partial<Record<AdvantageBinding, string[]>>
-
-const ModifierMap = {
-    [ProficiencyType.Armor]: "armor",
-    [ProficiencyType.Weapon]: "weapon",
-    [ProficiencyType.Tool]: "tool",
-    [ProficiencyType.Language]: "language",
-    [ProficiencyType.Skill]: "skill",
-    [ProficiencyType.Save]: "save",
-} satisfies Record<ProficiencyType, keyof IModifier>
-
-const ModifierCollectionMap = {
-    [ProficiencyType.Armor]: "armors",
-    [ProficiencyType.Weapon]: "weapons",
-    [ProficiencyType.Tool]: "tools",
-    [ProficiencyType.Language]: "languages",
-    [ProficiencyType.Skill]: "skills",
-    [ProficiencyType.Save]: "saves",
-} satisfies Record<ProficiencyType, keyof IModifier>
-
 const splitAdvantagesExpr = / *[\.\;] */
+
+interface ModifierResultData {
+    bonuses?: Partial<Record<ModifierBonusTypeProperty, number>>
+    movementBonuses?: Partial<Record<MovementType, number>>
+    attributeBonuses?: Partial<Record<Attribute, number>>
+
+    abilities?: ObjectId[]
+    spells?: ObjectId[]
+    proficienciesArmor?: ArmorType[]
+    proficienciesLanguage?: Language[]
+    proficienciesSave?: Attribute[]
+    proficienciesSkill?: Partial<Record<Skill, ProficiencyLevel>>
+    proficienciesTool?: Partial<Record<Tool, ProficiencyLevel>>
+    proficienciesWeapon?: WeaponType[]
+
+    advantages?: Partial<Record<AdvantageBinding, string[]>>
+    disadvantages?: Partial<Record<AdvantageBinding, string[]>>
+
+    resistances?: string[]
+    vulnerabilities?: string[]
+    dmgImmunities?: string[]
+    conImmunities?: string[]
+
+    critRange?: number
+    senses?: Partial<Record<Sense, number>>
+    acBase?: {
+        type: ArmorClassBase
+        value?: number
+        attribute?: Attribute
+    }[]
+    maxDEXBonus?: number
+    spellAttribute?: Attribute
+    multiAttack?: number
+
+    choices?: Record<string, ChoiceData>
+}
 
 class ModifierCollection implements IModifierCollection {
     protected readonly modifiers: IModifier[]
     protected readonly storage: ICharacterStorage
-    
+    protected readonly addData: ModifierResultData
+    protected readonly removeData: ModifierResultData
+
     constructor(modifiers: IModifier[], storage: ICharacterStorage) {
         this.modifiers = modifiers.reduce<IModifier[]>((prev, mod) => {
             if (mod.type === ModifierType.Choice && storage?.classData?.[mod.id]) {
@@ -45,14 +60,36 @@ class ModifierCollection implements IModifierCollection {
             }
             return [...prev, mod]
         }, []);
-        this.storage = storage ?? {};
+
+        this.storage = storage ?? {}
+        this.addData = {}
+        this.removeData = {}
+
+        for (const modifier of this.modifiers) {
+            switch (modifier.type) {
+                case ModifierType.Add:
+                    this.applyAddRemoveModifier(this.addData, modifier);
+                    break;
+                case ModifierType.Remove:
+                    this.applyAddRemoveModifier(this.removeData, modifier);
+                    break;
+                case ModifierType.Bonus:
+                    this.applyBonusModifier(this.addData, modifier);
+                    break;
+                case ModifierType.Set:
+                    this.applySetModifier(this.addData, modifier)
+                    break;
+                case ModifierType.Choice:
+                    this.applyChoiceModifier(this.addData, modifier)
+                    break;
+                default: break;
+            }
+        }
     }
 
     public equals(other: IModifierCollection): boolean {
         if (other instanceof ModifierCollection) {
-            return this.modifiers.length === other.modifiers.length 
-                && this.modifiers.every(mod => other.modifiers.some(x => mod.id === x.id))
-                && Object.keys(this.storage).every(key => key in other.storage && this.storage[key] === other.storage[key])
+            return this.modifiers.length === other.modifiers.length
         }
         return false
     }
@@ -67,375 +104,477 @@ class ModifierCollection implements IModifierCollection {
         return this
     }
 
-    public getChoices(): Record<string, ChoiceData> {
-        return this.modifiers.reduce<Record<string, ChoiceData>>((prev, mod) => {
-            if (mod.type === ModifierType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "choice", label: mod.label, options: mod.choices, num: mod.numChoices } satisfies ChoiceChoiceData}
-            } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency 
-                && mod.select === SelectType.Choice ) {
-                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency,  options: mod[ModifierCollectionMap[mod.proficiency]] ?? [], num: mod.numChoices } satisfies ChoiceData}
-            } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === SelectType.Choice
-                && mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability], num: mod.numChoices } satisfies AnyFileChoiceData}
-            } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
-                && mod.select === SelectType.Choice
-                && mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell], num: mod.numChoices } satisfies AnyFileChoiceData}
-            } else if (mod.type === ModifierType.Add 
-                && [ModifierAddRemoveTypeProperty.Ability, ModifierAddRemoveTypeProperty.Spell].includes(mod.addRemoveProperty)
-                && mod.select === SelectType.Choice
-                && !mod.allowAny) {
-                return {  ...prev,  [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files, num: mod.numChoices } satisfies FileChoiceData}
-            } else if (mod.type === ModifierType.Add 
-                && [ModifierAddRemoveTypeProperty.Advantage, ModifierAddRemoveTypeProperty.Disadvantage, ModifierAddRemoveTypeProperty.CONImmunity, ModifierAddRemoveTypeProperty.DMGImmunity, ModifierAddRemoveTypeProperty.Resistance, ModifierAddRemoveTypeProperty.Vulnerability].includes(mod.addRemoveProperty)
-                && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData}
-            } else if (mod.type === ModifierType.Bonus 
-                && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
-                && mod.select === SelectType.Choice) {
-                return {  ...prev,  [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData}
-            }
-            return prev
-        }, {})
-    }
-
     public length(): number {
         return this.modifiers.length
     }
 
-    public get bonusAC(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.AC 
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    private applyAddRemoveModifier(result: ModifierResultData, mod: IModifier): void {
+        switch (mod.addRemoveProperty) {
+            case ModifierAddRemoveTypeProperty.Ability:
+                if (mod.select === SelectType.Value) {
+                    result.abilities = [...result.abilities ?? [], mod.file]
+                } else if (this.storage.classData?.[mod.id]) {
+                    result.abilities = [...result.abilities ?? [], ...this.storage.classData[mod.id] ]
+                    if (mod.allowAny) {
+                        result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability], num: mod.numChoices } satisfies AnyFileChoiceData }
+                    } else {
+                        result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files, num: mod.numChoices } satisfies FileChoiceData }
+                    }
+                }
+                break;
+            case ModifierAddRemoveTypeProperty.Spell:
+                if (mod.select === SelectType.Value) {
+                    result.spells = [...result.spells ?? [], mod.file]
+                } else if (this.storage.classData?.[mod.id]) {
+                    result.spells = [...result.spells ?? [], ...this.storage.classData[mod.id]]
+                    if (mod.allowAny) {
+                        result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell], num: mod.numChoices } satisfies AnyFileChoiceData }
+                    } else {
+                        result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: false, options: mod.files, num: mod.numChoices } satisfies FileChoiceData }
+                    }
+                }
+                break;
+            case ModifierAddRemoveTypeProperty.Proficiency:
+                switch (mod.proficiency) {
+                    case ProficiencyType.Armor:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesArmor = [...result.proficienciesArmor ?? [], mod.armor]
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesArmor = [...result.proficienciesArmor ?? [], ...this.storage.classData[mod.id]]
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.armors ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    case ProficiencyType.Language:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesLanguage = [...result.proficienciesLanguage ?? [], mod.language]
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesLanguage = [...result.proficienciesLanguage ?? [], ...this.storage.classData[mod.id]]
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.languages ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    case ProficiencyType.Save:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesSave = [...result.proficienciesSave ?? [], mod.save]
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesSave = [...result.proficienciesSave ?? [], ...this.storage.classData[mod.id]]
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.saves ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    case ProficiencyType.Skill:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesSkill = { ...result.proficienciesSkill, [mod.skill]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesSkill?.[mod.skill]) }
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesSkill = (this.storage.classData[mod.id] as Skill[]).reduce((prev, skill) => (
+                                { ...prev, [skill]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesSkill?.[mod.skill]) }
+                            ), result.proficienciesSkill ?? {})
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.skills ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    case ProficiencyType.Tool:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesTool = { ...result.proficienciesTool, [mod.tool]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesTool?.[mod.tool]) }
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesTool = (this.storage.classData[mod.id] as Tool[]).reduce((prev, tool) => (
+                                { ...prev, [tool]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesTool?.[mod.tool]) }
+                            ), result.proficienciesTool ?? {})
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.tools ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    case ProficiencyType.Weapon:
+                        if (mod.select === SelectType.Value) {
+                            result.proficienciesWeapon = [...result.proficienciesWeapon ?? [], mod.weapon]
+                        } else if (this.storage.classData?.[mod.id]) {
+                            result.proficienciesWeapon = [...result.proficienciesWeapon ?? [], ...this.storage.classData[mod.id]]
+                            result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.weapons ?? [], num: mod.numChoices } satisfies ChoiceData }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case ModifierAddRemoveTypeProperty.Advantage:
+                if (mod.select === SelectType.Value) {
+                    result.advantages = { ...result.advantages, [mod.binding]: [...result.advantages?.[mod.binding] ?? [], mod.text] }
+                } else if (this.storage.classData?.[mod.id]) {
+                    result.advantages = { ...result.advantages, [mod.binding]: [...result.advantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            case ModifierAddRemoveTypeProperty.Disadvantage:
+                if (mod.select === SelectType.Value) {
+                    result.disadvantages = { ...result.disadvantages, [mod.binding]: [...result.disadvantages?.[mod.binding] ?? [], mod.text] }
+                } else if (this.storage.classData?.[mod.id]) {
+                    result.disadvantages = { ...result.disadvantages, [mod.binding]: [...result.disadvantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            case ModifierAddRemoveTypeProperty.CONImmunity:
+                if (mod.select === SelectType.Value) {
+                    result.conImmunities = [...result.conImmunities ?? [], mod.text]
+                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
+                    result.conImmunities = [...result.conImmunities ?? [], ...this.storage.classData[mod.id]]
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            case ModifierAddRemoveTypeProperty.DMGImmunity:
+                if (mod.select === SelectType.Value) {
+                    result.dmgImmunities = [...result.dmgImmunities ?? [], mod.text]
+                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
+                    result.dmgImmunities = [...result.dmgImmunities ?? [], ...this.storage.classData[mod.id]]
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            case ModifierAddRemoveTypeProperty.Resistance:
+                if (mod.select === SelectType.Value) {
+                    result.resistances = [...result.resistances ?? [], mod.text]
+                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
+                    result.resistances = [...result.resistances ?? [], ...this.storage.classData[mod.id]]
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            case ModifierAddRemoveTypeProperty.Vulnerability:
+                if (mod.select === SelectType.Value) {
+                    result.resistances = { ...result.resistances, [mod.binding]: [...result.resistances?.[mod.binding] ?? [], mod.text] }
+                } else if (this.storage.classData?.[mod.id]) {
+                    result.resistances = { ...result.resistances, [mod.binding]: [...result.resistances?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
+                }
+                break
+            default: break;
+        }
     }
 
-    public get bonusNumHealthDice(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type == ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.NumHitDice 
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    private applyBonusModifier(result: ModifierResultData, mod: IModifier): void {
+        switch (mod.bonusProperty) {
+            case ModifierBonusTypeProperty.Attribute:
+                if (mod.select === SelectType.Value) {
+                    result.attributeBonuses = { ...result.attributeBonuses, [mod.attribute]: (result.attributeBonuses?.[mod.attribute] ?? 0) + mod.value }
+                } else if (this.storage.classData?.[mod.id]) {
+                    let choices: Attribute[] = this.storage.classData?.[mod.id]
+                    for (let attr of Array.isArray(choices) ? choices : []) {
+                        result.attributeBonuses = { ...result.attributeBonuses, [attr]: (result.attributeBonuses?.[attr] ?? 0) + mod.value }
+                    }
+
+                    let choice = { type: "enum", label: mod.label, enum: "attr", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData
+                    result.choices = {...result.choices, [mod.id]: choice }
+                }
+                break;
+            case ModifierBonusTypeProperty.Movement:
+                result.movementBonuses = { ...result.movementBonuses, [mod.movement]: (result.movementBonuses?.[mod.movement] ?? 0) + mod.value }
+                break;
+            default:
+                result.bonuses = { ...result.bonuses, [mod.bonusProperty]: (result.bonuses?.[mod.bonusProperty] ?? 0) + mod.value }
+                break;
+        }
     }
 
-    public get bonusHealth(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Health 
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    private applySetModifier(result: ModifierResultData, mod: IModifier): void {
+        switch (mod.setProperty) {
+            case ModifierSetTypeProperty.CritRange:
+                result.critRange = mod.value
+                break;
+            case ModifierSetTypeProperty.MaxDexBonus:
+                result.maxDEXBonus = mod.value
+                break;
+            case ModifierSetTypeProperty.MultiAttack:
+                result.multiAttack = mod.value
+                break;
+            case ModifierSetTypeProperty.Sense:
+                result.senses = { ...result.senses, [mod.sense]: mod.value }
+                break;
+            case ModifierSetTypeProperty.SpellAttribute:
+                result.spellAttribute = mod.attribute
+                break;
+            case ModifierSetTypeProperty.ACBase:
+                result.acBase = [...result.acBase ?? [], { type: mod.acBase, attribute: mod.attribute, value: mod.value }]
+            default: break;
+        }
     }
 
-    public get bonusProficiency(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Proficiency 
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    private applyChoiceModifier(result: ModifierResultData, mod: IModifier): void {
+        let choice: ChoiceChoiceData = { type: "choice", label: mod.label, options: mod.choices, num: mod.numChoices }
+        result.choices = { ...result.choices, [mod.id]: choice }
     }
 
-    public get bonusDamage(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Damage
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    public getChoices(): Record<string, ChoiceData> {
+        return this.addData.choices ?? {}
     }
 
-    public get bonusInitiative(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Bonus && modifier.bonusProperty === ModifierBonusTypeProperty.Initiative
-                ? prev + modifier.value 
-                : prev
-        , 0)
+    public getBonus(type: ModifierBonusTypeProperty): number {
+        return this.addData.bonuses?.[type] ?? 0
+    }
+    public getMovementBonus(type: MovementType): number {
+        return this.addData.movementBonuses?.[type] ?? 0
+    }
+    public getAttributeBonus(type: Attribute): number {
+        return this.addData.attributeBonuses?.[type] ?? 0
     }
 
     public get critRange(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.CritRange && modifier.value !== null
-                ? modifier.value 
-                : prev
-        , null)
+        return this.addData.critRange ?? null
     }
-
     public get maxDEXBonus(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.MaxDexBonus && modifier.value !== null
-                ? (prev === null ? modifier.value : Math.min(prev, modifier.value)) 
-                : prev
-        , null)
+        return this.addData.maxDEXBonus ?? null
     }
-
     public get spellAttribute(): Attribute {
-        return this.modifiers.reduce<Attribute>((prev, modifier) => 
-            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.SpellAttribute && modifier.attribute !== null
-                ? modifier.attribute 
-                : prev
-        , null)
+        return this.addData.spellAttribute ?? null
     }
-
     public get multiAttack(): number {
-        return this.modifiers.reduce<number>((prev, modifier) => 
-            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.MultiAttack
-                ? (prev === null ? modifier.value : Math.max(prev, modifier.value))
-                : prev
-        , null)
+        return this.addData.multiAttack ?? null
     }
-
-    public getMovementBonus(movement: MovementType): number {
-        return this.modifiers.reduce<number>((prev, mod) => (
-            mod.type === ModifierType.Bonus 
-            && mod.bonusProperty === ModifierBonusTypeProperty.Movement
-            && mod.movement === movement
-            ? prev + mod.value 
-            : prev
-        ), 0)
-    }
-
-    public getAttributeBonus(attribute: Attribute): number {
-        return this.modifiers.reduce<number>((prev, mod) => {
-            if (mod.type === ModifierType.Bonus 
-             && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
-             && mod.select === SelectType.Value
-             && mod.attribute === attribute) {
-                return prev + mod.value
-            } else if (mod.type === ModifierType.Bonus 
-             && mod.bonusProperty === ModifierBonusTypeProperty.Attribute 
-             && mod.select === SelectType.Choice) {
-                let choices: Attribute[] = this.storage.classData?.[mod.id]
-                if (typeof choices !== typeof []) {
-                    choices = []
-                }
-                return choices.reduce((prev, value) => value === attribute ? prev + mod.value : prev, prev) ?? prev
-            } else {
-                return prev
-            }
-        }, 0)
-    }
-
     public getSenseRange(sense: Sense): number {
-        return this.modifiers.reduce<number>((prev, modifier) => (
-            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.Sense && modifier.sense === sense
-                ? Math.max(modifier.value, prev)
-                : prev
-        ), 0)
+        return this.addData.senses?.[sense] ?? 0
     }
-
-    private modifyCollection<T>(values: T[], key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): T[] {
-        let exclude: Set<T>
-        if (onlyRemove) {
-            let remove = this.modifiers.reduce<T[]>((prev, mod) => (
-                mod.type === ModifierType.Remove && filter(mod) ? [...prev, mod[key] as T]  : prev
-            ), [])
-            exclude = new Set(remove);
-        } else {
-            let groups = this.modifiers.reduce<AddRemoveGroup<T[]>>((prev, mod) => {
-                if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Value) {
-                    return { ...prev, add: [...prev.add, mod[key] ]}
-                } else if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Choice
-                    && this.storage.classData?.[mod.id]) {
-                        return { ...prev, add: [...prev.add, ...this.storage.classData[mod.id] ] }
-                } else if (mod.type === ModifierType.Remove && filter(mod)) {
-                    return { ...prev, remove: [...prev.remove, mod[key] as T]}
-                }
-                return prev
-            }, { add: [], remove: [] })
-            
-            values = groups.add.reduce<T[]>((prev, value) => (
-                prev.includes(value) ? prev : [...prev, value]
-            ), values)
-
-            exclude = new Set(groups.remove);
-        }
-        return values.filter(x => !exclude.has(x))
-    }
-
-    private modifyProficiencyRecord<T extends string>(values: ProficiencyRecord<T>, key: string, onlyRemove: boolean, filter: (mod: IModifier) => boolean): ProficiencyRecord<T> {
-        let exclude: ProficiencyRecord<T>
-        if (onlyRemove) {
-            exclude = this.modifiers.reduce((prev, mod) => (
-                mod.type === ModifierType.Remove && filter(mod) 
-                    ? {...prev, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev[mod[key]]) }  
-                    : prev
-            ), {})
-        } else {
-            let groups = this.modifiers.reduce<AddRemoveGroup<ProficiencyRecord<T>>>((prev, mod) => {
-                if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Value) {
-                    return { ...prev, add: {...prev.add, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev.add[mod[key]]) }}
-                } else if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Choice
-                    && this.storage.classData?.[mod.id]) {
-                    let add = {...prev.add }
-                    for (let proficiency of this.storage.classData[mod.id] as ProficiencyType[]) {
-                        add[proficiency] = getMaxProficiencyLevel(mod.proficiencyLevel, add[proficiency])
-                    }
-                    return { ...prev, add: add }
-                } else if (mod.type === ModifierType.Remove && filter(mod)) {
-                    return { ...prev, remove: {...prev.remove, [mod[key]]: getMaxProficiencyLevel(mod.proficiencyLevel, prev.remove[mod[key]]) }}
-                }
-                return prev
-            }, { add: values, remove: {} })
-
-            exclude = groups.remove
-            values = groups.add
-        }
-        
-        return Object.keys(values).reduce<ProficiencyRecord<T>>((prev, proficiency) => (
-            getMaxProficiencyLevel(values[proficiency], exclude[proficiency]) === exclude[proficiency] 
-                ? prev
-                : { ...prev, [proficiency]: values[proficiency] }
-        ), {})
-    }
-
-    private modifyAdvantageRecord(values: AdvantageRecord, onlyRemove: boolean, filter: (mod: IModifier) => boolean): AdvantageRecord {
-        let exclude: AdvantageRecord
-        if (onlyRemove) {
-            exclude = this.modifiers.reduce((prev, mod) => (
-                mod.type === ModifierType.Remove && filter(mod) 
-                    ? { ...prev, remove: {...prev, [mod.binding]: [...prev[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}  
-                    : prev
-            ), {})
-        } else {
-            let groups = this.modifiers.reduce<AddRemoveGroup<AdvantageRecord>>((prev, mod) => {
-                if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Value) {
-                    return { ...prev, add: {...prev.add, [mod.binding]: [...prev.add[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}
-                } else if (mod.type === ModifierType.Add 
-                    && filter(mod)
-                    && mod.select === SelectType.Choice
-                    && this.storage.classData?.[mod.id]) {
-                    return { ...prev, add: {...prev.add, [mod.binding]: [...prev.add[mod.binding] ?? [], ...this.storage.classData[mod.id] ?? []] }}
-                } else if (mod.type === ModifierType.Remove && filter(mod)) {
-                    return { ...prev, remove: {...prev.remove, [mod.binding]: [...prev.remove[mod.binding] ?? [], ...mod.text.split(splitAdvantagesExpr)] }}
-                }
-                return prev
-            }, { add: values, remove: {} })
-
-            exclude = groups.remove
-            values = groups.add
-        }
-        
-        return Object.keys(values).reduce<AdvantageRecord>((prev, binding: AdvantageBinding) => (
-            { ...prev, [binding]: values[binding].filter(x => !exclude[binding]?.includes(x)) }
-        ), {})
+    public getACBase(values: Record<Attribute, number>): number {
+        return this.addData.acBase?.reduce((prev, base) => {
+            switch (base.type) {
+                case ArmorClassBase.DEX:
+                    return Math.max(10 + values[Attribute.DEX], prev)
+                case ArmorClassBase.DEXAndAttribute:
+                    return Math.max(10 + values[Attribute.DEX] + values[base.attribute], prev)
+                case ArmorClassBase.DEXAndFixed:
+                    return Math.max(10 + values[Attribute.DEX] + base.value, prev)
+                default: return prev;
+            } 
+        }, 0) ?? 0
     }
 
     public modifyProficienciesArmor(proficiencies: ArmorType[], onlyRemove: boolean = false): ArmorType[] {
-        const type = ProficiencyType.Armor
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        let existing = new Set<ArmorType>(this.removeData.proficienciesArmor)
+        if (onlyRemove) {
+            return proficiencies.filter((x) => !existing.has(x))
+        } else {
+            return [...proficiencies ?? [], ...this.addData.proficienciesArmor ?? []].reduce<ArmorType[]>((prev, value) => {
+                if (existing.has(value)) {
+                    return prev
+                } else {
+                    existing.add(value)
+                    return [...prev, value]
+                }
+            }, [])
+        }
     }
     public modifyProficienciesWeapon(proficiencies: WeaponType[], onlyRemove: boolean = false): WeaponType[] {
-        const type = ProficiencyType.Weapon
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        let existing = new Set<WeaponType>(this.removeData.proficienciesWeapon)
+        if (onlyRemove) {
+            return proficiencies.filter((x) => !existing.has(x))
+        } else {
+            return [...proficiencies ?? [], ...this.addData.proficienciesWeapon ?? []].reduce<WeaponType[]>((prev, value) => {
+                if (existing.has(value)) {
+                    return prev
+                } else {
+                    existing.add(value)
+                    return [...prev, value]
+                }
+            }, [])
+        }
     }
     public modifyProficienciesLanguage(proficiencies: Language[], onlyRemove: boolean = false): Language[] {
-        const type = ProficiencyType.Language
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        let existing = new Set<Language>(this.removeData.proficienciesLanguage)
+        if (onlyRemove) {
+            return proficiencies.filter((x) => !existing.has(x))
+        } else {
+            return [...proficiencies ?? [], ...this.addData.proficienciesLanguage ?? []].reduce<Language[]>((prev, value) => {
+                if (existing.has(value)) {
+                    return prev
+                } else {
+                    existing.add(value)
+                    return [...prev, value]
+                }
+            }, [])
+        }
     }
     public modifyProficienciesSave(proficiencies: Attribute[], onlyRemove: boolean = false): Attribute[] {
-        const type = ProficiencyType.Save
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyCollection(proficiencies, key, onlyRemove, filter)
+        let existing = new Set<Attribute>(this.removeData.proficienciesSave)
+        if (onlyRemove) {
+            return proficiencies.filter((x) => !existing.has(x))
+        } else {
+            return [...proficiencies ?? [], ...this.addData.proficienciesSave ?? []].reduce<Attribute[]>((prev, value) => {
+                if (existing.has(value)) {
+                    return prev
+                } else {
+                    existing.add(value)
+                    return [...prev, value]
+                }
+            }, [])
+        }
     }
+
     public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
-        const type = ProficiencyType.Tool
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
+        if (onlyRemove) {
+            return Object.keys(proficiencies).reduce((prev, tool: Tool) => {
+                let max = getMaxProficiencyLevel(proficiencies[tool], this.removeData.proficienciesTool?.[tool])
+                if (max !== this.removeData.proficienciesTool?.[tool]) {
+                    return { ...prev, [tool]: proficiencies[tool]}
+                }
+                return prev
+            }, {})
+        } else {
+            return Object.values(Tool).reduce((prev, tool) => {
+                let max = getMaxProficiencyLevel(proficiencies[tool], this.addData.proficienciesTool?.[tool], this.removeData.proficienciesTool?.[tool])
+                if (this.removeData.proficienciesTool?.[tool] !== max) {
+                    return { ...prev, [tool]: max }
+                }
+                return prev
+            }, {})
+        }
     }
     public modifyProficienciesSkill(proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Skill, ProficiencyLevel>> {
-        const type = ProficiencyType.Skill
-        const key = ModifierMap[type];
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Proficiency && mod.proficiency === type
-        return this.modifyProficiencyRecord(proficiencies, key, onlyRemove, filter)
+        if (onlyRemove) {
+            return Object.keys(proficiencies).reduce((prev, skill: Skill) => {
+                let max = getMaxProficiencyLevel(proficiencies[skill], this.removeData.proficienciesSkill?.[skill])
+                if (max !== this.removeData.proficienciesSkill?.[skill]) {
+                    return { ...prev, [skill]: proficiencies[skill]}
+                }
+                return prev
+            }, {})
+        } else {
+            return Object.values(Skill).reduce((prev, skill) => {
+                let max = getMaxProficiencyLevel(proficiencies[skill], this.addData.proficienciesSkill?.[skill], this.removeData.proficienciesSkill?.[skill])
+                if (this.removeData.proficienciesSkill?.[skill] !== max) {
+                    return { ...prev, [skill]: max }
+                }
+                return prev
+            }, {})
+        }
     }
 
     public modifyResistances(resistances: string[], onlyRemove: boolean = false): string[] {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Resistance
-        return this.modifyCollection(resistances, "text", onlyRemove, filter)
+        let existing = new Set<string>(this.removeData.resistances)
+        if (onlyRemove) {
+            return resistances.filter(resistance => !existing.has(resistance))
+        } else {
+            return [...resistances, ...this.addData.resistances ?? []].filter(resistance => {
+                if (!existing.has(resistance)) {
+                    existing.add(resistance)
+                    return true
+                }
+                return false
+            })
+        }
     }
     public modifyVulnerabilities(vulnerabilities: string[], onlyRemove: boolean = false): string[] {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Vulnerability
-        return this.modifyCollection(vulnerabilities, "text", onlyRemove, filter)
+        let existing = new Set<string>(this.removeData.vulnerabilities)
+        if (onlyRemove) {
+            return vulnerabilities.filter(vulnerability => !existing.has(vulnerability))
+        } else {
+            return [...vulnerabilities, ...this.addData.vulnerabilities ?? []].filter(vulnerability => {
+                if (!existing.has(vulnerability)) {
+                    existing.add(vulnerability)
+                    return true
+                }
+                return false
+            })
+        }
     }
     public modifyAdvantages(advantages: Partial<Record<AdvantageBinding, string>>, onlyRemove: boolean = false): Partial<Record<AdvantageBinding, string>> {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Advantage
-        const value = Object.keys(advantages).reduce<AdvantageRecord>((prev, key: AdvantageBinding) => (
-            { ...prev, [key]: advantages[key]?.split(splitAdvantagesExpr) ?? [] }
-        ), {})
-        const result = this.modifyAdvantageRecord(value, onlyRemove, filter)
-        return Object.keys(result).reduce<Partial<Record<AdvantageBinding, string>>>((prev, key: AdvantageBinding) => (
-            { ...prev, [key]: result[key].join('; ') }
-        ), {})
+        if (onlyRemove) {
+            return Object.keys(advantages).reduce((prev, key: AdvantageBinding) => {
+                let exclude = new Set<string>(this.removeData.advantages?.[key])
+                return (
+                    { ...prev, [key]: advantages[key].split(splitAdvantagesExpr).filter(advantage => !exclude.has(advantage)).join('; ') }
+                )
+            }, {})
+        } else {
+            return Object.values(AdvantageBinding).reduce((prev, key: AdvantageBinding) => {
+                if (advantages?.[key] || this.addData.advantages?.[key]) {
+                    let existing = new Set<string>(this.removeData.advantages?.[key])
+                    return (
+                        { ...prev, [key]: [...advantages[key]?.split(splitAdvantagesExpr) ?? [], ...this.addData.advantages?.[key] ?? []].filter(advantage => {
+                            if (!existing.has(advantage)) {
+                                existing.add(advantage)
+                                return true
+                            }
+                        }).join('; ')}
+                    )
+                } else {
+                    return prev
+                }
+            }, {})
+        }
     }
     public modifyDisadvantages(disadvantages: Partial<Record<AdvantageBinding, string>>, onlyRemove: boolean = false): Partial<Record<AdvantageBinding, string>> {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Disadvantage
-        const value = Object.keys(disadvantages).reduce<AdvantageRecord>((prev, key: AdvantageBinding) => (
-            { ...prev, [key]: disadvantages[key]?.split(splitAdvantagesExpr) ?? [] }
-        ), {})
-        const result = this.modifyAdvantageRecord(value, onlyRemove, filter)
-        return Object.keys(result).reduce<Partial<Record<AdvantageBinding, string>>>((prev, key: AdvantageBinding) => (
-            { ...prev, [key]: result[key].join('; ') }
-        ), {})
+        if (onlyRemove) {
+            return Object.keys(disadvantages).reduce((prev, key: AdvantageBinding) => {
+                let exclude = new Set<string>(this.removeData.disadvantages?.[key])
+                return (
+                    { ...prev, [key]: disadvantages[key].split(splitAdvantagesExpr).filter(disadvantage => !exclude.has(disadvantage)).join('; ') }
+                )
+            }, {})
+        } else {
+            return Object.values(AdvantageBinding).reduce((prev, key: AdvantageBinding) => {
+                if (disadvantages?.[key] || this.addData.disadvantages?.[key]) {
+                    let existing = new Set<string>(this.removeData.disadvantages?.[key])
+                    return (
+                        { ...prev, [key]: [...disadvantages[key].split(splitAdvantagesExpr), ...this.addData.disadvantages?.[key]].filter(disadvantage => {
+                            if (!existing.has(disadvantage)) {
+                                existing.add(disadvantage)
+                                return true
+                            }
+                        }).join('; ')}
+                    )
+                } else {
+                    return prev
+                }
+            }, {})
+        }
     }
     public modifyDMGImmunities(immunities: string[], onlyRemove: boolean = false): string[] {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.DMGImmunity
-        return this.modifyCollection(immunities, "text", onlyRemove, filter)
+        let existing = new Set<string>(this.removeData.dmgImmunities)
+        if (onlyRemove) {
+            return immunities.filter(immunity => !existing.has(immunity))
+        } else {
+            return [...immunities, ...this.addData.dmgImmunities ?? []].filter(immunity => {
+                if (!existing.has(immunity)) {
+                    existing.add(immunity)
+                    return true
+                }
+                return false
+            })
+        }
     }
     public modifyCONImmunities(immunities: string[], onlyRemove: boolean = false): string[] {
-        const filter = (mod: IModifier) => mod.addRemoveProperty === ModifierAddRemoveTypeProperty.CONImmunity
-        return this.modifyCollection(immunities, "text", onlyRemove, filter)
+        let existing = new Set<string>(this.removeData.conImmunities)
+        if (onlyRemove) {
+            return immunities.filter(immunity => !existing.has(immunity))
+        }  else {
+            return [...immunities, ...this.addData.conImmunities ?? []].filter(immunity => {
+                if (!existing.has(immunity)) {
+                    existing.add(immunity)
+                    return true
+                }
+                return false
+            })
+        }
     }
 
-    public modifyAbilities(abilities: ObjectId[]): ObjectId[] {
-        return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
-            if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === SelectType.Value) {
-                return [...prev, mod.file]
-            } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Ability 
-                && mod.select === SelectType.Choice
-                && this.storage.classData?.[mod.id]) {
-                return [...prev, ...this.storage.classData[mod.id]]
-            }
-            return prev
-        }, abilities)
+    public modifyAbilities(abilities: ObjectId[], onlyRemove?: boolean): ObjectId[] {
+        let existing = new Set<ObjectId>(this.removeData.abilities)
+        if (onlyRemove) {
+            return abilities.filter(ability => !existing.has(ability))
+        }  else {
+            return  [...abilities ?? [], ...this.addData.abilities ?? []].filter(ability => {
+                if (!existing.has(ability)) {
+                    existing.add(ability)
+                    return true
+                }
+                return false
+            })
+        }
     }
-    public modifySpells(spells: ObjectId[]): ObjectId[] {
-        return this.modifiers.reduce<ObjectId[]>((prev, mod) => {
-            if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
-                && mod.select === SelectType.Value) {
-                return [...prev, mod.file]
-            } else if (mod.type === ModifierType.Add 
-                && mod.addRemoveProperty === ModifierAddRemoveTypeProperty.Spell 
-                && mod.select === SelectType.Choice
-                && this.storage.classData?.[mod.id]) {
-                return [...prev, ...this.storage.classData[mod.id]]
-            }
-            return prev
-        }, spells)
+    public modifySpells(spells: ObjectId[], onlyRemove?: boolean): ObjectId[] {
+        let existing = new Set<ObjectId>(this.removeData.spells)
+        if (onlyRemove) {
+            return spells.filter(spell => !existing.has(spell))
+        }  else {
+            return  [...spells ?? [], ...this.addData.abilities ?? []].filter(spell => {
+                if (!existing.has(spell)) {
+                    existing.add(spell)
+                    return true
+                }
+                return false
+            })
+        }
     }
 }
 

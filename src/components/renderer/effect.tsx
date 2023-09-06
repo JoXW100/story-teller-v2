@@ -1,12 +1,12 @@
+import { useMemo } from 'react';
 import Elements from 'data/elements';
 import Effect from 'data/structures/effect';
 import { DamageType, DiceType } from 'types/database/dnd';
 import { RollMode } from 'types/elements';
+import { RollType } from 'types/dice';
 import IEffect from 'types/database/files/iEffect';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import styles from 'styles/renderer.module.scss';
-import { useMemo } from 'react';
-import { RollType } from 'types/dice';
 
 type EffectProps = React.PropsWithRef<{
     data: IEffect

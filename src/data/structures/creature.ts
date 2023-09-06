@@ -1,19 +1,20 @@
-import { getOptionType } from "data/optionData";
-import Dice from "utils/data/dice";
-import { asEnum, isEnum } from "utils/helpers";
-import { RollOptions } from "data/elements/roll";
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
 import ModifierCollectionData from "./modifierCollection";
-import { AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
+import { getOptionType } from "data/optionData";
+import { RollOptions } from "data/elements/roll";
+import Dice from "utils/data/dice";
+import DiceCollection from "utils/data/diceCollection";
+import { asEnum, isEnum } from "utils/helpers";
+import { getProficiencyLevelValue } from "utils/calculations";
+import { AdvantageBinding, Alignment, ArmorClassBase, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
-import { ICreatureMetadata } from "types/database/files/creature";
+import { CreatureValue, ICreatureMetadata } from "types/database/files/creature";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectIdText } from "types/database";
 import { RollType } from "types/dice";
-import { getProficiencyLevelValue } from "utils/calculations";
-import DiceCollection from "utils/data/diceCollection";
+import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 
 class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
     public readonly modifiers: IModifierCollection
@@ -39,7 +40,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         } satisfies Required<ICreatureStats>)
     }
 
-    public getValues(): Record<string, number> {
+    public getValues(): Record<CreatureValue, number> {
         return {
             str: this.getAttributeModifier(Attribute.STR),
             dex: this.getAttributeModifier(Attribute.DEX),
@@ -50,7 +51,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
             proficiency: this.proficiencyValue,
             spellAttribute: this.getAttributeModifier(this.spellAttribute),
             level: this.level,
-        }
+        } satisfies Record<CreatureValue, number>
     }
 
     public getAttributeModifier(attribute: Attribute | OptionalAttribute): number {
@@ -190,7 +191,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get numHitDice(): number {
-        return this.level + this.modifiers.bonusNumHealthDice
+        return this.level + this.modifiers.getBonus(ModifierBonusTypeProperty.NumHitDice)
     }
 
     public get hitDiceCollection(): DiceCollection {
@@ -211,12 +212,12 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         let value = this.health.value ?? 0;
         switch (this.health.type) {
             case CalculationMode.Override:
-                return value + this.modifiers.bonusHealth;
+                return value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health);
             case CalculationMode.Auto:
                 value = 0
             case CalculationMode.Modify:
                 var mod: number = this.getAttributeModifier(Attribute.CON)
-                return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + value + this.modifiers.bonusHealth
+                return Math.floor(Dice.average(this.hitDiceValue) * this.numHitDice) + mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)
         }
     }
 
@@ -227,7 +228,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                 return {
                     dice: "0",
                     num: "0",
-                    mod: String(value + this.modifiers.bonusHealth),
+                    mod: String(value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions;
@@ -239,7 +240,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                 return {
                     dice: String(this.hitDice),
                     num: String(this.numHitDice),
-                    mod: String(mod * this.level + value + this.modifiers.bonusHealth),
+                    mod: String(mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions
@@ -251,25 +252,29 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get acBase(): number {
-        return 10
-    }
-
-    public get acScalingValue(): number {
         let max = this.modifiers.maxDEXBonus
         let dex = this.getAttributeModifier(Attribute.DEX)
-        return max !== null ? Math.min(dex, max) : dex
+        let values: Record<Attribute, number> = {
+            [Attribute.STR]: this.getAttributeModifier(Attribute.STR),
+            [Attribute.DEX]: max === null ? dex : Math.min(dex, max),
+            [Attribute.CON]: this.getAttributeModifier(Attribute.CON),
+            [Attribute.INT]: this.getAttributeModifier(Attribute.INT),
+            [Attribute.WIS]: this.getAttributeModifier(Attribute.WIS),
+            [Attribute.CHA]: this.getAttributeModifier(Attribute.CHA)
+        }
+        let base = this.modifiers.getACBase(values)
+        return base === 0 ? Math.max(10, 10 + values[Attribute.DEX]) : base
     }
 
     public get acValue(): number {
         let value = this.ac.value ?? 0;
         switch (this.ac.type) {
             case CalculationMode.Override:
-                return value + this.modifiers.bonusAC;
-            case CalculationMode.Modify:
-                return this.acBase + this.acScalingValue + value + this.modifiers.bonusAC;
+                return value + this.modifiers.getBonus(ModifierBonusTypeProperty.AC);
             case CalculationMode.Auto:
-            default:
-                return this.acBase + this.acScalingValue + this.modifiers.bonusAC;
+                value = 0
+            case CalculationMode.Modify:
+                return this.acBase + value + this.modifiers.getBonus(ModifierBonusTypeProperty.AC);
         }
     }
 
@@ -281,12 +286,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         let value: number = this.proficiency.value ?? 0
         switch (this.proficiency.type) {
             case CalculationMode.Override:
-                return value + this.modifiers.bonusProficiency
-            case CalculationMode.Modify:
-                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + value + this.modifiers.bonusProficiency;
+                return value + this.modifiers.getBonus(ModifierBonusTypeProperty.Proficiency);
             case CalculationMode.Auto:
-            default:
-                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + this.modifiers.bonusProficiency
+                value = 0
+            case CalculationMode.Modify:
+                return Math.floor(Math.max(this.level - 1, 0) / 4) + 2 + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Proficiency);
         }
     }
 
@@ -298,13 +302,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         let value: number = this.initiative.value ?? 0
         switch (this.initiative.type) {
             case CalculationMode.Override:
-                return value + this.modifiers.bonusInitiative;
-            case CalculationMode.Modify:
-                var mod: number = this.getAttributeModifier(Attribute.DEX);
-                return mod + value + this.modifiers.bonusInitiative;
+                return value + this.modifiers.getBonus(ModifierBonusTypeProperty.Initiative);
             case CalculationMode.Auto:
-            default:
-                return this.getAttributeModifier(Attribute.DEX) + this.modifiers.bonusInitiative;
+                value = 0
+            case CalculationMode.Modify:
+                return this.getAttributeModifier(Attribute.DEX) + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Initiative);
         }
     }
 
@@ -313,7 +315,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get bonusDamage(): number {
-        return this.modifiers.bonusDamage ?? 0
+        return this.modifiers.getBonus(ModifierBonusTypeProperty.Damage)
     }
 
     public get critRange(): number {

@@ -80,7 +80,7 @@ export const getMaxProficiencyLevel = (...proficiencies: ProficiencyLevel[]): Pr
         if (proficiency === ProficiencyLevel.Expert) {
             return proficiency
         }
-        if ((ProficiencyLevelValueMap[proficiency] ?? 0) > max_value) {
+        if (proficiency && ProficiencyLevelValueMap[proficiency] > max_value) {
             max_value = ProficiencyLevelValueMap[proficiency]
             max_proficiency = proficiency
         }

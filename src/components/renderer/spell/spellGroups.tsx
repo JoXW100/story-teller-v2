@@ -24,7 +24,7 @@ const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExpendedSl
     const categories = useMemo(() => {
         let categories: Record<number, JSX.Element[]> = []
         spells.forEach((file, index) => {
-            if (file.type === FileType.Spell) {
+            if (file && file.type === FileType.Spell) {
                 let level = file.metadata?.level as number ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 

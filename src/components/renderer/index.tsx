@@ -7,11 +7,11 @@ import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
 import ItemRenderer from './item';
 import { ParseError } from 'utils/parser';
+import { asEnum } from 'utils/helpers';
 import { RendererObject } from 'types/database/editor';
-import { File, FileType, IFile } from 'types/database/files';
+import { File, FileType } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
-import { asEnum } from 'utils/helpers';
 
 const Renderers: Record<FileType, RendererObject> = {
     [FileType.Ability]: AbilityRenderer,

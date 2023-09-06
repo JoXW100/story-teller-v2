@@ -9,13 +9,13 @@ import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
+import useCreatureHandler from 'utils/handlers/creatureHandler';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { FileMetadataQueryResult } from 'types/database/responses';
-import styles from 'styles/renderer.module.scss';
 import { RollType } from 'types/dice';
-import useCreatureHandler from 'utils/handlers/creatureHandler';
+import styles from 'styles/renderer.module.scss';
 
 type CreatureFileRendererProps = React.PropsWithRef<{
     file: CreatureFile
@@ -31,11 +31,11 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const [_, dispatch] = useContext(Context)
     const [page, setPage] = useState<typeof Pages[number]>(Pages[0])
     const [creature, abilities] = useCreatureHandler(file)
-    const stats = useMemo(() => creature.getStats(), [creature])
-    const values = useMemo(() => creature.getValues(), [creature])
+    const stats = useMemo(() => creature?.getStats(), [creature])
+    const values = useMemo(() => creature?.getValues(), [creature])
 
     const content = useParser(file.content.text, creature, "$content");
-    const description = useParser(creature.description, creature, "description")
+    const description = useParser(creature?.description, creature, "description")
 
     const expendedAbilityCharges = file.storage?.abilityData ?? {}
     const expendedSpellSlots = file.storage?.spellData ?? []

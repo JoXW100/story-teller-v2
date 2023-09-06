@@ -12,6 +12,7 @@ import { ObjectId, ObjectIdText } from "types/database";
 import ModifierCollection from "./modifierCollection";
 import { RollType } from "types/dice";
 import DiceCollection from "utils/data/diceCollection";
+import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
     private readonly storage: ICharacterStorage
@@ -56,7 +57,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
         let value = this.health.value ?? 0;
         switch (this.health.type) {
             case CalculationMode.Override:
-                return value + this.modifiers.bonusHealth;
+                return value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health);
             case CalculationMode.Auto:
                 value = 0;
             case CalculationMode.Modify:
@@ -65,7 +66,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                 var sum = collection.reduce((prev, value) => (
                     prev + Math.ceil(value.dice.average) * value.num
                 ), collection.modifier)
-                return sum + mod * this.level + value + this.modifiers.bonusHealth
+                return sum + mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)
         }
     }
 
@@ -76,7 +77,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                 return {
                     dice: "0",
                     num: "0",
-                    mod: String(value + this.modifiers.bonusHealth),
+                    mod: String(value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
                 } as RollOptions;
@@ -89,7 +90,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                     return {
                         dice: String(this.hitDice),
                         num: String(this.numHitDice - 1),
-                        mod: String(this.hitDiceValue + mod * this.level + value + this.modifiers.bonusHealth),
+                        mod: String(this.hitDiceValue + mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                         type: RollType.Health,
                         desc: "Max health"
                     } as RollOptions
@@ -97,7 +98,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                     return {
                         dice: String(this.hitDice),
                         num: String(this.numHitDice),
-                        mod: String(mod * this.level + value + this.modifiers.bonusHealth),
+                        mod: String(mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                         type: RollType.Health,
                         desc: "Max health"
                     } as RollOptions

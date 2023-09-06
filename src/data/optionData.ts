@@ -1,5 +1,5 @@
 import { Enum } from 'types';
-import { AbilityType, ActionType, AdvantageBinding, Alignment, AreaType, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
+import { AbilityType, ActionType, AdvantageBinding, Alignment, AreaType, ArmorClassBase, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
 import { EffectType } from 'types/database/files/iEffect';
@@ -529,6 +529,7 @@ const OptionTypes = {
         default: ModifierSetTypeProperty.CritRange,
         options: {
             [ModifierSetTypeProperty.CritRange]: "Critical Range",
+            [ModifierSetTypeProperty.ACBase]: "AC Base",
             [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
             [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus",
             [ModifierSetTypeProperty.Sense]: "Sense",
@@ -567,6 +568,15 @@ const OptionTypes = {
             [EffectType.Condition]: "Condition"
         }
     } satisfies IOptionType<typeof EffectType>,
+    "acBase": {
+        enum: ArmorClassBase,
+        default: ArmorClassBase.DEX,
+        options: {
+            [ArmorClassBase.DEX]: "Dexterity",
+            [ArmorClassBase.DEXAndAttribute]: "Dexterity + Attribute",
+            [ArmorClassBase.DEXAndFixed]: "Dexterity + Value"
+        }
+    } satisfies IOptionType<typeof ArmorClassBase>,
     "advantageBinding": {
         enum: AdvantageBinding,
         default: AdvantageBinding.General,

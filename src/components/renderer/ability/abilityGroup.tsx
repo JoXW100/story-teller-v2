@@ -4,12 +4,14 @@ import { AbilityToggleRenderer } from '.';
 import Logger from 'utils/logger';
 import { ActionType } from 'types/database/dnd';
 import { IAbilityMetadata } from 'types/database/files/ability';
-import ICreatureStats from 'types/database/files/iCreatureStats';
 import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
+import { IParserMetadata } from 'types/elements';
+import { ObjectId } from 'types/database';
+import ICreatureStats from 'types/database/files/iCreatureStats';
 
 interface AbilityCategory { 
     header: string, 
-    content: JSX.Element[] 
+    content: FileMetadataQueryResult<IAbilityMetadata & IParserMetadata>[]
 }
 
 type AbilityGroupsProps = React.PropsWithRef<{
@@ -22,37 +24,41 @@ type AbilityGroupsProps = React.PropsWithRef<{
 
 const AbilityGroups = ({ abilities, stats, values, expendedCharges, setExpendedCharges }: AbilityGroupsProps): React.ReactNode => {
     const [categories, setCategories] = useState<Partial<Record<ActionType, AbilityCategory>>>({})
-    Logger.log("AbilityGroups", abilities, stats)
 
     useEffect(() => {
-        const categories = {
+        const categories: Record<ActionType, AbilityCategory> = {
             [ActionType.Action]: { header: `Actions (${(stats.multiAttack)} Attacks Per Action)`, content: [] },
             [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
             [ActionType.Reaction]: { header: "Reactions", content: [] },
             [ActionType.Special]: { header: "Special", content: [] },
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
             [ActionType.None]: { header: "Other", content: [] },
-        } satisfies Record<ActionType, AbilityCategory>
-        abilities.forEach((file: FileMetadataQueryResult<IAbilityMetadata>, index) => {
+        }
+        abilities.forEach((file) => {
             if (file) {
-                categories[file.metadata?.action ?? ActionType.Action].content.push(
-                    <AbilityToggleRenderer 
-                        key={index} 
-                        metadata={{ ...file.metadata, $values: values }} 
-                        stats={stats}
-                        expendedCharges={isNaN(expendedCharges[String(file.id)]) ? 0 : expendedCharges[String(file.id)]}
-                        setExpendedCharges={(value) => setExpendedCharges({ ...expendedCharges, [String(file.id)]: value })}/>
-                )
+                categories[file.metadata?.action ?? ActionType.Action].content.push({ ...file, metadata: { ...file?.metadata, $values: values } })
             }
         })
         setCategories(categories)
-    }, [abilities, stats, expendedCharges])
+        Logger.log("AbilityGroups", abilities)
+    }, [abilities, stats?.multiAttack])
+
+    const handleSetExpendedCharges = (value: number, id: ObjectId) => {
+        setExpendedCharges({ ...expendedCharges, [String(id)]: value })
+    }
     
     return Object.keys(categories)
         .filter((type: ActionType) => categories[type].content.length > 0)
         .map((type: ActionType) => (
             <CollapsibleGroup key={type} header={categories[type].header}>
-                { categories[type].content }
+                { categories[type].content.map((file) => (
+                    <AbilityToggleRenderer 
+                        key={String(file.id)} 
+                        metadata={file.metadata} 
+                        stats={stats}
+                        expendedCharges={isNaN(expendedCharges[String(file.id)]) ? 0 : expendedCharges[String(file.id)]}
+                        setExpendedCharges={(value) => handleSetExpendedCharges(value, file.id)}/>
+                ))}
             </CollapsibleGroup>
         )
     )

@@ -42,7 +42,7 @@ const ChargesRenderer = ({ charges, expended, setExpended }: ChargesRendererProp
         setState(true)
     }
 
-    if (charges > 999) {
+    if (charges > 99) {
         return null
     } else if (charges > 5) {
         return (

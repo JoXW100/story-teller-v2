@@ -1,6 +1,6 @@
 import { getOptionType } from "data/optionData"
-import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
-import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, IChoice, ModifierCondition } from "types/database/files/modifier";
+import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, ModifierCondition } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 import ChoiceData from "./choice";
 
@@ -39,6 +39,10 @@ class ModifierData implements Required<IModifier>  {
     
     public get binding(): AdvantageBinding {
         return this.metadata.binding ?? getOptionType('advantageBinding').default
+    }
+
+    public get acBase(): ArmorClassBase {
+        return this.metadata.acBase ?? getOptionType('acBase').default
     }
 
     public get select(): SelectType {

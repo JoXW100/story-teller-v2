@@ -4,6 +4,17 @@ import type{ AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, Di
 import type { IOptionType } from "../editor"
 import type ICreatureStats from "./iCreatureStats"
 
+export enum CreatureValue {
+    STR = "str",
+    DEX = "dex",
+    CON = "con",
+    INT = "int",
+    WIS = "wis",
+    CHA = "cha",
+    Proficiency = "proficiency",
+    SpellAttribute = "spellAttribute",
+    Level = "level",
+}
 
 interface ICreatureContent extends IFileContent {
 }

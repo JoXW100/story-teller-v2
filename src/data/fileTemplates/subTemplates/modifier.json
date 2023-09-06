@@ -29,6 +29,15 @@
                     "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] }],
                     "params": { "label": "Property", "key": "setProperty", "type": "modifierSetTypeProperty", "default": "critRange" }
                 },
+                
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "acBase"] }
+                    ],
+                    "params": { "label": "AC Base Type", "key": "acBase", "default": "dex", "type": "acBase" }
+                },
 
                 { 
                     "type": "enum", 
@@ -41,7 +50,7 @@
                             ]}
                         ]}
                     ],
-                    "params": { "label": "Modifier Type", "key": "select", "type": "modifierSelect", "default": "value" }
+                    "params": { "label": "Value/Choice", "key": "select", "type": "modifierSelect", "default": "value" }
                 }, { 
                     "type": "text", 
                     "conditions": [
@@ -117,10 +126,18 @@
 
                 {
                     "type": "enum", 
-                    "conditions": [
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] },
-                        { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                    "conditions": [{ "type": "any", "value": [
+                        { "type": "all", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "acBase"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "acBase" }, "dexAndAttr"] }
+                        ]},
+                        { "type": "all", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "bonus"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "bonusProperty" }, "attribute"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "select" }, "value"] }
+                        ]}
+                    ]}    
                     ],
                     "params": { "label": "Attribute", "key": "attribute", "type": "attr", "default": "str" }
                 }, { 
@@ -353,6 +370,11 @@
                         { "type": "all", "value": [
                             { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
                             { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, { "type": "any", "value": ["critRange", "maxDexBonus", "multiAttack"] }] }
+                        ]},
+                        { "type": "all", "value": [
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "acBase"] },
+                            { "type": "equals", "value": [{ "type": "metadata", "value": "acBase" }, "dexAndFixed"] }
                         ]}
                     ]}],
                     "params": { "label": "Value", "key": "value" }

@@ -9,13 +9,14 @@ import useTextHandling from 'utils/handlers/textHandler';
 import Parser from 'utils/parser';
 import Logger from 'utils/logger';
 import { Point } from 'types/contextMenu';
+import { CreatureValue } from 'types/database/files/creature';
 import styles from 'styles/components/textEditor.module.scss';
 
-type DialogType = "none" | "option" | "function" | "variable"
+type DialogType = "none" | "option" | "function" | "variable" | "calc"
 
 const characterWidth = 7.2;
 const characterHeight = 15.05;
-const dialogShowExpression = /([\$\\])([a-z0-9]*)$/i
+const dialogShowExpression = /(?:([\$\\])([a-z0-9]*)|(\$\{).*?([a-z]+))$/i
 const dialogFunctionOptionExpression = /\\([a-z0-9]+)[ \t\n\r]*\[[^\]]*?(?:,? *([a-z0-9]*))$/i
 const dialogReplaceExpression = /([a-z0-9]*)$/i
 
@@ -25,7 +26,8 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
     const [handleChange, handleKey, handlePreInput] = useTextHandling(onChange)
     const codeRef = useRef<HTMLTextAreaElement>()
     const highlightRef = useRef<HTMLPreElement>()
-    const elements = Object.keys(ElementDictionary);
+    const elements: string[] = Object.keys(ElementDictionary);
+    const values: string[] = Object.values(CreatureValue)
     const name = className ? `${className} ${styles.holder}` : styles.holder
 
     const handleApply = (e: React.KeyboardEvent<HTMLTextAreaElement>, option: string, type: DialogType) => {
@@ -70,6 +72,9 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
             } else if (match[1] === "\\") {
                 options = elements.filter((element) => element.startsWith(match[2])) ?? []
                 type = "function"
+            } else if (match[3] === "${") {
+                options = values.filter((value) => value.startsWith(match[4])) ?? []
+                type = "calc"
             } else {
                 Logger.throw("textEditorWithSyntaxHighlighting.handleInput", new Error(match[1]))
             }
@@ -125,7 +130,7 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                 inside: {
                     'name': {
                         pattern: /\\[a-z0-9]+/i,
-                        inside: {
+                        inside: elements.length > 0 && {
                             'valid': new RegExp(`^\\\\(?:${elements.join('|')})$`),
                             'error': /.*/
                         }
@@ -138,7 +143,13 @@ const TextEditorWithSyntaxHighlighting = ({ className, text, variables, onChange
                             'variable': /\$/,
                             'bracket': /[\{\}]/,
                             'number': /-?[0-9]+/,
-                            'value': /[a-z0-9]+/i
+                            'value': {
+                                pattern: /[a-z0-9]+/i,
+                                inside: values.length > 0 && {
+                                    'valid': new RegExp(`^${values.join('|')}$`),
+                                    'error': /.*/
+                                }
+                            }
                         }
                     },
                     'separator': /,|:/,

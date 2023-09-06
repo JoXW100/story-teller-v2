@@ -17,11 +17,10 @@ type StoryContextProps = React.PropsWithChildren<{
     storyId: ObjectId,
     fileId: ObjectId,
     editMode: boolean,
-    hideRolls: boolean,
     viewMode: boolean
 }>
 
-const StoryContext = ({ storyId, fileId, editMode, viewMode, hideRolls, children }: StoryContextProps) => {
+const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryContextProps) => {
     const router = useRouter()
     
     const reducer = (state: StoryContextState, action: StoryContextDispatchAction): StoryContextState => {
@@ -99,13 +98,13 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, hideRolls, children
             let result = collection.roll(method, source)
             let event: RollEvent = { result: result, time: Date.now() }
             state.rollHistory.add(event)
-            Beyond20.sendRoll(result, hideRolls ? WhisperType.YES : WhisperType.NO)
+            Beyond20.sendRoll(result)
             dispatch({ type: 'roll', data: event });
         },
         clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
         collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),
         expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true })
-    }), [state.rollHistory, hideRolls, dispatch])
+    }), [state.rollHistory, dispatch])
 
     return (
         <Context.Provider value={[state, provider]}>
