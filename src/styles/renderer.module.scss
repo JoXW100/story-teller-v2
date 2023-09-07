@@ -131,6 +131,7 @@
     &[data=open] {
         cursor: pointer;
     }
+    
     &[data=closed] {
         cursor: pointer;
         border-bottom: 2px solid;
@@ -478,6 +479,7 @@
             font-weight: bold;
             min-width: 0;
             text-align: center;
+            height: 16px;
         }
 
         & > :last-child {

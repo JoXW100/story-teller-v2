@@ -601,7 +601,7 @@ class ModifierCollection implements IModifierCollection {
         if (onlyRemove) {
             return spells.filter(spell => !existing.has(spell))
         }  else {
-            return  [...spells ?? [], ...this.addData.abilities ?? []].filter(spell => {
+            return  [...spells ?? [], ...this.addData.spells ?? []].filter(spell => {
                 if (!existing.has(spell)) {
                     existing.add(spell)
                     return true
