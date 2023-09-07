@@ -12,7 +12,7 @@ class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata
     public readonly attuned: boolean
     constructor(metadata: IItemMetadata, data?: InventoryItemData, id?: ObjectId, attuned?: boolean) {
         super(metadata)
-        this.data = data;
+        this.data = data ?? {};
         this.id = id
         this.attuned = attuned ?? false
     }
@@ -95,7 +95,7 @@ class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata
     // Modifiers
 
     public get modifiers(): ModifierData[] {
-        if (this.equipped && (!this.requiresAttunement || this.attuned)) {
+        if ((this.equipped && (!this.requiresAttunement || this.attuned)) || this.type === ItemType.Consumable) {
             return (this.metadata.modifiers ?? []).map((modifier) => new ModifierData(modifier, this.id?.toString()))
         }
         return []

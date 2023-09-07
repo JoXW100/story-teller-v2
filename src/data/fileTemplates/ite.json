@@ -52,6 +52,7 @@
                     },
                     { 
                         "type": "boolean", 
+                        "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "type" }, "consumable"] }],
                         "params": { "label": "Attunement", "key": "requiresAttunement", "default": false }
                     },
                     {

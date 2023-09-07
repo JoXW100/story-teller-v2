@@ -30,8 +30,10 @@ const useCharacterHandler = (data: IFileQueryData<CharacterFile>): [character: C
     useEffect(() => {
         if (abilities) {
             let itemModifiers = items.flatMap((item) => item ? new ItemData(item.metadata, data.storage.inventory?.[String(item.id)], item.id, data.storage.attunement?.some(x => String(x) === String(item.id))).modifiers : [])
+            let itemModifierCollection = new ModifierCollection(itemModifiers, data.storage)
             let abilityModifiers = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
-            let collection = new ModifierCollection([...abilityModifiers, ...itemModifiers], data.storage)
+            let abilityModifierCollection = new ModifierCollection([...abilityModifiers, ...itemModifiers], data.storage)
+            let collection = abilityModifierCollection.join(itemModifierCollection)
             if (!collection.equals(modifiers)) {
                 setModifiers(collection);
             }

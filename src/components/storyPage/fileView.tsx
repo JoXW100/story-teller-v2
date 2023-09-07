@@ -57,6 +57,7 @@ const FileContent = (): JSX.Element => {
             return <NoSelectedFileView/>;
             
         let template = getTemplate(context.file.type)
+        console.log("EditMode", storyContext.editEnabled)
         if (template) {
             let pages = context.editFilePages ?? []
             let editorRoot = getFileEditorRoot(template, pages)
@@ -67,7 +68,7 @@ const FileContent = (): JSX.Element => {
                     className={styles.fileDivider}
                     minLeft={70}
                     minRight={50}
-                    collapsed={storyContext.editEnabled}
+                    collapsed={!storyContext.editEnabled}
                     left={<Editor key="editor" template={editorRoot} metadata={metadata}/>}
                     right={<Renderer key="renderer" template={template.renderer}/>}/>
             ) : storyContext.editEnabled 
