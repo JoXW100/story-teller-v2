@@ -5,7 +5,7 @@ import Localization from 'utils/localization';
 import CharacterBackgroundPage from './backgroundPage';
 import CharacterSpellPage from './spellPage';
 import CharacterClassPage from './classPage';
-import ItemsPage from './itemsPage';
+import InventoryPage from './inventoryPage';
 import HealthBox from './healthBox';
 import AbilityGroups from '../ability/abilityGroup';
 import SpellGroups from '../spell/spellGroups';
@@ -41,7 +41,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
 
     const Pages = [
         "Abilities",
-        "Items",
+        "Inventory",
         "Background", 
         character.spellAttribute !== OptionalAttribute.None && character.classFile ? "Spells" : null, 
         character.classFile ? "Class" : null]
@@ -151,8 +151,8 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                             setExpendedCharges={handleSetExpendedAbilityCharges}
                             values={values}/>
                     </div>
-                    <div className={styles.pageItem} data={page === "Items" ? "show" : "hide"}>
-                        <ItemsPage items={items} storage={file.storage} setStorage={dispatch.setStorage}/>
+                    <div className={styles.pageItem} data={page === "Inventory" ? "show" : "hide"}>
+                        <InventoryPage items={items} storage={file.storage} setStorage={dispatch.setStorage}/>
                     </div>
                     <div className={styles.pageItem} data={page === "Spells" ? "show" : "hide"}>
                         <CharacterSpellPage 

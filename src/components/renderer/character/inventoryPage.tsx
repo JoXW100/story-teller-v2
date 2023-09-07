@@ -25,7 +25,7 @@ type ItemsPageProps = React.PropsWithRef<{
 
 const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.RangedWeapon, ItemType.ThrownWeapon, ItemType.Trinket])
 
-const ItemsPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Element => {
+const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const [state, setState] = useState(null);
     const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
     const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
@@ -178,4 +178,4 @@ const ItemsPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Element 
     )
 }
 
-export default ItemsPage;
+export default InventoryPage;

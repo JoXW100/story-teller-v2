@@ -113,8 +113,10 @@ class ModifierCollection implements IModifierCollection {
             case ModifierAddRemoveTypeProperty.Ability:
                 if (mod.select === SelectType.Value) {
                     result.abilities = [...result.abilities ?? [], mod.file]
-                } else if (this.storage.classData?.[mod.id]) {
-                    result.abilities = [...result.abilities ?? [], ...this.storage.classData[mod.id] ]
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.abilities = [...result.abilities ?? [], ...this.storage.classData[mod.id] ]
+                    }
                     if (mod.allowAny) {
                         result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Ability], num: mod.numChoices } satisfies AnyFileChoiceData }
                     } else {
@@ -125,8 +127,10 @@ class ModifierCollection implements IModifierCollection {
             case ModifierAddRemoveTypeProperty.Spell:
                 if (mod.select === SelectType.Value) {
                     result.spells = [...result.spells ?? [], mod.file]
-                } else if (this.storage.classData?.[mod.id]) {
-                    result.spells = [...result.spells ?? [], ...this.storage.classData[mod.id]]
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.spells = [...result.spells ?? [], ...this.storage.classData[mod.id]]
+                    }
                     if (mod.allowAny) {
                         result.choices = {...result.choices, [mod.id]: { type: "file", label: mod.label, allowAny: true, options: [FileType.Spell], num: mod.numChoices } satisfies AnyFileChoiceData }
                     } else {
@@ -139,104 +143,127 @@ class ModifierCollection implements IModifierCollection {
                     case ProficiencyType.Armor:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesArmor = [...result.proficienciesArmor ?? [], mod.armor]
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesArmor = [...result.proficienciesArmor ?? [], ...this.storage.classData[mod.id]]
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                result.proficienciesArmor = [...result.proficienciesArmor ?? [], ...this.storage.classData[mod.id]]
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.armors ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
                     case ProficiencyType.Language:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesLanguage = [...result.proficienciesLanguage ?? [], mod.language]
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesLanguage = [...result.proficienciesLanguage ?? [], ...this.storage.classData[mod.id]]
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                result.proficienciesLanguage = [...result.proficienciesLanguage ?? [], ...this.storage.classData[mod.id]]
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.languages ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
                     case ProficiencyType.Save:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesSave = [...result.proficienciesSave ?? [], mod.save]
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesSave = [...result.proficienciesSave ?? [], ...this.storage.classData[mod.id]]
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                result.proficienciesSave = [...result.proficienciesSave ?? [], ...this.storage.classData[mod.id]]
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.saves ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
                     case ProficiencyType.Skill:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesSkill = { ...result.proficienciesSkill, [mod.skill]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesSkill?.[mod.skill]) }
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesSkill = (this.storage.classData[mod.id] as Skill[]).reduce((prev, skill) => (
-                                { ...prev, [skill]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesSkill?.[mod.skill]) }
-                            ), result.proficienciesSkill ?? {})
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                for (const skill of this.storage.classData[mod.id] as Skill[]) {
+                                    result.proficienciesSkill = { ...result.proficienciesSkill, [skill]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesSkill?.[mod.skill]) }
+                                }
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.skills ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
                     case ProficiencyType.Tool:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesTool = { ...result.proficienciesTool, [mod.tool]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesTool?.[mod.tool]) }
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesTool = (this.storage.classData[mod.id] as Tool[]).reduce((prev, tool) => (
-                                { ...prev, [tool]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesTool?.[mod.tool]) }
-                            ), result.proficienciesTool ?? {})
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                for (const tool of this.storage.classData[mod.id] as Tool[]) {
+                                    result.proficienciesTool = {...result.proficienciesTool, [tool]: getMaxProficiencyLevel(mod.proficiencyLevel, result.proficienciesTool?.[mod.tool])}
+                                }
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.tools ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
                     case ProficiencyType.Weapon:
                         if (mod.select === SelectType.Value) {
                             result.proficienciesWeapon = [...result.proficienciesWeapon ?? [], mod.weapon]
-                        } else if (this.storage.classData?.[mod.id]) {
-                            result.proficienciesWeapon = [...result.proficienciesWeapon ?? [], ...this.storage.classData[mod.id]]
+                        } else {
+                            if (Array.isArray(this.storage.classData?.[mod.id])) {
+                                result.proficienciesWeapon = [...result.proficienciesWeapon ?? [], ...this.storage.classData[mod.id]]
+                            }
                             result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: mod.proficiency, options: mod.weapons ?? [], num: mod.numChoices } satisfies ChoiceData }
                         }
                         break;
-                    default:
-                        break;
+                    default: break;
                 }
                 break;
             case ModifierAddRemoveTypeProperty.Advantage:
                 if (mod.select === SelectType.Value) {
                     result.advantages = { ...result.advantages, [mod.binding]: [...result.advantages?.[mod.binding] ?? [], mod.text] }
-                } else if (this.storage.classData?.[mod.id]) {
-                    result.advantages = { ...result.advantages, [mod.binding]: [...result.advantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.advantages = { ...result.advantages, [mod.binding]: [...result.advantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
             case ModifierAddRemoveTypeProperty.Disadvantage:
                 if (mod.select === SelectType.Value) {
                     result.disadvantages = { ...result.disadvantages, [mod.binding]: [...result.disadvantages?.[mod.binding] ?? [], mod.text] }
-                } else if (this.storage.classData?.[mod.id]) {
-                    result.disadvantages = { ...result.disadvantages, [mod.binding]: [...result.disadvantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.disadvantages = { ...result.disadvantages, [mod.binding]: [...result.disadvantages?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
             case ModifierAddRemoveTypeProperty.CONImmunity:
                 if (mod.select === SelectType.Value) {
                     result.conImmunities = [...result.conImmunities ?? [], mod.text]
-                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
-                    result.conImmunities = [...result.conImmunities ?? [], ...this.storage.classData[mod.id]]
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.conImmunities = [...result.conImmunities ?? [], ...this.storage.classData[mod.id]]
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
             case ModifierAddRemoveTypeProperty.DMGImmunity:
                 if (mod.select === SelectType.Value) {
                     result.dmgImmunities = [...result.dmgImmunities ?? [], mod.text]
-                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
-                    result.dmgImmunities = [...result.dmgImmunities ?? [], ...this.storage.classData[mod.id]]
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.dmgImmunities = [...result.dmgImmunities ?? [], ...this.storage.classData[mod.id]]
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
             case ModifierAddRemoveTypeProperty.Resistance:
                 if (mod.select === SelectType.Value) {
                     result.resistances = [...result.resistances ?? [], mod.text]
-                } else if (Array.isArray(this.storage.classData?.[mod.id])) {
-                    result.resistances = [...result.resistances ?? [], ...this.storage.classData[mod.id]]
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.resistances = [...result.resistances ?? [], ...this.storage.classData[mod.id]]
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
             case ModifierAddRemoveTypeProperty.Vulnerability:
                 if (mod.select === SelectType.Value) {
                     result.resistances = { ...result.resistances, [mod.binding]: [...result.resistances?.[mod.binding] ?? [], mod.text] }
-                } else if (this.storage.classData?.[mod.id]) {
-                    result.resistances = { ...result.resistances, [mod.binding]: [...result.resistances?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        result.resistances = { ...result.resistances, [mod.binding]: [...result.resistances?.[mod.binding] ?? [], ...this.storage.classData[mod.id]] }
+                    }
                     result.choices = {...result.choices, [mod.id]: { type: "text", label: mod.label, text: mod.text, options: mod.texts, num: mod.numChoices } satisfies TextChoiceData }
                 }
                 break
@@ -249,18 +276,26 @@ class ModifierCollection implements IModifierCollection {
             case ModifierBonusTypeProperty.Attribute:
                 if (mod.select === SelectType.Value) {
                     result.attributeBonuses = { ...result.attributeBonuses, [mod.attribute]: (result.attributeBonuses?.[mod.attribute] ?? 0) + mod.value }
-                } else if (this.storage.classData?.[mod.id]) {
-                    let choices: Attribute[] = this.storage.classData?.[mod.id]
-                    for (let attr of Array.isArray(choices) ? choices : []) {
-                        result.attributeBonuses = { ...result.attributeBonuses, [attr]: (result.attributeBonuses?.[attr] ?? 0) + mod.value }
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        for (let attr of this.storage.classData[mod.id] as Attribute[]) {
+                            result.attributeBonuses = { ...result.attributeBonuses, [attr]: (result.attributeBonuses?.[attr] ?? 0) + mod.value }
+                        }
                     }
-
-                    let choice = { type: "enum", label: mod.label, enum: "attr", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData
-                    result.choices = {...result.choices, [mod.id]: choice }
+                    result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: "attr", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData }
                 }
                 break;
             case ModifierBonusTypeProperty.Movement:
-                result.movementBonuses = { ...result.movementBonuses, [mod.movement]: (result.movementBonuses?.[mod.movement] ?? 0) + mod.value }
+                if (mod.select === SelectType.Value) {
+                    result.movementBonuses = { ...result.movementBonuses, [mod.movement]: (result.movementBonuses?.[mod.movement] ?? 0) + mod.value }
+                } else {
+                    if (Array.isArray(this.storage.classData?.[mod.id])) {
+                        for (let movement of this.storage.classData[mod.id] as MovementType[]) {
+                            result.movementBonuses = { ...result.movementBonuses, [movement]: (result.movementBonuses?.[movement] ?? 0) + mod.value }
+                        }
+                    }
+                    result.choices = {...result.choices, [mod.id]: { type: "enum", label: mod.label, enum: "movement", options: mod.attributes , num: mod.numChoices} satisfies EnumChoiceData }
+                }
                 break;
             default:
                 result.bonuses = { ...result.bonuses, [mod.bonusProperty]: (result.bonuses?.[mod.bonusProperty] ?? 0) + mod.value }
@@ -292,8 +327,7 @@ class ModifierCollection implements IModifierCollection {
     }
 
     private applyChoiceModifier(result: ModifierResultData, mod: IModifier): void {
-        let choice: ChoiceChoiceData = { type: "choice", label: mod.label, options: mod.choices, num: mod.numChoices }
-        result.choices = { ...result.choices, [mod.id]: choice }
+        result.choices = { ...result.choices, [mod.id]: { type: "choice", label: mod.label, options: mod.choices, num: mod.numChoices } as ChoiceChoiceData }
     }
 
     public getChoices(): Record<string, ChoiceData> {
@@ -401,42 +435,42 @@ class ModifierCollection implements IModifierCollection {
     }
 
     public modifyProficienciesTool(proficiencies: Partial<Record<Tool, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Tool, ProficiencyLevel>> {
+        let result: Partial<Record<Tool, ProficiencyLevel>> = {}
         if (onlyRemove) {
-            return Object.keys(proficiencies).reduce((prev, tool: Tool) => {
+            for (const tool in proficiencies) {
                 let max = getMaxProficiencyLevel(proficiencies[tool], this.removeData.proficienciesTool?.[tool])
                 if (max !== this.removeData.proficienciesTool?.[tool]) {
-                    return { ...prev, [tool]: proficiencies[tool]}
+                    result[tool] = proficiencies[tool]
                 }
-                return prev
-            }, {})
+            }
         } else {
-            return Object.values(Tool).reduce((prev, tool) => {
+            for (const tool of Object.values(Tool)) {
                 let max = getMaxProficiencyLevel(proficiencies[tool], this.addData.proficienciesTool?.[tool], this.removeData.proficienciesTool?.[tool])
-                if (this.removeData.proficienciesTool?.[tool] !== max) {
-                    return { ...prev, [tool]: max }
+                if (max && max !== this.removeData.proficienciesTool?.[tool]) {
+                    result[tool] = max
                 }
-                return prev
-            }, {})
+            }
         }
+        return result
     }
     public modifyProficienciesSkill(proficiencies: Partial<Record<Skill, ProficiencyLevel>>, onlyRemove: boolean = false): Partial<Record<Skill, ProficiencyLevel>> {
+        let result: Partial<Record<Skill, ProficiencyLevel>> = {}
         if (onlyRemove) {
-            return Object.keys(proficiencies).reduce((prev, skill: Skill) => {
+            for (const skill in proficiencies) {
                 let max = getMaxProficiencyLevel(proficiencies[skill], this.removeData.proficienciesSkill?.[skill])
                 if (max !== this.removeData.proficienciesSkill?.[skill]) {
-                    return { ...prev, [skill]: proficiencies[skill]}
+                    result[skill] = proficiencies[skill]
                 }
-                return prev
-            }, {})
+            }
         } else {
-            return Object.values(Skill).reduce((prev, skill) => {
+            for (const skill of Object.values(Skill)) {
                 let max = getMaxProficiencyLevel(proficiencies[skill], this.addData.proficienciesSkill?.[skill], this.removeData.proficienciesSkill?.[skill])
-                if (this.removeData.proficienciesSkill?.[skill] !== max) {
-                    return { ...prev, [skill]: max }
+                if (max && max !== this.removeData.proficienciesSkill?.[skill]) {
+                    result[skill] = max
                 }
-                return prev
-            }, {})
+            }
         }
+        return result
     }
 
     public modifyResistances(resistances: string[], onlyRemove: boolean = false): string[] {
@@ -445,7 +479,7 @@ class ModifierCollection implements IModifierCollection {
             return resistances.filter(resistance => !existing.has(resistance))
         } else {
             return [...resistances, ...this.addData.resistances ?? []].filter(resistance => {
-                if (!existing.has(resistance)) {
+                if (resistance && !existing.has(resistance)) {
                     existing.add(resistance)
                     return true
                 }

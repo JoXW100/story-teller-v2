@@ -11,13 +11,13 @@ import Dice from 'utils/data/dice';
 import Navigation from 'utils/navigation';
 import useCreatureHandler from 'utils/handlers/creatureHandler';
 import useCharacterHandler from 'utils/handlers/characterHandler';
+import Beyond20 from 'utils/beyond20';
+import DiceCollection from 'utils/data/diceCollection';
 import { ObjectId } from 'types/database';
 import { IEncounterCard, IEncounterStorage } from 'types/database/files/encounter';
 import { FileDataQueryResult } from 'types/database/responses';
-import { RollMethod, RollResult } from 'types/dice';
+import { RollMethod } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
-import Beyond20 from 'utils/beyond20';
-import DiceCollection from 'utils/data/diceCollection';
 
 type CreatureCardProps = React.PropsWithRef<{
     data: FileDataQueryResult
@@ -47,6 +47,10 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
     const attrOptions = getOptionType("attr")
     const attrModifier = rolls.type === "check" ? creature.getAttributeModifier(rolls.attr) : 0
     const saveModifier = rolls.type === "save" ? creature.getSaveModifier(rolls.attr) : 0
+    const portrait = creature.portrait && creature.portrait.includes("http")
+        ? creature.portrait
+        : '/defaultImage.jpg'
+
 
     const maxHealth = useMemo<number>(() => {
         if (!isNaN(card.maxHealth)) {
@@ -54,9 +58,8 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
             let value = creature.hitDiceCollection.roll(RollMethod.Normal, creature.name)
             Dice.seed(encounter.random())
             return value.results[value.selectedIndex].sum
-        } else {
-            return creature.healthValue
         }
+        return creature.healthValue
     }, [creature, card.maxHealth])
 
     const onNotesChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -82,10 +85,6 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
         Beyond20.sendInitiativeRoll(roll)
         dispatch.setStorage("cards", cards)
     }
-
-    const portrait = creature.portrait && creature.portrait.includes("http") 
-        ? creature.portrait 
-        : '/defaultImage.jpg'
 
     return (
         <div className={styles.encounterCard} style={{ order: order }}>

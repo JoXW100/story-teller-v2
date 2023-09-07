@@ -1,7 +1,6 @@
 import { ObjectIdText } from "types/database";
 import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
-import { CreatureValue } from "types/database/files/creature";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
 

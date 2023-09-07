@@ -1,7 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
+import DropdownMenu from 'components/common/controls/dropdownMenu';
 import Elements from 'data/elements';
 import EncounterData from 'data/structures/encounter';
+import { getOptionType } from 'data/optionData';
 import { Attribute } from 'types/database/dnd';
 import { CharacterCard, CreatureCard } from './encounterCard';
 import { useParser } from 'utils/parser';
@@ -14,8 +16,6 @@ import EncounterFile, { IEncounterMetadata } from 'types/database/files/encounte
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { File, FileType } from 'types/database/files';
 import styles from 'styles/renderer.module.scss';
-import { getOptionType } from 'data/optionData';
-import DropdownMenu from 'components/common/controls/dropdownMenu';
 
 type EncounterFileRendererProps = React.PropsWithRef<{
     file: File<EncounterFile>

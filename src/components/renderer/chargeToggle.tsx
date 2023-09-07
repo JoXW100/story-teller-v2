@@ -46,23 +46,26 @@ const ChargesRenderer = ({ charges, expended, setExpended }: ChargesRendererProp
         return null
     } else if (charges > 5) {
         return (
-            <>
-                <div className={styles.chargeToggleInputHolder} onClick={handleClick}>
-                    { state 
-                        ? (
-                            <>
-                                <NumberInput onFocusLost={handleFocusLost} value={charges - expended} setValue={handleSetValue} autoFocus={true}/>
-                                <b> / {charges}</b>
-                            </>
-                        ) : <b>{`${charges - expended} / ${charges}`}</b>
-                    }
-                </div>
-            </>
+            <div className={styles.chargeToggleInputHolder} onClick={handleClick}>
+                { state 
+                    ?
+                    <>
+                        <NumberInput 
+                            value={charges - expended}
+                            autoFocus={true}
+                            setValue={handleSetValue}
+                            onFocusLost={handleFocusLost}/>
+                        <b>{` / ${charges}`}</b>
+                    </>
+                    :
+                    <b>{`${charges - expended} / ${charges}`}</b>
+                }
+            </div>
         )
     } else if (charges > 0) {
         return (
             <>
-                { Array.from({length: charges }, (_,i) => (
+                {Array.from({length: charges }, (_,i) => (
                     <ChargeToggle 
                         key={i} 
                         expended={i < expended} 
