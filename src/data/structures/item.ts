@@ -8,7 +8,7 @@ import InventoryItemData from "types/database/files/inventoryItem";
 
 class ItemData extends FileData<IItemMetadata> implements Required<IItemMetadata> {
     private readonly data?: InventoryItemData
-    private readonly id?: ObjectId
+    public readonly id?: ObjectId
     public readonly attuned: boolean
     constructor(metadata: IItemMetadata, data?: InventoryItemData, id?: ObjectId, attuned?: boolean) {
         super(metadata)

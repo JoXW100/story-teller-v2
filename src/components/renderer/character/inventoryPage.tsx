@@ -63,10 +63,12 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
 
     const handleEquip = (id: ObjectIdText, value: boolean) => {
         let key = String(id)
-        setStorage("inventory", {
-            ...storage.inventory,
-            [key]: { ...storage.inventory[key], equipped: value }
-        } satisfies InventoryItemData)
+        if (key && id) {
+            setStorage("inventory", {
+                ...storage.inventory,
+                [key]: { ...storage.inventory[key], equipped: value }
+            } satisfies InventoryItemData)
+        }
     }
 
     const handleAttunementChanged = (index: number, value: string) => {
@@ -77,28 +79,18 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
         setStorage("inventoryOther", e.target.value)
     }
 
+    const handleSort = (a: ItemData, b: ItemData): number => {
+        if (b.equipped === a.equipped) {
+            return b.name.localeCompare(a.name)
+        }
+        return -a.equipped
+    }
+
     useEffect(() => {
         if (state) {
             setState(null)
         }
     }, [state])
-    
-    /*
-    useEffect(() => {
-        // This should be handled server-side
-        let invalidIds = ids.filter(id => id === undefined || !isObjectId(id))
-        if (invalidIds.length > 0) {
-            let inventory = { ...storage.inventory }
-            invalidIds.forEach(id => {
-                delete inventory[String(id)]
-            })
-            setStorage("inventory", inventory)
-        }
-        if (attunement.some(id => id && !(isObjectId(id) && ids.includes(String(id))))) {
-            setStorage("attunement", undefined)
-        }
-    }, [ids])
-    */
     
     return (
         <>
@@ -110,21 +102,21 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                     <b tooltips='Quantity'>QTY</b>
                     <b tooltips='Total Value'>VAL</b>
                 </div>
-                { items.map((data) => {
-                    if (!data) return null
-                    const item = new ItemData(data.metadata, storage.inventory?.[String(data.id)])
+                { items
+                    .map(item => new ItemData(item?.metadata, storage.inventory?.[String(item?.id)], item?.id, attunement.some(x => String(x) === String(item?.id))))
+                    .sort(handleSort)
+                    .map((item) => {
                     const isEquippable = equippable.has(item.type)
                     const isEquiped = isEquippable && item.equipped
-                    const isAttuned = attunement.some(x => String(x) === String(data.id))
                     return (
                         <div 
-                            key={String(data.id)} 
+                            key={String(item.id)} 
                             className={styles.inventoryItem}
                             data={String(isEquiped)}>
                             <button
                                 tooltips={isEquiped ? "Unequip" : "Equip"}
-                                onClick={() => handleEquip(data.id, !isEquiped)}
-                                disabled={!isEquippable || isAttuned}>
+                                onClick={() => handleEquip(item.id, !item.equipped)}
+                                disabled={!isEquippable || item.attuned}>
                                 {isEquiped ? <UnequipIcon/> : isEquippable && <EquipIcon/>}
                             </button>
                             <div>
@@ -138,8 +130,8 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                             <label>{String(item.totalValue)}</label>
                             <button 
                                 tooltips="Remove"
-                                disabled={isAttuned}
-                                onClick={() => handleRemove(data.id)}>
+                                disabled={item.attuned}
+                                onClick={() => handleRemove(item.id)}>
                                 <RemoveIcon/>
                             </button>
                         </div>
