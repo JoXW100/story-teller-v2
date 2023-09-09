@@ -560,12 +560,12 @@ const OptionTypes = {
     } satisfies IOptionType<typeof Rarity>,
     "effectType": {
         enum: EffectType,
-        default: EffectType.Other,
+        default: EffectType.MainDamage,
         options: {
-            [EffectType.Other]: "Other",
             [EffectType.MainDamage]: "Main Damage",
             [EffectType.BonusDamage]: "Bonus Damage",
-            [EffectType.Condition]: "Condition"
+            [EffectType.Condition]: "Condition",
+            [EffectType.Other]: "Other"
         }
     } satisfies IOptionType<typeof EffectType>,
     "acBase": {

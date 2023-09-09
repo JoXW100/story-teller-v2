@@ -16,7 +16,7 @@
                 },
                 { 
                     "type": "enum", 
-                    "params": { "label": "Effect Type", "key": "type", "type": "effectType", "default": "other" }
+                    "params": { "label": "Effect Type", "key": "type", "type": "effectType", "default": "main" }
                 },
                 { 
                     "type": "text", 

@@ -18,7 +18,7 @@ export const useFiles = <T extends IFileMetadata = IFileMetadata>(fileIDs: Objec
             new Promise(async (resolve) => {
                 let { results, rest } = func ? await func(fileIDs) : { results: [], rest: fileIDs as ObjectId[] }
                 if (rest.length > 0) {
-                    let res = await Communication.getManyData(arrayUnique(rest), allowedTypes)
+                    let res = await Communication.getManyMetadata(arrayUnique(rest), allowedTypes)
                     if (res.success) {
                         let result = res.result
                         let values = rest.map((id) => result.find((x) => String(x?.id) == String(id)))
