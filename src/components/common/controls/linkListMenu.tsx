@@ -19,37 +19,24 @@ type ListMenuPropsType<T, A extends boolean> = {
 }
 
 type ListMenuComponent = {
-    className: string
-    editClassName: string
+    itemClassName?: string
+    editClassName?: string
     files: FileGetManyMetadataResult
-    allowedTypes: FileType[]
-    allowText: boolean
-    placeholder: string
+    allowedTypes?: FileType[]
+    allowText?: boolean
+    placeholder?: string
     onChange: (selection: ObjectIdText[]) => void
 }
 
 type ListMenuProps = React.PropsWithRef<ListMenuPropsType<ObjectId, false> | ListMenuPropsType<ObjectIdText, true>>
 
-type IDCollection = { results: string[], rest: ObjectId[] } 
-
 const LinkListMenu = (props: ListMenuProps): JSX.Element => {
-    const { className, itemClassName, editClassName, onChange, validateInput, values = [], allowedTypes, allowText, placeholder } = props
+    const { className, onChange, validateInput, values = [], allowedTypes } = props
     if (allowedTypes == undefined || allowedTypes.length === 0) {
         throw new Error("LinkListMenu with no accepted filetypes, expected at least one")
     }
     
-    const [files, loading] = useFiles(values, allowedTypes, (values) => (
-        new Promise((resolve) => {
-            let ids = values.reduce<IDCollection>((prev, value) => {
-                if (isObjectId(value)) {
-                    return { ...prev, rest: [...prev.rest, value] }
-                } else {
-                    return { ...prev, results: [...prev.results, value] }
-                }
-            }, { results: [], rest: []})
-            resolve(ids as any)
-        })
-    ))
+    const [files, loading] = useFiles(values, allowedTypes)
     
     return (
         <ListTemplateMenu<ObjectIdText, ListMenuComponent>
@@ -60,14 +47,14 @@ const LinkListMenu = (props: ListMenuProps): JSX.Element => {
             EditComponent={EditComponent}
             defaultValue={""}
             values={loading ? [] : values}
-            params={{ className: itemClassName, editClassName: editClassName,  files: files, allowedTypes: allowedTypes, allowText: allowText, placeholder: placeholder, onChange: onChange }}/>
+            params={{ files: files, ...props }}/>
     )
 }
 
 
 const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuComponent>): JSX.Element => {
-    const { files, allowedTypes, allowText, className } = params
-    const file = files.find((file) => file.id == value)
+    const { files, allowedTypes, allowText, itemClassName } = params
+    const file = files.find((file) => file?.id == value)
     const valid = isObjectId(value)
         ? allowedTypes.includes(file?.type)
         : allowText
@@ -75,18 +62,22 @@ const Component = ({ value, params }: ListTemplateComponent<ObjectId, ListMenuCo
         ? file?.metadata?.name ?? String(value)
         : String(value)
     return (
-        <div className={className} error={String(valid && name)}>
+        <div className={itemClassName} error={String(valid && name)}>
             <b>{name}</b>
         </div>
     )
 }
 
 const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponent<ObjectId, ListMenuComponent>): JSX.Element => {
-    const { allowedTypes, editClassName, placeholder, onChange } = params
+    const { allowedTypes, editClassName, placeholder, allowText, onChange } = params
 
     const handleChange = (value: FileGetMetadataResult) => {
-        onChange([...values, value.id])
-        onUpdate(value.id)
+        if (typeof value === "string") {
+            onUpdate(value)
+        } else {
+            onChange([...values, value.id])
+            onUpdate(value.id)
+        }
     }
 
     return (
@@ -94,6 +85,7 @@ const EditComponent = ({ value, values, onUpdate, params }: ListTemplateComponen
             className={editClassName} 
             placeholder={placeholder}
             allowedTypes={allowedTypes}
+            allowText={allowText}
             value={value}
             onChange={handleChange}/>
     )

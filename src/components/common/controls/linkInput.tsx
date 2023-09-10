@@ -5,15 +5,21 @@ import { FileType } from 'types/database/files';
 import { ObjectId } from 'types/database';
 import { FileGetMetadataResult } from 'types/database/responses';
 import styles from 'styles/components/linkInput.module.scss';
+import { isValidAbilityFormat } from 'utils/importers/stringFormatAbilityImporter';
 
-type EditLinkInputComponentProps = React.PropsWithRef<{
+type EditLinkTypeHelper<A extends boolean, S> = {
     className?: string
     value: ObjectId
     placeholder?: string
     disabled?: boolean
     allowedTypes?: FileType[]
-    onChange: (value: FileGetMetadataResult) => void
-}>
+    allowText?: A
+    onChange: (value: S) => void
+}
+
+type EditLinkInputComponentPropsType = EditLinkTypeHelper<true, FileGetMetadataResult | string> | EditLinkTypeHelper<false, FileGetMetadataResult>
+
+type EditLinkInputComponentProps = React.PropsWithRef<EditLinkInputComponentPropsType>
 
 interface EditLinkInputState {
     text: string
@@ -21,7 +27,7 @@ interface EditLinkInputState {
     highlight: boolean
 }
 
-const LinkInput = ({ className, value, placeholder, disabled, allowedTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
+const LinkInput = ({ className, value, placeholder, disabled, allowText, allowedTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
     const [file, loading] = useFile(state.text as any, allowedTypes)
     const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
@@ -62,7 +68,13 @@ const LinkInput = ({ className, value, placeholder, disabled, allowedTypes, onCh
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         let value = e.target.value
-        if (isObjectId(value) || value === "") {
+        if (allowText) {
+            if (isValidAbilityFormat(value)) {
+                onChange(value)
+            } else {
+                setState({ ...state, text: value, error: true, highlight: false })
+            }
+        } else if (isObjectId(value) || value === "" ) {
             setState({ ...state, text: value, error: false, highlight: false })
         } else {
             setState({ ...state, text: value, error: true, highlight: false })

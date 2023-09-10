@@ -91,6 +91,7 @@ const CharacterClassPage = ({ character, storage, setStorage }: CharacterClassPa
                                     value={classStorage[key]?.[i] ?? null}
                                     allowedTypes={value.options}
                                     placeholder="File ID..."
+                                    allowText={false}
                                     onChange={(value) => handleChange(value.id, key, i)}
                                     disabled={classStorage[key]?.[i]}/>
                                 { classStorage[key]?.[i] &&

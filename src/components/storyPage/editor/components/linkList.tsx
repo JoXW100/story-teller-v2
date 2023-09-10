@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import LinkListMenu from 'components/common/controls/linkListMenu';
 import { Context } from 'components/contexts/fileContext';
 import { TemplateComponentProps } from '.';
+import { isValidAbilityFormat } from 'utils/importers/stringFormatAbilityImporter';
 import { asEnum, getRelativeMetadata, isObjectId } from 'utils/helpers';
 import { FileType } from 'types/database/files';
 import { LinkListTemplateParams } from 'types/templates';
@@ -18,7 +19,7 @@ const LinkListComponent = ({ params }: TemplateComponentProps<LinkListTemplatePa
     }
 
     const handleValidate = (value: ObjectIdText): value is ObjectId => {
-        return isObjectId(value)
+        return isObjectId(value) || (params.allowText && isValidAbilityFormat(value))
     }
 
     return (

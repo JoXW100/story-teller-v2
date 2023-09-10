@@ -76,6 +76,9 @@ const getAction = (action: string, type: AbilityType): ActionType => {
 }
 
 const roll20AbilityExpr = /^(?:([a-z ]+): *)?([a-z 0-9-\(\)]+)\. *(?:([a-z ]+): *([+-][0-9]+) *to hit,?.*[a-z ]+([0-9]+(?:\/[0-9]+)?)[^.]+\.,? *([^.]+)[^:]+: *(?:[0-9]+)? *\(([0-9]+)d([0-9]+) *([+-] *[0-9]+)?\) *([A-z]+)[^.]+. *)?(.*)?/mi
+const isValidAbilityFormat = (text: string): boolean => {
+    return new RegExp(roll20AbilityExpr).test(text)
+}
 const toAbility = async (text: string): Promise<IAbilityMetadata> => {
     var res = new RegExp(roll20AbilityExpr).exec(text)
     if (!res || !res[2])
@@ -123,5 +126,6 @@ const toAbility = async (text: string): Promise<IAbilityMetadata> => {
 }
 
 export {
-    toAbility
+    toAbility,
+    isValidAbilityFormat
 }
