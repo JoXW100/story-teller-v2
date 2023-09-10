@@ -10,6 +10,7 @@ import RollElement from 'data/elements/roll';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import useCreatureHandler from 'utils/handlers/creatureHandler';
+import Logger from 'utils/logger';
 import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
@@ -52,6 +53,8 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
     const handleSetExpendedSpellSlots = (value: number[]) => {
         dispatch.setStorage("spellData", value)
     }
+
+    Logger.log("CreatureFileRenderer", creature)
 
     return (
         <>

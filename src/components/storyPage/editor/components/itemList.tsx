@@ -90,7 +90,7 @@ const ItemListComponent = ({ params }: TemplateComponentProps<ItemListTemplatePa
                 onChange={handleChange}
                 onClick={handleCLick}
                 validateInput={handleValidate}
-                templates={Templates}
+                templates={params.useTemplates ? Templates: {}}
                 placeholder={params.placeholder}/>
         </div>
     )

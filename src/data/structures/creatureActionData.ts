@@ -2,15 +2,19 @@ import { getOptionType } from "data/optionData";
 import FileData from "./file";
 import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
-import IEffect from "types/database/files/iEffect";
+import Effect from "./effect";
+import IEffect, { EffectType } from "types/database/files/iEffect";
 import { getScalingValue } from "utils/calculations";
-import { Attribute, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
+import DiceCollection from "utils/data/diceCollection";
+import Dice from "utils/data/dice";
+import { Attribute, DamageType, EffectCondition, ScalingType, TargetType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";
 import ICreatureActionData from "types/database/files/iConditionalHitEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { IFileMetadata } from "types/database/files";
+import { RollType } from "types/dice";
 
-abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata> extends FileData<T> implements Required<ICreatureActionData & IFileMetadata> {
+abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata = ICreatureActionData & IFileMetadata> extends FileData<T> implements Required<ICreatureActionData & IFileMetadata> {
     public readonly stats: CreatureStats
 
     constructor(metadata: T, stats: ICreatureStats = null) {
@@ -73,6 +77,21 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata>
 
     public get effects(): IEffect[] {
         return this.metadata.effects ?? []
+    }
+
+    public getDamageOnHit(): DiceCollection[] {
+        let hasMainDamage = false
+        let collections = []
+        for (const data of this.effects) {
+            let effect = new Effect(data, this.stats)
+            if (effect.damageType !== DamageType.None && ((effect.type === EffectType.MainDamage && !hasMainDamage) || effect.type === EffectType.BonusDamage)) {
+                hasMainDamage = hasMainDamage || effect.type === EffectType.MainDamage;
+                let effectDiceCollection = new DiceCollection(effect.modifierValue, `${this.name} ${effect.label}`, effect.damageType, RollType.Damage)
+                effectDiceCollection.add(new Dice(effect.dice), effect.diceNum)
+                collections.push(effectDiceCollection)
+            }
+        }
+        return collections
     }
 }
 

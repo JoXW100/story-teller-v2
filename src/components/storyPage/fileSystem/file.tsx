@@ -115,13 +115,13 @@ const File = ({ file }: FileProps): JSX.Element => {
                 action: () => navigator.clipboard.writeText(String(file.id))
             },
             { 
-                text: Localization.toText('create-rename'), 
+                text: Localization.toText('common-rename'), 
                 icon: RenameIcon, 
                 id: contextID,
                 action: () => setState({ ...state, inEditMode: true })
             },
             { 
-                text: Localization.toText('create-delete'), 
+                text: Localization.toText('common-delete'), 
                 icon: RemoveIcon, 
                 action: () => dispatch.openRemoveFileMenu(file)
             },

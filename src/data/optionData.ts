@@ -2,7 +2,7 @@ import { Enum } from 'types';
 import { AbilityType, ActionType, AdvantageBinding, Alignment, AreaType, ArmorClassBase, ArmorType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, Gender, ItemType, Language, MagicSchool, MeleeWeaponType, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, RangedWeaponType, Rarity, RestType, ScalingType, Sense, SizeType, Skill, TargetType, ThrownWeaponType, Tool, WeaponType } from 'types/database/dnd';
 import { ModifierType, SelectType, ModifierCondition, ModifierBonusTypeProperty, ModifierAddRemoveTypeProperty, ModifierSetTypeProperty } from 'types/database/files/modifier';
 import { CalculationMode, RenderedFileType } from 'types/database/editor';
-import { EffectType } from 'types/database/files/iEffect';
+import { EffectType, EffectScaling, EffectScalingModifierType } from 'types/database/files/iEffect';
 
 interface IOptionType<T extends Enum> {
     enum: T
@@ -608,6 +608,24 @@ const OptionTypes = {
             [AdvantageBinding.SurvivalCheck]: "Survival Check",
         }
     } satisfies IOptionType<typeof AdvantageBinding>,
+    "effectScaling": {
+        enum: EffectScaling,
+        default: EffectScaling.Level,
+        options: {
+            [EffectScaling.Level]: "Level",
+            [EffectScaling.CasterLevel]: "Caster Level",
+            [EffectScaling.SpellSlot]: "Spell Slot"
+        }
+    } satisfies IOptionType<typeof EffectScaling>,
+    "effectScalingModifier": {
+        enum: EffectScalingModifierType,
+        default: EffectScalingModifierType.DiceSize,
+        options: {
+            [EffectScalingModifierType.DiceSize]: "Dice Size",
+            [EffectScalingModifierType.DiceNum]: "Number of Dice",
+            [EffectScalingModifierType.Modifier]: "Modifier"
+        }
+    } satisfies IOptionType<typeof EffectScalingModifierType>,
     "fileTypes": {
         enum: RenderedFileType,
         default: RenderedFileType.Ability,

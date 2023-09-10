@@ -15,7 +15,7 @@ import DiceCollection from "utils/data/diceCollection";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
-    private readonly storage: ICharacterStorage
+    public readonly storage: ICharacterStorage
     public readonly characterClass: ClassData
     public readonly characterSubClass: ClassData
     
@@ -132,9 +132,9 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
 
     public override get spellSlots(): number[] {
         if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterSubClass.spellSlots[this.level - 1] ?? []
+            return this.characterSubClass.spellSlots[this.casterLevelValue - 1] ?? []
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterClass.spellSlots[this.level - 1] ?? []
+            return this.characterClass.spellSlots[this.casterLevelValue - 1] ?? []
         } else {
             return this.metadata.spellSlots ?? []
         }
@@ -211,10 +211,10 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     public get preparationSlots(): number {
         if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
             let mod = this.getAttributeModifier(this.characterSubClass.preparationSlotsScaling)
-            return (this.characterSubClass.preparationSlots[this.level - 1] ?? 0) + mod
+            return (this.characterSubClass.preparationSlots[this.casterLevelValue - 1] ?? 0) + mod
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
             let mod = this.getAttributeModifier(this.characterClass.preparationSlotsScaling)
-            return (this.characterClass.preparationSlots[this.level - 1] ?? 0) + mod
+            return (this.characterClass.preparationSlots[this.casterLevelValue - 1] ?? 0) + mod
         } else {
             return 0
         }
@@ -232,9 +232,9 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     
     public get cantripSlots(): number {
         if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterSubClass.cantripSlots[this.level - 1] ?? 0
+            return this.characterSubClass.cantripSlots[this.casterLevelValue - 1] ?? 0
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterClass.cantripSlots[this.level - 1] ?? 0
+            return this.characterClass.cantripSlots[this.casterLevelValue - 1] ?? 0
         } else {
             return 0
         }
@@ -242,9 +242,9 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     
     public get learnedSlots(): number {
         if (this.characterSubClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterSubClass.learnedSlots[this.level - 1] ?? 0
+            return this.characterSubClass.learnedSlots[this.casterLevelValue - 1] ?? 0
         } else if (this.characterClass.spellAttribute !== OptionalAttribute.None) {
-            return this.characterClass.learnedSlots[this.level - 1] ?? 0
+            return this.characterClass.learnedSlots[this.casterLevelValue - 1] ?? 0
         } else {
             return 0
         }

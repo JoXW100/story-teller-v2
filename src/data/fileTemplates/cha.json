@@ -232,6 +232,11 @@
                                 "type": "enum", 
                                 "params": { "label": "Attribute", "key": "spellAttribute", "type": "optionalAttr", "default": "none" }
                             },
+                            { 
+                                "type": "option", 
+                                "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],
+                                "params": { "label": "Caster Level", "key": "casterLevel", "default": 0 }
+                            },
                             {
                                 "type": "staticList",
                                 "conditions": [{ "type": "notEquals", "value": [{ "type": "metadata", "value": "spellAttribute" }, "none"] }],

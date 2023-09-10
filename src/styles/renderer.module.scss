@@ -233,6 +233,11 @@
     font-size: 14px;
 }
 
+.encounterAddGroupButton {
+    width: 100%;
+    border-radius: $iconSmallSize;
+}
+
 .encounterCollapsedButtonHolder {
     display: block;
     position: relative;
@@ -276,6 +281,11 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-column-gap: 10px;
     grid-row-gap: 10px;
+    margin-top: 5px;
+
+    &[data=true] {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 }
 
 .encounterCard {
@@ -357,18 +367,6 @@
         }
     }
 
-    .encounterCardPortrait {
-        @include centerFlex();
-        overflow: hidden;
-        margin: 3px;
-        aspect-ratio: 1;
-
-        & > img {
-            width: 100%;
-            margin: auto;
-        }
-    }
-
     .encounterCardTextarea {
         display: flex;
         font: inherit;
@@ -382,30 +380,72 @@
     }
 }
 
-.spaceOutRolls {
-    & > span:not(:last-child) {
-        margin-right: 5px;
+.encounterCardPortrait {
+    @include centerFlex;
+    overflow: hidden;
+    margin: 3px;
+    aspect-ratio: 1;
+    position: relative;
+
+    & > img {
+        width: 100%;
+        margin: auto;
+    }
+}
+
+.encounterInitiativeCounter {
+    @include colorDecoration(second);
+    @include centerFlex;
+    position: absolute;
+    z-index: 100;
+    height: $iconSmallSize;
+    width: $iconSmallSize;
+    border-radius: 100%;
+}
+
+.encounterTurnOrderEntry {
+    @include colorWithShadow(second);
+    display: grid;
+    grid-template-columns: $iconSmallSize * 2 1fr;
+    margin-top: 5px;
+    padding-right: 10px;
+    align-items: center;
+    pointer-events: none;
+    user-select: none;
+
+    & > img {
+        width: 100%;
+    }
+
+    & > b {
+        @include fontNoLineBreak;
+    }
+
+    &:not(& + &) {
+        @include colorBackground(main);
+    }
+    
+    &[data=true] {
+        border-top: 2px solid;
     }
 }
 
 .sheetBox {
     @include colorDecoration(second);
     display: grid;
-    grid-template-columns: 1fr;
     justify-items: center;
     border: 2px solid;
     margin: 0 1px;
     padding: 3px;
     flex: 1;
-    font-size: small;
+    font-size: 14px;
 }
 
 .attributeBox {
     @extend .sheetBox;
-    border-radius: 10px;
+    border-radius: 15px;
 
     & > div {
-        position: relative;
         width: 100%;
         border-bottom: 1px solid;
         margin: 5px 0;
@@ -416,12 +456,13 @@
     }
 }
 
-
 .armorBox {
     @extend .sheetBox;
     border-bottom-left-radius: 50%;
     border-bottom-right-radius: 50%;
     max-width: 55px;
+
+    & > b:first-child { align-self: center; }
 }
 
 .initiativeBox {
@@ -429,9 +470,8 @@
     border-radius: 15px;
     max-width: 70px;
 
-    & > span {
-        width: 100%;
-    }
+    & > b { align-self: center; }
+    & > span { width: 100%; }
 }
 
 .healthBox {
@@ -450,7 +490,6 @@
 
         & > button {
             height: 19px;
-            font-size: small;
         }
 
         & > input {
@@ -488,21 +527,28 @@
     }
 }
 
-.passive {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 10px;
+.proficiencyBox {
+    @extend .sheetBox;
+    max-width: 16.5%;
+    border-radius: 15px;
+    & > b { align-self: center; }
+    & > span { width: 100%; }
+}
 
-    & > b {
-        @include colorDecoration(main);
-        @include centerFlex;
-        border: 2px solid;
-        pointer-events: none;
-        user-select: none;
-        border-radius: $iconLargeSize;
-        height: $iconSmallSize;
-        width: $iconSmallSize;
-    }
+.passivesBox {
+    @extend .sheetBox;
+    border-radius: 15px;
+    justify-items: left;
+    padding: 0 10px;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+}
+
+.speedBox {
+    @extend .sheetBox;
+    border-radius: 15px;
+    max-width: 33%;
+    & > b { align-self: center; }
 }
 
 .pageSelector {
@@ -531,46 +577,16 @@
     }
 }
 
-.collapsibleGroup {
-    position: relative;
-
-    & > button {
-        @include fontNormalBold;
-        width: 100%;
-        margin: 5px 0;
-        border-radius: 10px;
-    }
-
-    &[data=open]::after {
-        position: absolute;
-        right: 10px;
-        top: 0.5ch;
-        border-color: transparent colorInGroup(interactive, text) transparent transparent;
-        border-width: 5px;
-        border-style: solid;
-        z-index: 10000;
-        content: " ";
-    }
-
-    &[data=closed]::after {
-        position: absolute;
-        right: 4px;
-        top: 0.5ch;
-        border-color: transparent transparent transparent colorInGroup(interactive, text);
-        border-width: 5px;
-        border-style: solid;
-        z-index: 10000;
-        content: " ";
-    }
-}
-
 .skillTable {
+    @extend .sheetBox;
+    border-radius: 15px;
     font-family: $fontNormal;
     & > div {
         display: grid;
         grid-template-columns: auto 10px minmax(0, 1fr) $iconSmallSize * 2 55px;
         gap: 5px;
         height: $iconSmallSize;
+        width: 100%;
 
         & > label {
             font-family: $fontDocument;

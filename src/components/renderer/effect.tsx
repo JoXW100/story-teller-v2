@@ -12,12 +12,13 @@ type EffectProps = React.PropsWithRef<{
     data: IEffect
     stats: ICreatureStats
     desc: string
+    spellSlot?: number
     tooltips: string
-    id: string
 }>
 
-const EffectRenderer = ({ data, stats, desc, tooltips, id }: EffectProps): JSX.Element => {
-    const effect = useMemo(() => new Effect(data, stats, id), [data, stats, id])
+const EffectRenderer = ({ data, stats, desc, spellSlot, tooltips }: EffectProps): JSX.Element => {
+    console.log("EffectRenderer", stats)
+    const effect = useMemo(() => new Effect(data, stats, spellSlot), [data, stats])
     return (
         <div className={styles.iconRow}>
             <Elements.Bold>{effect.label} </Elements.Bold>

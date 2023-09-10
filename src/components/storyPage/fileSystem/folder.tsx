@@ -98,13 +98,13 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
                 action: () => dispatch.openCreateFileMenu(InputType.Import, file.id)
             },
             { 
-                text: Localization.toText('create-rename'), 
+                text: Localization.toText('common-rename'), 
                 icon: RenameIcon,
                 id: contextID,
                 action: () => setState((state) => ({ ...state, inEditMode: true }))
             },
             { 
-                text: Localization.toText('create-delete'), 
+                text: Localization.toText('common-delete'), 
                 icon: RemoveIcon, 
                 action: () => dispatch.openRemoveFileMenu(file)
             }

@@ -5,7 +5,6 @@ import CreatureTemplate from './cre.json';
 import DocumentTemplate from './doc.json';
 import EncounterTemplate from './enc.json';
 import SpellTemplate from './spe.json';
-import StoryTemplate from './sto.json';
 import ItemTemplate from './ite.json';
 import SubTemplates from './subTemplates';
 import { FileType, RenderedFileTypes } from "types/database/files";
@@ -19,7 +18,6 @@ export {
     DocumentTemplate,
     EncounterTemplate,
     SpellTemplate,
-    StoryTemplate,
     ItemTemplate
 }
 

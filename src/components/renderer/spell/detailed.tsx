@@ -102,8 +102,8 @@ const DetailedSpell = ({ metadata, stats, variablesKey }: SpellProps) => {
                         data={effect} 
                         stats={stats}
                         desc={`${spell.name} ${effect.label}`}
-                        tooltips={`Roll ${spell.name} ${effect.label}`}
-                        id={variablesKey}/>
+                        spellSlot={spell.level}
+                        tooltips={`Roll ${spell.name} ${effect.label}`}/>
                 ))}
             </Elements.Align>
         </Elements.Align>

@@ -9,6 +9,7 @@ interface IEncounterCard {
     health?: number
     maxHealth?: number
     notes?: string
+    group?: number
 }
 
 interface IEncounterMetadata extends IFileMetadata {
@@ -19,6 +20,7 @@ interface IEncounterMetadata extends IFileMetadata {
 
 interface IEncounterStorage extends IFileStorage {
     cards: IEncounterCard[]
+    groups: string[]
 }
 
 abstract class EncounterFile implements IFileData {

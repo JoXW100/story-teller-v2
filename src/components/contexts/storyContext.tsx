@@ -93,7 +93,7 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         }
     }, [storyId, fileId, editMode]);
 
-    const provider: StoryContextDispatch = useMemo(() => ({ 
+    const provider = useMemo<StoryContextDispatch>(() => ({ 
         roll: (collection, method = RollMethod.Normal, source: string) => {
             let result = collection.roll(method, source)
             let event: RollEvent = { result: result, time: Date.now() }

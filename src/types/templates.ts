@@ -105,6 +105,7 @@ interface StaticListTemplateParams extends IFileTemplateParams {
 
 interface ItemListTemplateParams extends IFileTemplateParams {
     template: string
+    useTemplates?: boolean
     default?: string
     prompt?: string
     placeholder?: string

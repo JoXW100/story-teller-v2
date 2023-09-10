@@ -1,25 +1,26 @@
 import { getOptionType } from "data/optionData";
 import { OptionTypeAuto } from "./creature";
 import CreatureStats from "./creatureStats";
+import EffectScalingModifier from "./effectScalingModifier";
 import { getScalingValue } from "utils/calculations";
 import { ScalingType, DiceType, DamageType } from "types/database/dnd";
 import { CalculationMode, IOptionType } from "types/database/editor";
-import IEffect, { EffectType } from "types/database/files/iEffect";
+import IEffect, { EffectScaling, EffectScalingModifierType, EffectType } from "types/database/files/iEffect";
 import ICreatureStats from "types/database/files/iCreatureStats";
 
 class Effect implements Required<IEffect> {
     private readonly metadata: IEffect;
     private readonly stats: ICreatureStats;
-    private readonly _id?: string
+    private readonly _spellSlot?: number
 
-    public constructor(metadata: IEffect, stats: ICreatureStats, id?: string) {
+    public constructor(metadata: IEffect, stats: ICreatureStats, spellSlot?: number) {
         this.metadata = metadata ?? { id: "" }
         this.stats = new CreatureStats(stats)
-        this._id = id;
+        this._spellSlot = spellSlot
     }
 
     public get id(): string {
-        return this._id ? `${this._id}-${this.metadata.id}` : this.metadata.id
+        return this.metadata.id;
     }
 
     public get type(): EffectType {
@@ -52,7 +53,14 @@ class Effect implements Required<IEffect> {
     }
 
     public get modifier(): IOptionType<number> {
-        return this.metadata.modifier ?? OptionTypeAuto
+        let max = 0;
+        return this.scalingModifiers.reduce((prev, mod) => {
+            if (this.scalingModifierIsActive(mod) && mod.type === EffectScalingModifierType.Modifier && mod.scalingValue > max) {
+                max = mod.scalingValue
+                return mod.modifier
+            }
+            return prev
+        }, this.metadata.modifier ?? OptionTypeAuto)
     }
 
     public get modifierValue(): number {
@@ -73,11 +81,42 @@ class Effect implements Required<IEffect> {
     }
 
     public get dice(): DiceType {
-        return this.metadata.dice ?? getOptionType("dice").default
+        let max = 0;
+        return this.scalingModifiers.reduce((prev, mod) => {
+            if (this.scalingModifierIsActive(mod) && mod.type === EffectScalingModifierType.DiceSize && mod.scalingValue > max) {
+                max = mod.scalingValue
+                return mod.dice
+            }
+            return prev
+        }, this.metadata.dice ?? getOptionType("dice").default)
     }
 
     public get diceNum(): number {
-        return this.metadata.diceNum ?? 1
+        let max = 0;
+        return this.scalingModifiers.reduce((prev, mod) => {
+            if (this.scalingModifierIsActive(mod) && mod.type === EffectScalingModifierType.DiceNum && mod.scalingValue > max) {
+                max = mod.scalingValue
+                return mod.diceNum
+            }
+            return prev
+        }, this.metadata.diceNum ?? 1)
+    }
+
+    public get scalingModifiers(): EffectScalingModifier[] {
+        return (this.metadata.scalingModifiers ?? []).map(x => new EffectScalingModifier(x))
+    }
+
+    private scalingModifierIsActive(modifier: EffectScalingModifier): boolean {
+        switch (modifier.scaling) {
+            case EffectScaling.CasterLevel:
+                return this.stats.casterLevel >= modifier.scalingValue
+            case EffectScaling.Level:
+                return this.stats.level >= modifier.scalingValue
+            case EffectScaling.SpellSlot:
+                return this._spellSlot >= modifier.scalingValue
+            default:
+                return false
+        }
     }
 }
 

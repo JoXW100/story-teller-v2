@@ -128,8 +128,7 @@ const Ability = ({ metadata, stats, open, variablesKey, expendedCharges, setExpe
                                 data={effect}
                                 stats={stats}
                                 desc={`${ability.name} ${effect.label ?? "Effect"}`}
-                                tooltips={`Roll ${ability.name} ${effect.label ?? "Effect"}`}
-                                id={variablesKey} />
+                                tooltips={`Roll ${ability.name} ${effect.label ?? "Effect"}`}/>
                         ))}{ ability.notes.length > 0 && 
                             <div> 
                                 <Elements.Bold>Notes </Elements.Bold> 

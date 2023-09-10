@@ -52,6 +52,23 @@
                     "params": { "label": "Number of Dice", "key": "diceNum", "default": 1 }
                 }
             ]
+        },
+        {
+            "type": "group",
+            "params": { "label": "Scaling", "open": true },
+            "content": [
+                {
+                    "type": "itemList",
+                    "params": {
+                        "label": "Scaling Modifiers",
+                        "key": "scalingModifiers",
+                        "prompt": "Edit",
+                        "placeholder": "Enter Name" ,
+                        "template": "effectScaling",
+                        "fill": true
+                    }
+                }
+            ]
         }
     ]
 }

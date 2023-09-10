@@ -86,18 +86,22 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
         dispatch.setStorage("cards", cards)
     }
 
+    const handleDragStart = () => {
+        window.dragData = { cardIndex: index }
+    }
+
     return (
-        <div className={styles.encounterCard} style={{ order: order }}>
+        <div className={styles.encounterCard} onDragStart={handleDragStart} style={{ order: order }} draggable>
             <div className={styles.encounterCardToken} data={num > 0 ? "show" : "hide"}>
                 { num }
             </div>
-            <Link href={Navigation.fileURL(id)} rel='noopener noreferrer' target="_blank">
+            <Link href={Navigation.fileURL(id)} rel='noopener noreferrer' target="_blank" draggable={false}>
                 <button className={styles.encounterCardHeader}>
                     <div>{creature.name}</div>
                 </button>
             </Link>
             <div className={styles.encounterCardPortrait} >
-                <img src={portrait} alt='/defaultImage.jpg'/>
+                <img src={portrait} alt='/defaultImage.jpg' draggable={false}/>
             </div>
             <div className={styles.encounterCardRow}>
                 <Elements.Bold>Initiative:</Elements.Bold>

@@ -3,7 +3,7 @@ import { Context } from 'components/contexts/fileContext';
 import StaticListMenu, { StaticListMenuItemData } from 'components/common/controls/staticListMenu';
 import { TemplateComponentProps } from '.';
 import { getOptionType } from 'data/optionData';
-import { getRelativeMetadata, isEnum } from 'utils/helpers';
+import { getRelativeMetadata } from 'utils/helpers';
 import Logger from 'utils/logger';
 import { StaticListTemplateParams } from 'types/templates';
 import styles from 'styles/pages/storyPage/editor.module.scss';
@@ -24,8 +24,8 @@ const StaticListComponent = ({ params }: TemplateComponentProps<StaticListTempla
         [...prev, { 
             label: label, 
             value: params.type === "list" 
-                ? ((values[index] ?? params.default) as number[]).join(',')
-                : String(values[index] ?? params.default)
+                ? ((values[index] ?? params.default ?? []) as number[]).join(',')
+                : String(values[index] ?? params.default ?? "")
         }]
     ), []) ?? [] 
 

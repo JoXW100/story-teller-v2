@@ -8,7 +8,7 @@ const parseText = async (value: string): Promise<FileGetMetadataResult> => {
     let res = await toAbility(value)
     if (res) {
         return {
-            id: null,
+            id: value as any,
             type: FileType.Ability,
             metadata: res
         } satisfies FileGetMetadataResult

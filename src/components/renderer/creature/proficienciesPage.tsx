@@ -56,7 +56,6 @@ const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
                     )
                 })}
             </div>
-            <Elements.Line/>
             <Elements.Header3>Armor</Elements.Header3>
             <div>{data.proficienciesArmorText}</div>
             <Elements.Header3>Weapons</Elements.Header3>

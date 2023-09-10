@@ -1,11 +1,12 @@
 import "react";
 import { ObjectId } from "types/database";
 import { FileStructure } from "types/database/files";
-import { IEncounterCardData } from "types/database/files/encounter";
+import { IEncounterCard } from "types/database/files/encounter";
 
 interface DragData { 
     file?: FileStructure, 
-    target?: ObjectId 
+    target?: ObjectId ,
+    cardIndex?: number
 }
 
 declare module 'react' {
@@ -20,13 +21,11 @@ declare module 'react' {
 
 declare global {
     export interface Window {
-        dragData: DragData,
-        encounterData: IEncounterCardData[]
+        dragData: DragData
     }
 }
 
 window.dragData = window.dragData || {} as DragData
-window.encounterData = window.encounterData || [] as IEncounterCardData[]
 
 export type {
     DragData

@@ -22,7 +22,7 @@ const useCharacterHandler = (data: IFileQueryData<CharacterFile>): [character: C
     const [items] = useFiles<IItemMetadata>(itemIds, [FileType.Item]);
 
     const classData = useMemo(() => new ClassData(classFile?.metadata, data.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, data.storage])
-    const subclassData = useMemo(() => classData.subclasses.includes(subclassFile?.id) ? new ClassData(subclassFile?.metadata, data.storage, subclassFile?.id ? String(subclassFile?.id) : undefined)  : null, [subclassFile, classData])
+    const subclassData = useMemo(() => classData.subclasses.includes(subclassFile?.id) ? new ClassData(subclassFile?.metadata, data.storage, subclassFile?.id ? String(subclassFile?.id) : undefined)  : null, [subclassFile, classData, data.storage])
     const character =  useMemo(() => new CharacterData(data.metadata, data.storage, modifiers, classData, subclassData), [data.metadata, data.storage, modifiers, classData, subclassData])
     const abilityIds = useMemo(() => character.abilities, [character])
     const [abilities] = useAbilitiesHandler(abilityIds, [FileType.Ability])
@@ -38,7 +38,7 @@ const useCharacterHandler = (data: IFileQueryData<CharacterFile>): [character: C
                 setModifiers(collection);
             }
         }
-    }, [abilities])
+    }, [abilities, data.storage])
 
     return [character, abilities, items]
 }

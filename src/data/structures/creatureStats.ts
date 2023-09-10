@@ -11,6 +11,9 @@ class CreatureStats implements Required<ICreatureStats> {
     public get level(): number {
         return this.data.level ?? 0
     }
+    public get casterLevel(): number {
+        return this.data.casterLevel ?? 0
+    }
 
     public get proficiency(): number {
         return this.data.proficiency ?? 2

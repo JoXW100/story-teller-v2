@@ -2,6 +2,7 @@ import type { OptionalAttribute } from "types/database/dnd"
 
 interface ICreatureStats {
     level?: number
+    casterLevel?: number
     str?: number
     dex?: number
     con?: number

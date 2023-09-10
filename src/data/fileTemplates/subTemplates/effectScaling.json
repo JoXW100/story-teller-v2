@@ -1,0 +1,45 @@
+{
+    "type": "root",
+    "content": [
+        { "type": "navigation" },
+        {
+            "type": "group",
+            "params": { "label": "Scaling", "open": true },
+            "content": [
+                { 
+                    "type": "enum", 
+                    "params": { "label": "Scaling With", "key": "scaling", "type": "effectScaling", "default": "level" }
+                },
+                { 
+                    "type": "number", 
+                    "conditions":[{ "type": "equals", "value": [{ "type": "metadata", "value": "scaling" }, { "type": "any", "value": ["level", "casterLevel"]}] }],
+                    "params": { "label": "Level", "key": "scalingValue", "default": 0 }
+                },
+                { 
+                    "type": "number", 
+                    "conditions":[{ "type": "equals", "value": [{ "type": "metadata", "value": "scaling" }, { "type": "any", "value": ["spellSlot"]}] }],
+                    "params": { "label": "Spell Slot", "key": "scalingValue", "default": 0 }
+                },
+                {
+                    "type": "enum", 
+                    "params": { "label": "Modifier", "key": "type", "type": "effectScalingModifier", "default": "diceSize" }
+                },
+                {
+                    "type": "enum", 
+                    "conditions":[{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "diceSize"] }],
+                    "params": { "label": "New Value", "key": "dice", "type": "dice", "default": 0 }
+                },
+                { 
+                    "type": "number", 
+                    "conditions":[{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "diceNum"] }],
+                    "params": { "label": "New Value", "key": "diceNum", "default": 0 }
+                },
+                { 
+                    "type": "option", 
+                    "conditions":[{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "modifier"] }],
+                    "params": { "label": "New Value", "key": "modifier", "type": "number" }
+                }
+            ]
+        }
+    ]
+}

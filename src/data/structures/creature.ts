@@ -7,7 +7,7 @@ import Dice from "utils/data/dice";
 import DiceCollection from "utils/data/diceCollection";
 import { asEnum, isEnum } from "utils/helpers";
 import { getProficiencyLevelValue } from "utils/calculations";
-import { AdvantageBinding, Alignment, ArmorClassBase, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
+import { AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import ICreatureStats from "types/database/files/iCreatureStats";
 import { CreatureValue, ICreatureMetadata } from "types/database/files/creature";
@@ -25,17 +25,18 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public getStats(): CreatureStats {
         return new CreatureStats({
-            level: this.level,
             str: this.str,
             dex: this.dex,
             con: this.con,
             int: this.int,
             wis: this.wis,
             cha: this.cha,
+            spellAttribute: this.spellAttribute,
+            proficiency: this.proficiencyValue,
+            level: this.level,
+            casterLevel: this.casterLevelValue,
             multiAttack: this.multiAttack,
             bonusDamage: this.bonusDamage,
-            proficiency: this.proficiencyValue,
-            spellAttribute: this.spellAttribute,
             critRange: this.critRange
         } satisfies Required<ICreatureStats>)
     }
@@ -48,9 +49,10 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
             int: this.getAttributeModifier(Attribute.INT),
             wis: this.getAttributeModifier(Attribute.WIS),
             cha: this.getAttributeModifier(Attribute.CHA),
-            proficiency: this.proficiencyValue,
             spellAttribute: this.getAttributeModifier(this.spellAttribute),
+            proficiency: this.proficiencyValue,
             level: this.level,
+            casterLevel: this.casterLevelValue,
         } satisfies Record<CreatureValue, number>
     }
 
@@ -473,6 +475,22 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public get spellAttribute(): OptionalAttribute {
         return asEnum(this.modifiers.spellAttribute, OptionalAttribute) ?? this.metadata.spellAttribute ?? getOptionType("optionalAttr").default
+    }
+
+    public get casterLevel(): IOptionType<number> {
+        return this.metadata.casterLevel ?? OptionTypeAuto
+    }
+
+    public get casterLevelValue(): number {
+        switch (this.casterLevel.type) {
+            case CalculationMode.Modify:
+                return this.level + this.casterLevel.value
+            case CalculationMode.Override:
+                return this.casterLevel.value
+            default:
+            case CalculationMode.Auto:
+                return this.level
+        } 
     }
 
     public get spellSlots(): number[] {

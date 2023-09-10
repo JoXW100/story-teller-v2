@@ -27,7 +27,7 @@ const AbilityGroups = ({ abilities, stats, values, expendedCharges, setExpendedC
 
     useEffect(() => {
         const categories: Record<ActionType, AbilityCategory> = {
-            [ActionType.Action]: { header: `Actions (${(stats.multiAttack)} Attacks Per Action)`, content: [] },
+            [ActionType.Action]: { header: `Actions${stats.multiAttack > 1 ? ` (${stats.multiAttack} Attacks Per Action)` : ''}`, content: [] },
             [ActionType.BonusAction]: { header: "Bonus Actions", content: [] },
             [ActionType.Reaction]: { header: "Reactions", content: [] },
             [ActionType.Special]: { header: "Special", content: [] },
@@ -40,7 +40,6 @@ const AbilityGroups = ({ abilities, stats, values, expendedCharges, setExpendedC
             }
         })
         setCategories(categories)
-        Logger.log("AbilityGroups", abilities)
     }, [abilities, stats?.multiAttack])
 
     const handleSetExpendedCharges = (value: number, id: ObjectId) => {
@@ -51,9 +50,9 @@ const AbilityGroups = ({ abilities, stats, values, expendedCharges, setExpendedC
         .filter((type: ActionType) => categories[type].content.length > 0)
         .map((type: ActionType) => (
             <CollapsibleGroup key={type} header={categories[type].header}>
-                { categories[type].content.map((file) => (
+                { categories[type].content.map((file, index) => file && (
                     <AbilityToggleRenderer 
-                        key={String(file.id)} 
+                        key={String(file.id ?? index)} 
                         metadata={file.metadata} 
                         stats={stats}
                         expendedCharges={isNaN(expendedCharges[String(file.id)]) ? 0 : expendedCharges[String(file.id)]}

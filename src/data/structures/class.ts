@@ -3,13 +3,12 @@ import FileData from "./file";
 import ModifierData from "./modifier";
 import ModifierCollection from "./modifierCollection";
 import { getOptionType } from "data/optionData";
+import DiceCollection from "utils/data/diceCollection";
+import Dice from "utils/data/dice";
 import { DiceType, OptionalAttribute } from "types/database/dnd";
 import { ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata, IClassMetadataProperties } from "types/database/files/class";
-import { IModifier } from "types/database/files/modifier";
 import { IModifierCollection } from "types/database/files/modifierCollection";
-import DiceCollection from "utils/data/diceCollection";
-import Dice from "utils/data/dice";
 
 class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage

@@ -109,13 +109,13 @@ const StoryCardBody = ({ data, setStatus }: StoryCardBodyProps): JSX.Element => 
         <button 
             className={styles.delete} 
             onClick={handleDelete}
-            tooltips={Localization.toText("create-delete")}> 
+            tooltips={Localization.toText("common-delete")}> 
             <RemoveIcon/>
         </button>
         <button
             className={styles.edit} 
             onClick={handleEdit}
-            tooltips={Localization.toText("create-edit")}>
+            tooltips={Localization.toText("common-edit")}>
             <EditIcon/> 
         </button>
         <div className={styles.date}> 

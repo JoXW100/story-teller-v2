@@ -158,14 +158,6 @@
                                     { "type": "equals", "value": [{ "type": "metadata", "value": "area" }, "line"] }],
                                 "params": { "label": "Width (ft)", "key": "areaSize" }
                             },
-                            { 
-                                "type": "number", 
-                                "conditions": [
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, { "type": "any", "value": ["rangedAttack", "rangedWeapon"] }] },
-                                    { "type": "equals", "value": [{ "type": "metadata", "value": "target" }, "single"] }
-                                ],
-                                "params": { "label": "Range (Long)", "key": "rangeLong" }
-                            },
                             {
                                 "type": "itemList",
                                 "params": { 

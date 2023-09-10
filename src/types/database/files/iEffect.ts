@@ -9,6 +9,28 @@ export enum EffectType {
     Other = "other"
 }
 
+export enum EffectScaling {
+    Level = "level",
+    CasterLevel = "casterLevel",
+    SpellSlot = "spellSlot"
+}
+
+export enum EffectScalingModifierType {
+    DiceSize = "diceSize",
+    DiceNum = "diceNum",
+    Modifier = "modifier"
+}
+
+interface IEffectScalingModifier extends ISubPageItemMetadata {
+    scaling?: EffectScaling
+    scalingValue?: number
+    type?: EffectScalingModifierType
+    // Changes
+    dice?: DiceType
+    diceNum?: number
+    modifier?: IOptionType<number>
+}
+
 interface IEffect extends ISubPageItemMetadata {
     type?: EffectType
     label?: string
@@ -19,6 +41,11 @@ interface IEffect extends ISubPageItemMetadata {
     modifier?: IOptionType<number>
     dice?: DiceType
     diceNum?: number
+    // Scaling
+    scalingModifiers?: IEffectScalingModifier[]
 }
 
 export default IEffect
+export type {
+    IEffectScalingModifier
+}

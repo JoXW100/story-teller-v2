@@ -14,12 +14,13 @@ export enum CreatureValue {
     Proficiency = "proficiency",
     SpellAttribute = "spellAttribute",
     Level = "level",
+    CasterLevel = "casterLevel"
 }
 
 interface ICreatureContent extends IFileContent {
 }
 
-interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "proficiency"> {
+interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "proficiency"|"casterLevel"> {
     type?: CreatureType
     size?: SizeType
     alignment?: Alignment
@@ -57,6 +58,7 @@ interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "profici
     
     // Spells
     spellSlots?: number[]
+    casterLevel?: IOptionType<number>
     spells?: ObjectIdText[]
 }
 

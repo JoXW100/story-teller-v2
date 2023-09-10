@@ -7,6 +7,7 @@ import EquipIcon from '@mui/icons-material/AddModeratorSharp';
 import UnequipIcon from '@mui/icons-material/RemoveModeratorSharp';
 import Elements from 'data/elements';
 import ItemData from 'data/structures/item';
+import Localization from 'utils/localization';
 import { FileContextDispatch } from 'types/context/fileContext';
 import { ICharacterStorage } from 'types/database/files/character';
 import { IItemMetadata } from 'types/database/files/item';
@@ -96,11 +97,21 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
         <>
             <CollapsibleGroup header={"Inventory"}>
                 <div className={styles.inventoryHeader}>
-                    <b tooltips='Equipped'>EQU</b>
-                    <b tooltips='Item Name'>NAME</b>
-                    <b tooltips='Total Weight (lbs)'>LBS</b>
-                    <b tooltips='Quantity'>QTY</b>
-                    <b tooltips='Total Value'>VAL</b>
+                    <b tooltips={Localization.toText("character-inventory-equipped-tooltips")}>
+                        {Localization.toText("character-inventory-equipped")}
+                    </b>
+                    <b tooltips={Localization.toText("character-inventory-name-tooltips")}>
+                        {Localization.toText("character-inventory-name")}
+                    </b>
+                    <b tooltips={Localization.toText("character-inventory-weight-tooltips")}>
+                        {Localization.toText("character-inventory-weight")}
+                    </b>
+                    <b tooltips={Localization.toText("character-inventory-quantity-tooltips")}>
+                        {Localization.toText("character-inventory-quantity")}
+                    </b>
+                    <b tooltips={Localization.toText("character-inventory-value-tooltips")}>
+                        {Localization.toText("character-inventory-value")}
+                    </b>
                 </div>
                 { items
                     .map(item => new ItemData(item?.metadata, storage.inventory?.[String(item?.id)], item?.id, attunement.some(x => String(x) === String(item?.id))))
@@ -114,7 +125,9 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                             className={styles.inventoryItem}
                             data={String(isEquiped)}>
                             <button
-                                tooltips={isEquiped ? "Unequip" : "Equip"}
+                                tooltips={isEquiped 
+                                    ? Localization.toText("character-inventory-unequip") 
+                                    : Localization.toText("character-inventory-equip")}
                                 onClick={() => handleEquip(item.id, !item.equipped)}
                                 disabled={!isEquippable || item.attuned}>
                                 {isEquiped ? <UnequipIcon/> : isEquippable && <EquipIcon/>}
@@ -129,7 +142,7 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                             <label>{String(item.quantity)}</label>
                             <label>{String(item.totalValue)}</label>
                             <button 
-                                tooltips="Remove"
+                                tooltips={Localization.toText("character-inventory-remove")}
                                 disabled={item.attuned}
                                 onClick={() => handleRemove(item.id)}>
                                 <RemoveIcon/>
@@ -138,25 +151,25 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                     )
                 })}
             </CollapsibleGroup>
-            <CollapsibleGroup header="Attunement">
+            <CollapsibleGroup header={Localization.toText("character-inventory-attunement")}>
                 {attunement.map((value, index) => (
                     <DropdownMenu
                         key={index}
                         className={styles.inventoryAttunementDropdown}
                         itemClassName={styles.inventoryAttunementDropdownItem}
-                        exclude={attunement.map(x => String(x))?.filter(x => x !== "null" && x !== String(value))}
+                        exclude={attunement.map(x => String(x)).filter(x => x !== "null" && x !== String(value))}
                         value={value ? String(value) : null}
                         values={attunementOptions}
                         onChange={(value) => handleAttunementChanged(index, value)}/>
                 ))}
             </CollapsibleGroup>
-            <CollapsibleGroup header="Other">
+            <CollapsibleGroup header={Localization.toText("character-inventory-other")}>
                 <textarea
                     className={styles.inventoryInput}
                     value={storage.inventoryOther ?? ""}
                     onChange={handleTextChanged}/>
             </CollapsibleGroup>
-            <CollapsibleGroup header="Add Item">
+            <CollapsibleGroup header={Localization.toText("character-inventory-add")}>
                 <div className={styles.modifierChoice}>
                     <Elements.Bold>Item: </Elements.Bold>
                     <LinkInput

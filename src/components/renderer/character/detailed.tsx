@@ -82,14 +82,30 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <Elements.Line/>
                     <AttributesBox data={character}/>
                     <Elements.Space/>
+                    <Elements.Align>
+                        <div className={styles.proficiencyBox}>
+                            <b>PROF</b>
+                            <RollElement options={{ 
+                                mod: String(character.proficiencyValue), 
+                                desc: "Proficiency Check"
+                            }}/>
+                        </div>
+                        <div className={styles.passivesBox}>
+                            <b>Passive Perception: </b>
+                            <b>{character.passivePerceptionValue.toString()}</b>
+                            <b>Passive Investigation: </b>
+                            <b>{character.passiveInvestigationValue.toString()}</b>
+                            <b>Passive Insight: </b>
+                            <b>{character.passiveInsightValue.toString()}</b>
+                        </div>
+                        <div className={styles.speedBox}>
+                            <Elements.Bold>SPEED</Elements.Bold>
+                            <span>{character.speedAsText}</span>
+                        </div>
+                    </Elements.Align>
                     <Elements.Space/>
-                    <div>
-                        <b>Proficiency </b>
-                        <RollElement options={{ 
-                            mod: String(character.proficiencyValue), 
-                            desc: "Proficiency Check"
-                        }}/>
-                    </div>
+                    <ProficienciesPage data={character}/>
+                    <Elements.Space/>
                     { character.resistances.length > 0 && 
                         <div>
                             <Elements.Bold>Resistances </Elements.Bold>
@@ -115,19 +131,11 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <div><Elements.Bold>COND Immunities </Elements.Bold>
                             {character.conImmunities}
                         </div>
-                    }
-                    <div><Elements.Bold>Speed </Elements.Bold>{character.speedAsText}</div>
-                    { senses.length > 0 &&
+                    }{ senses.length > 0 &&
                         <div><Elements.Bold>Senses </Elements.Bold>
                             {senses}
                         </div>
                     }
-                    <Elements.Space/>
-                    <div><Elements.Bold>Passive Perception: </Elements.Bold>{character.passivePerceptionValue.toString()}</div>
-                    <div><Elements.Bold>Passive Investigation: </Elements.Bold>{character.passiveInvestigationValue.toString()}</div>
-                    <div><Elements.Bold>Passive Insight: </Elements.Bold>{character.passiveInsightValue.toString()}</div>
-                    <Elements.Space/>
-                    <ProficienciesPage data={character}/>
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
@@ -173,7 +181,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                     <Elements.Line options={{ width: '3px'}}/>
                     <Elements.Align>
                             <Elements.Align options={{ weight: '3.6' }}>
-                                <Elements.Header2> Spells: </Elements.Header2>
+                                <Elements.Header2>Spells:</Elements.Header2>
                             </Elements.Align>
                             <Elements.Align options={{ direction: 'vc' }}>
                                 <Elements.Bold>Spell Modifier</Elements.Bold>
