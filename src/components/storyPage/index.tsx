@@ -10,6 +10,7 @@ import DiceButton from './dicePanel/diceButton';
 import RollHistoryButton from '../common/rollHistory/rollHistoryButton';
 import HelpMenuButton from './helpMenuButton';
 import EditModeButton from './editModeButton';
+import { isObjectId } from 'utils/helpers';
 import styles from 'styles/pages/storyPage/main.module.scss'
 
 const StoryPage = (): JSX.Element => {
@@ -23,14 +24,14 @@ const StoryPage = (): JSX.Element => {
                 </label>
                 <HelpMenuButton/>
                 <SettingsButton/>
-                <EditModeButton editEnabled={context.editEnabled}/>
+                <EditModeButton editEnabled={context.editEnabled} disabled={!isObjectId(context.fileId)}/>
                 <DiceButton/>
                 <RollHistoryButton disabled={context.rollHistory.length == 0}/>
                 <HomeButton/>
             </div>
             <Divider 
                 className={styles.divider}
-                minLeft={120}
+                minLeft={150}
                 minRight={100}
                 defaultSlider={0}
                 collapsed={!context.sidePanelExpanded}

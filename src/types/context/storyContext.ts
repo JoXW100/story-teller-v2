@@ -4,6 +4,7 @@ import type { ContextDispatch, ContextState, ContextProvider, DispatchAction } f
 import type { DBResponse, DateValue, ObjectId } from "types/database";
 import type { RollMethod, RollResult } from "types/dice";
 import type { IStoryData } from "types/database/stories";
+import type { ILocalFile } from "types/database/files";
 
 interface RollEvent {
     result: RollResult
@@ -17,7 +18,9 @@ interface StoryContextState extends ContextState {
     story: Partial<IStoryData>
     fileId: ObjectId
     rollHistory: Queue<RollEvent>
-    helpMenuOpen: boolean
+    helpMenuOpen: boolean,
+    localFiles: Record<string, ILocalFile>
+    localFilesHasChanged: boolean
 }
 
 interface StoryContextDispatch extends ContextDispatch {
@@ -25,6 +28,8 @@ interface StoryContextDispatch extends ContextDispatch {
     clearRolls: () => void
     collapseSidePanel: () => void
     expandSidePanel: () => void
+    setLocalFiles: (files: Record<string, ILocalFile>, localChanged?: boolean) => void
+    saveLocalFiles: () => void
 }
 
 type StoryContextDispatchAction = 
@@ -35,6 +40,8 @@ type StoryContextDispatchAction =
     | DispatchAction<"roll", RollEvent, StoryContextDispatchAction>
     | DispatchAction<"clearRolls", undefined, StoryContextDispatchAction>
     | DispatchAction<"setSidePanelExpanded", boolean, StoryContextDispatchAction>
+    | DispatchAction<"setLocalFiles", { files: Record<string, ILocalFile>, changed: boolean }, StoryContextDispatchAction>
+    | DispatchAction<"saveLocalFiles", null, StoryContextDispatchAction>
 
 type StoryContextProvider = ContextProvider<StoryContextState, StoryContextDispatch>
 

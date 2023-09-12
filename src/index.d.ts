@@ -5,7 +5,7 @@ import { IEncounterCard } from "types/database/files/encounter";
 
 interface DragData { 
     file?: FileStructure, 
-    target?: ObjectId ,
+    target?: ObjectId | string,
     cardIndex?: number
 }
 

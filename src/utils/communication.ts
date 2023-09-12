@@ -96,7 +96,7 @@ abstract class Communication {
         })
 
         if (result.success) {
-            this.cache[String(result.result.id)] = {
+            this.cache[String(result.result?.id)] = {
                 id: result.result.id,
                 type: result.result.type,
                 metadata: result.result.metadata

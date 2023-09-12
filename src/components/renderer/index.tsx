@@ -24,7 +24,9 @@ const Renderers: Record<FileType, RendererObject> = {
     [FileType.Item]: ItemRenderer,
     [FileType.Empty]: null,
     [FileType.Root]: null,
-    [FileType.Folder]: null
+    [FileType.Folder]: null,
+    [FileType.LocalFolder]: null,
+    [FileType.LocalImage]: null
 }
 
 export const useRenderer = (template: FileRendererTemplate, file: File<any>): JSX.Element => {

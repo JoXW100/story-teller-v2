@@ -25,8 +25,6 @@ interface ImportContentState {
     loading: boolean
 }
 
-
-
 interface SortingMethod {
     field: string | null
     direction: "ascending" | "descending" | "none"
@@ -86,7 +84,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 }
             }))
             .catch(e => Logger.throw("createImportContent.handleImportClick", e))
-            closePopup()
+            .finally(closePopup)
         }
     }
 

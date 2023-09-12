@@ -17,7 +17,7 @@ interface FileSystemContextState extends ContextState {
 }
 
 interface FileSystemContextDispatch extends ContextDispatch {
-    openCreateFileMenu: (type: InputType, holder?: ObjectId) => void
+    openCreateFileMenu: (type: InputType, holder?: ObjectId | string, local?: boolean) => void
     openRemoveFileMenu: (file: IFileStructure) => void
     renameFile: (file: IFileStructure, name: string, callback?: Callback<FileRenameResult>) => void
     moveFile: (file: IFileStructure, target: IFileStructure) => void
@@ -36,6 +36,7 @@ type FileSystemContextProvider = ContextProvider<FileSystemContextState, FileSys
 export enum InputType {
     File = "file",
     Upload = "upload",
+    UploadResources = "uploadResources",
     Folder = "folder",
     ImportOld = "importOld",
     Import = "import"

@@ -29,7 +29,7 @@ const Templates = {
     [FileType.Document]: DocumentTemplate as FileTemplate,
     [FileType.Encounter]: EncounterTemplate as FileTemplate,
     [FileType.Item]: ItemTemplate as FileTemplate,
-    [FileType.Spell]: SpellTemplate as FileTemplate
+    [FileType.Spell]: SpellTemplate as FileTemplate,
 } satisfies Record<RenderedFileTypes, FileTemplate>
 
 export const CreateFileOptions = { 

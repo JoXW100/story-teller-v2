@@ -18,6 +18,7 @@ import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
 import { CreateFileOptions } from 'data/fileTemplates';
 import { FileType, RenderedFileTypes, IFileStructure } from "types/database/files";
+import { ObjectId } from 'types/database';
 import styles from 'styles/pages/storyPage/file.module.scss';
 
 type FileProps = React.PropsWithRef<{
@@ -98,33 +99,43 @@ const File = ({ file }: FileProps): JSX.Element => {
     const handleContext = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
-        openContext([
+
+        const copyIdOption = {
+            text: Localization.toText('create-copyId'), 
+            icon: CopyIcon, 
+            action: () => navigator.clipboard.writeText(file.type === FileType.LocalImage 
+                ? `local/${file.id}`
+                : String(file.id))
+        }
+        const deleteOption = { 
+            text: Localization.toText('common-delete'), 
+            icon: RemoveIcon, 
+            action: () => dispatch.openRemoveFileMenu(file)
+        }
+        const renameOption = { 
+            text: Localization.toText('common-rename'), 
+            icon: RenameIcon, 
+            id: contextID,
+            action: () => setState({ ...state, inEditMode: true })
+        }
+        
+        openContext(file.type === FileType.LocalImage 
+        ? [
+            copyIdOption, renameOption, deleteOption
+        ] : [
             {
                 text: Localization.toText('create-openFile'), 
                 icon: OpenIcon, 
-                action: () => router.push(Navigation.fileURL(file.id))
+                action: () => router.push(Navigation.fileURL(file.id as ObjectId))
             },
             {
                 text: Localization.toText('create-openFileNewTab'), 
                 icon: OpenInNewPageIcon, 
-                action: () => window.open(Navigation.fileURL(file.id))
+                action: () => window.open(Navigation.fileURL(file.id as ObjectId))
             },
-            {
-                text: Localization.toText('create-copyId'), 
-                icon: CopyIcon, 
-                action: () => navigator.clipboard.writeText(String(file.id))
-            },
-            { 
-                text: Localization.toText('common-rename'), 
-                icon: RenameIcon, 
-                id: contextID,
-                action: () => setState({ ...state, inEditMode: true })
-            },
-            { 
-                text: Localization.toText('common-delete'), 
-                icon: RemoveIcon, 
-                action: () => dispatch.openRemoveFileMenu(file)
-            },
+            copyIdOption,
+            renameOption,
+            deleteOption,
             { 
                 text: Localization.toText('create-createCopy'), 
                 icon: DuplicateIcon, 
@@ -176,9 +187,9 @@ const File = ({ file }: FileProps): JSX.Element => {
         </div>
     )
 
-    return state.inEditMode ? Content : (
+    return state.inEditMode || file.type === FileType.LocalImage ? Content : (
         <Link 
-            href={Navigation.fileURL(file.id)} 
+            href={Navigation.fileURL(file.id as ObjectId)} 
             key={String(file.id)}
             passHref>
             { Content }

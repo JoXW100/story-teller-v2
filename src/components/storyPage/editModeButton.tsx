@@ -8,6 +8,7 @@ import styles from 'styles/pages/storyPage/main.module.scss'
 
 type EditModeButtonProps = React.PropsWithRef<{
     editEnabled: boolean
+    disabled?: boolean
 }>
 
 interface EditModeData {
@@ -15,7 +16,7 @@ interface EditModeData {
     icon: any
 }
 
-const EditModeButton = ({ editEnabled }: EditModeButtonProps): JSX.Element => {
+const EditModeButton = ({ editEnabled, disabled = false }: EditModeButtonProps): JSX.Element => {
     const data = useMemo<EditModeData>(() => (
         editEnabled ? {
             tooltips: Localization.toText('storyPage-disableEditMode'),
@@ -27,8 +28,8 @@ const EditModeButton = ({ editEnabled }: EditModeButtonProps): JSX.Element => {
     ), [location, editEnabled])
     
     return (
-        <Link href={Navigation.editModeURL(!editEnabled)} passHref>
-            <button className={styles.mobileVisibleHeaderButton} tooltips={data.tooltips}>
+        <Link href={Navigation.editModeURL(!editEnabled)} disabled={disabled} passHref>
+            <button className={styles.mobileVisibleHeaderButton} disabled={disabled} tooltips={data.tooltips}>
                 <data.icon/>
             </button>
         </Link>

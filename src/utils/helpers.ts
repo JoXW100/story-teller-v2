@@ -1,6 +1,6 @@
 import { Collection, Enum } from "types";
 import { EditFilePage } from "types/context/fileContext";
-import { ObjectId, ObjectIdText } from "types/database";
+import { ObjectId } from "types/database";
 import { IFileMetadata } from "types/database/files";
 
 /** Compares two arrays and returns if they contain equivalent elements */
@@ -44,8 +44,8 @@ export function asKeyOf<T extends Collection>(value: keyof Collection, type: T):
     return Object.keys(type).includes(value) ? value as keyof Collection : undefined
 }
 
-export function isObjectId(value: ObjectIdText): value is ObjectId {
-    return /^[0-9a-fA-F]{24}$/.test(String(value))
+export function isObjectId(value: any): value is ObjectId {
+    return value && /^[0-9a-fA-F]{24}$/.test(String(value))
 }
 
 export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage[]): IFileMetadata {

@@ -45,20 +45,17 @@ const FileMenuHeader = (): JSX.Element => {
                     tooltips={Localization.toText('create-folderTooltips')}> 
                     <FolderIcon/> 
                 </button>
-                {/*
-                <div 
-                    className={styles.headerButton}
-                    onClick={() => dispatch.openCreateFileMenu(InputType.Upload)}
-                    tooltips={Localization.toText('create-uploadTooltips')}
-                > 
-                    <UploadIcon/> 
-                </div>
-                */}
                 <button 
                     className={styles.headerButton}
                     onClick={() => dispatch.openCreateFileMenu(InputType.Import)}
                     tooltips={Localization.toText('create-importTooltips')}> 
                     <ImportIcon/> 
+                </button>
+                <button 
+                    className={styles.headerButton}
+                    onClick={() => dispatch.openCreateFileMenu(InputType.Upload)}
+                    tooltips={Localization.toText('create-uploadTooltips')}> 
+                    <UploadIcon/> 
                 </button>
                 <button
                     className={styles.headerEndButton}

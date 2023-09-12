@@ -1,12 +1,4 @@
 import type { ObjectId } from ".."
-import type AbilityFile from "./ability"
-import type CharacterFile from "./character"
-import type ClassFile from "./class"
-import type CreatureFile from "./creature"
-import type DocumentFile from "./document"
-import type EncounterFile from "./encounter"
-import type ItemFile from "./item"
-import type SpellFile from "./spell"
 
 interface IFileContent {
     name: string
@@ -33,8 +25,8 @@ interface IFileStorage {
 }
 
 interface IFileStructure {
-    id: ObjectId
-    holderId: ObjectId
+    id: ObjectId | string
+    holderId: ObjectId | string
     type: FileType
     name: string
     open: boolean
@@ -44,6 +36,15 @@ interface IFileStructure {
 interface IFile extends IFileData {
     id: ObjectId
     isOwner: boolean
+}
+
+interface ILocalFile {
+    id: string
+    holderId: string
+    type: FileType
+    name: string
+    open?: boolean
+    data?: string
 }
 
 interface IFileData {
@@ -71,6 +72,8 @@ export enum FileType {
     Root = "root",
     Empty = "empty",
     Folder = "folder",
+    LocalFolder = "localFolder",
+    LocalImage = "img",
     Ability = "abi",
     Character = "cha",
     Class = "cla",
@@ -81,8 +84,9 @@ export enum FileType {
     Spell = "spe",
 }
 
-export type UsedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root>
-export type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root|FileType.Folder>
+export type FileStructureTypes = FileType.Root|FileType.Folder|FileType.LocalFolder|FileType.LocalImage
+export type UsedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root|FileType.LocalFolder|FileType.LocalImage>
+export type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileStructureTypes>
 export type File<T extends IFileData> = IFile & T
 
 export type {
@@ -93,6 +97,7 @@ export type {
     IFileStorage,
     IFileStructure,
     IFile,
+    ILocalFile,
     IFileData,
     IFileQueryData,
     IFolderData,

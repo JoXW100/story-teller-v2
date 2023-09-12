@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { ParseError } from 'utils/parser';
 import { Queries, IElementObject, ElementParams, Variables } from 'types/elements';
 import styles from 'styles/elements.module.scss';
+import { Context } from 'components/contexts/storyContext';
+import { ILocalFile } from 'types/database/files';
 
 interface ImageOptions extends Variables {
     href?: string
@@ -11,9 +13,11 @@ interface ImageOptions extends Variables {
 
 class Options implements ImageOptions {
     protected readonly options: ImageOptions;
+    private readonly localFiles: Record<string, ILocalFile>
 
-    constructor(options: ImageOptions) {
+    constructor(options: ImageOptions, localFiles: Record<string, ILocalFile>) {
         this.options =  options ?? {}
+        this.localFiles = localFiles
     }
 
     public get href(): string {
@@ -21,11 +25,13 @@ class Options implements ImageOptions {
     }
 
     public get hrefURL(): string {
-        try {
-            return this.href.includes('http') ? this.href : undefined;
-        } catch (error) {
-            return undefined;
+        let match = /local\/(.+)/.exec(this.href)
+        if (match && match[1] in this.localFiles) {
+            return this.localFiles[match[1]].data as string
+        } else if (this.href?.includes('http')) {
+            return this.href
         }
+        return undefined;
     }
 
     public get width(): string {
@@ -64,7 +70,8 @@ const validateOptions = (options: ImageOptions): Queries => {
 }
 
 const ImageElement = ({ options = {} }: ElementParams<ImageOptions>): JSX.Element => {
-    const imageOptions = new Options(options)
+    const [context] = useContext(Context)
+    const imageOptions = new Options(options, context.localFiles)
 
     return (
         <div

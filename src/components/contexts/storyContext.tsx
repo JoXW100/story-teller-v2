@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useReducer } from 'react'
+import React, { useEffect, useMemo, useReducer, useRef } from 'react'
 import { useRouter } from 'next/router'
 import HelpMenu from 'components/storyPage/helpMenu';
 import Queue from 'utils/data/queue';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
-import Beyond20, { WhisperType } from 'utils/beyond20';
+import Beyond20 from 'utils/beyond20';
 import { RollEvent, StoryContextProvider, StoryContextState, StoryContextDispatchAction, StoryContextDispatch } from 'types/context/storyContext';
 import { DBResponse, ObjectId } from 'types/database';
 import { RollMethod } from 'types/dice';
@@ -22,6 +22,7 @@ type StoryContextProps = React.PropsWithChildren<{
 
 const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryContextProps) => {
     const router = useRouter()
+    const downloadRef = useRef<HTMLAnchorElement>(null)
     
     const reducer = (state: StoryContextState, action: StoryContextDispatchAction): StoryContextState => {
         Logger.log("storyContext", action.type)
@@ -68,6 +69,18 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
                 return { ...state }
             case 'setSidePanelExpanded':
                 return { ...state, sidePanelExpanded: action.data }
+            case 'setLocalFiles':
+                return { ...state, localFiles: action.data.files, localFilesHasChanged: action.data.changed }
+            case 'saveLocalFiles':
+                if (downloadRef.current) {
+                    let content = JSON.stringify(state.localFiles)
+                    let download = "data:text/json;charset=utf-8," + encodeURIComponent(content)
+                    downloadRef.current.setAttribute("href", download)
+                    downloadRef.current.setAttribute("download", "backup.localResources")
+                    downloadRef.current.click()
+                    return { ...state, localFilesHasChanged: false }
+                }
+                return state
             default:
                 return state
         }
@@ -80,7 +93,9 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         story: null,
         fileId: null,
         rollHistory: new Queue<RollEvent>(10),
-        helpMenuOpen: false
+        helpMenuOpen: false,
+        localFiles: {},
+        localFilesHasChanged: false
     })
 
     useEffect(() => {
@@ -93,6 +108,19 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         }
     }, [storyId, fileId, editMode]);
 
+    // Prevent leaving page with unsaved changes
+    useEffect(() => {
+        if (window) {
+            window.onbeforeunload = (e : BeforeUnloadEvent) => {
+                if (state.localFilesHasChanged) {
+                    e.preventDefault();
+                    e.returnValue = "";
+                }
+            };
+        }
+        return () => window && (window.onbeforeunload = null);
+    }, [state.localFilesHasChanged])
+
     const provider = useMemo<StoryContextDispatch>(() => ({ 
         roll: (collection, method = RollMethod.Normal, source: string) => {
             let result = collection.roll(method, source)
@@ -103,13 +131,16 @@ const StoryContext = ({ storyId, fileId, editMode, viewMode, children }: StoryCo
         },
         clearRolls: () => dispatch({ type: 'clearRolls', data: null }),
         collapseSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: false }),
-        expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true })
+        expandSidePanel: () => dispatch({ type: 'setSidePanelExpanded', data: true }),
+        setLocalFiles: (files, localChanged = true) => dispatch({ type: 'setLocalFiles', data: { files: files, changed: localChanged } }),
+        saveLocalFiles: () => dispatch({ type: 'saveLocalFiles', data: null })
     }), [state.rollHistory, dispatch])
 
     return (
         <Context.Provider value={[state, provider]}>
             { !state.loading && state.story && children }
             { state.helpMenuOpen && <HelpMenu/>}
+            {<a ref={downloadRef} style={{ display: "none" }}/> }
         </Context.Provider>
     )
 }

@@ -23,7 +23,7 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
             }
         }))
         .catch(e => Logger.throw("createImportOldContent.handleClick", e))
-        closePopup()
+        .finally(closePopup)
     }
 
     const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,8 +62,7 @@ const CreateImportOldContent = ({ callback }: CreateContentProps): JSX.Element =
                     placeholder={Localization.toText('createFilePopup-importURLPlaceholder')}
                 />
             </div>
-            <div className={styles.inputRow}/>
-            <div className={styles.inputRow}>
+            <div className={styles.inputRowLast}>
                 <button 
                     ref={ref}
                     onClick={handleClick}

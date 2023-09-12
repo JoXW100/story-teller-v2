@@ -9,17 +9,24 @@ import { CreateFileOptions } from 'data/fileTemplates';
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
+import { isObjectId } from 'utils/helpers';
 import { ObjectId, DBResponse } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileType, IFileStructure, RenderedFileTypes } from 'types/database/files'
+import { FileType, IFileStructure, ILocalFile, RenderedFileTypes } from 'types/database/files'
 import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult } from 'types/database/responses';
 
-
+const findUniqueId = (existing: string[], initial: string): string => {
+    let ids = new Set<string>(existing)
+    let id = 1;
+    while (ids.has(initial + String(id))) id++;
+    return initial + String(id)
+}
+ 
 export const Context: React.Context<FileSystemContextProvider> = React.createContext([null, null])
 
 const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Element => {
     const router = useRouter();
-    const [context] = useContext(StoryContext);
+    const [context, dispatch] = useContext(StoryContext);
     const [state, setState] = useState<FileSystemContextState>({
         loading: false,
         fetching: true,
@@ -29,16 +36,29 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         files: []
     })
 
-    const openCreateFileMenu = (type: InputType, holder: ObjectId = context.story.root) => {
+    const openCreateFileMenu = (type: InputType, holder: ObjectId | string = context.story.root, local: boolean = false) => {
         openPopup(
             <CreateFilePopup 
                 type={type} 
                 callback={(res) => {
+                    console.log("openCreateFileMenu", res)
                     if (res.type === InputType.Import) {
-                        Communication.addFileFromData(context.story.id, holder, res.data.name, res.data.type, res.data.data)
+                        Communication.addFileFromData(context.story.id, holder as ObjectId, res.data.name, res.data.type, res.data.data)
                         .then(() => setState({ ...state, fetching: true}))
-                    } else {
-                        Communication.addFile(context.story.id, holder, res.data.name, res.data.type)
+                    } else if (res.type === InputType.UploadResources) {
+                        dispatch.setLocalFiles(res.resources ?? {}, false)
+                    } else if (res.type === InputType.Upload || local) {
+                        if (isObjectId(holder)) holder = null
+                        let localFile: ILocalFile = {
+                            id: findUniqueId(Object.keys(context.localFiles), res.data.name),
+                            holderId: holder as string,
+                            type: res.data.type === FileType.Folder ? FileType.LocalFolder : res.data.type,
+                            name: res.data.name,
+                            data: res.data.file ?? null
+                        }
+                        dispatch.setLocalFiles({ ...context.localFiles, [localFile.id]: localFile })
+                    } else if (isObjectId(holder)) {
+                        Communication.addFile(context.story.id, holder as ObjectId, res.data.name, res.data.type)
                         .then(() => setState({ ...state, fetching: true}))
                     }
                 }}
@@ -57,15 +77,21 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes) {
-                        Communication.deleteFile(context.story.id, file.id)
-                        .then((res) => {
-                            if (!res.success) {
-                                Logger.warn("FileSystemContext.openRemoveFileMenu", res.result);
-                            } else if (selected) {
-                                router.push('../' + context.story.id)
-                            }
-                            setState({ ...state, fetching: true})
-                        })
+                        if (isObjectId(file.id)) {
+                            Communication.deleteFile(context.story.id, file.id)
+                            .then((res) => {
+                                if (!res.success) {
+                                    Logger.warn("FileSystemContext.openRemoveFileMenu", res.result);
+                                } else if (selected) {
+                                    router.push('../' + context.story.id)
+                                }
+                                setState({ ...state, fetching: true})
+                            })
+                        } else if (file.type === FileType.LocalFolder || file.type === FileType.LocalImage) {
+                            let files = {...context.localFiles}
+                            delete files[file.id as string]
+                            dispatch.setLocalFiles(files)
+                        }
                     }
                 }}  
             />
@@ -82,7 +108,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                 description={Localization.toText('create-confirmationConvertDescription', file.name, CreateFileOptions[type as RenderedFileTypes])}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
-                    if (response === optionYes) {
+                    if (response === optionYes && isObjectId(file.id)) {
                         Communication.convertFile(context.story.id, file.id, type)
                         .then((res) => {
                             if (!res.success) {
@@ -99,56 +125,67 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     }
 
     const renameFile = (file: IFileStructure, name: string, callback: Callback<FileRenameResult>) => {
-        Communication.renameFile(context.story.id, file.id, name)
-        .then((res) => {
-            if (!res.success) {
-                Logger.warn("FileSystemContext.renameFile", res.result);
-            }
-            if (callback) {
-                callback(res);
-            }
-        })
+        if (isObjectId(file.id)) {
+            Communication.renameFile(context.story.id, file.id, name)
+            .then((res) => {
+                if (!res.success) {
+                    Logger.warn("FileSystemContext.renameFile", res.result);
+                }
+                if (callback) {
+                    callback(res);
+                }
+            })
+        } else if (file.type === FileType.LocalFolder || file.type === FileType.LocalImage) {
+            let newFile = { ...context.localFiles[file.id], name: name }
+            dispatch.setLocalFiles({...context.localFiles, [file.id]: newFile })
+        }
     }
 
     const moveFile = (file: IFileStructure, target: IFileStructure) => {
-        Communication.moveFile(context.story.id, file.id, target?.id ?? context.story.root)
-        .then((res) => {
-            if (!res.success) {
-                Logger.warn("FileSystemContext.moveFile", res.result);
-            }
-            setState({ ...state, fetching: true})
-        })
+        let targetId = target?.id ?? context.story.root
+        if (isObjectId(file.id) && isObjectId(targetId)) {
+            Communication.moveFile(context.story.id, file.id, targetId)
+            .then((res) => {
+                if (!res.success) {
+                    Logger.warn("FileSystemContext.moveFile", res.result);
+                }
+                setState({ ...state, fetching: true})
+            })
+        } else if ((file.type === FileType.LocalFolder || file.type === FileType.LocalImage)
+            && (!target?.id || target.type === FileType.LocalFolder || target.type === FileType.LocalImage)) {
+            let newFile = { ...context.localFiles[file.id as string], holderId: (target?.id ?? null) as string } 
+            dispatch.setLocalFiles({ ...context.localFiles, [file.id as string]: newFile })
+        }
     }
 
     const setFileState = (file: IFileStructure, state: boolean, callback: Callback<FileSetPropertyResult>) => {
-        Communication.setFileState(context.story.id, file.id, state)
-        .then((res) => {
-            if (!res.success) {
-                Logger.warn("FileSystemContext.setFileState", res.result);
-            }
-            if (callback) {
-                callback(res);
-            }
-        })
+        if (isObjectId(file.id)) {
+            Communication.setFileState(context.story.id, file.id, state)
+            .then((res) => {
+                if (!res.success) {
+                    Logger.warn("FileSystemContext.setFileState", res.result);
+                }
+                if (callback) {
+                    callback(res);
+                }
+            })
+        }
     }
 
     const createCopy = (file: IFileStructure) => {
+        if (!isObjectId(file.id)) return;
+
         let num = 0;
         let name = file.name;
-        try {
-            const regex = RegExp(/(.*) \(([0-9]+)\)$/)
-            let res = regex.exec(file.name);
-            if (res) {
-                let val = parseInt(res[2])
-                num = isNaN(val) ? 0 : val
-                name = res[1]
-            }
-        } catch (error) {
-            Logger.throw("fileSystem.createCopy", error)
+        const regex = RegExp(/(.*) \(([0-9]+)\)$/)
+        const match = regex.exec(file.name);
+        if (match) {
+            let val = parseInt(match[2])
+            num = isNaN(val) ? 0 : val
+            name = match[1]
         }
-
         let newName = `${name} (${num + 1})`
-        Communication.addFileCopy(context.story.id, file.holderId, file.id, newName)
+        Communication.addFileCopy(context.story.id, file.holderId as ObjectId, file.id, newName)
         .then((res) => {
             if (!res.success) {
                 Logger.warn("FileSystemContext.createCopy", res.result);
@@ -178,12 +215,9 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             Communication.getFileStructure(context.story.id)
             .then((res: DBResponse<FileGetStructureResult>) => {
                 if (res.success) {
-                    setState((state) => ({ 
-                        ...state, 
-                        files: res.result ?? [] 
-                    }));
+                    setState((state) => ({ ...state, files: res.result ?? [] }));
                 }
-                setState((state) => ({ ...state, loading: false, fetching: false}))
+                setState((state) => ({ ...state, loading: false, fetching: false }))
             })
         }
     }, [state.fetching])

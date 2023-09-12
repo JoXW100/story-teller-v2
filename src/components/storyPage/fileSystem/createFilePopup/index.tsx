@@ -4,14 +4,16 @@ import CloseIcon from '@mui/icons-material/CloseSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
 import FolderIcon from '@mui/icons-material/FolderSharp';
 import ImportIcon from '@mui/icons-material/DownloadSharp';
+import UploadIcon from '@mui/icons-material/Upload';
 import ErrorIcon from '@mui/icons-material/ErrorSharp';
 import { closePopup } from "components/common/popupHolder";
 import CreateFileContent from "./createFileContent";
 import CreateFolderContent from "./createFolderContent";
 import CreateImportContent from "./createImportContent";
 import CreateImportOldContent from "./createImportOldContent";
+import CreateUploadContent from "./createUploadContent";
 import Localization from "utils/localization";
-import { IFileMetadata, FileType } from "types/database/files";
+import { IFileMetadata, FileType, ILocalFile } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
 
@@ -26,13 +28,15 @@ export type CreateContentProps = React.PropsWithRef<{
 
 export interface CreateFilePopupResult {
     type: InputType
-    data: CreateFilePopupData
+    data?: CreateFilePopupData
+    resources?: Record<string, ILocalFile>
 }
 
 export interface CreateFilePopupData {
     type: FileType
     name: string
     data?: IFileMetadata
+    file?: string
 }
 
 interface PageData {
@@ -60,14 +64,6 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             width: 600,
             content: CreateFolderContent
         },
-        /**
-        [InputType.Upload]: {
-            icon: UploadIcon,
-            tooltips: 'create-uploadTooltips',
-            content: CreateUploadContent
-        },
-         */
-        
         [InputType.Import]: {
             icon: ImportIcon,
             tooltips: 'create-importTooltips',
@@ -79,6 +75,12 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
             tooltips: 'create-importOldTooltips',
             width: 600,
             content: CreateImportOldContent
+        },
+        [InputType.Upload]: {
+            icon: UploadIcon,
+            width: 600,
+            tooltips: 'create-uploadTooltips',
+            content: CreateUploadContent
         }
     } satisfies Partial<Record<InputType, PageData>>
     
@@ -107,6 +109,7 @@ const CreateFilePopup = ({ type, callback }: FileProps): JSX.Element => {
                                 onClick={() => setSelected(key as InputType)}
                                 data={key === selected ? "open" : "closed"}
                                 tooltips={Localization.toText(page.tooltips)}
+                                disabled={type === InputType.Upload || key === InputType.Upload}
                             > 
                                 <page.icon/>
                             </div>

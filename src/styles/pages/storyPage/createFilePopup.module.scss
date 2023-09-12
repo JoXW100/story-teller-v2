@@ -160,7 +160,21 @@ $navbarWidth: 35px;
 
 .inputArea {
     @extend .input;
-    height: 100%;
+    display: flex;
+    height: 100px;
+    width: 100%;
+
+    @include desktop {
+        height: 100px;
+    }
+
+    @include mobile {
+        flex: 1;
+    }
+
+    @include mobile-landscape {
+        flex: 1;
+    }
 
     .upload {
         @include colorBorder(input);
@@ -173,6 +187,7 @@ $navbarWidth: 35px;
         margin: 5px;
         padding: 10px;
         border: 2px dotted;
+        cursor: pointer;
 
         & > input {
             position: absolute;
@@ -184,6 +199,10 @@ $navbarWidth: 35px;
             width: 100%;
             height: 100%;
             cursor: pointer;
+
+            &:disabled {
+                z-index: -1;
+            }
         }
     
         & > SVG {

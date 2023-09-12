@@ -10,7 +10,7 @@ import Folder from "./folder";
 import File from "./file";
 import Localization from "utils/localization";
 import { InputType } from "types/context/fileSystemContext";
-import { IFileStructure, FileType } from "types/database/files";
+import { IFileStructure, FileType, ILocalFile } from "types/database/files";
 import styles from 'styles/pages/storyPage/fileSystem.module.scss';
 
 const FileMenu = (): JSX.Element => {
@@ -75,10 +75,10 @@ const FileMenu = (): JSX.Element => {
     }
 
     const buildFileStructure = (file: IFileStructure): JSX.Element => {
-        if (file.type === FileType.Folder) {
+        if (file.type === FileType.Folder || file.type === FileType.LocalFolder) {
             return (
                 <Folder key={String(file.id)} file={file}>
-                    { file.children?.map((file) => buildFileStructure(file)) }
+                    { file.children?.map(buildFileStructure) }
                 </Folder>
             )
         } else {
@@ -115,10 +115,48 @@ const FileMenu = (): JSX.Element => {
         ]
     }
 
+    const convertLocalFileStructure = (files: Record<string, ILocalFile>): IFileStructure[] => {
+        let roots: string[] = []
+        let rootMap: Record<string, string[]> = {}
+
+        for (const id in files) {
+            const file = files[id]
+            if (!file.holderId) {
+                roots.push(file.id)
+            } else {
+                rootMap[file.holderId] = [...rootMap[file.holderId] ?? [], file.id]
+            }
+        }
+
+        const resolveMaps = (id: string): IFileStructure => {
+            let file = files[id]
+            return { 
+                id: file.id,
+                holderId: file.holderId,
+                type: file.type,
+                name: file.name,
+                open: file.open ?? false,
+                children: rootMap[file.id]?.map(resolveMaps) ?? []
+            }
+        }
+        return roots.map(resolveMaps)
+    }
+
 
     const children = useMemo<JSX.Element[]>(() => {
-        return filterFileStructure(context.files).map(buildFileStructure)
-    }, [context.files, context.fileFilter, context.searchFilter]);
+        let localFolder: IFileStructure = {
+            type: FileType.LocalFolder,
+            holderId: null,
+            id: null,
+            name: "local",
+            open: false,
+            children: filterFileStructure(convertLocalFileStructure(storyContext.localFiles))
+        }
+        return Object.keys(storyContext.localFiles).length > 0 ? [
+            buildFileStructure(localFolder),
+            ...filterFileStructure(context.files).map(buildFileStructure)
+        ] : filterFileStructure(context.files).map(buildFileStructure)
+    }, [context.files, context.fileFilter, context.searchFilter, storyContext.localFiles]);
     
     return (
         <div 

@@ -7,12 +7,15 @@ import Localization from 'utils/localization';
 import IconClosed from '@mui/icons-material/FolderSharp';
 import IconOpen from '@mui/icons-material/FolderOpenSharp';
 import FileIcon from '@mui/icons-material/InsertDriveFileSharp';
+import UploadIcon from '@mui/icons-material/Upload';
 import ImportIcon from '@mui/icons-material/DownloadSharp';
 import RemoveIcon from '@mui/icons-material/Remove';
 import RenameIcon from '@mui/icons-material/DriveFileRenameOutline';
+import DownloadIcon from '@mui/icons-material/BrowserUpdatedSharp';
 import { InputType } from 'types/context/fileSystemContext';
-import { IFileStructure } from 'types/database/files';
+import { FileType, IFileStructure } from 'types/database/files';
 import { ObjectId } from 'types/database';
+import { ContextRowData } from 'types/contextMenu';
 import styles from 'styles/pages/storyPage/file.module.scss';
 
 const hasSelectedChild = (file: IFileStructure, fileId: ObjectId): boolean => {
@@ -27,9 +30,22 @@ type FolderProps = React.PropsWithChildren<{
     file: IFileStructure
 }>
 
+type ContextOptionNames = "createFile" | "createFolder" | "uploadFile" | "importFile" | "rename" | "delete" | "saveLocal"
+
+const getFolderContextOptions = (file: IFileStructure, options: Record<ContextOptionNames, ContextRowData>): ContextRowData[] => {
+    if (file.type === FileType.Folder) {
+        return [options.createFile, options.createFolder, options.importFile, options.rename, options.delete]
+    } else if (file.type === FileType.LocalFolder && file.holderId === null && file.id === null) {
+        return [options.createFolder, options.uploadFile, options.saveLocal]
+    } else if (file.type === FileType.LocalFolder) {
+        return [options.createFolder, options.rename, options.uploadFile, options.delete]
+    }
+    return []
+}
+
 const Folder = ({ file, children }: FolderProps): JSX.Element => {
     const [app] = useContext(AppContext);
-    const [context] = useContext(StoryContext);
+    const [context, storyDispatch] = useContext(StoryContext);
     const [_, dispatch] = useContext(Context);
     const [state, setState] = useState({
         open: Boolean(file.open),
@@ -71,44 +87,49 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
         }
     }
 
+    const contextOptions: Record<ContextOptionNames, ContextRowData> = {
+        createFile: { 
+            text: Localization.toText('create-fileTooltips'), 
+            icon: FileIcon, 
+            action: () => dispatch.openCreateFileMenu(InputType.File, file.id)
+        },
+        createFolder: { 
+            text: Localization.toText('create-folderTooltips'), 
+            icon: IconClosed, 
+            action: () => dispatch.openCreateFileMenu(InputType.Folder, file.id, file.type === FileType.LocalFolder)
+        },
+        uploadFile: { 
+            text: Localization.toText('create-uploadTooltips'), 
+            icon: UploadIcon, 
+            action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
+        },
+        importFile: {
+            text: Localization.toText('create-importTooltips'), 
+            icon: ImportIcon, 
+            action: () => dispatch.openCreateFileMenu(InputType.Import, file.id)
+        },
+        rename: { 
+            text: Localization.toText('common-rename'), 
+            icon: RenameIcon,
+            id: contextID,
+            action: () => setState((state) => ({ ...state, inEditMode: true }))
+        },
+        delete: { 
+            text: Localization.toText('common-delete'), 
+            icon: RemoveIcon, 
+            action: () => dispatch.openRemoveFileMenu(file)
+        },
+        saveLocal: {
+            text: Localization.toText('create-downloadLocal'), 
+            icon: DownloadIcon, 
+            action: () => storyDispatch.saveLocalFiles()
+        }
+    }
+
     const handleContext = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         e.stopPropagation()
-        openContext([
-            { 
-                text: Localization.toText('create-fileTooltips'), 
-                icon: FileIcon, 
-                action: () => dispatch.openCreateFileMenu(InputType.File, file.id)
-            },
-            { 
-                text: Localization.toText('create-folderTooltips'), 
-                icon: IconClosed, 
-                action: () => dispatch.openCreateFileMenu(InputType.Folder, file.id)
-            },
-            /**
-            { 
-                text: Localization.toText('create-uploadTooltips'), 
-                icon: UploadIcon, 
-                action: () => dispatch.openCreateFileMenu(InputType.Upload, file.id)
-            }
-            */
-            {
-                text: Localization.toText('create-importTooltips'), 
-                icon: ImportIcon, 
-                action: () => dispatch.openCreateFileMenu(InputType.Import, file.id)
-            },
-            { 
-                text: Localization.toText('common-rename'), 
-                icon: RenameIcon,
-                id: contextID,
-                action: () => setState((state) => ({ ...state, inEditMode: true }))
-            },
-            { 
-                text: Localization.toText('common-delete'), 
-                icon: RemoveIcon, 
-                action: () => dispatch.openRemoveFileMenu(file)
-            }
-        ], { x: e.pageX, y: e.pageY }, true)
+        openContext(getFolderContextOptions(file, contextOptions), { x: e.pageX, y: e.pageY }, true)
     }
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
