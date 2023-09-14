@@ -41,7 +41,6 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             <CreateFilePopup 
                 type={type} 
                 callback={(res) => {
-                    console.log("openCreateFileMenu", res)
                     if (res.type === InputType.Import) {
                         Communication.addFileFromData(context.story.id, holder as ObjectId, res.data.name, res.data.type, res.data.data)
                         .then(() => setState({ ...state, fetching: true}))

@@ -17,7 +17,6 @@ type EffectProps = React.PropsWithRef<{
 }>
 
 const EffectRenderer = ({ data, stats, desc, spellSlot, tooltips }: EffectProps): JSX.Element => {
-    console.log("EffectRenderer", stats)
     const effect = useMemo(() => new Effect(data, stats, spellSlot), [data, stats])
     return (
         <div className={styles.iconRow}>

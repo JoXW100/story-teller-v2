@@ -44,7 +44,6 @@ const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
         try {
             if (isResources) {
                 let json = decodeURIComponent(state.file)
-                console.log("CreateUploadContent", json)
                 callback({ type: InputType.UploadResources, resources: JSON.parse(json) })
             } else {
                 callback({ type: InputType.Upload, data: {

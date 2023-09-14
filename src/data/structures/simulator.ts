@@ -137,7 +137,6 @@ class Simulator {
             default:
                 return null;
         }
-        console.log("simulator.isHit", isHit, hitResult, attack)
 
         return {
             target: target,

@@ -27,8 +27,6 @@ const SimulatorRenderer = ({ creatures, data }: SimulatorRendererProps): JSX.Ele
         const spellRecord = spells.reduce<Record<string, ISpellMetadata>>((prev, spell) => (
             {...prev, [String(spell.id)]: spell.metadata }
         ), {})
-        console.log("simulator.creatureData", creatureData)
-        console.log("simulator.abilityRecord", abilityRecord)
         return new Simulator(creatureData, abilityRecord, spellRecord)
     }, [creatureData, abilityRecord, spells])
 
