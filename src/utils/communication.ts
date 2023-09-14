@@ -89,12 +89,8 @@ abstract class Communication {
         })
     }
 
-    public static async getFile(storyId: ObjectId, fileId: ObjectId): Promise<DBResponse<FileGetResult>> {
-        let result = await this.databaseFetch<FileGetResult>('getFile', 'GET', {
-            storyId: storyId, 
-            fileId: fileId
-        })
-
+    public static async getFile(fileId: ObjectId): Promise<DBResponse<FileGetResult>> {
+        let result = await this.databaseFetch<FileGetResult>('getFile', 'GET', { fileId: fileId })
         if (result.success) {
             this.cache[String(result.result?.id)] = {
                 id: result.result.id,
@@ -102,7 +98,6 @@ abstract class Communication {
                 metadata: result.result.metadata
             }
         }
-
         return result
     }
 

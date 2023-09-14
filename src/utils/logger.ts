@@ -18,7 +18,7 @@ abstract class Logger
     
     public static error(sender: string, value: any, ...extra: any[]): void
     {
-        if (process.env.NODE_ENV !== "development") {
+        if (process.env.NODE_ENV === "development") {
             console.error(`[${this.time}]: ${sender} →`, value, ...extra);
         } else {
             console.error(String(value));
@@ -27,7 +27,7 @@ abstract class Logger
 
     public static throw(sender: string, value: unknown, ...extra: any[]): void
     {
-        if (process.env.NODE_ENV !== "development") {
+        if (process.env.NODE_ENV === "development") {
             console.error(`[${this.time}]: ${sender} →`, value, ...extra);
             throw value;
         } else {

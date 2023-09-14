@@ -39,7 +39,7 @@ const fileReducer = (state: FileContextState, action: FileContextDispatchAction)
                     editFilePages: []
                 }
             if (action.dispatch) {
-                Communication.getFile(action.data.story, action.data.file).then((res) => {
+                Communication.getFile(action.data.file).then((res) => {
                     action.dispatch({ type: 'initSet', data: res })
                 })
             } else {
@@ -197,8 +197,8 @@ const FileContext = ({ storyId, fileId, viewMode = false, children }: FileContex
         queue: new RequestQueue()
     })
 
-    useEffect(() => { dispatch({ type: 'init', data: { story: storyId, file: fileId }, dispatch: dispatch }) }, [storyId, fileId])
-    useEffect(() => { dispatch({ type: 'setViewMode', data: viewMode }) }, [viewMode])
+    useEffect(() => dispatch({ type: 'init', data: { story: storyId, file: fileId }, dispatch: dispatch }), [storyId, fileId])
+    useEffect(() => dispatch({ type: 'setViewMode', data: viewMode }), [viewMode])
     
     const memoizedDispatch = useMemo<FileContextDispatch>(() => ({
         setText: (text) => dispatch({ type: 'setText', data: text }),
