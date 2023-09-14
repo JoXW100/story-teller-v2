@@ -110,8 +110,8 @@ class StoriesInterface
             } satisfies Partial<DBStory>
             let value = { 
                 $set: { 
-                    name: { $isNull: [update.name, '$name'] },
-                    desc: { $isNull: [update.desc, '$desc'] },
+                    name: update.name ?? "",
+                    desc: update.desc ?? "",
                     dateUpdated: Date.now()
                 } satisfies Partial<KeysOf<DBStory>>
             }
