@@ -5,9 +5,9 @@ import CollapseIcon from '@mui/icons-material/CloseFullscreenSharp';
 import ExpandIcon from '@mui/icons-material/OpenInFullSharp';
 import Localization from "utils/localization"
 import { openContext } from "./contextMenu";
+import { DragData } from "index";
 import { ContextRowData } from "types/contextMenu";
 import styles from 'styles/components/collapsibleGroup.module.scss';
-import { DragData } from "index";
 
 type CollapsibleGroupProps = React.PropsWithChildren<{
     header: React.ReactNode | string
@@ -33,26 +33,29 @@ const CollapsibleGroup = ({ header, open = true, onChange, onRemove, onDrag, onD
         e.preventDefault()
         e.stopPropagation()
 
-        const collapseExpandRow: ContextRowData = {
+        let options: ContextRowData[] = [{
             text: tooltips, 
             icon: state.isOpen ? CollapseIcon : ExpandIcon, 
             action: () => setState((state) => ({...state, isOpen: !state.isOpen}))
-        }
-        const editRow: ContextRowData = {
-            text: Localization.toText('common-rename'), 
-            icon: EditIcon, 
-            action: () => setState((state) => ({...state, isEdit: !state.isEdit}))
-        }
-        const removeRow: ContextRowData = {
-            text: Localization.toText('common-delete'), 
-            icon: RemoveIcon, 
-            action: onRemove
+        }]
+        
+        if (onChange) {
+            options.push({
+                text: Localization.toText('common-rename'), 
+                icon: EditIcon, 
+                action: () => setState((state) => ({...state, isEdit: !state.isEdit}))
+            })
         }
 
-        openContext(onRemove !== undefined
-            ? [collapseExpandRow, editRow, removeRow]
-            : [collapseExpandRow, editRow]
-        , { x: e.pageX, y: e.pageY }, true)
+        if (onRemove) {
+            options.push({
+                text: Localization.toText('common-delete'), 
+                icon: RemoveIcon, 
+                action: onRemove
+            })
+        }
+
+        openContext(options, { x: e.pageX, y: e.pageY }, true)
     }
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -99,7 +102,7 @@ const CollapsibleGroup = ({ header, open = true, onChange, onRemove, onDrag, onD
     return <>
         <div 
             className={styles.collapsibleGroup} 
-            data={open ? "open" : "closed"}
+            data={state.isOpen ? "open" : "closed"}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
@@ -119,7 +122,7 @@ const CollapsibleGroup = ({ header, open = true, onChange, onRemove, onDrag, onD
                 }
             </button>
         </div>
-        { open && children }
+        { state.isOpen && children }
     </>
 }
 
