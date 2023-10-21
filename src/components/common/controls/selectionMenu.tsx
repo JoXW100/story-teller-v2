@@ -53,7 +53,7 @@ const SelectionMenu = (props: SelectionMenuProps) => {
     )
 }
 
-const EditComponent = ({ value, params }: ListTemplateComponent<string, SelectionComponentParams>) => {
+const EditComponent = ({ value, values: selected, params }: ListTemplateComponent<string, SelectionComponentParams>) => {
     const { dropdownClassName, dropdownItemClassName, values, options, defaultValue = null, addLast = true, onChange } = params
     const style = dropdownClassName ? `${styles.dropdown} ${dropdownClassName}` : styles.dropdown;
     const itemStyle = dropdownItemClassName ? `${styles.dropdownItem} ${dropdownItemClassName}` : styles.dropdownItem
@@ -69,6 +69,7 @@ const EditComponent = ({ value, params }: ListTemplateComponent<string, Selectio
             className={style}
             itemClassName={itemStyle}
             values={options}
+            exclude={selected}
             value={value}
             onChange={handleChange}/>
     )
