@@ -91,8 +91,8 @@ abstract class Communication {
 
     public static async getFile(fileId: ObjectId): Promise<DBResponse<FileGetResult>> {
         let result = await this.databaseFetch<FileGetResult>('getFile', 'GET', { fileId: fileId })
-        if (result.success) {
-            this.cache[String(result.result?.id)] = {
+        if (result.success && result.result) {
+            this.cache[String(result.result.id)] = {
                 id: result.result.id,
                 type: result.result.type,
                 metadata: result.result.metadata

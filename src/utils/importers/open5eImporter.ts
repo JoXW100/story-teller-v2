@@ -1,81 +1,18 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
-import { asEnum, isEnum } from "utils/helpers";
-import { ActionType, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, OptionalAttribute, ProficiencyLevel, ProficiencyType, ScalingType, Sense, SizeType, Skill, TargetType } from "types/database/dnd";
-import { CalculationMode, OptionType } from "types/database/editor";
+import { asEnum } from "utils/helpers";
+import { AreaType, Attribute, CastingTime, DamageType, DiceType, Duration, EffectCondition, MagicSchool, ScalingType, TargetType } from "types/database/dnd";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
 import { KeysOf } from "types";
+import { Open5eCreature } from "types/open5eCompendium";
+import Open5eCreatureData from "data/structures/open5eCreature";
 
-const hpSplitExpr = /([0-9]+)d([0-9]+)([\+\-][0-9]+)?/
 const castTimeExpr = /([0-9]+)? *([A-z-]+)/
 const durationMatchExpr = /([0-9]+)? *([A-z]+)/g
 const areaMatchExpr = /([0-9]+)[- ]*(?:foot|feet)[- ]*([A-z]+)[- ]*(sphere|centered|cylinder)?/g
 const damageMatchExpr = /([0-9]+)d([0-9]+)[ -]+([A-z]+) *damage/
 const conditionMatchExpr = /(?:([A-z]+) (saving[- ]*throw)|(ranged|melee) (spell[- ]*attack))/
-
-interface Open5eMonsterAction {
-    name: string
-    desc: string
-    attack_bonus?: number
-    damage_dice?: string
-}
-
-interface Open5eMonster {
-    slug: string // id
-    desc: string
-    // Stats
-    charisma: number
-    constitution: number
-    dexterity: number
-    intelligence: number
-    strength: number
-    wisdom: number
-    // Info
-    hit_dice: string
-    hit_points: number
-    img_main: null
-    languages: string
-    name: string
-    alignment: string
-    armor_class: number
-    armor_desc: string
-    cr: number
-    challenge_rating: string
-    type: string
-    sub_type: string
-    senses: string
-    size: string
-    speed: Record<string, number>
-    // Saves
-    charisma_save: number | null
-    constitution_save: number | null
-    dexterity_save: number | null
-    intelligence_save: number | null
-    strength_save: number | null
-    wisdom_save: number | null
-    // Immunities & Resistances
-    condition_immunities: string
-    damage_immunities: string
-    damage_resistances: string
-    damage_vulnerabilities: string
-    // Actions
-    actions: Open5eMonsterAction[]
-    legendary_actions: Open5eMonsterAction[] | string
-    legendary_desc: string
-    reactions: Open5eMonsterAction[] | string
-    special_abilities: Open5eMonsterAction[] | string
-    // Skills
-    perception: number
-    skills: Record<string, number>
-    // Ignore
-    document__license_url: string
-    document__slug: string
-    document__title: string
-    group: null
-
-    spell_list: string[] // open5e urls to the spell pages
-}
 
 interface Open5eSpell {
     archetype: string
@@ -100,185 +37,6 @@ interface Open5eSpell {
     document__license_url: string
     document__slug: string
     document__title: string
-}
-
-const splitHP = (hp: string) => {
-    let res = hpSplitExpr.exec(hp ?? "") ?? []
-    return {
-        num: isNaN(Number(res[1])) ? 0 : Number(res[1]),
-        dice: isNaN(Number(res[2])) ? 0 : Number(res[2]),
-        mod: isNaN(Number(res[3])) ? 0 : Number(res[3])
-    }
-}
-
-const getAlignment = (alignment: string): Alignment => {
-    switch (true) {
-        case /unaligned/.test(alignment):
-            return Alignment.Unaligned
-
-        case /any/.test(alignment):
-            return Alignment.Any
-            
-        case /chaotic evil/.test(alignment):
-            return Alignment.ChaoticEvil
-
-        case /chaotic good/.test(alignment):
-            return Alignment.ChaoticGood
-
-        case /non\-lawful/.test(alignment):
-        case /chaotic neutral/.test(alignment):
-            return Alignment.ChaoticNeutral
-
-        case /lawful evil/.test(alignment):
-            return Alignment.LawfulEvil
-
-        case /lawful good/.test(alignment):
-            return Alignment.LawfulGood
-            
-        case /non\-chaotic/.test(alignment):
-        case /lawful neutral/.test(alignment):
-            return Alignment.LawfulNeutral
-
-        case /non\-good/.test(alignment):
-        case /neutral evil/.test(alignment):
-            return Alignment.NeutralEvil
-
-        case /non\-evil/.test(alignment):
-        case /neutral good/.test(alignment):
-            return Alignment.NeutralGood
-
-        case /true neutral/.test(alignment):
-        case /neutral/.test(alignment):
-            return Alignment.TrueNeutral
-            
-        default:
-            return Alignment.None
-    }
-}
-
-const getSpeed = (speed: Record<string, number>): Partial<Record<MovementType, number>> => {
-    return Object.keys(speed).reduce((prev, val) => 
-        isEnum(val, MovementType)
-            ? { ...prev, [val]: speed[val] } 
-            : { ...prev }
-    , {}) as Partial<Record<MovementType, number>>
-}
-
-const getSaveProficiencies = (monster: Open5eMonster): Attribute[] => {
-    let saves: Attribute[] = []
-    if (monster.strength_save !== null) {
-        saves.push(Attribute.STR)
-    }
-    if (monster.charisma_save !== null) {
-        saves.push(Attribute.CHA)
-    }
-    if (monster.constitution_save !== null) {
-        saves.push(Attribute.CON)
-    }
-    if (monster.dexterity_save  !== null) {
-        saves.push(Attribute.DEX)
-    }
-    if (monster.intelligence_save !== null) {
-        saves.push(Attribute.INT)
-    }
-    if (monster.wisdom_save !== null) {
-        saves.push(Attribute.WIS)
-    }
-    return saves
-}
-
-const getSkillProficiencies = (skills: Record<string, number>): Partial<Record<Skill, ProficiencyLevel>> => {
-    let res: Partial<Record<Skill, ProficiencyLevel>> = {}
-    Object.keys(skills).forEach((key) => {
-        if (skills[key] ?? null === null) return;
-        switch (key.toLowerCase()) {
-            case "acrobatics": // TODO: Verify
-                res[Skill.Acrobatics] = ProficiencyLevel.Proficient
-                break
-            case "animal_handling": // TODO: Verify
-                res[Skill.AnimalHandling] = ProficiencyLevel.Proficient
-                break
-            case "arcana": // TODO: Verify
-                res[Skill.Arcana] = ProficiencyLevel.Proficient
-                break
-            case "athletics": // TODO: Verify
-                res[Skill.Athletics] = ProficiencyLevel.Proficient
-                break
-            case "deception": // TODO: Verify
-                res[Skill.Deception] = ProficiencyLevel.Proficient
-                break
-            case "history":
-                res[Skill.History] = ProficiencyLevel.Proficient
-                break
-            case "insight": // TODO: Verify
-                res[Skill.Insight] = ProficiencyLevel.Proficient
-                break
-            case "intimidation": // TODO: Verify
-                res[Skill.Intimidation] = ProficiencyLevel.Proficient
-                break
-            case "investigation": // TODO: Verify
-                res[Skill.Investigation] = ProficiencyLevel.Proficient
-                break
-            case "medicine": // TODO: Verify
-            res[Skill.Medicine] = ProficiencyLevel.Proficient
-                break
-            case "nature": // TODO: Verify
-                res[Skill.Nature] = ProficiencyLevel.Proficient
-                break
-            case "perception":
-                res[Skill.Perception] = ProficiencyLevel.Proficient
-                break
-            case "performance": // TODO: Verify
-                res[Skill.Performance] = ProficiencyLevel.Proficient
-                break
-            case "persuasion": // TODO: Verify
-                res[Skill.Persuasion] = ProficiencyLevel.Proficient
-                break
-            case "religion": // TODO: Verify
-                res[Skill.Religion] = ProficiencyLevel.Proficient
-                break
-            case "sleightOfHand": // TODO: Verify
-                res[Skill.SleightOfHand] = ProficiencyLevel.Proficient
-                break
-            case "stealth":
-                res[Skill.Stealth] = ProficiencyLevel.Proficient
-                break
-            case "survival": // TODO: Verify
-                res[Skill.Survival] = ProficiencyLevel.Proficient
-                break
-            default:
-                break
-        }
-    })
-    return res
-}
-
-const getSenses = (senses: string): Partial<Record<Sense, number>> => {
-    let res: Partial<Record<Sense, number>> = {}
-    let parts = senses.toLowerCase().split(/\.\,?/g)
-    parts.forEach(part => {
-        let match = /([a-z]+) +([0-9]+)/.exec(part)
-        if (match && match[0]) {
-            let num = parseInt(match[2])
-            switch (match[1]) {
-                case "blindsight":
-                    res[Sense.BlindSight] = isNaN(num) ? num : 0
-                    break;
-                case "darkvission":
-                    res[Sense.DarkVision] = isNaN(num) ? num : 0
-                    break;
-                case "tremorsense":
-                    res[Sense.TremorSense] = isNaN(num) ? num : 0
-                    break;
-                case "truesight":
-                    res[Sense.TrueSight] = isNaN(num) ? num : 0
-                    break;
-                default:
-                    break;
-            }
-        }
-    });
-    return res
 }
 
 const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, timeValue: number } => {
@@ -481,76 +239,17 @@ const getTarget = (area: AreaType, range: string): TargetType => {
     }
 }
 
-const estimateSpellAttribute = (monster: Open5eMonster): OptionalAttribute => {
-    if (monster.spell_list.length <= 0) {
-        return OptionalAttribute.None
-    }
-    return [ 
-        { val: monster.intelligence, attr: OptionalAttribute.INT },
-        { val: monster.wisdom, attr: OptionalAttribute.WIS },
-        { val: monster.charisma, attr: OptionalAttribute.CHA }
-    ].reduce((prev, val) => (
-        val.val > prev.val ? val : prev
-    ), { val: -1, attr: OptionalAttribute.INT }).attr
-}
-
 export const open5eCreatureImporter = async (id: string): Promise<ICreatureMetadata> => {
-    let res = await Communication.open5eFetchOne<Open5eMonster>("monsters", id);
+    let res = await Communication.open5eFetchOne<Open5eCreature>("monsters", id);
     if (!res) { return null; }
-    res.special_abilities = typeof res.special_abilities == typeof [] ? res.special_abilities : []
-    res.legendary_actions = typeof res.legendary_actions == typeof [] ? res.legendary_actions : []
-    res.reactions = typeof res.reactions == typeof [] ? res.reactions : []
-    let { num, dice } = splitHP(res.hit_dice)
-    let metadata = {
-        name: res.name,
-        type: asEnum(res.type.toLowerCase(), CreatureType) ?? CreatureType.None,
-        size: asEnum(res.size.toLowerCase(), SizeType) ?? SizeType.Medium,
-        alignment: getAlignment(res.alignment.toLowerCase()),
-        portrait: res.img_main ?? null,
-        description: res.desc,
-        abilities: [
-            ...res.actions, 
-            ...res.special_abilities as Open5eMonsterAction[],
-            ...(res.legendary_actions as Open5eMonsterAction[])?.map(val => ({ ...val, name: `${ActionType.Legendary}: ${val.name}` })),
-            ...(res.reactions as Open5eMonsterAction[])?.map(val => ({ ...val, name: `${ActionType.Reaction}: ${val.name}` }))
-        ].map((x) => `${x.name}. ${x.desc}`),
-        challenge: res.cr,
-        // xp: 
-
-        level: num,
-        hitDice: asEnum(dice, DiceType) ?? DiceType.None,
-        health: { type: CalculationMode.Auto, value: res.hit_points } satisfies OptionType<number>,
-        ac: { type: CalculationMode.Override, value: res.armor_class } satisfies OptionType<number>,
-        proficiency: { type: CalculationMode.Auto, value: 0 } satisfies OptionType<number>,
-        initiative: { type: CalculationMode.Auto, value: 0 } satisfies OptionType<number>,
-
-        resistances: res.damage_resistances,
-        vulnerabilities: res.damage_vulnerabilities,
-        // advantages: 
-        dmgImmunities: res.damage_immunities,
-        conImmunities: res.condition_immunities,
-
-        speed: getSpeed(res.speed),
-        senses: getSenses(res.senses),
-
-        proficienciesSave: getSaveProficiencies(res),
-        proficienciesSkill: getSkillProficiencies(res.skills),
-        // languages:
-
-        str: res.strength,
-        dex: res.dexterity,
-        con: res.constitution,
-        int: res.intelligence,
-        wis: res.wisdom,
-        cha: res.charisma,
-        spellAttribute: estimateSpellAttribute(res),
-
-        // spellSlots: 
-        spells: res.spell_list ? res.spell_list : [],
-    } satisfies ICreatureMetadata
-    
-    Logger.log("toCreature", { file: res, result: metadata })
-    return metadata
+    try {
+        let metadata = new Open5eCreatureData(res)
+        Logger.log("toCreature", { file: res, result: metadata })
+        return metadata.toJSON()
+    } catch (error: unknown) {
+        Logger.throw("open5eCreatureImporter", error)
+        return null;
+    }
 }
 
 export const open5eSpellImporter = async (id: string): Promise<ISpellMetadata> => {

@@ -48,14 +48,18 @@ export function isObjectId(value: any): value is ObjectId {
     return value && /^[0-9a-fA-F]{24}$/.test(String(value))
 }
 
+export function asArray<T>(value: any): T[] {
+    return Array.isArray(value) ? value : []
+}
+
 export function getRelativeMetadata(metadata: IFileMetadata, pages: EditFilePage[]): IFileMetadata {
-    if (metadata && pages.length > 0) {
-        pages.forEach((page) => {
+    if (metadata) {
+        for (const page of pages) {
             let items: IFileMetadata[] = metadata[page.rootKey]
             if (items) {
                 metadata = items[page.index] ?? metadata
             }
-        })
+        }
     } 
     return metadata
 }
