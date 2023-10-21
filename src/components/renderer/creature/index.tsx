@@ -123,6 +123,12 @@ const CreatureFileRenderer = ({ file }: CreatureFileRendererProps): JSX.Element 
                             {creature.sensesAsText}
                         </div>
                     }
+                    { creature.proficienciesLanguage.length > 0 &&
+                        <div>
+                            <Elements.Bold>Languages </Elements.Bold>
+                            {creature.proficienciesLanguageText}
+                        </div>
+                    }
                     <Elements.Space/>
                     <div><Elements.Bold>Passive Perception: </Elements.Bold>{creature.passivePerceptionValue.toString()}</div>
                     <div><Elements.Bold>Passive Investigation: </Elements.Bold>{creature.passiveInvestigationValue.toString()}</div>
