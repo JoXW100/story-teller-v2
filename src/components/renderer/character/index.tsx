@@ -2,7 +2,7 @@ import { useParser } from 'utils/parser';
 import Elements from 'data/elements';
 import SimpleCharacterRenderer from './simple';
 import DetailedCharacterRenderer from './detailed';
-import CharacterFile, { ICharacterMetadata } from 'types/database/files/character';
+import { CharacterFile, ICharacterMetadata } from 'types/database/files/character';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import { RendererObject } from 'types/database/editor';
 

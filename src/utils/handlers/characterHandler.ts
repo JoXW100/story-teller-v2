@@ -12,7 +12,7 @@ import { IClassMetadata } from "types/database/files/class"
 import { IItemMetadata } from "types/database/files/item"
 import { IModifierCollection } from "types/database/files/modifierCollection"
 import { FileGetManyMetadataResult } from "types/database/responses"
-import CharacterFile from "types/database/files/character"
+import { CharacterFile } from "types/database/files/character"
 
 const useCharacterHandler = (data: IFileQueryData<CharacterFile>): [character: CharacterData, abilities: FileGetManyMetadataResult<IAbilityMetadata>, items: FileGetManyMetadataResult<IItemMetadata>] => {
     const [modifiers, setModifiers] = useState<IModifierCollection>(null)

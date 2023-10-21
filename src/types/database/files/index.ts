@@ -48,7 +48,7 @@ interface ILocalFile {
 }
 
 interface IFileData {
-    type: Exclude<FileType, FileType.Folder | FileType.Root>
+    type: Exclude<FileType, FileType.Folder|FileType.Root|FileType.Empty>
     content: IFileContent
     metadata: IFileMetadata
     storage: IFileStorage

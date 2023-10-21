@@ -3,7 +3,7 @@ import { useParser } from 'utils/parser';
 import Elements from 'data/elements';
 import CharacterData from 'data/structures/character';
 import Logger from 'utils/logger';
-import CharacterFile from 'types/database/files/character';
+import { CharacterFile } from 'types/database/files/character';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile

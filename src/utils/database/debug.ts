@@ -5,13 +5,13 @@ import { success } from "./database";
 import { DBData, DBFolder, DBItem, DBResponse, DBRoot } from "types/database";
 import { FileType } from "types/database/files";
 import { KeysOf, ValueOf } from "types";
-import AbilityFile from "types/database/files/ability";
-import CreatureFile from "types/database/files/creature";
-import CharacterFile from "types/database/files/character";
-import DocumentFile from "types/database/files/document";
-import EncounterFile from "types/database/files/encounter";
-import SpellFile from "types/database/files/spell";
-import ClassFile from "types/database/files/class";
+import { AbilityFile } from "types/database/files/ability";
+import { CreatureFile } from "types/database/files/creature";
+import { CharacterFile } from "types/database/files/character";
+import { DocumentFile } from "types/database/files/document";
+import { EncounterFile } from "types/database/files/encounter";
+import { SpellFile } from "types/database/files/spell";
+import { ClassFile } from "types/database/files/class";
 import { Alignment, Skill } from "types/database/dnd";
 
 type DBAbility = DBData & AbilityFile

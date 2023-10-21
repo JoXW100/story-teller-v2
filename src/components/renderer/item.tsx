@@ -4,7 +4,7 @@ import ItemData from 'data/structures/item';
 import Logger from 'utils/logger';
 import { useParser } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
-import ItemFile, { IItemMetadata } from 'types/database/files/item';
+import { ItemFile, IItemMetadata } from 'types/database/files/item';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
 

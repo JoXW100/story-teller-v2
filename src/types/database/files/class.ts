@@ -63,11 +63,11 @@ abstract class ClassFile implements IFileData {
     storage: IClassStorage
 }
 
-export default ClassFile
 export type {
     IClassContent,
     IClassLevels,
     IClassMetadataProperties,
     IClassMetadata,
-    IClassStorage
+    IClassStorage,
+    ClassFile
 }

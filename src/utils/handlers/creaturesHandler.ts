@@ -13,8 +13,8 @@ import { FileType } from "types/database/files"
 import { IAbilityMetadata } from "types/database/files/ability"
 import { IItemMetadata } from "types/database/files/item"
 import { IModifierCollection } from "types/database/files/modifierCollection"
-import CharacterFile, { ICharacterStorage } from "types/database/files/character"
-import CreatureFile from "types/database/files/creature"
+import { CharacterFile, ICharacterStorage } from "types/database/files/character"
+import { CreatureFile } from "types/database/files/creature"
 import { FileDataQueryResult } from "types/database/responses"
 
 const useCreaturesHandler = (data: FileDataQueryResult[]): [creatures: CreatureData[], abilities: Record<string, IAbilityMetadata>, items: Record<string, IItemMetadata>] => {

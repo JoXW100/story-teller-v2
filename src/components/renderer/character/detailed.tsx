@@ -16,7 +16,7 @@ import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import Logger from 'utils/logger';
 import useCharacterHandler from 'utils/handlers/characterHandler';
-import CharacterFile, { ICharacterAbilityStorageData } from 'types/database/files/character';
+import { CharacterFile, ICharacterAbilityStorageData } from 'types/database/files/character';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RollType } from 'types/dice';
 import styles from 'styles/renderer.module.scss';

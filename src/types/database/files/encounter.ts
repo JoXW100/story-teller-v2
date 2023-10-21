@@ -30,10 +30,10 @@ abstract class EncounterFile implements IFileData {
     storage: IEncounterStorage
 }
 
-export default EncounterFile
 export type {
     IEncounterContent,
     IEncounterMetadata,
     IEncounterStorage,
-    IEncounterCard
+    IEncounterCard,
+    EncounterFile
 }

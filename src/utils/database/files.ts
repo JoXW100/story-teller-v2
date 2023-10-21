@@ -1,4 +1,4 @@
-import { ObjectId, Collection, Db } from "mongodb";
+import { ObjectId, Collection, Db, Filter } from "mongodb";
 import { failure, success } from "./database";
 import Logger from 'utils/logger';
 import { isEnum } from "utils/helpers";
@@ -247,7 +247,7 @@ class FilesInterface
     /** Changes the type of a file in the database */
     async convert(userId: string, storyId: string, fileId: string, type: FileType): Promise<DBResponse<FileConvertResult>> {
         try {
-            if (!isEnum(type, FileType) && type !== FileType.Folder && type !== FileType.Root) {
+            if (!isEnum(type, FileType) || type === FileType.Folder || type === FileType.LocalFolder || type === FileType.Root || type === FileType.Empty) {
                 Logger.error('files.convert', type);
                 return failure(`${type} is not a valid type`);
             }
@@ -257,7 +257,7 @@ class FilesInterface
                 _userId: userId,
                 _storyId: new ObjectId(storyId),
                 type: { $nin: [FileType.Folder, FileType.Root] },
-            } satisfies Partial<KeysOf<DBItem>>
+            } satisfies Filter<DBItem>
 
             let value = { 
                 $set: {
@@ -266,7 +266,7 @@ class FilesInterface
                 } satisfies Partial<DBItem>
             }
 
-            let result = await this.collection.updateOne(filter, value)
+            let result = await this.collection.updateOne(filter as Filter<DBItem>, value)
             let x = result.modifiedCount === 1;
 
             Logger.log('files.convert', x ? type : 'Null');
@@ -356,7 +356,7 @@ class FilesInterface
                 } 
             }
 
-            let result = await this.collection.updateOne(filter, update)
+            let result = await this.collection.updateOne(filter as Filter<DBItem>, update)
             let x = result.modifiedCount === 1;
             Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 30 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");

@@ -49,10 +49,10 @@ abstract class CharacterFile implements IFileData {
     storage: ICharacterStorage
 }
 
-export default CharacterFile
 export type {
     ICharacterContent,
     ICharacterMetadata,
     ICharacterStorage,
-    ICharacterAbilityStorageData
+    ICharacterAbilityStorageData,
+    CharacterFile
 }

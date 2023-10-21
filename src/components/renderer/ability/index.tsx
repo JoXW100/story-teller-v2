@@ -5,7 +5,7 @@ import EffectRenderer from '../effect';
 import ChargesRenderer from '../chargeToggle';
 import { useParser } from 'utils/parser';
 import Logger from 'utils/logger';
-import AbilityFile, { IAbilityMetadata } from 'types/database/files/ability';
+import { AbilityFile, IAbilityMetadata } from 'types/database/files/ability';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { RendererObject } from 'types/database/editor';
 import { IParserMetadata, RollMode } from 'types/elements';

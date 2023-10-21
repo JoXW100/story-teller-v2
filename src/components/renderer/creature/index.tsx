@@ -11,7 +11,7 @@ import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
 import useCreatureHandler from 'utils/handlers/creatureHandler';
 import Logger from 'utils/logger';
-import CreatureFile, { ICreatureMetadata } from 'types/database/files/creature';
+import { CreatureFile, ICreatureMetadata } from 'types/database/files/creature';
 import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
 import { RendererObject } from 'types/database/editor';
 import { FileMetadataQueryResult } from 'types/database/responses';

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
-import SpellFile, { ISpellMetadata } from 'types/database/files/spell';
+import { SpellFile, ISpellMetadata } from 'types/database/files/spell';
 import { FileMetadataQueryResult } from 'types/database/responses';
 import DetailedSpell from './detailed';
 import SimpleSpell from './simple';

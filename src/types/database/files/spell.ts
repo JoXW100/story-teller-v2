@@ -39,9 +39,9 @@ abstract class SpellFile implements IFileData {
     storage: ISpellStorage
 }
 
-export default SpellFile
 export type {
     ISpellContent,
     ISpellMetadata,
-    ISpellStorage
+    ISpellStorage,
+    SpellFile
 }

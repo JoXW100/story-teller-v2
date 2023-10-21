@@ -74,9 +74,9 @@ abstract class CreatureFile implements IFileData {
     storage: ICreatureStorage
 }
 
-export default CreatureFile
 export type {
     ICreatureContent,
     ICreatureMetadata,
-    ICreatureStorage
+    ICreatureStorage,
+    CreatureFile
 }

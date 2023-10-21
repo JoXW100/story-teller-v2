@@ -30,9 +30,9 @@ abstract class AbilityFile implements IFileData {
     storage: IAbilityStorage
 }
 
-export default AbilityFile
 export type {
     IAbilityContent,
     IAbilityMetadata,
-    IAbilityStorage
+    IAbilityStorage,
+    AbilityFile
 }

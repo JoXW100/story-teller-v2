@@ -18,9 +18,9 @@ abstract class DocumentFile implements IFileData {
     storage: IDocumentStorage
 }
 
-export default DocumentFile
 export type {
     IDocumentContent,
     IDocumentMetadata,
-    IDocumentStorage
+    IDocumentStorage,
+    DocumentFile
 }

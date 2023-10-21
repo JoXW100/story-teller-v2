@@ -34,9 +34,9 @@ abstract class ItemFile implements IFileData {
     storage: IItemStorage
 }
 
-export default ItemFile
 export type {
     IItemContent,
     IItemMetadata,
-    IItemStorage
+    IItemStorage,
+    ItemFile
 }

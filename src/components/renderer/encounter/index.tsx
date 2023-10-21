@@ -15,7 +15,7 @@ import { useDataFiles } from 'utils/handlers/files';
 import Dice from 'utils/data/dice';
 import Logger from 'utils/logger';
 import { RendererObject } from 'types/database/editor';
-import EncounterFile, { IEncounterCard, IEncounterMetadata } from 'types/database/files/encounter';
+import { EncounterFile, IEncounterCard, IEncounterMetadata } from 'types/database/files/encounter';
 import { FileDataQueryResult, FileMetadataQueryResult } from 'types/database/responses';
 import { File, FileType } from 'types/database/files';
 import styles from 'styles/renderer.module.scss';

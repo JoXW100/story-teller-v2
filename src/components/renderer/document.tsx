@@ -3,7 +3,7 @@ import Elements from 'data/elements';
 import { useParser } from 'utils/parser';
 import { RendererObject } from 'types/database/editor';
 import ICreatureStats from 'types/database/files/iCreatureStats';
-import DocumentFile, { IDocumentMetadata } from 'types/database/files/document';
+import { DocumentFile, IDocumentMetadata } from 'types/database/files/document';
 import { FileMetadataQueryResult } from 'types/database/responses';
 
 type DocumentFileRendererProps = React.PropsWithRef<{

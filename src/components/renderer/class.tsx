@@ -1,6 +1,6 @@
 import Elements from 'data/elements';
 import { RendererObject } from 'types/database/editor';
-import ClassFile, { IClassMetadata } from 'types/database/files/class';
+import { ClassFile, IClassMetadata } from 'types/database/files/class';
 import { FileMetadataQueryResult } from 'types/database/responses';
 
 type ClassFileRendererProps = React.PropsWithRef<{
