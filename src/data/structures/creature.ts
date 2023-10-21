@@ -385,18 +385,18 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get passivePerceptionValue(): number {
-        let proficiency = Skill.Perception in this.proficienciesSkill ? this.proficiencyValue : 0
-        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
+        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.perception)
+        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue
     }
 
     public get passiveInvestigationValue(): number {
-        let proficiency = Skill.Investigation in this.proficienciesSkill ? this.proficiencyValue : 0
-        return 10 + this.getAttributeModifier(Attribute.INT) + proficiency
+        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.investigation)
+        return 10 + this.getAttributeModifier(Attribute.INT) + proficiency * this.proficiencyValue
     }
 
     public get passiveInsightValue(): number {
-        let proficiency = Skill.Insight in this.proficienciesSkill ? this.proficiencyValue : 0
-        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency
+        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.insight)
+        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue
     }
 
     // Attributes
