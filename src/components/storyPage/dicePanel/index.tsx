@@ -29,7 +29,7 @@ const DicePanel = ({ open }: DicePanelProps): JSX.Element => {
     }
 
     const handleRoll = () => {
-        dispatch.roll(state.collection, RollMethod.Normal, null)
+        dispatch.roll(state.collection, null)
         setState({ ...state, collection: new DiceCollection() })
     }
 

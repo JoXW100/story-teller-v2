@@ -85,7 +85,7 @@ const ItemListComponent = ({ params }: TemplateComponentProps<ItemListTemplatePa
             <ItemListMenu
                 itemClassName={styles.itemListItem}
                 values={Array.isArray(values) ? values : []}
-                defaultValue={params.default}
+                defaultValue={{ id: params.default }}
                 prompt={params.prompt ?? "Edit"}
                 onChange={handleChange}
                 onClick={handleCLick}

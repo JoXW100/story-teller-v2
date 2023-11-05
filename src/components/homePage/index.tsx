@@ -60,13 +60,13 @@ const HomePage = (): JSX.Element => {
         let cards: StoryCardData[] = res.success 
             ? res.result.map((story) => ({ ...story, type: CardType.Story })) 
             : []
-        setState({ 
+        setState((state) => ({ 
             ...state, 
             loading: false,
             connected: res.success,
             status: PageStatus.Select,
             cards: [createCard, ...cards]
-        })
+        }))
     }
 
     const handleSetStatus = (status: PageStatus) => { 
@@ -105,9 +105,9 @@ const HomePage = (): JSX.Element => {
             <div className={styles.pageHeader}>
                 <Link className={styles.logoutButton} href={Navigation.logoutAPI()} passHref>
                     <button>
-                        <label>
+                        <span>
                             { Localization.toText('home-logout', user?.name ?? "") }
-                        </label>
+                        </span>
                         <LogoutIcon/>
                     </button>
                 </Link>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isObjectId } from 'utils/helpers';
 import { useFile } from 'utils/handlers/files';
 import { FileType } from 'types/database/files';
@@ -29,7 +29,8 @@ interface EditLinkInputState {
 
 const LinkInput = ({ className, value, placeholder, disabled, allowText, allowedTypes, onChange }: EditLinkInputComponentProps): JSX.Element => {
     const [state, setState] = useState<EditLinkInputState>({ text: value ? String(value) : "", error: false, highlight: false })
-    const [file, loading] = useFile(state.text as any, allowedTypes)
+    const fileId = useMemo(() => isObjectId(state.text) ? state.text : null, [state.text])
+    const [file, loading] = useFile(fileId, allowedTypes)
     const style = className ? `${styles.linkInput} ${className}` : styles.linkInput;
     const name: string = file?.metadata?.name ?? "..."
 

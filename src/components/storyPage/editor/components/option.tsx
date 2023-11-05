@@ -4,7 +4,7 @@ import NumberInput from 'components/common/controls/numericInput';
 import { Context } from 'components/contexts/fileContext';
 import { getOptionType } from 'data/optionData';
 import Logger from 'utils/logger';
-import { getRelativeMetadata } from 'utils/helpers';
+import { asNumber, getRelativeMetadata } from 'utils/helpers';
 import { TemplateComponentProps } from '.';
 import { OptionTemplateParams } from 'types/templates';
 import { CalculationMode } from 'types/database/editor';
@@ -27,7 +27,7 @@ const OptionComponent = ({ params }: TemplateComponentProps<OptionTemplateParams
     const data = getData(metadata, params.key, params.default)
         
     const handleChange = (value: string) => {
-        data.type = Number(value) ?? value
+        data.type = asNumber(value, null) ?? value
         dispatch.setMetadata(params.key, data);
     }
 

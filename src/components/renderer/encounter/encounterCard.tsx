@@ -17,6 +17,7 @@ import { ObjectId } from 'types/database';
 import { IEncounterCard, IEncounterStorage } from 'types/database/files/encounter';
 import { FileDataQueryResult } from 'types/database/responses';
 import { RollMethod } from 'types/dice';
+import { DiceType } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
 
 type CreatureCardProps = React.PropsWithRef<{
@@ -79,7 +80,7 @@ const EncounterCard = ({ id, creature, encounter, rolls, index, storage }: Encou
 
     const onRollInitiative = () => {
         let collection = new DiceCollection(initiativeBonus, "Initiative")
-        collection.add(new Dice(20), 1)
+        collection.add(DiceType.D20, 1)
         let roll = collection.roll(RollMethod.Normal, creature.name)
         let cards: IEncounterCard[] = [...storage.cards.slice(0, index), { ...storage.cards[index], initiative: roll.results[roll.selectedIndex].sum }, ...storage.cards.slice(index + 1)]
         Beyond20.sendInitiativeRoll(roll)

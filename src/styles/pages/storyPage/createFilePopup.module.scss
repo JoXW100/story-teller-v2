@@ -241,8 +241,7 @@ $navbarWidth: 35px;
         gap: 5px;
     }
 
-    & > label {
-        @include fontNormalBold();
+    & > b {
         @include fontNoLineBreak();
         text-indent: 5px;
     }

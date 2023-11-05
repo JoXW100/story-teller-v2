@@ -1,8 +1,7 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
-import type { ObjectIdText } from ".."
-import type{ AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
+import type{ AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "../dnd"
 import type { IOptionType } from "../editor"
-import type ICreatureStats from "./iCreatureStats"
+import type { ObjectIdText } from ".."
 
 export enum CreatureValue {
     STR = "str",
@@ -20,13 +19,11 @@ export enum CreatureValue {
 interface ICreatureContent extends IFileContent {
 }
 
-interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "proficiency"|"casterLevel"> {
+interface ICreatureMetadata extends IFileMetadata {
     type?: CreatureType
     size?: SizeType
     alignment?: Alignment
     portrait?: string
-
-    abilities?: ObjectIdText[]
     challenge?: number
     xp?: number
 
@@ -37,6 +34,15 @@ interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "profici
     ac?: IOptionType<number>
     proficiency?: IOptionType<number>
     initiative?: IOptionType<number>
+    str?: number
+    dex?: number
+    con?: number
+    int?: number
+    wis?: number
+    cha?: number
+    critRange?: number
+    multiAttack?: number
+    bonusDamage?: number
 
     resistances?: string
     vulnerabilities?: string
@@ -48,17 +54,26 @@ interface ICreatureMetadata extends IFileMetadata, Omit<ICreatureStats, "profici
     speed?: Partial<Record<MovementType, number>>
     senses?: Partial<Record<Sense, number>>
 
+    // Passives
+    passivePerception?: IOptionType<number>
+    passiveInvestigation?: IOptionType<number>
+    passiveInsight?: IOptionType<number>
+
     // Proficiencies
     proficienciesSave?: Attribute[]
-    proficienciesSkill?: Partial<Record<Skill, ProficiencyLevel>>
     proficienciesArmor?: ArmorType[]
     proficienciesWeapon?: WeaponType[]
-    proficienciesTool?: Partial<Record<Tool, ProficiencyLevel>>
     proficienciesLanguage?: Language[]
+    proficienciesTool?: Partial<Record<Tool, ProficiencyLevel>>
+    proficienciesSkill?: Partial<Record<Skill, ProficiencyLevel>>
+
+    // Abilities
+    abilities?: ObjectIdText[]
     
     // Spells
-    spellSlots?: number[]
     casterLevel?: IOptionType<number>
+    spellAttribute?: OptionalAttribute
+    spellSlots?: number[]
     spells?: ObjectIdText[]
 }
 

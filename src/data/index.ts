@@ -10,6 +10,6 @@ interface ITextData {
     content: Record<string, string>
 }
 
-export const Open5eCompendiumData: ICompendiumMenuItem[] = Open5eCompendiumMenu as any;
-export const HelpData: IHelpData = Help as any;
-export const TextData: Record<string, ITextData> = Text as any;
+export const Open5eCompendiumData: ICompendiumMenuItem[] = Open5eCompendiumMenu;
+export const HelpData: IHelpData = Help;
+export const TextData: Record<string, ITextData> = Text;

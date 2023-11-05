@@ -1,31 +1,25 @@
-import { useState, useMemo, useEffect } from "react"
-import AbilityData from "data/structures/ability"
-import ModifierCollection from "data/structures/modifierCollection"
+import { useState, useEffect } from "react"
 import CreatureData from "data/structures/creature"
-import useAbilitiesHandler from "./abilitiesHandler"
+import type ItemData from "data/structures/item"
+import { getCreatureData } from "./creaturesHandler"
+import Logger from "utils/logger"
 import { FileType, IFileQueryData } from "types/database/files"
-import { IAbilityMetadata } from "types/database/files/ability"
-import { IModifierCollection } from "types/database/files/modifierCollection"
-import { FileGetManyMetadataResult } from "types/database/responses"
-import { CreatureFile } from "types/database/files/creature"
+import type { IAbilityMetadata } from "types/database/files/ability"
+import type { CreatureFile } from "types/database/files/creature"
 
-const useCreatureHandler = (data: IFileQueryData<CreatureFile>): [creature: CreatureData, abilities: FileGetManyMetadataResult<IAbilityMetadata>] => {
-    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
-    const creature =  useMemo(() => new CreatureData(data.metadata, modifiers), [data.metadata, data.storage, modifiers])
-    const abilityIds = useMemo(() => creature.abilities, [creature])
-    const [abilities] = useAbilitiesHandler(abilityIds, [FileType.Ability])
+type CreatureTypeCollection = [creatures: CreatureData, abilities: Record<string, IAbilityMetadata>, items: Record<string, ItemData>]
 
+const useCreatureHandler = (data: IFileQueryData<CreatureFile>): CreatureTypeCollection => {
+    const [state, setState] = useState<CreatureTypeCollection>([new CreatureData(data?.metadata), {}, {}])
     useEffect(() => {
-        if (abilities) {
-            let modifiersList = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
-            let collection = new ModifierCollection(modifiersList, null)
-            if (!collection.equals(modifiers)) {
-                setModifiers(collection);
-            }
-        }
-    }, [abilities])
-
-    return [creature, abilities]
+        getCreatureData({ ...data, id: null, type: FileType.Creature })
+        .then((res) => setState(res as CreatureTypeCollection))
+        .catch((e) => {
+            Logger.throw("useCreatureHandler.error", e)
+            setState([new CreatureData(data?.metadata), {}, {}])
+        })
+    }, [data])
+    return state
 }
 
 export default useCreatureHandler

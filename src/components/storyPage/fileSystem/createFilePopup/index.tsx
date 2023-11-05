@@ -36,7 +36,7 @@ export interface CreateFilePopupData {
     type: FileType
     name: string
     data?: IFileMetadata
-    file?: string
+    file?: string | ArrayBuffer
 }
 
 interface PageData {

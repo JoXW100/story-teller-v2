@@ -19,9 +19,9 @@ const StoryPage = (): JSX.Element => {
         <div className={styles.main}>
             <div className={styles.header}>
                 <Logo/>
-                <label>
+                <span>
                     {String(context.story.name)}
-                </label>
+                </span>
                 <HelpMenuButton/>
                 <SettingsButton/>
                 <EditModeButton editEnabled={context.editEnabled} disabled={!isObjectId(context.fileId)}/>

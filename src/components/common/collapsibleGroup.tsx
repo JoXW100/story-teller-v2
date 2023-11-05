@@ -10,7 +10,7 @@ import { ContextRowData } from "types/contextMenu";
 import styles from 'styles/components/collapsibleGroup.module.scss';
 
 type CollapsibleGroupProps = React.PropsWithChildren<{
-    header: React.ReactNode | string
+    header: React.ReactNode
     open?: boolean
     onChange?: (value: string) => void
     onRemove?: () => void
@@ -23,7 +23,7 @@ const CollapsibleGroup = ({ header, open = true, onChange, onRemove, onDrag, onD
         isOpen: open,
         isEdit: false,
         highlight: false,
-        header: header as string
+        header: String(header)
     })
     const tooltips = state.isOpen 
         ? Localization.toText('common-collapse')

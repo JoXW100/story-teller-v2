@@ -4,11 +4,9 @@ interface IDocumentContent extends IFileContent {
 }
 
 interface IDocumentMetadata extends IFileMetadata {
-
 }
 
 interface IDocumentStorage extends IFileStorage {
-
 }
 
 abstract class DocumentFile implements IFileData {

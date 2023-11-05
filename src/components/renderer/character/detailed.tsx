@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'components/contexts/fileContext';
 import { useParser } from 'utils/parser';
 import Localization from 'utils/localization';
@@ -12,21 +12,25 @@ import SpellGroups from '../spell/spellGroups';
 import AttributesBox from '../creature/attributesBox';
 import ProficienciesPage from '../creature/proficienciesPage';
 import PageSelector from '../pageSelector';
+import ShortRestSidePanel from './shortRestSidePanel';
+import { CampIcon, NightIcon } from 'assets/icons';
 import Elements from 'data/elements';
 import RollElement from 'data/elements/roll';
 import Logger from 'utils/logger';
 import useCharacterHandler from 'utils/handlers/characterHandler';
 import { CharacterFile, ICharacterAbilityStorageData } from 'types/database/files/character';
-import { AdvantageBinding, OptionalAttribute } from 'types/database/dnd';
+import { AdvantageBinding, OptionalAttribute, RestType } from 'types/database/dnd';
 import { RollType } from 'types/dice';
 import styles from 'styles/renderer.module.scss';
+import { openPopup } from 'components/common/popupHolder';
+import ConfirmationPopup from 'components/common/confirmationPopup';
 
 type CharacterFileRendererProps = React.PropsWithRef<{
     file: CharacterFile
 }>
 
 const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Element => {
-    const [_, dispatch] = useContext(Context)
+    const [context, dispatch] = useContext(Context)
     const [character, abilities, items] = useCharacterHandler(file)
     const [page, setPage] = useState<typeof Pages[number]>("Abilities")
     const spells = useMemo(() => character?.spells, [character])
@@ -46,14 +50,15 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         character.spellAttribute !== OptionalAttribute.None && character.classFile ? "Spells" : null, 
         character.classFile ? "Class" : null]
 
-    const expendedAbilityCharges = Object.keys(file.storage?.abilityData ?? {}).reduce<Record<string,number>>((prev, value) => (
+    const expendedAbilityCharges = Object.keys(file.storage?.abilityData ?? {})
+    .reduce<Record<string,number>>((prev, value) => (
         { ...prev, [value]: file.storage.abilityData[value].expendedCharges ?? 0 }
     ), {})
     const expendedSpellSlots = file.storage?.spellData ?? []
     const senses = character?.sensesAsText
 
     const handleSetExpendedAbilityCharges = (value: Record<string, number>) => {
-        let data = Object.keys(value).reduce<Record<string,ICharacterAbilityStorageData>>((prev, key) => (
+        let data = Object.keys(value).reduce<Record<string, ICharacterAbilityStorageData>>((prev, key) => (
             character.abilities.includes(key)
             ? { ...prev, [key]: { ...file.storage.abilityData?.[key], expendedCharges: value[key] }} 
             : prev
@@ -61,9 +66,54 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
         dispatch.setStorage("abilityData", data)
     }
 
+    const handleShortRest = () => {
+        dispatch.openSidePanel({
+            header: "Short Rest",
+            content: (
+                <ShortRestSidePanel 
+                    character={character} 
+                    storage={file.storage} 
+                    abilities={abilities}
+                />
+            )
+        })
+    }
+
+    const handleLongRest = () => {
+        const optionYes = Localization.toText('character-longRest-confirmationYes');
+        const optionNo = Localization.toText('character-longRest-confirmationNo');
+        openPopup(
+            <ConfirmationPopup 
+                header={Localization.toText('character-longRest-confirmationHeader')}
+                description={Localization.toText('character-longRest-confirmationDescription')}
+                options={[optionYes, optionNo]}
+                callback={(option) => {
+                    if (option === optionYes) {
+                        let data = {...file.storage?.abilityData ?? {}}
+                        for (const key in abilities) {
+                            const ability = abilities[key]
+                            if ((ability.chargesReset === RestType.LongRest || ability.chargesReset === RestType.ShortRest) && data[key]) {
+                                data[key].expendedCharges = 0
+                            }
+                        }
+                        dispatch.setStorage("abilityData", data)
+                        dispatch.setStorage("health", character.healthValue)
+                        dispatch.setStorage("tempHealth", 0)
+                        dispatch.setStorage("hitDice", {})
+                    }
+                }}/>
+        )
+    }
+
     const handleSetExpendedSpellSlots = (value: number[]) => {
         dispatch.setStorage("spellData", value)
     }
+
+    useEffect(() => {
+        if (context.rendererSidePanel?.header === "Short Rest") {
+            handleShortRest()
+        }
+    }, [character, file.storage, abilities])
 
     Logger.log("DetailedCharacterRenderer", character)
 
@@ -73,10 +123,18 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                 <Elements.Block>
                     <div className={styles.namePlate}>
                         <Elements.Image options={{href: character.portrait}}/>
-                        <div>
+                        <div className={styles.characterDetailsPanel}>
                             <Elements.Header2>{character.name}</Elements.Header2>
-                            <div>{`${character.genderText} ${character.raceText} ${character.className}`}</div>
+                            <div className={styles.noLineBreak}>{`${character.genderText} ${character.raceText} ${character.className}`}</div>
                             <div>{`Level ${character.level}`}</div>
+                        </div>
+                        <div className={styles.restPanel}>
+                            <button onClick={handleShortRest} tooltips={Localization.toText('character-shortRest')}>
+                                <CampIcon/>
+                            </button>
+                            <button onClick={handleLongRest} tooltips={Localization.toText('character-longRest')}>
+                                <NightIcon/>
+                            </button>
                         </div>
                     </div>
                     <Elements.Line/>

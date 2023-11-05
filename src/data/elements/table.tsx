@@ -73,7 +73,7 @@ const validate = (options: TableOptions, content: IParserObject[]): Queries => {
 }
 
 const GetTableItems = (content: IParserObject[], metadata: IFileMetadata, key: string): TableItems => {
-    return content.reduce((items, element, index) => {
+    return content.reduce<TableItems>((items, element, index) => {
         switch (true) {
             case validHeaders.has(element?.type):
                 return { 
@@ -91,21 +91,21 @@ const GetTableItems = (content: IParserObject[], metadata: IFileMetadata, key: s
             default:
                 throw new ParseError(`Table cannot contain elements of type: '${element.type}'`);
         }
-    }, { headers: [], cells: [] } as TableItems)
+    }, { headers: [], cells: [] })
 }
 
 const TableElement = ({ options = {}, content, metadata, variablesKey }: ElementParams<TableOptions>): JSX.Element => {
     const optionsTable = new Options(options)
-    const style = { maxWidth: optionsTable.width } as Record<string, string | number>
+    const style: Record<string, string | number> = { maxWidth: optionsTable.width }
     const { headers, cells } = GetTableItems(content, metadata, variablesKey);
     const columns = headers.length;
-    const rows = cells.reduce((rows, cell, index) => {
+    const rows = cells.reduce<JSX.Element[][]>((rows, cell, index) => {
         let i = index % columns;
         let j = Math.floor(index / columns);
         if (!rows[j]) rows[j] = [];
         rows[j][i] = cell;
         return rows;
-    }, [] as JSX.Element[][])
+    }, [])
 
     if (options.weight) { style.flex = optionsTable.weightValue }
     if (options.color) { style.background = optionsTable.color }

@@ -1,9 +1,11 @@
 import AdvantageIcon from './advantage.svg';
-import DisadvantageIcon from './disadvantage.svg';
+import CampIcon from './camp.svg'
+import ConcentrationIcon from './concentration.svg'
 import CritIcon from './crit.svg';
 import DragonIcon from './dragon.svg';
+import DisadvantageIcon from './disadvantage.svg';
 import HandIcon from './hand.svg';
-import ConcentrationIcon from './concentration.svg'
+import NightIcon from './night.svg'
 import RitualIcon from './ritual.svg'
 import CrossedSwords from './crossedSwords.svg';
 import AcidIcon from './dmg/acid.svg';
@@ -28,10 +30,12 @@ import { FileType } from 'types/database/files';
 
 export {
     AdvantageIcon,
+    CampIcon,
+    ConcentrationIcon,
     DisadvantageIcon,
     DragonIcon,
     HandIcon,
-    ConcentrationIcon,
+    NightIcon,
     RitualIcon,
     CrossedSwords,
     CritIcon,
@@ -68,9 +72,11 @@ export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttrib
 export const Icons: Record<string,React.FunctionComponent<React.SVGAttributes<SVGElement>>> = {
     advantage: AdvantageIcon,
     disadvantage: DisadvantageIcon,
+    camp: CampIcon,
     crit: CritIcon,
     dragon: DragonIcon,
     hand: HandIcon,
+    night: NightIcon,
     concentration: ConcentrationIcon,
     ritual: RitualIcon,
     cone: ConeIcon,

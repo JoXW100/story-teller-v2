@@ -24,7 +24,7 @@ interface StoryContextState extends ContextState {
 }
 
 interface StoryContextDispatch extends ContextDispatch {
-    roll: (collection: DiceCollection, method: RollMethod, source: string) => void
+    roll: (collection: DiceCollection, source: string, method?: RollMethod, callback?: (result: RollResult) => void) => void
     clearRolls: () => void
     collapseSidePanel: () => void
     expandSidePanel: () => void

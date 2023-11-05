@@ -5,12 +5,12 @@ type ConfirmationPopupProps = React.PropsWithoutRef<{
     header: string
     description: string
     options: string[]
-    callback: (option: string) => void
+    callback: (option: string, index: number) => void
 }>
 
 const ConfirmationPopup = ({ header, description, options = [], callback }: ConfirmationPopupProps): JSX.Element => {
-    const handleClick = (option: string) => {
-        callback(option)
+    const handleClick = (option: string, index: number) => {
+        callback(option, index)
         closePopup()
     }
 
@@ -20,7 +20,7 @@ const ConfirmationPopup = ({ header, description, options = [], callback }: Conf
             <div className={styles.body}>{description}</div>
             <div className={styles.buttons}>
                 { options?.map((option, index) => (
-                    <button key={index} onClick={() => handleClick(option)}> 
+                    <button key={index} onClick={() => handleClick(option, index)}> 
                         {option} 
                     </button>
                 ))}

@@ -2,10 +2,11 @@ import { useContext, useState } from "react"
 import { Context } from "components/contexts/fileContext"
 import Elements from "data/elements"
 import CharacterData from "data/structures/character"
+import Beyond20 from "utils/beyond20"
 import { ICharacterStorage } from "types/database/files/character"
 import { RollType } from "types/dice"
 import styles from 'styles/renderer.module.scss';
-import Beyond20 from "utils/beyond20"
+import { asNumber } from "utils/helpers"
 
 
 type HealthBoxProps = React.PropsWithRef<{
@@ -20,7 +21,7 @@ interface HealthBoxState {
 }
 
 const HealthBox = ({ character, storage }: HealthBoxProps): JSX.Element => {
-    const [context, dispatch] = useContext(Context)
+    const [_, dispatch] = useContext(Context)
     const [state, setState] = useState<HealthBoxState>({
         healDamageInput: "",
         hpInput: null,
@@ -33,8 +34,8 @@ const HealthBox = ({ character, storage }: HealthBoxProps): JSX.Element => {
 
     const changeHealth = (value: number) => {
         let max = character.healthValue
-        let health = storage.health ?? 0
-        let temp = storage.tempHealth ?? 0
+        let health = asNumber(storage.health)
+        let temp = asNumber(storage.tempHealth)
         if (value < 0) {
             if (-value > temp) {
                 let rest = value + temp
@@ -137,13 +138,13 @@ const HealthBox = ({ character, storage }: HealthBoxProps): JSX.Element => {
                     <b>TEMP</b>
                     
                     { state.hpInput === null 
-                        ? <span onClick={handleHPClick}>{storage.health ?? character.healthValue}</span>
+                        ? <span onClick={handleHPClick}>{asNumber(storage.health, character.healthValue)}</span>
                         : <input type='number' autoFocus onChange={handleHPChanged} onBlur={handleHPFocusLost} value={state.hpInput}/>
                     }
                     <b>/</b>
                     <span>{`${character.healthValue} `}</span>
                     { state.tempInput === null 
-                        ? <span onClick={handleTempClick}>{(storage.tempHealth ?? 0) <= 0 ? '-' : storage.tempHealth}</span>
+                        ? <span onClick={handleTempClick}>{asNumber(storage.tempHealth, -1) < 0 ? '-' : asNumber(storage.tempHealth)}</span>
                         : <input type='number' autoFocus onChange={handleTempChanged} onBlur={handleTempFocusLost} value={state.tempInput}/>
                     }
 

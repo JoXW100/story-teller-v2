@@ -25,7 +25,7 @@ const SearchList = ({ className, items, prompt, placeholder }: SearchListProps):
     return (
         <div className={name}>
             <div className={styles.search}>
-                <label>{prompt}</label>
+                <span>{prompt}</span>
                 <input value={search} placeholder={placeholder} onChange={handleChange}/>
             </div>
             <div className={styles.content}>

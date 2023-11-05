@@ -1,7 +1,6 @@
 import Logger from "./logger"
 import { DBResponse, ObjectId } from "types/database"
 import { StoryAddResult, StoryDeleteResult, StoryGetAllResult, StoryGetResult, StoryUpdateResult, FileAddCopyResult, FileAddResult, FileConvertResult, FileDeleteFromResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMoveResult, FileRenameResult, FileSetPropertyResult, FileMetadataQueryResult, FileGetManyDataResult } from "types/database/responses"
-import { Open5eFetchType } from "types/open5eCompendium"
 import { FileType, IFileData, IFileMetadata, IFileStorage } from "types/database/files"
 import { IStory } from "types/database/stories"
 import { isObjectId } from "./helpers"
@@ -45,10 +44,10 @@ abstract class Communication {
     public static async getServerMode(): Promise<ServerMode> {
         try {
             let res = await fetch(`${this._serverRootURL}?query=mode`, { method: 'GET' })
-            let message = await res.text()
+            let message = await res.text() as ServerMode
             if (res.status === 200) {
                 Logger.log("getServerMode", message)
-                return message as ServerMode
+                return message
             } else {
                 Logger.error("getServerMode", message)
                 return "failed"
@@ -324,7 +323,7 @@ abstract class Communication {
         }
     }
 
-    public static async open5eFetchAll<T>(type: Open5eFetchType, query?: Record<string, string | number>, fields: string[] = []): Promise<Open5eResponse<T>> {
+    public static async open5eFetchAll<T>(type: string, query?: Record<string, string | number>, fields: string[] = []): Promise<Open5eResponse<T>> {
         return new Promise(async (resolve) => {
             try {
                 let limit = 5000;
@@ -348,7 +347,7 @@ abstract class Communication {
         })
     }
 
-    public static async open5eFetchOne<T>(type: Open5eFetchType, id: string): Promise<T | null> {
+    public static async open5eFetchOne<T>(type: string, id: string): Promise<T | null> {
         try {
             let data = await fetch(`${this._open5eRootURL}${type}/${id}`)
             let result = await data.json() as T

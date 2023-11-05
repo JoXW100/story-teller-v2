@@ -7,8 +7,16 @@ import { FileGetMetadataResult } from "types/database/responses"
 const parseText = async (value: string): Promise<FileGetMetadataResult> => {
     let res = await toAbility(value)
     if (res) {
+        let hash = 0
+        let char = 0
+        for (let i = 0; i < value.length; i++) {
+            char = value.charCodeAt(i)
+            hash = ((hash << 5) - hash) + char
+            hash = hash & hash
+        }
+
         return {
-            id: value as any,
+            id: String(hash) as any,
             type: FileType.Ability,
             metadata: res
         } satisfies FileGetMetadataResult
@@ -16,7 +24,7 @@ const parseText = async (value: string): Promise<FileGetMetadataResult> => {
     return null
 }
 
-const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
+export const processTextAbilities: ProcessFunction<IAbilityMetadata> = async (ids) => {
     return (await Promise.all(ids.map((id) => parseText(String(id)))))
     .reduce((prev, ability, index) => (
         ability ? { ...prev, results: [...prev.results, ability] }
@@ -25,7 +33,7 @@ const processFunction: ProcessFunction<IAbilityMetadata> = async (ids) => {
 }
 
 const useAbilitiesHandler: typeof useFiles<IAbilityMetadata> = (abilityIds, allowedTypes) => {
-    return useFiles(abilityIds, allowedTypes, processFunction)
+    return useFiles(abilityIds, allowedTypes, processTextAbilities)
 }
 
 export default useAbilitiesHandler

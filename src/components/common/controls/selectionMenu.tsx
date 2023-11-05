@@ -85,7 +85,7 @@ const Component = ({ value, index, params }: ListTemplateComponent<string, Selec
             res = isNaN(res) ? 0 : res
         }
         onChange(Array.isArray(values) 
-            ? [ ...values.slice(0, index), res as string, ...values.slice(index + 1)] 
+            ? [ ...values.slice(0, index), String(res), ...values.slice(index + 1)] 
             : { ...values, [value]: res })
     }
 

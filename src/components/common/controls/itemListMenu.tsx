@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import useAutoCompleteDialog from "../autoCompleteDialog";
 import { ISubPageItemMetadata } from "types/database/files";
 import ListTemplateMenu, { ListTemplateComponent } from "./listTemplateMenu";
@@ -10,7 +9,7 @@ type ItemListMenuProps<T extends ISubPageItemMetadata> = React.PropsWithRef<{
     values: T[]
     templates?: Record<string, T>
     prompt?: string
-    defaultValue: string
+    defaultValue: T
     placeholder?: string
     addLast?: boolean
     onChange: (selection: T[]) => void
@@ -32,12 +31,10 @@ type ItemListComponent<T> = {
 const dialogShowExpression = /^\$([a-z0-9]*)$/i
 
 const ItemListMenu = <T extends ISubPageItemMetadata>(params: ItemListMenuProps<T>): JSX.Element => { 
-    const { className, itemClassName, onChange, validateInput, values = [], defaultValue = "", addLast = true } = params
+    const { className, itemClassName, onChange, validateInput, values = [], defaultValue, addLast = true } = params
     const handleValidate = (value: T): value is T => {
         return validateInput(value.id, values)
     }
-
-    const defaultItem = useMemo<T>(() => ({ id: defaultValue } as T), [defaultValue]);
     
     return (
         <ListTemplateMenu<T, ItemListComponent<T>>
@@ -46,7 +43,7 @@ const ItemListMenu = <T extends ISubPageItemMetadata>(params: ItemListMenuProps<
             validateInput={handleValidate}
             Component={Component}
             EditComponent={EditComponent}
-            defaultValue={defaultItem}
+            defaultValue={defaultValue}
             values={values}
             addLast={addLast}
             params={{ ...params, className: itemClassName }}/>

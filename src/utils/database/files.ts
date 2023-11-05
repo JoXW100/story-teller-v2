@@ -4,9 +4,9 @@ import Logger from 'utils/logger';
 import { isEnum } from "utils/helpers";
 import { FileType } from "types/database/files";
 import type { DBFile, DBFolder, DBItem, DBItemData, DBResponse, DBRoot } from "types/database";
-import type { IFile, IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
+import type { IFileMetadata, IFileStorage, IFileStructure } from "types/database/files";
 import type { FileAddCopyResult, FileAddResult, FileConvertResult, FileDataQueryResult, FileDeleteFromResult, FileDeleteResult, FileGetManyDataResult, FileGetManyMetadataResult, FileGetMetadataResult, FileGetResult, FileGetStructureResult, FileMetadataQueryResult, FileMoveResult, FileRenameResult, FileSetPropertyResult } from "types/database/responses";
-import { KeysOf, KeysOfTwo } from "types";
+import type { KeysOf, KeysOfTwo } from "types";
 
 interface StructureCollection {
     root: IFileStructure
@@ -122,7 +122,7 @@ class FilesInterface
                     content: { $ifNull: ['$content', {}] },
                     metadata: { $ifNull: ['$metadata', {}] },
                     storage: { $ifNull: ['$storage', {}] }
-                } satisfies KeysOfTwo<IFile, DBFile> },
+                } satisfies KeysOfTwo<FileGetResult, DBFile> },
                 { $limit: 1 },
             ]).toArray())[0];
             Logger.log('files.get', `${result?.content.name}${result ? '.' + result.type : ''}`);
@@ -152,7 +152,9 @@ class FilesInterface
                 { $limit: 1 }
             ]).toArray())[0];
             Logger.log('files.getMetadata', fileId, allowedTypes);
-            return result ? success(result) : failure("Could not find any matching file");
+            return result 
+                ? success(result) 
+                : failure("Could not find any matching file");
         } catch (error) {
             return failure(error.message);
         }
@@ -252,12 +254,12 @@ class FilesInterface
                 return failure(`${type} is not a valid type`);
             }
 
-            let filter = {
+            let filter: Filter<DBItem> = {
                 _id: new ObjectId(fileId),
                 _userId: userId,
                 _storyId: new ObjectId(storyId),
                 type: { $nin: [FileType.Folder, FileType.Root] },
-            } satisfies Filter<DBItem>
+            }
 
             let value = { 
                 $set: {
@@ -266,7 +268,7 @@ class FilesInterface
                 } satisfies Partial<DBItem>
             }
 
-            let result = await this.collection.updateOne(filter as Filter<DBItem>, value)
+            let result = await this.collection.updateOne(filter, value)
             let x = result.modifiedCount === 1;
 
             Logger.log('files.convert', x ? type : 'Null');
@@ -279,7 +281,7 @@ class FilesInterface
     /** Changes the filename of a file in the database */
     async rename(userId: string, storyId: string, fileId: string, name: string): Promise<DBResponse<FileRenameResult>> {
         try {
-            let filter = {
+            let filter: Filter<DBItem> = {
                 _id: new ObjectId(fileId),
                 _userId: userId,
                 _storyId: new ObjectId(storyId)       
@@ -342,7 +344,7 @@ class FilesInterface
     /** Changes a property of a folder in the database */
     private async setDataValue(userId: string, storyId: string, fileId: string, property: string, value: any, onFolders: boolean = false): Promise<DBResponse<FileSetPropertyResult>> {
         try {
-            let filter = { 
+            let filter: Filter<DBItem> = { 
                 _id: new ObjectId(fileId),
                 _storyId: new ObjectId(storyId),
                 _userId: userId, 
@@ -356,7 +358,7 @@ class FilesInterface
                 } 
             }
 
-            let result = await this.collection.updateOne(filter as Filter<DBItem>, update)
+            let result = await this.collection.updateOne(filter, update)
             let x = result.modifiedCount === 1;
             Logger.log('files.setProperty', x ? `${property}: ${String(value).length > 30 ? '...' : value}` : 'Null');
             return x ? success(x) : failure("Could not find file to change state");
@@ -399,7 +401,7 @@ class FilesInterface
     /** Gets the file structure of story in the database */
     async getStructure(userId: string, storyId: string): Promise<DBResponse<FileGetStructureResult>> {
         try {
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<IFileStructure>([
                 { $match: { 
                     _userId: userId,
                     _storyId: new ObjectId(storyId) 
@@ -413,7 +415,7 @@ class FilesInterface
                     open: '$content.open',
                     children: []
                 }  satisfies KeysOfTwo<IFileStructure, DBItem> }
-            ]).toArray()) as IFileStructure[]
+            ]).toArray())
 
             let data = result.reduce<StructureCollection>((acc, value) => (
                 value.type === FileType.Root

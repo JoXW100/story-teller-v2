@@ -1,7 +1,7 @@
 import Logger from "utils/logger";
-import { asEnum, isEnum } from "utils/helpers";
+import { asEnum, asNumber, isEnum } from "utils/helpers";
 import { AdvantageBinding, Alignment, AreaType, Attribute, CastingTime, CreatureType, DamageType, DiceType, Duration, EffectCondition, MagicSchool, MovementType, ScalingType, SizeType, TargetType } from "types/database/dnd"
-import { CalculationMode, IOptionType } from "types/database/editor"
+import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor"
 import { FileType, IFileMetadata } from "types/database/files";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
@@ -23,7 +23,7 @@ const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, 
     return {
         time: type,
         timeCustom: time,
-        timeValue: Number(res[1]) ? Number(res[1]) : 1
+        timeValue: asNumber(res[1], 1)
     }
 }
 
@@ -35,7 +35,7 @@ const getDuration = (duration: string): { duration: Duration, durationValue: num
 
     while(null != (hit = expr.exec(duration?.toLowerCase() ?? ""))){
         if (type == Duration.Custom) {
-            value = Number(hit[1]) ? Number(hit[1]) : value
+            value = asNumber(hit[1], value)
         }
         switch (hit[2]) {
             case "instantaneous":
@@ -110,18 +110,17 @@ const getRange = (range: string): { range: number, area?: AreaType, areaSize?: n
     // Rare, perhaps remove
     var res = /[A-z-]+ *\( *([0-9]+)[^ ]+ ([A-z]+) *\)/.exec(range) ?? []
     if (res[2]) {
-        var area = res[2] as AreaType
-        var r = Number(res[1]) ? Number(res[1]) : 0
+        var r = asNumber(res[1])
         return {
-            range: r,
-            area: asEnum(area, AreaType) ?? AreaType.None,
+            range: asNumber(res[1]),
+            area: asEnum(res[2], AreaType) ?? AreaType.None,
             areaSize: r
         }
     }
         
     var res = /([0-9]+)/.exec(range) ?? []
     return {
-        range: Number(res[1]) ? Number(res[1]) : 0,
+        range: asNumber(res[1]),
         area: AreaType.None,
         areaSize: 0
     }
@@ -149,32 +148,32 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
             case "radius":
                 if (area == AreaType.None)
                     area = AreaType.Sphere
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "square":
                 area = AreaType.Square
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "cube":
                 area = AreaType.Cube
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "cone":
                 area = AreaType.Cone
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "long":
                 if (area == AreaType.None)
                     area = AreaType.Line
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
             case "wide":
                 if (area == AreaType.None)
                     area = AreaType.Line
-                height = Number(hit[1]) ? Number(hit[1]) : size
+                height = asNumber(hit[1], height)
             case "tall":
                 if (area == AreaType.None)
                     area = AreaType.Cylinder
-                height = Number(hit[1]) ? Number(hit[1]) : size
+                height = asNumber(hit[1], height)
             default:
                 break;
         }
@@ -189,15 +188,16 @@ const getDamage = (results: Record<string, string>): { damageType?: DamageType, 
     let effectDiceNum: number = 1
     let effectDice: number = 0
     let damageType: string = DamageType.None
+
     if (results['damage']) {
         let res = damageExcMatchExpr.exec(results['damage']) ?? [] // Todo expand
-        effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
-        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2])
+        effectDiceNum = asNumber(res[1], effectDiceNum)
+        effectDice = asNumber(res[2], effectDice)
         damageType = results['damage type']
     } else {
         let res = damageMatchExpr.exec(results['content']?.toLocaleLowerCase() ?? '') ?? []
-        effectDiceNum =  isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
-        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2])
+        effectDiceNum = asNumber(res[1], effectDiceNum)
+        effectDice = asNumber(res[2], effectDice)
         damageType = res[3]
     }
     
@@ -256,18 +256,18 @@ const getAlignment = (alignment: string) => {
 const splitHP = (hp: string) => {
     var res = hpSplitExpr.exec(hp ?? "") ?? []
     return {
-        hp: isNaN(Number(res[1])) ? 0 : Number(res[1]),
-        num: isNaN(Number(res[2])) ? 0 : Number(res[2]),
-        dice: isNaN(Number(res[3])) ? 0 : Number(res[3]),
-        mod: isNaN(Number(res[4])) ? 0 : Number(res[4])
+        hp: asNumber(res[1]),
+        num: asNumber(res[2]),
+        dice: asNumber(res[3]),
+        mod: asNumber(res[4])
     }
 }
 
 const getChallenge = (challenge: string) => {
     var res = challengeMatchExpr.exec(challenge ?? "") ?? []
-    var dividend = res[1] ?? 0
-    var divisor = res[2]
-    return divisor ? Number(dividend) / Number(divisor) : Number(dividend)
+    var dividend = asNumber(res[1])
+    var divisor = asNumber(res[2])
+    return divisor !== 0 ? dividend / divisor : dividend
 }
 
 const getSpeed = (speed: string) => {
@@ -277,7 +277,7 @@ const getSpeed = (speed: string) => {
     while(null != (hit = expr.exec(speed))){
         var key = hit[1] ?? MovementType.Walk
         if (isEnum(key, MovementType)) {
-            result[key] = isNaN(Number(hit[2])) ? 0 : Number(hit[2])
+            result[key] = asNumber(hit[2])
         }
     }
     return result
@@ -356,21 +356,21 @@ const toCreature = (results: {[key: string]: string}): ICreatureMetadata => {
         hitDice: asEnum(dice, DiceType) ?? DiceType.None,
         health: hp 
             ? { type: CalculationMode.Auto, value: hp } 
-            : { type: CalculationMode.Auto } as IOptionType<number>,
+            : OptionTypeAuto,
         ac: isNaN(ac) 
-            ? { type: CalculationMode.Auto } as IOptionType<number>
+            ? OptionTypeAuto
             : { type: CalculationMode.Auto, value: ac } ,
         resistances: results['resistances'] ?? "",
         advantages: results['advantages'] ? { [AdvantageBinding.General]: results['advantages'] } : {}, // @todo confirm 
         dmgImmunities: results['immunities'] ?? "",
         conImmunities: results['condition immunities'] ?? "",
         speed: getSpeed(results['speed']),
-        str: Number(results['str']) ? Number(results['str']) : 0,
-        dex: Number(results['dex']) ? Number(results['dex']) : 0,
-        con: Number(results['con']) ? Number(results['con']) : 0,
-        int: Number(results['int']) ? Number(results['int']) : 0,
-        wis: Number(results['wis']) ? Number(results['wis']) : 0,
-        cha: Number(results['cha']) ? Number(results['cha']) : 0,
+        str: asNumber(results['str'], 10),
+        dex: asNumber(results['dex'], 10),
+        con: asNumber(results['con'], 10),
+        int: asNumber(results['int'], 10),
+        wis: asNumber(results['wis'], 10),
+        cha: asNumber(results['cha'], 10),
         // languages: results['languages'] ?? "",
         // senses: senses.join(', '),
         challenge: getChallenge(results['challenge rating'])
@@ -380,7 +380,6 @@ const toCreature = (results: {[key: string]: string}): ICreatureMetadata => {
 }
 
 const toSpell = (results: {[key: string]: string}): ISpellMetadata => {
-    var level = Number(results['level'])
     var { time, timeCustom, timeValue } = getCastingTime(results['casting time'])
     var { duration, durationValue } = getDuration(results['duration'])
     var { damageType, effectDice, effectDiceNum } = getDamage(results)
@@ -393,7 +392,7 @@ const toSpell = (results: {[key: string]: string}): ISpellMetadata => {
     var fileContent: ISpellMetadata = {
         name: results['title'] ?? "Missing name",
         description: results['content'] ?? "",
-        level: isNaN(level) ? 0 : Number(results['level']),
+        level: asNumber(results['level']),
         school: asEnum(results['school'], MagicSchool) ?? MagicSchool.Abjuration,
         time: time,
         timeCustom: timeCustom,

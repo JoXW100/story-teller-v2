@@ -1,12 +1,13 @@
 import { DXIcon, D4Icon, D6Icon, D8Icon, D10Icon, D12Icon, D20Icon, D100Icon } from "assets/dice";
+import { DiceType } from "types/database/dnd";
 import Random from "utils/random";
 
 class Dice {
     private readonly type: number;
     private static random = new Random()
     
-    constructor(type: number | string) {
-        let num = parseInt(String(type));
+    constructor(type: number | string | DiceType) {
+        let num: number = Number(type);
         if (isNaN(num)) {
             throw new Error("Error: NaN Dice type")
         }
@@ -60,7 +61,7 @@ class Dice {
 
     /** Returns a list of numbers of random values in the range [1..num] */
     public roll(num: number = 1): number[] {
-        return [...Array(num)].map(() => this.rollOnce());
+        return Array.from({ length: num }).map(() => this.rollOnce());
     }
 
     /** Returns a number of random values in the range [num..num * type] */

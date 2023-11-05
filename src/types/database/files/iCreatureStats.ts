@@ -9,11 +9,11 @@ interface ICreatureStats {
     int?: number
     wis?: number
     cha?: number
+    spellAttribute?: OptionalAttribute
+    proficiency?: number
+    critRange?: number
     multiAttack?: number
     bonusDamage?: number
-    spellAttribute?: OptionalAttribute,
-    proficiency?: number,
-    critRange?: number
 }
 
 export default ICreatureStats

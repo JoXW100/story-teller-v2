@@ -1,33 +1,35 @@
 {
-  "name": "story-teller",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next dev",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@auth0/nextjs-auth0": "^1.9.1",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.8.0",
-    "@mui/material": "^5.8.1",
-    "@svgr/webpack": "^6.3.1",
-    "mongodb": "^4.6.0",
-    "next": "^13.1.1",
-    "prismjs": "^1.29.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.3",
-    "sass": "^1.54.4"
-  },
-  "devDependencies": {
-    "eslint": "^8.14.0",
-    "eslint-config-next": "^12.0.4",
-    "@types/chrome": "^0.0.244",
-    "@types/prismjs": "^1.26.0",
-    "@types/react": "^18.0.8"
-  }
+    "name": "story-teller",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next dev",
+        "lint": "next lint",
+        "test": "ts-node ./tests/index.test.ts"
+    },
+    "dependencies": {
+        "@auth0/nextjs-auth0": "^1.9.1",
+        "@emotion/react": "^11.9.0",
+        "@emotion/styled": "^11.8.1",
+        "@mui/icons-material": "^5.8.0",
+        "@mui/material": "^5.8.1",
+        "@svgr/webpack": "^6.3.1",
+        "mongodb": "^4.6.0",
+        "next": "^13.1.1",
+        "prismjs": "^1.29.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-markdown": "^8.0.3",
+        "sass": "^1.54.4",
+        "ts-node": "^10.9.1"
+    },
+    "devDependencies": {
+        "@types/chrome": "^0.0.244",
+        "@types/prismjs": "^1.26.0",
+        "@types/react": "^18.0.8",
+        "eslint": "^8.14.0",
+        "eslint-config-next": "^12.0.4"
+    }
 }

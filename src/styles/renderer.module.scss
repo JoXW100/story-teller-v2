@@ -73,13 +73,14 @@
     position: sticky;
     top: 0;
     right: 0;
-    z-index: 999;
+    height: 0;
+    z-index: 99999;
+    pointer-events: none;
+    font-family: $fontDocument;
+
     & > div {
         @include colorWithShadow(document);
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 3in;
+        width: 4in;
         height: fit-content;
         margin-left: auto;
         flex-shrink: 0;
@@ -90,6 +91,7 @@
 
         &[data=true] {
             @include contentSlideInFromRight(400ms);
+            pointer-events: all;
         }
         &[data=false] {
             @include contentSlideOutFromRight(400ms);
@@ -99,6 +101,7 @@
 }
 
 .sidePanelHeader {
+    @include colorWithShadow(main);
     display: grid;
     grid-template-columns: minmax(0, 1fr) $iconNormalSize;
     height: $iconNormalSize;
@@ -174,9 +177,15 @@
     &:not(:first-child) {
         margin-left: 5px;
     }
+
+    &[data=fixed] {
+        cursor: default;
+        &::after { background: color(accents); }
+    }
     
-    &[data=active]::after {
-        background: colorInGroup(second, text);
+    &[data=expended]::after { background: colorInGroup(second, text); }
+    
+    &[data]::after {
         position: absolute;
         z-index: 100;
         left: 0;
@@ -200,9 +209,13 @@
     font-size: small;
 
     & > :first-child {
-        width: 70px;
+        min-width: 70px;
         text-align: center;
         padding-left: 10px;
+    }
+
+    & > input {
+        width: 70px;
     }
 
     & > :last-child {
@@ -588,7 +601,7 @@
         height: $iconSmallSize;
         width: 100%;
 
-        & > label {
+        & > .label {
             font-family: $fontDocument;
         }
 
@@ -686,8 +699,7 @@
     border-radius: 10px;
     margin-bottom: 5px;
 
-    & > label {
-        @include fontNormalBold;
+    & > b {
         align-self: center;
         text-indent: 5px
     }
@@ -728,10 +740,6 @@
             height: 100%;
         }
     }
-
-    & > label {
-        align-self: center;
-    }
 }
 
 .inventoryItem {
@@ -752,12 +760,16 @@
         display: grid;
         text-indent: 10px;
 
-        & > label {
+        & > b {
+            @include colorByRarity;
+        }
+
+        & > span {
             font-size: small;
         }
     }
 
-    & > label {
+    & > span {
         justify-self: center;
     }
 
@@ -834,10 +846,62 @@
 
 .namePlate {
     display: grid;
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: 60px 1fr $iconSmallSize + 5px;
     gap: 5px;
 }
 
-.rarityLabel {
-    @include colorByRarity();
+.restPanel {
+    display: grid;
+    gap: 3px;
+    & > button {
+        padding: 5px;
+        border-radius: 100%;
+        width: 100%;
+        aspect-ratio: 1;
+        & > svg {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
+
+.characterDetailsPanel {
+    max-width: 275px;
+    & > div:nth-child(2) {
+        @include fontNoLineBreak;
+    }
+}
+
+.shortRestSidePanel {
+    padding: 5px;
+
+    & > .shortRestRecoverChargesHolder {
+        @include colorDecoration(second);
+        display: grid;
+        gap: 5px;
+        margin-bottom: 5px;
+
+        & > div {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+
+            & > span {
+                margin-right: 5px;
+            }
+
+            &:not(:has(div)){
+                display: none;
+            }
+        }
+    }
+
+    & > button {
+        width: 100%;
+        height: $iconSmallSize;
+
+        &:not(:last-child) {
+            margin-bottom: 5px;
+        }
+    }
 }

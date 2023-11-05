@@ -12,19 +12,16 @@ interface IItemMetadata extends IFileMetadata {
     value?: number
     notes?: string
     requiresAttunement?: boolean
-
     // Subtype
     armorType?: ArmorType
     meleeWeaponType?: MeleeWeaponType
     rangedWeaponType?: RangedWeaponType
     thrownWeaponType?: ThrownWeaponType
-
     // Modifiers
     modifiers?: IModifier[]
 }
 
 interface IItemStorage extends IFileStorage {
-
 }
 
 abstract class ItemFile implements IFileData {

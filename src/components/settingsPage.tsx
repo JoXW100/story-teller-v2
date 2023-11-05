@@ -35,7 +35,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
     return (
         <div className={styles.main}>
             <div className={styles.header}>
-                <label> { Localization.toText("settingsPage-header")} </label>
+                <span> { Localization.toText("settingsPage-header")} </span>
                 <Link 
                     className={styles.closeButton}
                     href={Navigation.settingsReturnURL(returnURL)}>
@@ -46,7 +46,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
             </div>
             <div className={styles.body}>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-palette")} </label>
+                    <span>{Localization.toText("settingsPage-palette")} </span>
                     <DropdownMenu 
                         itemClassName={styles.dropdownItem}
                         value={context.palette}
@@ -54,7 +54,7 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         onChange={(value) => dispatch.setPalette(value) }/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-viewMode")}</label>
+                    <span>{Localization.toText("settingsPage-viewMode")}</span>
                     <DropdownMenu 
                         itemClassName={styles.dropdownItem}
                         value={context.viewMode}
@@ -62,46 +62,48 @@ const SettingsPage = ({ returnURL }: SettingsPageProps): JSX.Element => {
                         onChange={(value) => isEnum(value, ViewMode) && dispatch.setViewMode(value)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-syntaxHighlighting")}</label> 
+                    <span>{Localization.toText("settingsPage-syntaxHighlighting")}</span> 
                     <Checkbox
                         className={styles.checkbox}
                         value={context.enableSyntaxHighlighting}
                         onChange={(value) => dispatch.setEnableSyntaxHighlighting(value)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-rowNumbers")}</label> 
+                    <span>{Localization.toText("settingsPage-rowNumbers")}</span> 
                     <Checkbox
                         className={styles.checkbox}
                         value={context.enableRowNumbers}
                         onChange={(value) => dispatch.setEnableRowNumbers(value)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-colorFileByType")}</label> 
+                    <span>{Localization.toText("settingsPage-colorFileByType")}</span> 
                     <Checkbox
                         className={styles.checkbox}
                         value={context.enableColorFileByType}
                         onChange={(value) => dispatch.setEnableColorFileByType(value)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-automaticLineBreak")}</label> 
-                    <NumberInput
-                        className={styles.numberInput}
-                        value={context.automaticLineBreak}
-                        setValue={(value) => dispatch.setAutomaticLineBreak(value)}/>
+                    <span>{Localization.toText("settingsPage-automaticLineBreak")}</span> 
+                    { context.automaticLineBreak !== 0 &&
+                        <NumberInput
+                            className={styles.numberInput}
+                            value={context.automaticLineBreak}
+                            setValue={(value) => dispatch.setAutomaticLineBreak(value)}/>
+                    }
                     <Checkbox
                         className={styles.checkbox}
                         value={context.automaticLineBreak > 0}
                         onChange={(value) => dispatch.setAutomaticLineBreak(value ? 80 : 0)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-hideRolls")}</label> 
+                    <span>{Localization.toText("settingsPage-hideRolls")}</span> 
                     <Checkbox
                         className={styles.checkbox}
                         value={context.hideRolls}
                         onChange={(value) => dispatch.setHideRolls(value)}/>
                 </div>
                 <div className={styles.row}>
-                    <label>{Localization.toText("settingsPage-cashedEntries", Communication.cachedEntries.length)}</label> 
+                    <span>{Localization.toText("settingsPage-cashedEntries", Communication.cachedEntries.length)}</span> 
                     <button 
                         className={styles.button} 
                         onClick={handleClearCache}

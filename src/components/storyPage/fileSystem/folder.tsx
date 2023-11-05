@@ -81,7 +81,7 @@ const Folder = ({ file, children }: FolderProps): JSX.Element => {
     }
 
     const handleEvent = (e: MouseEvent) => {
-        let target = e.target as any
+        let target = e.target as HTMLInputElement
         if (state.inEditMode && target !== ref.current && target?.id != contextID) {
             cancelEdit()
         }

@@ -18,14 +18,14 @@ export const arraysAreEqual = (a: any[], b: any[]): boolean => {
 
 export const arrayUnique = <T>(array: T[]): T[] => {
     let unique = new Set<T>()
-    return array.reduce((prev, value) => {
+    return array.reduce<T[]>((prev, value) => {
         if (unique.has(value)) {
             return prev
         } else {
             unique.add(value)
             return [...prev, value]
         }
-    }, [] as T[])
+    }, [])
 }
 
 export function isEnum<T extends Enum>(value: Enum[keyof Enum], type: T): value is T[keyof T] {
@@ -44,8 +44,22 @@ export function asKeyOf<T extends Collection>(value: keyof Collection, type: T):
     return Object.keys(type).includes(value) ? value as keyof Collection : undefined
 }
 
+export function asNumber(value: any, nanValue: number = 0): number {
+    let temp = Number(value)
+    if (isNaN(temp)) temp = nanValue
+    return temp
+}
+
 export function isObjectId(value: any): value is ObjectId {
     return value && /^[0-9a-fA-F]{24}$/.test(String(value))
+}
+
+export function asObjectId(value: any): ObjectId {
+    return isObjectId(value) ? value : undefined
+}
+
+export function isObjectIdOrNull(value: any): value is ObjectId | null {
+    return value === null || value && /^[0-9a-fA-F]{24}$/.test(String(value))
 }
 
 export function asArray<T>(value: any): T[] {

@@ -47,7 +47,7 @@ class StoriesInterface
     /** Gets a story from the database */
     async get(userId: string, storyId: string): Promise<DBResponse<StoryGetResult>> {
         try {
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<StoryGetResult>([
                 { $match: { _userId: userId, _id: new ObjectId(storyId) }},
                 { $lookup: {
                     from: 'files',
@@ -71,7 +71,7 @@ class StoriesInterface
                     dateUpdated: '$dateUpdated'
                 } satisfies KeysOfTwo<IStoryData, DBStory> },
                 { $limit: 1 }
-            ]).toArray())[0] as StoryGetResult
+            ]).toArray())[0]
             Logger.log('stories.get', result ? result.name : 'Null');
             return success(result);
         } catch (error) {
@@ -95,7 +95,7 @@ class StoriesInterface
                 if (!res.success)
                 Logger.error('stories.delete', "Failed removing files of removed story: " + storyId)
             }
-            return success(removed as StoryDeleteResult);
+            return success(removed);
         } catch (error) {
             return failure(error.message);
         }
@@ -129,7 +129,7 @@ class StoriesInterface
     /** Gets all stories from the database */
     async getAll(userId: string): Promise<DBResponse<StoryGetAllResult>> {
         try {
-            let result = (await this.collection.aggregate([
+            let result = (await this.collection.aggregate<IStory>([
                 { $match: { 
                     _userId: userId 
                 } satisfies Partial<DBStory>},
@@ -141,7 +141,7 @@ class StoriesInterface
                     dateCreated: '$dateCreated',
                     dateUpdated: '$dateUpdated'
                 } satisfies KeysOfTwo<IStory, DBStory>}
-            ]).toArray()) as StoryGetAllResult
+            ]).toArray())
             Logger.log('stories.getAll', result.length);
             return success(result);
         } catch (error) {

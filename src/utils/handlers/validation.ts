@@ -20,15 +20,15 @@ export const useValidation = (): boolean => {
     useEffect(() => {
         Communication.getServerMode()
         .then(mode => setState((state) => ({ ...state, loading: false, mode: mode })))
-    }, [location.pathname])
+    }, [router.pathname])
 
-    if (!context.user && !context.isLoading) {
-        router.push(Navigation.loginURL(location.pathname))
-    }
-
-    if (!state.loading && state.mode === "maintenance") {
-        router.push(Navigation.maintenanceURL())
-    }
+    useEffect(() => {
+        if (!context.user && !context.isLoading) {
+            router.push(Navigation.loginURL(location.pathname))
+        } else if (!state.loading && state.mode === "maintenance") {
+            router.push(Navigation.maintenanceURL())
+        }
+    }, [context.user, context.isLoading, state.loading, state.mode])
 
     return !context.isLoading && !state.loading && context.user !== null;
 }

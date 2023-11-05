@@ -1,5 +1,5 @@
 import Logger from "utils/logger";
-import { arrayUnique, asArray, asEnum, isEnum } from "utils/helpers";
+import { arrayUnique, asArray, asEnum, asNumber, isEnum } from "utils/helpers";
 import { ActionType, AdvantageBinding, Alignment, ArmorType, Attribute, CreatureType, DiceType, Language, MovementType, OptionalAttribute, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd";
 import { CalculationMode, IOptionType, OptionTypeAuto } from "types/database/editor";
 import { ICreatureMetadata } from "types/database/files/creature";
@@ -120,7 +120,7 @@ class Open5eCreatureData implements ICreatureMetadata {
     public get level(): number {
         try {
             let res = hpSplitExpr.exec(this.data.hit_dice ?? "") ?? []
-            return isNaN(Number(res[1])) ? 0 : Number(res[1])
+            return asNumber(res[1])
         } catch (error : unknown) {
             Logger.throw("Open5eCreatureData.level", error)
             return 0
@@ -130,7 +130,7 @@ class Open5eCreatureData implements ICreatureMetadata {
     public get hitDice(): DiceType {
         try {
             let res = hpSplitExpr.exec(this.data.hit_dice ?? "") ?? []
-            let dice = isNaN(Number(res[2])) ? 0 : Number(res[1])
+            let dice = asNumber(res[2])
             return asEnum(dice, DiceType) ?? DiceType.None
         } catch (error : unknown) {
             Logger.throw("Open5eCreatureData.hitDice", error)

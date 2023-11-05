@@ -11,6 +11,7 @@ import { Open5eCompendiumData } from "data";
 import Localization from "utils/localization";
 import Navigation from "utils/navigation";
 import Communication from "utils/communication";
+import { asNumber } from "utils/helpers";
 import Logger from "utils/logger";
 import { IFileMetadata, FileType } from "types/database/files";
 import { InputType } from "types/context/fileSystemContext";
@@ -127,9 +128,9 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
     const splitHP = (hp: string) => {
         let res = hpSplitExpr.exec(hp ?? "") ?? []
         return {
-            num: isNaN(Number(res[1])) ? 0 : Number(res[1]),
-            dice: isNaN(Number(res[2])) ? 0 : Number(res[2]),
-            mod: isNaN(Number(res[3])) ? 0 : Number(res[3])
+            num: asNumber(res[1]),
+            dice: asNumber(res[2]),
+            mod: asNumber(res[3])
         }
     }
 
@@ -145,10 +146,10 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
                 let numB = parseInt(b[state.sorting.field])
                 val = numA - numB;
             } else {
-                val = (a[state.sorting.field] as string).localeCompare(b[state.sorting.field])
+                val = String(a[state.sorting.field]).localeCompare(b[state.sorting.field])
             }
         } else {
-            val = (a[state.sorting.field] as number) - b[state.sorting.field]
+            val = Number(a[state.sorting.field]) - b[state.sorting.field]
         }
         return state.sorting.direction == "descending" ? val : -val;
     }
@@ -189,12 +190,12 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
             return;
         }
 
-        let sorting = {
+        let sorting: SortingMethod = {
             field: state.menu.sortFields[index],
             direction: "descending"
-        } as SortingMethod;
+        }
 
-        if (state.sorting.field == state.menu.sortFields[index]) {
+        if (state.sorting.field === state.menu.sortFields[index]) {
             switch (state.sorting.direction) {
                 case "ascending":
                     sorting.direction = "none"
@@ -239,9 +240,7 @@ const CreateImportContent = ({ callback }: CreateContentProps): JSX.Element => {
         <>
             <div className={styles.inputCompendiumArea}>
                 <div className={styles.inputHeader}> 
-                    <label>
-                        {Localization.toText('createFilePopup-importHeader')}
-                    </label>
+                    <b>{Localization.toText('createFilePopup-importHeader')}</b>
                     <div className={styles.compendiumSpellFilterGroup}> 
                         { state.menu.type == "spells" && spellFilterItems.map((item, index) => (
                             <button 

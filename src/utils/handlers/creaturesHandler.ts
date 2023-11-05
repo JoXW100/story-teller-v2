@@ -1,87 +1,136 @@
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useEffect } from "react"
 import AbilityData from "data/structures/ability"
 import ClassData from "data/structures/class"
 import ItemData from "data/structures/item"
 import ModifierCollection from "data/structures/modifierCollection"
 import CharacterData from "data/structures/character"
 import CreatureData from "data/structures/creature"
-import { useFiles } from "./files"
-import useAbilitiesHandler from "./abilitiesHandler"
-import { isObjectId } from "utils/helpers"
-import { FileType } from "types/database/files"
+import { processTextAbilities } from "./abilitiesHandler"
+import Communication from "utils/communication"
+import Logger from "utils/logger"
+import { IModifier } from "types/database/files/modifier"
+import { ObjectId, ObjectIdText } from "types/database"
+import { CreatureFile } from "types/database/files/creature"
+import { FileType, IFileStorage } from "types/database/files"
 import { IAbilityMetadata } from "types/database/files/ability"
-import { IItemMetadata } from "types/database/files/item"
 import { IModifierCollection } from "types/database/files/modifierCollection"
 import { CharacterFile, ICharacterStorage } from "types/database/files/character"
-import { CreatureFile } from "types/database/files/creature"
 import { FileDataQueryResult } from "types/database/responses"
 
-const useCreaturesHandler = (data: FileDataQueryResult[]): [creatures: CreatureData[], abilities: Record<string, IAbilityMetadata>, items: Record<string, IItemMetadata>] => {
-    const [modifiers, setModifiers] = useState<IModifierCollection[]>([]) 
-    const [creatures, characters] = useMemo<[FileDataQueryResult<CreatureFile>[], FileDataQueryResult<CharacterFile>[]]>(() => data.reduce((prev, x) => x.type === FileType.Character 
-        ? [prev[0], [...prev[1], x]] 
-        : [[...prev[0], x], prev[1]]
-    , [[], []]), [data])
-    const classFileIds = useMemo(() => characters.map(x => x.metadata.classFile), [characters])
-    const subclassFileIds = useMemo(() => characters.map(x => x.storage?.classData?.$subclass), [characters])
-    const itemIds = useMemo(() => characters.flatMap(x => Object.keys(x.storage?.inventory ?? {})), [characters])
-    const [classFiles] = useFiles(classFileIds, [FileType.Class])
-    const [subclassFiles] = useFiles(subclassFileIds, [FileType.Class])
-    const [itemFiles] = useFiles(itemIds, [FileType.Item])
+type CreatureTypeCollection = [creatures: CreatureData[], abilities: Record<string, IAbilityMetadata>, items: Record<string, ItemData>]
 
-    const creatureFiles = useMemo<CreatureData[]>(() => {
-        let z = 0
-        return [...creatures, ...characters].map((x, i) => {
-            let modifier = modifiers[i]
-            if (x?.type === FileType.Character) {
-                let storage: ICharacterStorage = x?.storage as ICharacterStorage
-                let classData = new ClassData(classFiles[z]?.metadata, storage, String(classFiles[z]?.id))
-                let subclassData = classData.subclasses.includes(subclassFiles[z]?.id) 
-                    ? new ClassData(subclassFiles[z]?.metadata, storage, String(subclassFiles[z]?.id))
-                    : null
-                z++;
-                return new CharacterData(x?.metadata, storage, modifier, classData, subclassData)
-            } else {    
-                return new CreatureData(x?.metadata, modifier)
-            }
-        })
-    }, [creatures, characters, classFiles, subclassFiles, modifiers])
+const getCreatureModifiers = async (ids: ObjectIdText[], storage: IFileStorage, abilities: Record<string, IAbilityMetadata> = {}): Promise<[IModifierCollection, Record<string, IAbilityMetadata>]> => {
+    let modifierCollection: IModifierCollection = null
+    let prevLength = 0
+    
+    while (ids.length > prevLength) {
+        const { results, rest } = await processTextAbilities(ids)
+        let modifiers: IModifier[] = []
 
-    const abilityIds = useMemo(() => creatureFiles.flatMap(x => x.abilities ?? []), [creatureFiles])
-    const [abilities] = useAbilitiesHandler(abilityIds)
-
-    const abilitiesRecord = useMemo(() => abilities?.reduce<Record<string, IAbilityMetadata>>((prev, ability) => (
-        {...prev, [String(ability.id)]: ability.metadata ?? prev[String(ability.id)] }
-    ), {}) ?? {}, [abilities])
-    const itemsRecord = useMemo(() => itemFiles?.reduce<Record<string, IItemMetadata>>((prev, item) => (
-        {...prev, [String(item.id)]: item.metadata ?? prev[String(item.id)] }
-    ), {}) ?? {}, [itemFiles])
-   
-    useEffect(() => {
-        if (Object.keys(abilitiesRecord).length > 0) {
-            let newModifiers: IModifierCollection[] = []
-
-            for (let i = 0; i < creatureFiles.length; i++) {
-                const creature = creatureFiles[i]
-                let abilityModifiers = creature.abilities.flatMap((id) => new AbilityData(abilitiesRecord[String(id)], null, String(id)).modifiers);
-                let abilityModifierCollection = new ModifierCollection(abilityModifiers, null)
-                if (creature && creature instanceof CharacterData) {
-                    let itemModifiers = Object.keys(creature?.storage?.inventory ?? {}).flatMap((key) => isObjectId(key) ? new ItemData(itemsRecord[key], creature.storage.inventory[key], key, creature.storage.attunement?.some(x => String(x) === String(key))).modifiers : [])
-                    let itemModifierCollection = new ModifierCollection(itemModifiers, creature.storage)
-                    newModifiers[i] = abilityModifierCollection.join(itemModifierCollection)
-                } else {
-                    newModifiers[i] = abilityModifierCollection
-                }
-            }
-            
-            if (modifiers.length !== newModifiers.length || modifiers.some((mod,i) => !mod.equals(newModifiers[i]))) {
-                setModifiers(newModifiers);
+        for (const result of results) {
+            abilities[String(result.id)] = result.metadata
+            for (const modifier of AbilityData.modifiers(result.metadata, String(result.id))) {
+                modifiers.push(modifier)
             }
         }
-    }, [creatureFiles, abilitiesRecord, creatures, characters, itemsRecord, modifiers])
 
-    return [creatureFiles, abilitiesRecord, itemsRecord]
+        const response = await Communication.getManyMetadata(rest, [FileType.Ability])
+        if (response.success) {
+            for (const result of response.result) {
+                if (result) {
+                    abilities[String(result.id)] = result.metadata
+                    for (const modifier of AbilityData.modifiers(result.metadata, String(result.id))) {
+                        modifiers.push(modifier)
+                    }
+                }
+            }
+        } else {
+            Logger.warn("getCreatureModifiers.failure", response.result)
+            break
+        }
+
+        modifierCollection = new ModifierCollection(modifiers, storage)
+        prevLength = ids.length
+        ids = CreatureData.abilities(null, modifierCollection)
+        console.log("useCharacterHandler.getCreatureModifiers", ids)
+    }
+
+    return [modifierCollection ?? new ModifierCollection([], storage), abilities]
+}
+
+const getClassData = async (id: ObjectId, storage: ICharacterStorage): Promise<ClassData> => {
+    if (id) {
+        const response = await Communication.getMetadata(id, [FileType.Class])
+        if (response.success) {
+            return new ClassData(response.result.metadata, storage, String(id))
+        } else {
+            Logger.warn("getClassData.failure", response.result)
+        }
+    }
+    return null
+}
+
+const getItemsData = async (storage: ICharacterStorage): Promise<Record<string, ItemData>> => {
+    const ids = Object.keys(storage.inventory ?? {}) as any as ObjectId[]
+    const itemsCollection = {}
+    const response = await Communication.getManyMetadata(ids, [FileType.Item])
+    const attunedItems = new Set(storage?.attunement ?? [])
+    if (response.success) {
+        for (const item of response.result) {
+            if (item) {
+                const data = storage.inventory?.[String(item.id)]
+                itemsCollection[String(item.id)] = new ItemData(item.metadata, data, item.id, attunedItems.has(item.id)) 
+            }
+        }
+    } else {
+        Logger.warn("getItemsData.failure", response.result)
+    }
+    return itemsCollection
+}
+
+export const getCreatureData = async (data: FileDataQueryResult): Promise<[CreatureData | CharacterData, Record<string, IAbilityMetadata>, Record<string, ItemData>]> => {
+    if (data.type === FileType.Character) {
+        const cData = data as FileDataQueryResult<CharacterFile>
+
+        let c = await getClassData(cData.metadata?.classFile, cData.storage)
+        let sc: ClassData = null
+        if (c?.subclasses?.includes(cData.storage?.classData?.$subclass)) {
+            sc = await getClassData(cData.storage?.classData?.$subclass, cData.storage)
+        }
+
+        let items = await getItemsData(cData.storage)
+        let itemModifierCollection = new ModifierCollection(Object.values(items).flatMap((item) => item.modifiers), cData.storage)
+
+        const cha = new CharacterData(cData.metadata, cData.storage, itemModifierCollection, c, sc)
+        const [modifierCollection, abilities] = await getCreatureModifiers(cha.abilities, cData.storage)
+        const collection = modifierCollection.join(itemModifierCollection)
+        return [new CharacterData(cData.metadata, cData.storage, collection, c, sc), abilities, items]
+    } else {
+        const cData = data as FileDataQueryResult<CreatureFile>
+        const cre = new CreatureData(cData.metadata)
+        const [collection, abilities] = await getCreatureModifiers(cre.abilities, cData.storage)
+        return [new CreatureData(cData.metadata, collection), abilities, {}]
+    }
+}
+
+const useCreaturesHandler = (data: FileDataQueryResult[]): CreatureTypeCollection => {
+    const [state, setState] = useState<CreatureTypeCollection>([[], {}, {}])
+    useEffect(() => {
+        Promise.all(data.map(x => getCreatureData(x)))
+        .then((res) => {
+            let newState = res.reduce<CreatureTypeCollection>((prev, [creature, abilities, items]) => (
+                [[...prev[0], creature], {...prev[1], ...abilities}, {...prev[2], ...items}]
+            ), [[], {}, {}])
+            setState(newState)
+        })
+        .catch((e) => {
+            Logger.throw("useCreaturesHandler", e)
+            setState([[], {}, {}])
+        })
+    }, [data])
+
+    return state
 }
 
 export default useCreaturesHandler

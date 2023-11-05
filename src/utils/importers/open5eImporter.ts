@@ -1,6 +1,6 @@
 import Communication from "utils/communication"
 import Logger from "utils/logger";
-import { asEnum } from "utils/helpers";
+import { asEnum, asNumber } from "utils/helpers";
 import { AreaType, Attribute, CastingTime, DamageType, DiceType, Duration, EffectCondition, MagicSchool, ScalingType, TargetType } from "types/database/dnd";
 import { ICreatureMetadata } from "types/database/files/creature";
 import { ISpellMetadata } from "types/database/files/spell";
@@ -45,7 +45,7 @@ const getCastingTime = (time: string): { time: CastingTime, timeCustom: string, 
     return {
         time: type,
         timeCustom: time,
-        timeValue: Number(res[1]) ? Number(res[1]) : 1
+        timeValue: asNumber(res[1], 1)
     }
 }
 
@@ -57,7 +57,7 @@ const getDuration = (duration: string): { duration: Duration, durationValue: num
 
     while(null != (hit = expr.exec(duration?.toLowerCase() ?? ""))){
         if (type == Duration.Custom) {
-            value = Number(hit[1]) ? Number(hit[1]) : value
+            value = asNumber(hit[1], value)
         }
         switch (hit[2]) {
             case "instantaneous":
@@ -96,7 +96,7 @@ const getRange = (range: string): number => {
     }
         
     var res = /([0-9]+)/.exec(range) ?? []
-    return isNaN(Number(res[1])) ? 0 : Number(res[1])
+    return asNumber(res[1])
 }
 
 const getAttribute = (attribute: string): Attribute => {
@@ -151,9 +151,9 @@ const getDamage = (desc: string): { damageType: DamageType, effectDice: DiceType
     let effectDice: DiceType = DiceType.None
     let damageType: DamageType = DamageType.None
     if (res) {
-        effectDiceNum = isNaN(Number(res[1])) ? effectDiceNum : Number(res[1])
-        effectDice = isNaN(Number(res[2])) ? effectDiceNum : Number(res[2]) as DiceType
-        damageType = res[3] as DamageType
+        effectDiceNum = asNumber(res[1], effectDiceNum)
+        effectDice = asEnum(asNumber(res[2], effectDiceNum), DiceType)
+        damageType = asEnum(res[3], DamageType)
     }
     
     return {
@@ -185,32 +185,32 @@ const getArea = (content: string): { area: AreaType, areaSize: number, areaHeigh
             case "radius":
                 if (area == AreaType.None)
                     area = AreaType.Sphere
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "square":
                 area = AreaType.Square
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "cube":
                 area = AreaType.Cube
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "cone":
                 area = AreaType.Cone
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
                 break;
             case "long":
                 if (area == AreaType.None)
                     area = AreaType.Line
-                size = Number(hit[1]) ? Number(hit[1]) : size
+                size = asNumber(hit[1], size)
             case "wide":
                 if (area == AreaType.None)
                     area = AreaType.Line
-                height = Number(hit[1]) ? Number(hit[1]) : size
+                height = asNumber(hit[1], height)
             case "tall":
                 if (area == AreaType.None)
                     area = AreaType.Cylinder
-                height = Number(hit[1]) ? Number(hit[1]) : size
+                height = asNumber(hit[1], height)
             default:
                 break;
         }

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import DropDownIcon from '@mui/icons-material/ArrowDropDownSharp';
 import DropUpIcon from '@mui/icons-material/ArrowDropUpSharp';
 import styles from 'styles/components/dropdownMenu.module.scss'
@@ -21,9 +21,9 @@ const DropdownMenu = ({ className, itemClassName, values, exclude, value, showBu
     const { [value]: _, ...rest } = values
     const keys = Object.keys(rest)
 
-    const clickHandler = () => {
+    const clickHandler = useCallback(() => {
         if (open) { setOpen(false) }
-    }
+    }, [open])
 
     const openHandler = () => {
         setOpen(!open)

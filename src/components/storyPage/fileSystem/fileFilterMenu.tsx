@@ -9,6 +9,7 @@ import { CreateFileOptions } from "data/fileTemplates";
 import Localization from "utils/localization";
 import { FileType } from "types/database/files";
 import styles from 'styles/pages/storyPage/fileSystem.module.scss';
+import { asEnum } from "utils/helpers";
 
 const FileFilterMenu = (): JSX.Element => {
     const [app] = useContext(AppContext)
@@ -53,7 +54,7 @@ const FileFilterMenu = (): JSX.Element => {
                         data={app.enableColorFileByType ? type : undefined}>
                         <Checkbox 
                             value={state.fileFilter[type]} 
-                            onChange={() => handleChange(type as FileType)}/>
+                            onChange={() => handleChange(asEnum(type, FileType))}/>
                         <Icon/>
                         { CreateFileOptions[type] }
                     </div>

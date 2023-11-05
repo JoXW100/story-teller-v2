@@ -16,8 +16,9 @@ import { Context } from 'components/contexts/fileSystemContext';
 import { openContext } from 'components/common/contextMenu';
 import Navigation from 'utils/navigation';
 import Localization from 'utils/localization';
+import { asEnum } from 'utils/helpers';
 import { CreateFileOptions } from 'data/fileTemplates';
-import { FileType, RenderedFileTypes, IFileStructure } from "types/database/files";
+import { FileType, IFileStructure } from "types/database/files";
 import { ObjectId } from 'types/database';
 import styles from 'styles/pages/storyPage/file.module.scss';
 
@@ -50,7 +51,7 @@ const File = ({ file }: FileProps): JSX.Element => {
     }
 
     const handleEvent = (e: MouseEvent) => {
-        let target = e.target as any
+        let target = e.target as HTMLInputElement
         if (state.inEditMode && target !== ref.current && target?.id != contextID) {
             cancelEdit()
         }
@@ -126,12 +127,12 @@ const File = ({ file }: FileProps): JSX.Element => {
             {
                 text: Localization.toText('create-openFile'), 
                 icon: OpenIcon, 
-                action: () => router.push(Navigation.fileURL(file.id as ObjectId))
+                action: () => router.push(Navigation.fileURL(file.id))
             },
             {
                 text: Localization.toText('create-openFileNewTab'), 
                 icon: OpenInNewPageIcon, 
-                action: () => window.open(Navigation.fileURL(file.id as ObjectId))
+                action: () => window.open(Navigation.fileURL(file.id))
             },
             copyIdOption,
             renameOption,
@@ -147,9 +148,9 @@ const File = ({ file }: FileProps): JSX.Element => {
                 enabled: file.type === FileType.Document,
                 content: Object.keys(CreateFileOptions).filter((type) => type != FileType.Document).map((type) => (
                     {
-                        text: CreateFileOptions[type as RenderedFileTypes], 
+                        text: CreateFileOptions[type], 
                         icon: FileIcons[type], 
-                        action: () => dispatch.convert(file, type as RenderedFileTypes)
+                        action: () => dispatch.convert(file, asEnum(type, FileType))
                     }
                 ))
             }
@@ -189,7 +190,7 @@ const File = ({ file }: FileProps): JSX.Element => {
 
     return state.inEditMode || file.type === FileType.LocalImage ? Content : (
         <Link 
-            href={Navigation.fileURL(file.id as ObjectId)} 
+            href={Navigation.fileURL(file.id)} 
             key={String(file.id)}
             passHref>
             { Content }

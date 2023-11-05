@@ -38,11 +38,9 @@ abstract class Parser
     private static queries: QueryCollection = {}
 
     static async parse(text: string, metadata: IParserMetadata, variablesKey: string): Promise<JSX.Element> {
-        if (!text)
-            return null;
-
-        if (metadata instanceof FileData)
-            metadata = metadata.metadata;
+        if (!text) {
+            return null
+        }
 
         // Initialize variables
         let splits = text.split(this.matchBodyExpr);
@@ -83,7 +81,7 @@ abstract class Parser
             let stack: IParserObject[] = [];
             let current: IParserObject = { type: 'root', content: [], options: [], variables: {} };
 
-            splits.forEach((part) => {
+            for (const part of splits) {
                 switch (part) {
                     case '\{':
                         if (!command)
@@ -102,7 +100,7 @@ abstract class Parser
                             command = this.parseFunction(part, current);
                         break;
                 }
-            })
+            }
 
             if (current.type !== 'root')
                 throw new ParseError("Unexpected content start (\{)")
@@ -120,40 +118,34 @@ abstract class Parser
             isEnum(split, CalcOperation) ? split : values[split] ?? parseFloat(split.replace(',', '.'))
         ))
 
-        OperationsOrder.forEach(operation => {
-            for (let i = 0; i < parts.length - 1; i++) {
-                if (i > 0) {
-                    let left  = parts[i - 1]
-                    let right = parts[i + 1]
-                    if (i > 0 && parts[i] === operation && isNumber(left) && isNumber(right)) {
-                        switch (operation) {
-                            case CalcOperation.Add:
-                                parts = [...parts.slice(0, i - 1), left + right, ...parts.slice(i + 2)]
-                                i--
-                                break;
-                            case CalcOperation.Subtract:
-                                parts = [...parts.slice(0, i - 1), left - right, ...parts.slice(i + 2)]
-                                i--
-                                break;
-                            case CalcOperation.Multiply:
-                                parts = [...parts.slice(0, i - 1), left * right, ...parts.slice(i + 2)]
-                                i--
-                                break;
-                            case CalcOperation.DivideDown:
-                                parts = [...parts.slice(0, i - 1), Math.floor(left / right), ...parts.slice(i + 2)]
-                                i--
-                                break;
-                            case CalcOperation.DivideUp:
-                                parts = [...parts.slice(0, i - 1), Math.ceil(left / right), ...parts.slice(i + 2)]
-                                i--
-                                break;
-                            default:
-                                throw new ParseError(`Failed parsing calculation: ${text}, operation not defined for: ${operation}`)
-                        }
+        for (const operation of OperationsOrder) {
+            for (let i = 1; i < parts.length - 1;) {
+                let left  = parts[i - 1]
+                let right = parts[i + 1]
+                if (parts[i] === operation && isNumber(left) && isNumber(right)) {
+                    switch (operation) {
+                        case CalcOperation.Add:
+                            parts = [...parts.slice(0, i - 1), left + right, ...parts.slice(i + 2)]
+                            continue;
+                        case CalcOperation.Subtract:
+                            parts = [...parts.slice(0, i - 1), left - right, ...parts.slice(i + 2)]
+                            continue;
+                        case CalcOperation.Multiply:
+                            parts = [...parts.slice(0, i - 1), left * right, ...parts.slice(i + 2)]
+                            continue;
+                        case CalcOperation.DivideDown:
+                            parts = [...parts.slice(0, i - 1), Math.floor(left / right), ...parts.slice(i + 2)]
+                            continue;
+                        case CalcOperation.DivideUp:
+                            parts = [...parts.slice(0, i - 1), Math.ceil(left / right), ...parts.slice(i + 2)]
+                            continue;
+                        default:
+                            throw new ParseError(`Failed parsing calculation: ${text}, operation not defined for: ${operation}`)
                     }
                 }
+                i++;
             }
-        })
+        }
 
         return isNumber(parts[0]) ? parts[0] : NaN
     }
@@ -261,7 +253,7 @@ abstract class Parser
     private static async resolveQueries(tree: IParserObject): Promise<QueryCollection> {
         let queries = this.getQueries(tree)
         let keys = Object.keys(queries)
-        let filtered = keys.filter((key) => isObjectId(key) && !(key in this.queries)) as unknown as ObjectId[]
+        let filtered = keys.filter((key) => isObjectId(key) && !(key in this.queries)) as any[] as ObjectId[]
         
         if (filtered.length > 0) {
             let response = await Communication.getManyMetadata(arrayUnique(filtered))
@@ -297,7 +289,7 @@ abstract class Parser
             <element.toComponent 
                 options={tree.variables} 
                 content={tree.content} 
-                metadata={metadata} 
+                metadata={metadata}
                 variablesKey={variablesKey}
                 key={key}>
                 {element.buildChildren && tree.content.map((child, key) => (

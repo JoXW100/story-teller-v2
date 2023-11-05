@@ -2,10 +2,10 @@ import { IParserMetadata, QueryCollection, VariablesCollection } from "types/ele
 
 abstract class FileData<T extends IParserMetadata> implements Required<IParserMetadata>
 {
-    public readonly metadata: T;
+    public readonly metadata: Partial<T>;
 
     constructor(metadata: Partial<T>) {
-        this.metadata = metadata ?? {} as any;
+        this.metadata = metadata ?? {};
     }
 
     public get $vars(): VariablesCollection {

@@ -2,7 +2,7 @@ import Logger from "utils/logger";
 import { DiceType, AbilityType, ActionType, EffectCondition, TargetType, DamageType } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { IAbilityMetadata } from "types/database/files/ability";
-import { asEnum } from "utils/helpers";
+import { asEnum, asNumber } from "utils/helpers";
 import { KeysOf } from "types";
 
 const getAbilityType = (ability: string): AbilityType => {
@@ -36,20 +36,16 @@ const getTargetType = (target: string): TargetType => {
 }
 
 const getRollMod = (roll: string | null): number => {
-    if (roll) {
-        var value = Number(roll.replace(' ', '') ?? "0")
-        return value ? value : 0
-    }
-    return 0
+    return asNumber(roll?.trim())
 }
 
 const getRange = (range: string): { range: number, rangeLong?: number } => {
     var splits = range?.split('/') ?? []
     var res = { range: 0 }
     if (splits[0])
-        res['range'] = Number(splits[0]) ? Number(splits[0]) : 0
+        res['range'] = asNumber(splits[0])
     if (splits[1])
-        res['rangeLong'] = Number(splits[1]) ? Number(splits[1]) : 0
+        res['rangeLong'] = asNumber(splits[1])
     return res
 }
 
@@ -97,7 +93,6 @@ const toAbility = async (text: string): Promise<IAbilityMetadata> => {
             } satisfies KeysOf<IAbilityMetadata>
             break;
         default:
-            var dmgNumDice = Number(res[7] ?? "1")
             result = {
                 name: res[2] ?? "Missing name",
                 description: res[11] ?? "",
@@ -110,8 +105,8 @@ const toAbility = async (text: string): Promise<IAbilityMetadata> => {
                         id: "main",
                         label: damageType === DamageType.None ? "Effect" : "Damage",
                         damageType: damageType,
-                        dice: asEnum(Number(res[8]), DiceType) ?? DiceType.None,
-                        diceNum: isNaN(dmgNumDice) ? 1 : dmgNumDice,
+                        dice: asEnum(asNumber(res[8]), DiceType) ?? DiceType.None,
+                        diceNum: asNumber(res[7], 1),
                         modifier: { type: CalculationMode.Override, value: getRollMod(res[9]) },
                     }
                 ],

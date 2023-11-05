@@ -7,6 +7,7 @@ import { ObjectId } from 'types/database';
 import { ISpellMetadata } from 'types/database/files/spell';
 import { FileGetMetadataResult } from 'types/database/responses';
 import styles from 'styles/renderer.module.scss';
+import { asNumber } from 'utils/helpers';
 
 type SpellListProps = React.PropsWithRef<{
     header: string
@@ -37,11 +38,17 @@ const SpellList = ({ header, spells, maxLevel = 0, removeIsDisabled, prepareIsDi
         setFilter(newFilter)
     }
 
+    const spellSort = (a: FileGetMetadataResult<ISpellMetadata>, b: FileGetMetadataResult<ISpellMetadata>) => {
+        let levelDiff = asNumber(a.metadata?.level, 1) - asNumber(b.metadata?.level, 1)
+        if (levelDiff !== 0) return levelDiff
+        return (a.metadata?.name ?? "").localeCompare(b.metadata?.name ?? "")
+    }
+
     return (
         <CollapsibleGroup header={header}>
             { maxLevel > 0 &&
                 <div className={styles.spellFilterMenu}>
-                    <label>Filter: </label>
+                    <b>Filter: </b>
                     { Array.from({ length: maxLevel }).map((_, index) => (
                         <button 
                             key={index}
@@ -54,7 +61,10 @@ const SpellList = ({ header, spells, maxLevel = 0, removeIsDisabled, prepareIsDi
                     ))}
                 </div>
             }
-            { spells.filter((spell => filter[(spell.metadata?.level ?? 1) - 1] ?? true)).map((data) => 
+            { spells
+                .filter((spell => filter[(spell.metadata?.level ?? 1) - 1] ?? true))
+                .sort(spellSort)
+                .map((data) => 
                 <SpellListItem 
                     key={String(data.id)} 
                     data={data}
@@ -73,8 +83,8 @@ const SpellListItem = ({ data, removeIsDisabled, prepareIsDisabled, handleRemove
     return (
         <div className={styles.spellItem} error={String(!validate(data))}>
             <b>{spell.name}: </b>
-            <label>{spell.levelText}</label>
-            <label>{spell.schoolName}</label>
+            <span>{spell.levelText}</span>
+            <span>{spell.schoolName}</span>
             { handlePrepare &&
                 <button 
                     tooltips="Prepare"

@@ -9,11 +9,11 @@ import ItemRenderer from './item';
 import { ParseError } from 'utils/parser';
 import { asEnum } from 'utils/helpers';
 import { RendererObject } from 'types/database/editor';
-import { File, FileType, IFile } from 'types/database/files';
+import { FileType, File, IFileData, RenderedFileTypes, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 
-const Renderers: Record<FileType, RendererObject> = {
+const Renderers: Record<RenderedFileTypes, RendererObject> = {
     [FileType.Ability]: AbilityRenderer,
     [FileType.Character]: CharacterRenderer,
     [FileType.Class]: ClassRenderer,
@@ -21,19 +21,18 @@ const Renderers: Record<FileType, RendererObject> = {
     [FileType.Spell]: SpellRenderer,
     [FileType.Document]: DocumentRenderer,
     [FileType.Encounter]: EncounterRenderer,
-    [FileType.Item]: ItemRenderer,
-    [FileType.Empty]: null,
-    [FileType.Root]: null,
-    [FileType.Folder]: null,
-    [FileType.LocalFolder]: null,
-    [FileType.LocalImage]: null
+    [FileType.Item]: ItemRenderer
+}
+
+const isValid = <T extends IFileData>(file: IFile, type: T): file is File<T> => {
+    return file.type === type.type;
 }
 
 export const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
-    const Renderer = Renderers[asEnum(template?.type, FileType)] ?? DocumentRenderer
+    const Renderer: RendererObject<IFileData> = Renderers[asEnum(template?.type, FileType)] ?? DocumentRenderer
     
     try {
-        return file?.id && <Renderer.fileRenderer file={file as File<any>}/>
+        return file?.id && <Renderer.fileRenderer file={file}/>
     } catch (error: unknown) {
         if (error instanceof ParseError) {
             return (

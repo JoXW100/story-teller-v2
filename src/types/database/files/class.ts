@@ -1,7 +1,7 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
-import type { ObjectId } from ".."
 import type { DiceType, OptionalAttribute } from "../dnd"
 import type { IModifier } from "./modifier"
+import type { ObjectId } from ".."
 
 interface IClassContent extends IFileContent {
 }
@@ -34,7 +34,7 @@ interface IClassMetadataProperties {
     hasLeveledHitDice?: boolean
     hitDice?: DiceType
     leveledHitDice?: DiceType[]
-    subclassLevel: number
+    subclassLevel?: number
     subclasses?: ObjectId[]
     // Spells
     spellAttribute?: OptionalAttribute
@@ -53,7 +53,6 @@ interface IClassMetadata extends IClassMetadataProperties, IClassLevels, IFileMe
 }
 
 interface IClassStorage extends IFileStorage {
-    
 }
 
 abstract class ClassFile implements IFileData {
@@ -65,9 +64,9 @@ abstract class ClassFile implements IFileData {
 
 export type {
     IClassContent,
-    IClassLevels,
-    IClassMetadataProperties,
     IClassMetadata,
     IClassStorage,
+    IClassLevels,
+    IClassMetadataProperties,
     ClassFile
 }

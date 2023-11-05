@@ -6,20 +6,20 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import EquipIcon from '@mui/icons-material/AddModeratorSharp';
 import UnequipIcon from '@mui/icons-material/RemoveModeratorSharp';
 import Elements from 'data/elements';
-import ItemData from 'data/structures/item';
+import type ItemData from 'data/structures/item';
 import Localization from 'utils/localization';
-import { FileContextDispatch } from 'types/context/fileContext';
-import { ICharacterStorage } from 'types/database/files/character';
-import { IItemMetadata } from 'types/database/files/item';
-import { ObjectIdText } from 'types/database';
 import { FileType } from 'types/database/files';
 import { ItemType } from 'types/database/dnd';
-import { FileGetManyMetadataResult, FileGetMetadataResult } from 'types/database/responses';
-import InventoryItemData from 'types/database/files/inventoryItem';
+import type { FileContextDispatch } from 'types/context/fileContext';
+import type { ICharacterStorage } from 'types/database/files/character';
+import type { IItemMetadata } from 'types/database/files/item';
+import type { ObjectIdText } from 'types/database';
+import type { FileGetMetadataResult } from 'types/database/responses';
+import type InventoryItemData from 'types/database/files/inventoryItem';
 import styles from 'styles/renderer.module.scss';
 
 type ItemsPageProps = React.PropsWithRef<{
-    items: FileGetManyMetadataResult<IItemMetadata>
+    items: Record<string, ItemData>
     storage: ICharacterStorage
     setStorage: FileContextDispatch["setStorage"]
 }>
@@ -29,11 +29,16 @@ const equippable = new Set([ItemType.Armor, ItemType.MeleeWeapon, ItemType.Range
 const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Element => {
     const [state, setState] = useState(null);
     const attunement = [storage.attunement?.[0] ?? null, storage.attunement?.[1] ?? null, storage.attunement?.[2] ?? null]
-    const attunementOptions = useMemo(() => items.reduce((prev, item, index) => 
-        item && storage.inventory[String(item.id)]?.equipped && item.metadata?.requiresAttunement
-        ? {...prev, [String(item.id)]: items?.[index]?.metadata?.name ?? "-"} 
-        : prev, { null: "None" })
-    , [items])
+    const attunementOptions = useMemo(() => {
+        let options: Record<string, string> = { null: "None" }
+        for (const key in items) {
+            const item = items[key]
+            if (item && storage.inventory[key]?.equipped && item.requiresAttunement) {
+                options[key] = item.name ?? "-"
+            }
+        }
+        return options
+    }, [items])
 
     const handleChange = (value: FileGetMetadataResult<IItemMetadata>) => {
         if (!value) return;
@@ -113,8 +118,7 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                         {Localization.toText("character-inventory-value")}
                     </b>
                 </div>
-                { items
-                    .map(item => new ItemData(item?.metadata, storage.inventory?.[String(item?.id)], item?.id, attunement.some(x => String(x) === String(item?.id))))
+                { Object.values(items)
                     .sort(handleSort)
                     .map((item) => {
                     const isEquippable = equippable.has(item.type)
@@ -133,14 +137,12 @@ const InventoryPage = ({ items, storage, setStorage }: ItemsPageProps): JSX.Elem
                                 {isEquiped ? <UnequipIcon/> : isEquippable && <EquipIcon/>}
                             </button>
                             <div>
-                                <b className={styles.rarityLabel} data={item.rarity}>
-                                    {item.name}
-                                </b>
-                                <label>{item.subTypeName}</label>
+                                <b data={item.rarity}>{item.name}</b>
+                                <span>{item.subTypeName}</span>
                             </div>
-                            <label>{String(item.totalWeight)}</label>
-                            <label>{String(item.quantity)}</label>
-                            <label>{String(item.totalValue)}</label>
+                            <span>{String(item.totalWeight)}</span>
+                            <span>{String(item.quantity)}</span>
+                            <span>{String(item.totalValue)}</span>
                             <button 
                                 tooltips={Localization.toText("character-inventory-remove")}
                                 disabled={item.attuned}

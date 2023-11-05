@@ -7,6 +7,7 @@ import { CreateFileOptions } from "data/fileTemplates";
 import { CreateContentProps, CreateFilePopupData } from ".";
 import { InputType } from "types/context/fileSystemContext";
 import styles from 'styles/pages/storyPage/createFilePopup.module.scss';
+import { asEnum } from "utils/helpers";
 
 const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
     const ref = useRef<HTMLButtonElement>(null);
@@ -48,7 +49,7 @@ const CreateFileContent = ({ callback }: CreateContentProps): JSX.Element => {
                     itemClassName={styles.dropdownItem}
                     value={state.type} 
                     values={CreateFileOptions}
-                    onChange={(value) => setState({ ...state, type: value as FileType })}/>
+                    onChange={(value) => setState({ ...state, type: asEnum(value, FileType) })}/>
             </div>
             <div className={styles.inputRowLast}>
                 <button 

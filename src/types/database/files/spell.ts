@@ -29,7 +29,6 @@ interface ISpellMetadata extends IFileMetadata, ICreatureActionData {
 }
 
 interface ISpellStorage extends IFileStorage {
-
 }
 
 abstract class SpellFile implements IFileData {

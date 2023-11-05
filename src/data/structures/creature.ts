@@ -174,7 +174,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get abilities(): ObjectIdText[] {
-        return this.modifiers.modifyAbilities(this.metadata.abilities ?? [])
+        return this.modifiers.modifyAbilities(this.metadata.abilities ?? []) ?? this.metadata.abilities ?? []
+    }
+
+    public static abilities = (creature: ICreatureMetadata, modifiers: IModifierCollection): ObjectIdText[] => {
+        return modifiers?.modifyAbilities(creature?.abilities ?? []) ?? creature?.abilities ?? []
     }
 
     // Stats
@@ -199,7 +203,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     public get hitDiceCollection(): DiceCollection {
         if (this.level > 0 && this.hitDice !== DiceType.None) {
             let collection = new DiceCollection(this.hitDiceValue)
-            collection.add(new Dice(this.hitDice), this.level)
+            collection.add(this.hitDice, this.level)
             return collection
         } else {
             return new DiceCollection()
@@ -233,7 +237,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                     mod: String(value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
-                } as RollOptions;
+                } satisfies RollOptions;
             default:
             case CalculationMode.Auto:
                 value = 0;
@@ -245,7 +249,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
                     mod: String(mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
-                } as RollOptions
+                } satisfies RollOptions
         }
     }
 
@@ -355,7 +359,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     public get speed(): Record<MovementType, number> {
         return Object.values(MovementType).reduce<Record<MovementType, number>>((prev, type) => (
             { ...prev, [type]: (this.metadata.speed?.[type] ?? 0) + this.modifiers.getMovementBonus(type) }
-        ), {} as any)
+        ), {} as Record<MovementType, number>)
     }
 
     public get speedAsText(): string {
@@ -369,7 +373,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     public get senses(): Record<Sense, number> {
         return Object.values(Sense).reduce<Record<Sense, number>>((prev, sense) => (
             { ...prev, [sense]: this.getSenseRange(sense) }
-        ), {} as any)
+        ), {} as Record<Sense, number>)
     }
 
     public get sensesAsText(): string {
@@ -382,21 +386,6 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public getSenseRange(sense: Sense) {
         return Math.max(this.modifiers.getSenseRange(sense), this.metadata.senses?.[sense] ?? 0)
-    }
-
-    public get passivePerceptionValue(): number {
-        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.perception)
-        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue
-    }
-
-    public get passiveInvestigationValue(): number {
-        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.investigation)
-        return 10 + this.getAttributeModifier(Attribute.INT) + proficiency * this.proficiencyValue
-    }
-
-    public get passiveInsightValue(): number {
-        let proficiency = getProficiencyLevelValue(this.proficienciesSkill.insight)
-        return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue
     }
 
     // Attributes
@@ -423,6 +412,62 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
     public get cha(): number {
         return (this.metadata.cha ?? 10) + this.modifiers.getAttributeBonus(Attribute.CHA)
+    }
+
+    // Passives
+
+    public get passivePerception(): IOptionType<number> {
+        return this.metadata.passivePerception ?? OptionTypeAuto
+    }
+
+    public get passivePerceptionValue(): number {
+        let mod = 0;
+        switch (this.passivePerception.type) {
+            case CalculationMode.Override:
+                return this.passivePerception.value
+            case CalculationMode.Modify:
+                mod = this.passivePerception.value
+            default:
+            case CalculationMode.Auto:
+                let proficiency = getProficiencyLevelValue(this.proficienciesSkill.perception)
+                return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue + mod
+        }
+    }
+
+    public get passiveInvestigation(): IOptionType<number> {
+        return this.metadata.passiveInvestigation ?? OptionTypeAuto
+    }
+
+    public get passiveInvestigationValue(): number {
+        let mod = 0;
+        switch (this.passivePerception.type) {
+            case CalculationMode.Override:
+                return this.passivePerception.value
+            case CalculationMode.Modify:
+                mod = this.passivePerception.value
+            default:
+            case CalculationMode.Auto:
+                let proficiency = getProficiencyLevelValue(this.proficienciesSkill.investigation)
+                return 10 + this.getAttributeModifier(Attribute.INT) + proficiency * this.proficiencyValue + mod
+        }
+    }
+
+    public get passiveInsight(): IOptionType<number> {
+        return this.metadata.passiveInsight ?? OptionTypeAuto
+    }
+
+    public get passiveInsightValue(): number {
+        let mod = 0;
+        switch (this.passivePerception.type) {
+            case CalculationMode.Override:
+                return this.passivePerception.value
+            case CalculationMode.Modify:
+                mod = this.passivePerception.value
+            default:
+            case CalculationMode.Auto:
+                let proficiency = getProficiencyLevelValue(this.proficienciesSkill.insight)
+                return 10 + this.getAttributeModifier(Attribute.WIS) + proficiency * this.proficiencyValue + mod
+        }
     }
 
     // Proficiencies

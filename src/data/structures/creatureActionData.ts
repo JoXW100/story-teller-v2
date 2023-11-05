@@ -87,7 +87,7 @@ abstract class CreatureActionData<T extends ICreatureActionData & IFileMetadata 
             if (effect.damageType !== DamageType.None && ((effect.type === EffectType.MainDamage && !hasMainDamage) || effect.type === EffectType.BonusDamage)) {
                 hasMainDamage = hasMainDamage || effect.type === EffectType.MainDamage;
                 let effectDiceCollection = new DiceCollection(effect.modifierValue, `${this.name} ${effect.label}`, effect.damageType, RollType.Damage)
-                effectDiceCollection.add(new Dice(effect.dice), effect.diceNum)
+                effectDiceCollection.add(effect.dice, effect.diceNum)
                 collections.push(effectDiceCollection)
             }
         }

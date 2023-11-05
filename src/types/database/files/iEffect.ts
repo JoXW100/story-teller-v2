@@ -41,11 +41,11 @@ interface IEffect extends ISubPageItemMetadata {
     modifier?: IOptionType<number>
     dice?: DiceType
     diceNum?: number
-    // Scaling
     scalingModifiers?: IEffectScalingModifier[]
 }
 
 export default IEffect
 export type {
+    IEffect,
     IEffectScalingModifier
 }

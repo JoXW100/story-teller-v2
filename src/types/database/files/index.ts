@@ -33,22 +33,22 @@ interface IFileStructure {
     children: IFileStructure[]
 }
 
-interface IFile extends IFileData {
-    id: ObjectId
-    isOwner: boolean
-}
-
 interface ILocalFile {
     id: string
     holderId: string
     type: FileType
     name: string
     open?: boolean
-    data?: string
+    data?: string | ArrayBuffer
+}
+
+interface IFile extends IFileData {
+    id: ObjectId
+    isOwner: boolean
 }
 
 interface IFileData {
-    type: Exclude<FileType, FileType.Folder|FileType.Root|FileType.Empty>
+    type: Exclude<FileType, FileType.Folder|FileType.Root>
     content: IFileContent
     metadata: IFileMetadata
     storage: IFileStorage
@@ -68,6 +68,12 @@ interface IRootData {
     type: FileType.Root
 }
 
+
+type File<T extends IFileData> = {
+    id: ObjectId
+    isOwner: boolean
+} & T
+
 export enum FileType {
     Root = "root",
     Empty = "empty",
@@ -84,22 +90,21 @@ export enum FileType {
     Spell = "spe",
 }
 
-export type FileStructureTypes = FileType.Root|FileType.Folder|FileType.LocalFolder|FileType.LocalImage
-export type UsedFileTypes = Exclude<FileType, FileType.Empty|FileType.Root|FileType.LocalFolder|FileType.LocalImage>
-export type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileStructureTypes>
-export type File<T extends IFileData> = IFile & T
+type RenderedFileTypes = Exclude<FileType, FileType.Empty|FileType.Folder|FileType.LocalFolder|FileType.LocalImage|FileType.Root>
 
 export type {
     ISubPageItemMetadata,
     IFolderContent,
+    IFile,
     IFileContent,
     IFileMetadata,
     IFileStorage,
     IFileStructure,
-    IFile,
     ILocalFile,
     IFileData,
     IFileQueryData,
     IFolderData,
-    IRootData
+    IRootData,
+    File,
+    RenderedFileTypes
 }

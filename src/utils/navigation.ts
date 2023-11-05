@@ -1,6 +1,5 @@
 import { isObjectId } from "./helpers";
 import { ObjectId } from "types/database";
-import { Open5eFetchType } from "types/open5eCompendium";
 
 abstract class Navigation 
 {
@@ -8,7 +7,7 @@ abstract class Navigation
         return new URL(`${location.origin}/story/${storyId}${location.search}`);
     }
 
-    public static fileURL(fileId: ObjectId, storyId: ObjectId = null): URL {
+    public static fileURL(fileId: ObjectId | string, storyId: ObjectId = null): URL {
         let page = 'story'
         if (!storyId) {
             const expr = /\/([A-z]+)\/([^\/\?]+)/i
@@ -62,7 +61,7 @@ abstract class Navigation
         return new URL(location.origin + returnURL)
     }
 
-    public static open5eURL(type: Open5eFetchType, itemId: string): URL {
+    public static open5eURL(type: string, itemId: string): URL {
         return new URL(`https://open5e.com/${type}/${itemId}`)
     }
 }

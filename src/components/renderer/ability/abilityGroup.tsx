@@ -1,21 +1,17 @@
 import { useEffect, useState } from 'react';
 import CollapsibleGroup from 'components/common/collapsibleGroup';
 import { AbilityToggleRenderer } from '.';
-import Logger from 'utils/logger';
 import { ActionType } from 'types/database/dnd';
 import { IAbilityMetadata } from 'types/database/files/ability';
-import { FileGetManyMetadataResult, FileMetadataQueryResult } from 'types/database/responses';
-import { IParserMetadata } from 'types/elements';
-import { ObjectId } from 'types/database';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 
 interface AbilityCategory { 
     header: string, 
-    content: FileMetadataQueryResult<IAbilityMetadata & IParserMetadata>[]
+    content: string[]
 }
 
 type AbilityGroupsProps = React.PropsWithRef<{
-    abilities: FileGetManyMetadataResult<IAbilityMetadata>
+    abilities: Record<string, IAbilityMetadata>
     values?: Record<string, number>
     stats?: ICreatureStats
     expendedCharges: Record<string, number>
@@ -34,29 +30,32 @@ const AbilityGroups = ({ abilities, stats, values, expendedCharges, setExpendedC
             [ActionType.Legendary] : { header: "Legendary Actions", content: [] },
             [ActionType.None]: { header: "Other", content: [] },
         }
-        abilities.forEach((file) => {
-            if (file) {
-                categories[file.metadata?.action ?? ActionType.Action].content.push({ ...file, metadata: { ...file?.metadata, $values: values } })
+        
+        for (const key in abilities) {
+            const ability = abilities[key]
+            if (abilities[key] && key != null) {
+                categories[ability.action ?? ActionType.Action].content.push(key)
             }
-        })
+        }
+
         setCategories(categories)
     }, [abilities, stats?.multiAttack])
 
-    const handleSetExpendedCharges = (value: number, id: ObjectId) => {
-        setExpendedCharges({ ...expendedCharges, [String(id)]: value })
+    const handleSetExpendedCharges = (value: number, key: string) => {
+        setExpendedCharges({ ...expendedCharges, [key]: value })
     }
     
     return Object.keys(categories)
         .filter((type: ActionType) => categories[type].content.length > 0)
         .map((type: ActionType) => (
             <CollapsibleGroup key={type} header={categories[type].header}>
-                { categories[type].content.map((file, index) => file && (
+                { categories[type].content.map((key, index) => (
                     <AbilityToggleRenderer 
-                        key={String(file.id ?? index)} 
-                        metadata={file.metadata} 
+                        key={key} 
+                        metadata={{ ...abilities[key], $values: values }} 
                         stats={stats}
-                        expendedCharges={isNaN(expendedCharges[String(file.id)]) ? 0 : expendedCharges[String(file.id)]}
-                        setExpendedCharges={(value) => handleSetExpendedCharges(value, file.id)}/>
+                        expendedCharges={isNaN(expendedCharges[key]) ? 0 : expendedCharges[key]}
+                        setExpendedCharges={(value) => handleSetExpendedCharges(value, key)}/>
                 ))}
             </CollapsibleGroup>
         )

@@ -1,6 +1,4 @@
 
-type Open5eFetchType = "spells" | "monsters"
-
 interface Open5eItemInfo {
     slug: string
     name: string
@@ -10,7 +8,7 @@ interface Open5eItemInfo {
 
 interface ICompendiumMenuItem {
     title: string
-    type: Open5eFetchType
+    type: string
     fields: string[]
     sortFields: string[]
     headers: string[]
@@ -82,7 +80,6 @@ interface Open5eCreature {
 }
 
 export type {
-    Open5eFetchType,
     Open5eItemInfo,
     ICompendiumMenuItem,
     Open5eCreature,

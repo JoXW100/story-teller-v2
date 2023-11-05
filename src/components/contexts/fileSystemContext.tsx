@@ -9,10 +9,10 @@ import { CreateFileOptions } from 'data/fileTemplates';
 import Localization from 'utils/localization';
 import Communication from 'utils/communication';
 import Logger from 'utils/logger';
-import { isObjectId } from 'utils/helpers';
+import { isObjectId, isObjectIdOrNull } from 'utils/helpers';
 import { ObjectId, DBResponse } from 'types/database'
 import { Callback, FileFilter, FileSystemContextProvider, FileSystemContextState, InputType } from 'types/context/fileSystemContext'
-import { FileType, IFileStructure, ILocalFile, RenderedFileTypes } from 'types/database/files'
+import { FileType, IFileStructure, ILocalFile } from 'types/database/files'
 import { FileGetStructureResult, FileRenameResult, FileSetPropertyResult } from 'types/database/responses';
 
 const findUniqueId = (existing: string[], initial: string): string => {
@@ -41,8 +41,8 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             <CreateFilePopup 
                 type={type} 
                 callback={(res) => {
-                    if (res.type === InputType.Import) {
-                        Communication.addFileFromData(context.story.id, holder as ObjectId, res.data.name, res.data.type, res.data.data)
+                    if (res.type === InputType.Import && isObjectId(holder)) {
+                        Communication.addFileFromData(context.story.id, holder, res.data.name, res.data.type, res.data.data)
                         .then(() => setState({ ...state, fetching: true}))
                     } else if (res.type === InputType.UploadResources) {
                         dispatch.setLocalFiles(res.resources ?? {}, false)
@@ -50,14 +50,14 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                         if (isObjectId(holder)) holder = null
                         let localFile: ILocalFile = {
                             id: findUniqueId(Object.keys(context.localFiles), res.data.name),
-                            holderId: holder as string,
+                            holderId: String(holder),
                             type: res.data.type === FileType.Folder ? FileType.LocalFolder : res.data.type,
                             name: res.data.name,
                             data: res.data.file ?? null
                         }
                         dispatch.setLocalFiles({ ...context.localFiles, [localFile.id]: localFile })
                     } else if (isObjectId(holder)) {
-                        Communication.addFile(context.story.id, holder as ObjectId, res.data.name, res.data.type)
+                        Communication.addFile(context.story.id, holder, res.data.name, res.data.type)
                         .then(() => setState({ ...state, fetching: true}))
                     }
                 }}
@@ -88,7 +88,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
                             })
                         } else if (file.type === FileType.LocalFolder || file.type === FileType.LocalImage) {
                             let files = {...context.localFiles}
-                            delete files[file.id as string]
+                            delete files[file.id]
                             dispatch.setLocalFiles(files)
                         }
                     }
@@ -104,7 +104,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
         openPopup(
             <ConfirmationPopup 
                 header={Localization.toText('create-confirmationHeader')} 
-                description={Localization.toText('create-confirmationConvertDescription', file.name, CreateFileOptions[type as RenderedFileTypes])}
+                description={Localization.toText('create-confirmationConvertDescription', file.name, CreateFileOptions[type])}
                 options={[optionYes, optionNo]} 
                 callback={(response) => {
                     if (response === optionYes && isObjectId(file.id)) {
@@ -152,8 +152,13 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             })
         } else if ((file.type === FileType.LocalFolder || file.type === FileType.LocalImage)
             && (!target?.id || target.type === FileType.LocalFolder || target.type === FileType.LocalImage)) {
-            let newFile = { ...context.localFiles[file.id as string], holderId: (target?.id ?? null) as string } 
-            dispatch.setLocalFiles({ ...context.localFiles, [file.id as string]: newFile })
+            dispatch.setLocalFiles({ 
+                ...context.localFiles, 
+                [String(file.id)]: { 
+                    ...context.localFiles[String(file.id)], 
+                    holderId: target?.id ? String(target.id) : null
+                }
+            })
         }
     }
 
@@ -172,8 +177,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
     }
 
     const createCopy = (file: IFileStructure) => {
-        if (!isObjectId(file.id)) return;
-
+        if (!isObjectId(file.id) || !isObjectIdOrNull(file.holderId)) return;
         let num = 0;
         let name = file.name;
         const regex = RegExp(/(.*) \(([0-9]+)\)$/)
@@ -184,7 +188,7 @@ const FileSystemContext = ({ children }: React.PropsWithChildren<{}>): JSX.Eleme
             name = match[1]
         }
         let newName = `${name} (${num + 1})`
-        Communication.addFileCopy(context.story.id, file.holderId as ObjectId, file.id, newName)
+        Communication.addFileCopy(context.story.id, file.holderId, file.id, newName)
         .then((res) => {
             if (!res.success) {
                 Logger.warn("FileSystemContext.createCopy", res.result);

@@ -46,7 +46,7 @@ $rowSize: 30px;
         grid-template-columns: minmax(0, 1fr) $menuHeaderHeight;
     }
 
-    & > label {
+    & > span {
         @include fontHeader1();
         text-indent: $menuHeaderHeight + 10px;
     }
@@ -85,13 +85,13 @@ $rowSize: 30px;
     height: $rowSize;
     align-items: center;
     
-    & > label {
+    & > span {
         @include fontNoLineBreak;
         text-indent: 1ch;
         flex: 1;
     }
 
-    & > :not(label) {
+    & > :not(span) {
         max-width: $controlWidth;
         height: 100%;
     }

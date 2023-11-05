@@ -1,11 +1,11 @@
 import SpellData from 'data/structures/spell';
-import { asEnum } from './helpers';
+import { asEnum, asNumber } from './helpers';
 import ICreatureStats from 'types/database/files/iCreatureStats';
 import { ISpellMetadata } from 'types/database/files/spell';
 import { AdvantageBinding, AreaType, Attribute, OptionalAttribute, ProficiencyLevel, ScalingType, Skill, TargetType } from "types/database/dnd";
 
 export const getAttributeModifier = (stats: ICreatureStats = {}, attr: Attribute): number => {
-    return stats[attr] ? Math.ceil((Number(stats[attr] ?? 10) - 11) / 2.0) : 0
+    return Math.ceil((asNumber(stats?.[attr], 10) - 11) / 2.0)
 }
 
 export const getScalingValue = (scaling: ScalingType | Attribute | OptionalAttribute, stats: ICreatureStats): number => {

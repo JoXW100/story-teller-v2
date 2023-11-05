@@ -4,6 +4,7 @@ type NumberInputProps = React.PropsWithRef<{
     value: number
     defaultValue?: number
     setValue: (value: number) => void
+    validate?: (value: number) => boolean
     onFocusLost?: () => void
     className?: string
     decimal?: boolean
@@ -12,15 +13,16 @@ type NumberInputProps = React.PropsWithRef<{
     autoFocus?: boolean
 }>
 
-const NumberInput = ({ value, defaultValue = 0, setValue, onFocusLost, className, decimal = false, negative = false, disabled = false , autoFocus = false}: NumberInputProps): JSX.Element => {
+const NumberInput = ({ value, defaultValue = 0, setValue, validate, onFocusLost, className, decimal = false, negative = false, disabled = false , autoFocus = false}: NumberInputProps): JSX.Element => {
     const [state, setState] = useState({ text: "", error: false })
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         let parser = decimal ? parseFloat : parseInt
         let value = parser(e.target.value)
-        if (isNaN(value) || (!negative && value < 0)) {
+        if (isNaN(value) || (!negative && value < 0) || (validate && !validate(value))) {
             setState({ text: e.target.value, error: true })
         } else {
+            setState({ text: e.target.value, error: false })
             setValue(value)
         }
     }

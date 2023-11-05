@@ -1,46 +1,25 @@
-import { useState, useMemo, useEffect } from "react"
-import AbilityData from "data/structures/ability"
-import ClassData from "data/structures/class"
-import ItemData from "data/structures/item"
-import ModifierCollection from "data/structures/modifierCollection"
+import { useState, useEffect } from "react"
 import CharacterData from "data/structures/character"
-import { useFile, useFiles } from "./files"
-import useAbilitiesHandler from "./abilitiesHandler"
+import type ItemData from "data/structures/item"
+import { getCreatureData } from "./creaturesHandler"
+import Logger from "utils/logger"
 import { FileType, IFileQueryData } from "types/database/files"
-import { IAbilityMetadata } from "types/database/files/ability"
-import { IClassMetadata } from "types/database/files/class"
-import { IItemMetadata } from "types/database/files/item"
-import { IModifierCollection } from "types/database/files/modifierCollection"
-import { FileGetManyMetadataResult } from "types/database/responses"
-import { CharacterFile } from "types/database/files/character"
+import type { IAbilityMetadata } from "types/database/files/ability"
+import type { CharacterFile } from "types/database/files/character"
 
-const useCharacterHandler = (data: IFileQueryData<CharacterFile>): [character: CharacterData, abilities: FileGetManyMetadataResult<IAbilityMetadata>, items: FileGetManyMetadataResult<IItemMetadata>] => {
-    const [modifiers, setModifiers] = useState<IModifierCollection>(null)
-    const [classFile] = useFile<IClassMetadata>(data.metadata?.classFile, [FileType.Class])
-    const [subclassFile] = useFile<IClassMetadata>(data.storage?.classData?.$subclass, [FileType.Class]);
-    const itemIds = useMemo(() => Object.keys(data.storage?.inventory ?? {}), [data.storage?.inventory])
-    const [items] = useFiles<IItemMetadata>(itemIds, [FileType.Item]);
+type CharacterTypeCollection = [creatures: CharacterData, abilities: Record<string, IAbilityMetadata>, items: Record<string, ItemData>]
 
-    const classData = useMemo(() => new ClassData(classFile?.metadata, data.storage, classFile?.id ? String(classFile?.id) : undefined), [classFile, data.storage])
-    const subclassData = useMemo(() => classData.subclasses.includes(subclassFile?.id) ? new ClassData(subclassFile?.metadata, data.storage, subclassFile?.id ? String(subclassFile?.id) : undefined)  : null, [subclassFile, classData, data.storage])
-    const character =  useMemo(() => new CharacterData(data.metadata, data.storage, modifiers, classData, subclassData), [data.metadata, data.storage, modifiers, classData, subclassData])
-    const abilityIds = useMemo(() => character.abilities, [character])
-    const [abilities] = useAbilitiesHandler(abilityIds, [FileType.Ability])
-
+const useCharacterHandler = (data: IFileQueryData<CharacterFile>): CharacterTypeCollection => {
+    const [state, setState] = useState<CharacterTypeCollection>([new CharacterData(data?.metadata, data?.storage), {}, {}])
     useEffect(() => {
-        if (abilities) {
-            let itemModifiers = items.flatMap((item) => item ? new ItemData(item.metadata, data.storage.inventory?.[String(item.id)], item.id, data.storage.attunement?.some(x => String(x) === String(item.id))).modifiers : [])
-            let itemModifierCollection = new ModifierCollection(itemModifiers, data.storage)
-            let abilityModifiers = abilities.flatMap((ability) => ability ? new AbilityData(ability.metadata, null, String(ability.id)).modifiers : []);
-            let abilityModifierCollection = new ModifierCollection([...abilityModifiers, ...itemModifiers], data.storage)
-            let collection = abilityModifierCollection.join(itemModifierCollection)
-            if (!collection.equals(modifiers)) {
-                setModifiers(collection);
-            }
-        }
-    }, [abilities, data.storage])
-
-    return [character, abilities, items]
+        getCreatureData({ ...data, id: null, type: FileType.Character })
+        .then((res) => setState(res as CharacterTypeCollection))
+        .catch((e) => {
+            Logger.throw("useCharacterHandler.error", e)
+            setState([new CharacterData(data?.metadata, data?.storage), {}, {}])
+        })
+    }, [data])
+    return state
 }
 
 export default useCharacterHandler

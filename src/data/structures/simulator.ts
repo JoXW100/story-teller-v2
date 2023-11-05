@@ -5,7 +5,7 @@ import SpellData from "./spell";
 import CreatureActionData from "./creatureActionData";
 import { IEncounterCard } from "types/database/files/encounter";
 import { IAbilityMetadata } from "types/database/files/ability";
-import { AbilityType, ActionType, CastingTime, EffectCondition } from "types/database/dnd";
+import { AbilityType, ActionType, CastingTime, DiceType, EffectCondition } from "types/database/dnd";
 import DiceCollection from "utils/data/diceCollection";
 import Dice from "utils/data/dice";
 import { RollMethod, RollResult, RollType } from "types/dice";
@@ -122,7 +122,7 @@ class Simulator {
                 return null;
         }
 
-        hitCollection.add(new Dice(20))
+        hitCollection.add(DiceType.D20)
         let hitResult = hitCollection.roll(RollMethod.Normal, active.creature.name)
         let damage = attack.damage.map(x => x.roll(hitResult.results[hitResult.selectedIndex].isCritical ? RollMethod.Crit : RollMethod.Normal, active.creature.name))
 

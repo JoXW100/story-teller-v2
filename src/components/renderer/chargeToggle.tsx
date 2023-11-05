@@ -1,36 +1,56 @@
 import NumberInput from 'components/common/controls/numericInput';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styles from 'styles/renderer.module.scss';
 
 type ChargesRendererProps = React.PropsWithRef<{
     charges: number
-    expended: number
+    expended?: number
+    fixed?: number
     setExpended: (expended: number) => void
 }>
 
 type ChargeProps = React.PropsWithRef<{
     expended: boolean
+    fixed: boolean
     setExpended: (value: boolean) => void
 }>
 
-export const ChargeToggle = ({ expended, setExpended }: ChargeProps): JSX.Element => {
+const getChangeState = (expended: boolean, fixed: boolean): string => {
+    if (fixed) {
+        return "fixed"
+    } else if (expended) {
+        return "expended"
+    } else {
+        return undefined
+    }
+}
+
+export const ChargeToggle = ({ expended, fixed, setExpended }: ChargeProps): JSX.Element => {
     const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
         e.stopPropagation()
-        setExpended(!expended)
+        if (!fixed) {
+            setExpended(!expended)
+        }
     }
 
     return (
         <div 
             className={styles.chargeToggle} 
             onClick={handleClick}
-            data={expended ? 'active' : undefined}/>
+            data={getChangeState(expended, fixed)}/>
     )
 }
 
-const ChargesRenderer = ({ charges, expended, setExpended }: ChargesRendererProps): JSX.Element => {
+const ChargesRenderer = ({ charges, expended = 0, fixed = 0, setExpended }: ChargesRendererProps): JSX.Element => {
     const [state, setState] = useState(false)
+    const available = useMemo(() => Math.max(charges - expended - fixed, 0), [charges, expended, fixed])
+
     const handleSetValue = (value: number) => {
-        setExpended(Math.max(0, Math.min(charges - value, charges)))
+        setExpended(Math.max(0, Math.min(charges - value - fixed, charges - fixed)))
+    }
+
+    const validate = (value: number): boolean => {
+        return value <= charges - fixed
     }
 
     const handleFocusLost = () => {
@@ -51,14 +71,15 @@ const ChargesRenderer = ({ charges, expended, setExpended }: ChargesRendererProp
                     ?
                     <>
                         <NumberInput 
-                            value={charges - expended}
+                            value={available}
                             autoFocus={true}
+                            validate={validate}
                             setValue={handleSetValue}
                             onFocusLost={handleFocusLost}/>
-                        <b>{` / ${charges}`}</b>
+                        <b>{fixed > 0 ? ` / ${charges - fixed} (${charges})` : ` / ${charges}`}</b>
                     </>
                     :
-                    <b>{`${charges - expended} / ${charges}`}</b>
+                    <b>{fixed > 0 ? `${available} / ${charges - fixed} (${charges})` : `${available} / ${charges}`}</b>
                 }
             </div>
         )
@@ -68,8 +89,9 @@ const ChargesRenderer = ({ charges, expended, setExpended }: ChargesRendererProp
                 {Array.from({length: charges }, (_,i) => (
                     <ChargeToggle 
                         key={i} 
-                        expended={i < expended} 
-                        setExpended={(value) => setExpended(value ? i + 1 : i)}/>
+                        fixed={i < fixed}
+                        expended={i < (fixed + expended)} 
+                        setExpended={(value) => setExpended((value ? i + 1 : i) - fixed)}/>
                 ))}
             </>
         )

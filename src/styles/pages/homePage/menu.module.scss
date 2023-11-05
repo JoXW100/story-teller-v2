@@ -95,7 +95,7 @@
         padding-left: 2ch;
     }
 
-    & > label {
+    & > span {
         @include fontHeader2;
         @include mobile {
             font-size: larger;

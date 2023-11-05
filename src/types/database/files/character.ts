@@ -1,6 +1,6 @@
 import type { FileType, IFileContent, IFileData, IFileMetadata, IFileStorage } from "."
 import type { ICreatureMetadata } from "./creature"
-import type { Gender } from "../dnd"
+import type { DiceType, Gender } from "../dnd"
 import type { ObjectId } from ".."
 import type InventoryItemData from "./inventoryItem"
 
@@ -30,6 +30,7 @@ interface ICharacterAbilityStorageData {
 interface ICharacterStorage extends IFileStorage {
     health?: number
     tempHealth?: number
+    hitDice?: Partial<Record<DiceType, number>>
     inventory?: Record<string, InventoryItemData>
     inventoryOther?: string
     attunement?: [ObjectId, ObjectId, ObjectId]
@@ -37,7 +38,6 @@ interface ICharacterStorage extends IFileStorage {
     cantrips?: ObjectId[]
     learnedSpells?: ObjectId[]
     preparedSpells?: ObjectId[]
-
     abilityData?: Record<string, ICharacterAbilityStorageData>
     spellData?: number[]
 }

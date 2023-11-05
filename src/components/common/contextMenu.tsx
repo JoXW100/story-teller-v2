@@ -1,18 +1,37 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
-import type { Point, ContextRowData, ContextMenuData, ContextEventDetails } from 'types/contextMenu'
+import type { Point, ContextRowData, ContextMenuData } from 'types/contextMenu'
 import styles from 'styles/common/contextMenu.module.scss'
 
 interface ContextMenuState {
     show: boolean
+    interrupt?: boolean
     anchors: { left: number, top: number }
     content: ContextRowData[]
     data: ContextMenuData
 }
 
+type ContextMenuEvent = CustomEvent<ContextMenuState>
+
 type ContextMenuItemProps = React.PropsWithRef<{
     data: ContextRowData
 }>
+
+const getDepthHeight = (row: ContextRowData): { height: number, depth: number } => {
+    return row.content?.reduce((pre, cur, index) => {
+        if ('content' in cur) {
+            let { height, depth } = getDepthHeight(cur)
+            return {
+                height: Math.max(height + index, pre.height),
+                depth: Math.max(1 + depth, pre.depth)
+            }
+        }
+        return { 
+            height: Math.max(1 + index, pre.height),
+            depth: pre.depth
+        }
+    }, { height: 0, depth: 1 }) ?? { height: 0, depth: 0 }
+} 
 
 const ContextMenu = () => {
     const router = useRouter()
@@ -23,28 +42,12 @@ const ContextMenu = () => {
         data: {}
     })
     
-    const clickHandler = () => {
-        state.show && setState({ ...state, show: false })
-    }
+    const clickHandler = useCallback(() => {
+        state.show && setState((state) => ({ ...state, show: false }))
+    }, [state.show])
 
-    const getDepthHeight = (row: ContextRowData): { height: number, depth: number } => {
-        return row.content?.reduce((pre, cur, index) => {
-            if ('content' in cur) {
-                let { height, depth } = getDepthHeight(cur)
-                return {
-                    height: Math.max(height + index, pre.height),
-                    depth: Math.max(1 + depth, pre.depth)
-                }
-            }
-            return { 
-                height: Math.max(1 + index, pre.height),
-                depth: pre.depth
-            }
-        }, { height: 0, depth: 1 }) ?? { height: 0, depth: 0 }
-    } 
-
-    const contextHandler = (ev: MouseEvent) => {
-        let detail = ev.detail as unknown as ContextEventDetails
+    const contextHandler = useCallback((ev: ContextMenuEvent) => {
+        let detail = ev.detail
         let { depth, height } = getDepthHeight({
             text: null,
             icon: null,
@@ -71,7 +74,7 @@ const ContextMenu = () => {
                 data: detail.data
             })
         }
-    }
+    }, [state.show])
 
     useEffect(() => {
         setState((state) => ({ ...state, show: false }))
@@ -89,7 +92,7 @@ const ContextMenu = () => {
             window.removeEventListener("contextmenu", clickHandler)
             document.removeEventListener("contextMenu", contextHandler)
         }
-    }, [state.show]);
+    }, [state.show, contextHandler, clickHandler]);
 
     return state.show ? (
         <div 
@@ -125,7 +128,7 @@ const ContextMenuItem = ({ data }: ContextMenuItemProps): JSX.Element => {
 }
 
 export const openContext = (content: ContextRowData[], point: Point, interrupt: boolean = true, data: ContextMenuData = {}) => {
-    document.dispatchEvent(new CustomEvent('contextMenu', {
+    document.dispatchEvent(new CustomEvent<ContextMenuState>('contextMenu', {
         bubbles: true,
         detail: {
             show: true,
@@ -138,3 +141,6 @@ export const openContext = (content: ContextRowData[], point: Point, interrupt: 
 }
 
 export default ContextMenu;
+export type {
+    ContextMenuEvent
+}

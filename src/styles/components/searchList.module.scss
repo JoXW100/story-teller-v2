@@ -16,7 +16,7 @@
     grid-template-columns: $labelWidth minmax(0,1fr);
     z-index: 2;
     
-    & > label {
+    & > span {
         @include fontNormalBold;
         display: flex;
         align-items: center;

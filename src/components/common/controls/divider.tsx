@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useEffect, useRef } from 'react'
+import React, { MutableRefObject, useCallback, useEffect, useRef } from 'react'
 import styles from 'styles/components/divider.module.scss'
 
 type DividerProps = React.PropsWithRef<{
@@ -16,6 +16,15 @@ const Divider = ({ className, left, right, collapsed = false, defaultSlider = 0.
     const ref: MutableRefObject<HTMLDivElement> = useRef()
     const leftRef: MutableRefObject<HTMLDivElement> = useRef()
     const rightRef: MutableRefObject<HTMLDivElement> = useRef()
+
+    const setSlider = useCallback((value: number) => {
+        let clamp = `clamp(${minLeft + 10}px, ${value * 100}%, 100% - ${minRight + 10}px)`
+        if (ref.current && leftRef.current && rightRef.current) {
+            ref.current.style.left = clamp
+            leftRef.current.style.width = clamp
+            rightRef.current.style.left = clamp
+        }
+    }, [minLeft, minRight])
     
     const dragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault()
@@ -48,15 +57,6 @@ const Divider = ({ className, left, right, collapsed = false, defaultSlider = 0.
         let rect = ref.current?.parentElement.getBoundingClientRect();
         setSlider((touch.pageX - rect.left) / rect.width)
     }
-
-    const setSlider = (value: number) => {
-        let clamp = `clamp(${minLeft + 10}px, ${value * 100}%, 100% - ${minRight + 10}px)`
-        if (ref.current && leftRef.current && rightRef.current) {
-            ref.current.style.left = clamp
-            leftRef.current.style.width = clamp
-            rightRef.current.style.left = clamp
-        }
-    }
     
     useEffect(() => {
         if (!collapsed) {
@@ -67,7 +67,7 @@ const Divider = ({ className, left, right, collapsed = false, defaultSlider = 0.
             leftRef.current.style.width = "auto"
             rightRef.current.style.left = leftRef.current.offsetWidth + "px";
         }
-    }, [collapsed])
+    }, [collapsed, setSlider, defaultSlider])
     
     const name = className ? styles.main + ' ' + className : styles.main
 

@@ -23,10 +23,10 @@ interface IModifierCollection {
     getAttributeBonus: (attribute: Attribute) => number
 
     // Set
-    critRange: number
-    maxDEXBonus: number
-    spellAttribute: Attribute
-    multiAttack: number
+    readonly critRange: number
+    readonly maxDEXBonus: number
+    readonly spellAttribute: Attribute
+    readonly multiAttack: number
     getACBase: (values: Record<Attribute, number>) => number
     getSenseRange: (sense: Sense) => number
 

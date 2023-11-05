@@ -54,7 +54,7 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     padding: 1px 5px;
     overflow: hidden;
 
-    & > label {
+    & > span {
         @include fontNoLineBreak;
         width: 100%;
         text-align: left;
@@ -293,12 +293,6 @@ $sizeExtra: ($size + 1px) * 8 - 1px;
     font-weight: bold;
     padding: 1px;
     text-indent: 5px;
-
-    & > label {
-        @include fontNoLineBreak;
-        width: 100%;
-        text-align: left;
-    }
 }
 
 .editLinkItemHolder {

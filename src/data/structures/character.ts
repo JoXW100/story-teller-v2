@@ -1,4 +1,3 @@
-import Dice from "utils/data/dice";
 import CreatureData from "./creature";
 import ClassData from "./class";
 import { getOptionType } from "data/optionData";
@@ -9,7 +8,6 @@ import { CalculationMode } from "types/database/editor";
 import { ICharacterMetadata, ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId, ObjectIdText } from "types/database";
-import ModifierCollection from "./modifierCollection";
 import { RollType } from "types/dice";
 import DiceCollection from "utils/data/diceCollection";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
@@ -20,11 +18,14 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     public readonly characterSubClass: ClassData
     
     public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
-        let mods: IModifierCollection = new ModifierCollection([], storage)
+        let mods: IModifierCollection
         if (characterClass) {
-            mods = mods.join(characterClass.getModifiers(metadata?.level ?? 0, characterSubclass))
+            mods = modifiers.join(characterClass.getModifiers(metadata?.level ?? 0, characterSubclass))
+            console.log("useCharacterHandler.CharacterData", characterClass)
+        } else {
+            mods = modifiers
         }
-        super(metadata, mods.join(modifiers))
+        super(metadata, mods)
         this.storage = storage ?? {}
         this.characterClass = characterClass ?? new ClassData()
         this.characterSubClass = characterSubclass ?? new ClassData()
@@ -46,7 +47,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
             return this.characterClass.getHitDiceCollection(this.level)
         } else if (this.level > 0 && this.hitDice !== DiceType.None) {
             let collection = new DiceCollection(this.hitDiceValue)
-            collection.add(new Dice(this.hitDice), this.level - 1)
+            collection.add(this.hitDice, this.level - 1)
             return collection
         } else {
             return new DiceCollection()
@@ -80,7 +81,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                     mod: String(value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                     type: RollType.Health,
                     desc: "Max health"
-                } as RollOptions;
+                } satisfies RollOptions;
             default:
             case CalculationMode.Auto:
                 value = 0;
@@ -93,7 +94,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                         mod: String(this.hitDiceValue + mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                         type: RollType.Health,
                         desc: "Max health"
-                    } as RollOptions
+                    } satisfies RollOptions
                 } else {
                     return {
                         dice: String(this.hitDice),
@@ -101,7 +102,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
                         mod: String(mod * this.level + value + this.modifiers.getBonus(ModifierBonusTypeProperty.Health)),
                         type: RollType.Health,
                         desc: "Max health"
-                    } as RollOptions
+                    } satisfies RollOptions
                 }
         }
     }

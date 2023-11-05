@@ -173,7 +173,7 @@ const RollElement = ({ children, options }: ElementParams<RollOptions>): JSX.Ele
     const roll = (method: RollMethod) => {
         let collection = new DiceCollection(rollOptions.modValue, rollOptions.desc, rollOptions.details, rollOptions.type, rollOptions.critRangeValue);
         collection.add(rollOptions.diceValue, rollOptions.numValue);
-        dispatch.roll(collection, method, context?.file?.metadata?.name ?? null);
+        dispatch.roll(collection, context?.file?.metadata?.name ?? null, method);
     }
 
     const handleContext: React.MouseEventHandler<HTMLSpanElement> = (e) => {

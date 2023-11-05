@@ -3,7 +3,6 @@ import Elements from 'data/elements';
 import CreatureData from 'data/structures/creature';
 import { getOptionType } from 'data/optionData';
 import { SkillAdvantageBindingMap } from 'utils/calculations';
-import Localization from 'utils/localization';
 import { Skill } from 'types/database/dnd';
 import styles from 'styles/renderer.module.scss';
 
@@ -34,7 +33,7 @@ const ProficienciesPage = ({ data }: DataProps): JSX.Element => {
                                 className={styles.proficiencyMarker}
                                 data={data.proficienciesSkill[skill] ?? "none"}
                                 tooltips={getOptionType("proficiencyLevel").options[data.proficienciesSkill[skill]]}/>
-                            <label>{skills[skill]}</label>
+                            <div className={styles.label}>{skills[skill]}</div>
                             <div className={styles.iconHolder}>
                                 { SkillAdvantageBindingMap[skill] in advantages &&
                                     <span tooltips={advantages[SkillAdvantageBindingMap[skill]]}>

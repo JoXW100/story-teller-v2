@@ -48,7 +48,7 @@ $logoutButtonRadius: $pageHeaderHeight / 2 - 3px;
             grid-template-columns: $labelWidth*2 $iconNormalSize;
         }
     
-        & > label {
+        & > span {
             @include fontNoLineBreak;
             margin: auto;
         }

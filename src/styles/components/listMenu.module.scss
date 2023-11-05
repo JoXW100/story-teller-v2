@@ -63,7 +63,7 @@ $size: 20px;
     grid-template-columns: $labelWidth 1fr;
     max-height: $size;
 
-    & > label {
+    & > b {
         @include fontNoLineBreak;
         display: flex;
         align-items: center;
@@ -98,14 +98,6 @@ $size: 20px;
     margin-right: 2px;
     height: 100%;
     flex: 1;
-
-    & > label {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        flex: 1;
-        min-width: 0;
-    }
 
     & > button {
         max-width: $smallButtonWidth;

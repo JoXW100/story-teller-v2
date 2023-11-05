@@ -1,9 +1,8 @@
 import type { ObjectId as MongoDBObjectId } from 'mongodb'
-import { IFileData, IFolderData, IRootData } from './files'
+import type { IFileData, IFolderData, IRootData } from './files'
 
 export type UserId = string
 export type DateValue = number
-export type ErrorMessage = string
 export type ObjectId = MongoDBObjectId
 export type ObjectIdText = MongoDBObjectId | string
 
@@ -12,7 +11,7 @@ export type DBResponse<T> = {
     result: T
 } | {
     success: false
-    result: ErrorMessage
+    result: string
 }
 
 interface DBData {

@@ -43,16 +43,6 @@ const Renderer = ({ template }: RendererProps): JSX.Element => {
                     </button>
                 </div>
             </div>
-            <div className={styles.innerPage} style={{ zoom: `${zoom}%` }}>
-                { context.fetching
-                    ? <Loading className={styles.loading}/>
-                    : (
-                        <div className={styles.contentHolder}>
-                            {render}
-                        </div> 
-                    )
-                }
-            </div>
             <div className={styles.sidePanel}>
                 <div data={String(context.rendererSidePanel !== null)}>
                     <div className={styles.sidePanelHeader}>
@@ -63,6 +53,16 @@ const Renderer = ({ template }: RendererProps): JSX.Element => {
                     </div>
                     { context.rendererSidePanel?.content }
                 </div>
+            </div>
+            <div className={styles.innerPage} style={{ zoom: `${zoom}%` }}>
+                { context.fetching
+                    ? <Loading className={styles.loading}/>
+                    : (
+                        <div className={styles.contentHolder}>
+                            {render}
+                        </div> 
+                    )
+                }
             </div>
         </div>
     )

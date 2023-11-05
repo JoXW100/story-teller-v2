@@ -1,5 +1,5 @@
 import type { IFileContent, IFileMetadata, IFileStorage, FileType, IFileData } from "."
-import { ObjectId } from ".."
+import type { ObjectId } from ".."
 
 interface IEncounterContent extends IFileContent {
 }

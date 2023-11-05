@@ -13,14 +13,14 @@ interface IAbilityMetadata extends IFileMetadata, ICreatureActionData {
     range?: number
     rangeLong?: number
     rangeThrown?: number
-    // Modifiers
-    modifiers?: IModifier[]
+    // Charges
     charges?: number[]
     chargesReset?: RestType
+    // Modifiers
+    modifiers?: IModifier[]
 }
 
 interface IAbilityStorage extends IFileStorage {
-
 }
 
 abstract class AbilityFile implements IFileData {

@@ -12,7 +12,7 @@ import Logger from "utils/logger";
 interface CreateUploadContentState {
     name: string
     fileName: string
-    file: string
+    file: string | ArrayBuffer
 }
 
 function clearFileInput(input: HTMLInputElement){
@@ -43,7 +43,7 @@ const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
     const handleClick = () => {
         try {
             if (isResources) {
-                let json = decodeURIComponent(state.file)
+                let json = decodeURIComponent(String(state.file))
                 callback({ type: InputType.UploadResources, resources: JSON.parse(json) })
             } else {
                 callback({ type: InputType.Upload, data: {
@@ -68,7 +68,7 @@ const CreateUploadContent = ({ callback }: CreateContentProps): JSX.Element => {
             const reader = new FileReader()
             reader.addEventListener('load', () => {
                 let name = file.name.split('.')?.[0] ?? ""
-                setState({ ...state, name: name, fileName: file.name, file: reader.result as string })
+                setState({ ...state, name: name, fileName: file.name, file: reader.result })
             })
             if (file.name.endsWith(".localResources")) {
                 reader.readAsText(file)

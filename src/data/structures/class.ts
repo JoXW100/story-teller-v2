@@ -4,11 +4,12 @@ import ModifierData from "./modifier";
 import ModifierCollection from "./modifierCollection";
 import { getOptionType } from "data/optionData";
 import DiceCollection from "utils/data/diceCollection";
-import Dice from "utils/data/dice";
 import { DiceType, OptionalAttribute } from "types/database/dnd";
 import { ICharacterStorage } from "types/database/files/character";
 import { IClassMetadata, IClassMetadataProperties } from "types/database/files/class";
 import { IModifierCollection } from "types/database/files/modifierCollection";
+import { IModifier } from "types/database/files/modifier";
+import { asNumber } from "utils/helpers";
 
 class ClassData extends FileData<IClassMetadata> implements Required<IClassMetadataProperties>, IClassMetadata {
     public readonly storage: ICharacterStorage
@@ -29,7 +30,11 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
     }
 
     public get hitDice(): DiceType {
-        return this.metadata.hitDice ?? getOptionType("dice").default
+        if (this.hasLeveledHitDice) {
+            return this.leveledHitDice[0] ?? getOptionType("dice").default
+        } else {
+            return this.metadata.hitDice ?? getOptionType("dice").default
+        }
     }
 
     public get hitDiceValue(): number {
@@ -43,16 +48,16 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
 
     public getHitDiceCollection(level: number): DiceCollection {
         if (level > 0 && this.hasLeveledHitDice) {
-            let mod = parseInt(String(this.leveledHitDice[0]))
+            let mod = asNumber(this.leveledHitDice[0])
             mod = isNaN(mod) ? 0 : mod
             let collection = new DiceCollection(mod)
             for (let l = 1; l < level; l++) {
-                collection.add(new Dice(this.leveledHitDice[l]))
+                collection.add(this.leveledHitDice[l])
             }
             return collection
         } else if (level > 0 && this.hitDice !== DiceType.None) {
             let collection = new DiceCollection(this.hitDiceValue)
-            collection.add(new Dice(this.hitDice), level - 1)
+            collection.add(this.hitDice, level - 1)
             return collection
         } else {
             return new DiceCollection()
@@ -101,15 +106,20 @@ class ClassData extends FileData<IClassMetadata> implements Required<IClassMetad
     }
 
     public getModifiers(level: number, subclass?: ClassData): IModifierCollection {
-        let collection: IModifierCollection = null
-        if (level >= this.subclassLevel) {
-            collection = subclass?.getModifiers(level);
-        }
-        let modifiers = []
+        let modifierData: ModifierData[] = []
         for (let index = 1; index <= Math.min(20, level); index++) {
-            modifiers = [...modifiers, ...(this.metadata[index] ?? [])].map((modifier) => new ModifierData(modifier, `${this.id}-${index}`))
+            let modifiers: IModifier[] = this.metadata[index] ?? []
+            for (const modifier of modifiers) {
+                let data = new ModifierData(modifier, `${this.id}-${index}`)
+                modifierData.push(data)
+            }
         }
-        return new ModifierCollection(modifiers, this.storage).join(collection)
+        let collection = new ModifierCollection(modifierData, this.storage)
+        if (level >= this.subclassLevel && subclass) {
+            return collection.join(subclass.getModifiers(level));
+        } else {
+            return collection
+        }
     }
 }
 

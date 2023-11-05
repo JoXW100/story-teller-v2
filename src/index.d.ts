@@ -25,7 +25,7 @@ declare global {
     }
 }
 
-window.dragData = window.dragData || {} as DragData
+window.dragData = window.dragData || {}
 
 export type {
     DragData

@@ -1,16 +1,17 @@
 
 import Dice from 'utils/data/dice';
 import { DiceResult, RollMethod, RollResult, RollType, RollValue } from 'types/dice';
+import { DiceType } from 'types/database/dnd';
 
 
 class DiceCollection {
-    private readonly collection: Record<string, number>;
+    protected readonly collection: Record<string, number>;
     public readonly modifier: number;
     public readonly description: string;
     public readonly details: string;
     public readonly type: RollType;
-    public readonly canCritAndFail: boolean
     public readonly critRange: number
+    public readonly canCritAndFail: boolean
 
     constructor(modifier: number | null = 0, description: string = 'Rolled', details: string = null, type: RollType = RollType.General, critRange: number = 20) {
         this.collection = {};
@@ -18,14 +19,15 @@ class DiceCollection {
         this.description = description;
         this.details = details;
         this.type = type;
-        this.canCritAndFail = type === RollType.Attack || type === RollType.Save
         this.critRange = critRange
+        this.canCritAndFail = this.type === RollType.Attack || type === RollType.Save
     }
 
     /** Adds a number of dice to the collection */
-    public add(dice: Dice, num: number = 1) {
-        let value = this.collection[dice.num] ?? 0;
-        this.collection[dice.num] = value + num;
+    public add(dice: Dice | DiceType, num: number = 1) {
+        let key = dice instanceof Dice ? dice.num : dice
+        let value = this.collection[key] ?? 0;
+        this.collection[key] = value + num;
     }
 
     /** Rolls the dice in the collection */
@@ -93,9 +95,19 @@ class DiceCollection {
         return Object.keys(this.collection).reduce((prev, key) => prev + Dice.average(key) * this.collection[key], this.modifier)
     }
 
+    public get text(): string {
+        let diceText = this.map((value) => `${value.num}${value.dice.text}`).join(' + ')
+        return this.modifier === 0 ? diceText : `${diceText} ${this.modifier < 0 ? '-' : '+'} ${Math.abs(this.modifier)}`
+    }
+
+    public get length(): number {
+        return Object.keys(this.collection).reduce((sum, key) => sum + (this.collection[key] ?? 0), 0)
+    }
+
     /** Gets the number of a type of dice in the collection */
-    getNum(dice: Dice) {
-        return this.collection[dice.num] ?? 0;
+    getNum(dice: Dice | DiceType) {
+        let key = dice instanceof Dice ? dice.num : dice
+        return this.collection[key] ?? 0;
     }
 
     /** Iterates over the dice in the collection */

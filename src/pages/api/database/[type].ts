@@ -3,6 +3,7 @@ import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from "next";
 import { FileType, IFileData, IFileMetadata, IFolderData } from "types/database/files";
 import Logger from "utils/logger";
+import { isEnum } from "utils/helpers";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<void> => {
     const { user } = getSession(req, res);
@@ -37,15 +38,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>): Promise<
                         return res.status(200).json(await Database.files.get(userId, params.fileId as string));
                     
                     case 'getMetadata':
-                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        var types = (Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') ?? [])
+                            .reduce<FileType[]>((prev, v) => isEnum(v, FileType) ? [...prev, v] : prev, [])
                         return res.status(200).json(await Database.files.getMetadata(userId, params.fileId as string, types));
     
                     case 'getManyMetadata':
-                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        var types = (Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') ?? [])
+                            .reduce<FileType[]>((prev, v) => isEnum(v, FileType) ? [...prev, v] : prev, [])
                         return res.status(200).json(await Database.files.getManyMetadata(userId, params.fileIds as string, types));
     
                     case 'getManyData':
-                        var types: FileType[] = Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') as any ?? []
+                        var types = (Array.isArray(params.allowedTypes) ? params.allowedTypes : params.allowedTypes?.split(',') ?? [])
+                            .reduce<FileType[]>((prev, v) => isEnum(v, FileType) ? [...prev, v] : prev, [])
                         return res.status(200).json(await Database.files.getManyData(userId, params.fileIds as string, types));
     
                     case 'getFileStructure':

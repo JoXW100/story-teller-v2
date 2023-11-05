@@ -1,4 +1,4 @@
-import { UsedFileTypes } from "./database/files"
+import { FileType } from "./database/files"
 
 interface Palette {
     name: string
@@ -48,7 +48,7 @@ interface Palette {
         "second-border": string
         "second-shadow": string
         "second-icons": string
-    } & Record<UsedFileTypes, string>
+    } & Partial<Record<FileType, string>>
 }
 
 export type {

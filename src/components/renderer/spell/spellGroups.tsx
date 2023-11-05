@@ -25,7 +25,7 @@ const SpellGroups = ({ spellIds, spellSlots, expendedSlots, stats, setExpendedSl
         let categories: Record<number, JSX.Element[]> = []
         spells.forEach((file, index) => {
             if (file && file.type === FileType.Spell) {
-                let level = file.metadata?.level as number ?? 1
+                let level = file.metadata?.level ?? 1
                 categories[level] = [
                     ...categories[level] ?? [], 
                     <SpellToggleRenderer key={index} metadata={file.metadata} stats={stats}/>
