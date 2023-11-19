@@ -26,7 +26,7 @@ const SimpleCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.Elem
                 </Elements.Block>
                 <Elements.Line/>
                 <Elements.Block>
-                    <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
+                    <div><Elements.Bold>Race </Elements.Bold>{character.raceName}</div>
                     <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
                     <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
                     <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>

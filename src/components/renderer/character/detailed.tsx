@@ -125,7 +125,7 @@ const DetailedCharacterRenderer = ({ file }: CharacterFileRendererProps): JSX.El
                         <Elements.Image options={{href: character.portrait}}/>
                         <div className={styles.characterDetailsPanel}>
                             <Elements.Header2>{character.name}</Elements.Header2>
-                            <div className={styles.noLineBreak}>{`${character.genderText} ${character.raceText} ${character.className}`}</div>
+                            <div className={styles.noLineBreak}>{`${character.genderText} ${character.raceName} ${character.className}`}</div>
                             <div>{`Level ${character.level}`}</div>
                         </div>
                         <div className={styles.restPanel}>

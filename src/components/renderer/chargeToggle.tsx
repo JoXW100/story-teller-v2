@@ -29,7 +29,7 @@ export const ChargeToggle = ({ expended, fixed, setExpended }: ChargeProps): JSX
     const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
         e.stopPropagation()
         if (!fixed) {
-            setExpended(!expended)
+            setExpended && setExpended(!expended)
         }
     }
 
@@ -46,7 +46,7 @@ const ChargesRenderer = ({ charges, expended = 0, fixed = 0, setExpended }: Char
     const available = useMemo(() => Math.max(charges - expended - fixed, 0), [charges, expended, fixed])
 
     const handleSetValue = (value: number) => {
-        setExpended(Math.max(0, Math.min(charges - value - fixed, charges - fixed)))
+        setExpended && setExpended(Math.max(0, Math.min(charges - value - fixed, charges - fixed)))
     }
 
     const validate = (value: number): boolean => {

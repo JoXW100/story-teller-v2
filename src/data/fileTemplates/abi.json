@@ -132,7 +132,7 @@
                     },
                     {
                         "type": "group",
-                        "params": { "label": "Modifiers" },
+                        "params": { "label": "Modifiers", "open": true },
                         "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "feature"] }],
                         "content": [
                             {

@@ -87,6 +87,7 @@ export enum FileType {
     Document = "doc",
     Encounter = "enc",
     Item = "ite",
+    Race = "rce",
     Spell = "spe",
 }
 

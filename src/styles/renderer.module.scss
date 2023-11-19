@@ -35,7 +35,9 @@
     & > div {
         position: absolute;
         display: grid;
+        gap: 3px;
         justify-items: center;
+        
         & > span {
             @include colorBackground(second);
             @include fontNormal;

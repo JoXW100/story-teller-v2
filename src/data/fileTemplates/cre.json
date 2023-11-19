@@ -16,7 +16,7 @@
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Size", "key": "size", "type": "creatureSize", "default": "medium" }
+                        "params": { "label": "Size", "key": "size", "type": "size", "default": "medium" }
                     },
                     { 
                         "type": "enum", 

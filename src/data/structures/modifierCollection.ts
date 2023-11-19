@@ -1,6 +1,6 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
@@ -33,6 +33,7 @@ interface ModifierResultData {
 
     critRange?: number
     senses?: Partial<Record<Sense, number>>
+    size?: SizeType
     acBase?: {
         type: ArmorClassBase
         value?: number
@@ -320,6 +321,9 @@ class ModifierCollection implements IModifierCollection {
             case ModifierSetTypeProperty.SpellAttribute:
                 result.spellAttribute = mod.attribute
                 break;
+            case ModifierSetTypeProperty.Size:
+                result.size = mod.size
+                break;
             case ModifierSetTypeProperty.ACBase:
                 result.acBase = [...result.acBase ?? [], { type: mod.acBase, attribute: mod.attribute, value: mod.value }]
             default: break;
@@ -352,6 +356,9 @@ class ModifierCollection implements IModifierCollection {
     }
     public get spellAttribute(): Attribute {
         return this.addData.spellAttribute ?? null
+    }
+    public get size(): SizeType {
+        return this.addData.size ?? null
     }
     public get multiAttack(): number {
         return this.addData.multiAttack ?? null

@@ -1,5 +1,5 @@
 import { ObjectIdText } from "types/database";
-import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { ICharacterStorage } from "types/database/files/character";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 import { IModifierCollection, ChoiceData } from "types/database/files/modifierCollection";
@@ -66,6 +66,10 @@ class CombinedModifierCollection implements IModifierCollection {
 
     public get spellAttribute(): Attribute {
         return this.c1.spellAttribute ?? this.c2.spellAttribute 
+    }
+
+    public get size(): SizeType {
+        return this.c1.size ?? this.c2.size 
     }
 
     public get multiAttack(): number {

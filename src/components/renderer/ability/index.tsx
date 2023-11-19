@@ -27,9 +27,9 @@ type AbilityLinkRendererProps = React.PropsWithRef<{
 
 type AbilityToggleRendererProps = React.PropsWithRef<{
     metadata: IAbilityMetadata & IParserMetadata
-    stats: ICreatureStats
-    expendedCharges: number
-    setExpendedCharges: (value: number) => void
+    stats?: ICreatureStats
+    expendedCharges?: number
+    setExpendedCharges?: (value: number) => void
     open?: boolean
 }>
 
@@ -157,7 +157,7 @@ const AbilityFileRenderer = ({ file, stats = {} }: AbilityFileRendererProps): JS
     )
 }
 
-export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges, setExpendedCharges, open = false }: AbilityToggleRendererProps): JSX.Element => {
+export const AbilityToggleRenderer = ({ metadata, stats = {}, expendedCharges = 0, setExpendedCharges = null, open = false }: AbilityToggleRendererProps): JSX.Element => {
     const [isOpen, setOpen] = useState(open);
     const data = (metadata?.description?.length ?? 0) > 0
         ? isOpen ? "open" : "closed"

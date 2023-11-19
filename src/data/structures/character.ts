@@ -1,15 +1,16 @@
 import CreatureData from "./creature";
 import ClassData from "./class";
+import RaceData from "./race";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
 import { asEnum } from "utils/helpers";
+import DiceCollection from "utils/data/diceCollection";
 import { Attribute, DiceType, Gender, OptionalAttribute } from "types/database/dnd";
 import { CalculationMode } from "types/database/editor";
 import { ICharacterMetadata, ICharacterStorage } from "types/database/files/character";
 import { IModifierCollection } from "types/database/files/modifierCollection";
 import { ObjectId, ObjectIdText } from "types/database";
 import { RollType } from "types/dice";
-import DiceCollection from "utils/data/diceCollection";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 
 class CharacterData extends CreatureData<ICharacterMetadata> implements Required<ICharacterMetadata> {
@@ -17,15 +18,12 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     public readonly characterClass: ClassData
     public readonly characterSubClass: ClassData
     
-    public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, modifiers?: IModifierCollection, characterClass?: ClassData, characterSubclass?: ClassData) {
-        let mods: IModifierCollection
+    public constructor(metadata: ICharacterMetadata, storage: ICharacterStorage, modifiers?: IModifierCollection, race?: RaceData, characterClass?: ClassData, characterSubclass?: ClassData) {
+        let mods: IModifierCollection = modifiers
         if (characterClass) {
-            mods = modifiers.join(characterClass.getModifiers(metadata?.level ?? 0, characterSubclass))
-            console.log("useCharacterHandler.CharacterData", characterClass)
-        } else {
-            mods = modifiers
+            mods = characterClass.getModifiers(metadata?.level ?? 0, characterSubclass).join(mods)
         }
-        super(metadata, mods)
+        super(metadata, mods, race)
         this.storage = storage ?? {}
         this.characterClass = characterClass ?? new ClassData()
         this.characterSubClass = characterSubclass ?? new ClassData()
@@ -152,6 +150,7 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     public get gender(): Gender {
         return this.metadata.gender ?? getOptionType("gender").default
     }
+
     public get genderText(): string {
         return  getOptionType("gender").options[this.gender]
     }
@@ -166,10 +165,6 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
 
     public get weight(): string {
         return this.metadata.weight ?? ""
-    }
-
-    public get raceText(): string {
-        return this.metadata.raceText ?? ""
     }
 
     public get occupation(): string {
@@ -193,6 +188,17 @@ class CharacterData extends CreatureData<ICharacterMetadata> implements Required
     public get notes(): string {
         return this.metadata.notes ?? ""
     }
+
+    // Race
+    
+    public get raceFile(): ObjectId {
+        return this.metadata.raceFile ?? null
+    }
+
+    public get raceName(): string {
+        return this.race?.name ?? this.metadata.raceName ?? ""
+    }
+
 
     // Class
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import AbilityData from "data/structures/ability"
 import ClassData from "data/structures/class"
 import ItemData from "data/structures/item"
+import RaceData from "data/structures/race"
 import ModifierCollection from "data/structures/modifierCollection"
 import CharacterData from "data/structures/character"
 import CreatureData from "data/structures/creature"
@@ -53,10 +54,21 @@ const getCreatureModifiers = async (ids: ObjectIdText[], storage: IFileStorage, 
         modifierCollection = new ModifierCollection(modifiers, storage)
         prevLength = ids.length
         ids = CreatureData.abilities(null, modifierCollection)
-        console.log("useCharacterHandler.getCreatureModifiers", ids)
     }
 
     return [modifierCollection ?? new ModifierCollection([], storage), abilities]
+}
+
+const getRaceData = async (id: ObjectId, storage: ICharacterStorage): Promise<RaceData> => {
+    if (id) {
+        const response = await Communication.getMetadata(id, [FileType.Race])
+        if (response.success) {
+            return new RaceData(response.result.metadata, storage, String(id))
+        } else {
+            Logger.warn("getClassData.failure", response.result)
+        }
+    }
+    return null
 }
 
 const getClassData = async (id: ObjectId, storage: ICharacterStorage): Promise<ClassData> => {
@@ -93,6 +105,7 @@ export const getCreatureData = async (data: FileDataQueryResult): Promise<[Creat
     if (data.type === FileType.Character) {
         const cData = data as FileDataQueryResult<CharacterFile>
 
+        let race = await getRaceData(cData.metadata?.raceFile, cData.storage)
         let c = await getClassData(cData.metadata?.classFile, cData.storage)
         let sc: ClassData = null
         if (c?.subclasses?.includes(cData.storage?.classData?.$subclass)) {
@@ -102,10 +115,10 @@ export const getCreatureData = async (data: FileDataQueryResult): Promise<[Creat
         let items = await getItemsData(cData.storage)
         let itemModifierCollection = new ModifierCollection(Object.values(items).flatMap((item) => item.modifiers), cData.storage)
 
-        const cha = new CharacterData(cData.metadata, cData.storage, itemModifierCollection, c, sc)
+        const cha = new CharacterData(cData.metadata, cData.storage, itemModifierCollection, race, c, sc)
         const [modifierCollection, abilities] = await getCreatureModifiers(cha.abilities, cData.storage)
         const collection = modifierCollection.join(itemModifierCollection)
-        return [new CharacterData(cData.metadata, cData.storage, collection, c, sc), abilities, items]
+        return [new CharacterData(cData.metadata, cData.storage, collection, race, c, sc), abilities, items]
     } else {
         const cData = data as FileDataQueryResult<CreatureFile>
         const cre = new CreatureData(cData.metadata)

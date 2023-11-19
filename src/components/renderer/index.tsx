@@ -6,10 +6,11 @@ import SpellRenderer from './spell';
 import DocumentRenderer from './document';
 import EncounterRenderer from './encounter';
 import ItemRenderer from './item';
+import RaceRenderer from './race';
 import { ParseError } from 'utils/parser';
 import { asEnum } from 'utils/helpers';
 import { RendererObject } from 'types/database/editor';
-import { FileType, File, IFileData, RenderedFileTypes, IFile } from 'types/database/files';
+import { FileType, IFileData, RenderedFileTypes, IFile } from 'types/database/files';
 import { FileRendererTemplate } from 'types/templates';
 import styles from 'styles/renderer.module.scss';
 
@@ -18,19 +19,15 @@ const Renderers: Record<RenderedFileTypes, RendererObject> = {
     [FileType.Character]: CharacterRenderer,
     [FileType.Class]: ClassRenderer,
     [FileType.Creature]: CreatureRenderer,
-    [FileType.Spell]: SpellRenderer,
     [FileType.Document]: DocumentRenderer,
     [FileType.Encounter]: EncounterRenderer,
-    [FileType.Item]: ItemRenderer
-}
-
-const isValid = <T extends IFileData>(file: IFile, type: T): file is File<T> => {
-    return file.type === type.type;
+    [FileType.Item]: ItemRenderer,
+    [FileType.Race]: RaceRenderer,
+    [FileType.Spell]: SpellRenderer,
 }
 
 export const useRenderer = (template: FileRendererTemplate, file: IFile): JSX.Element => {
     const Renderer: RendererObject<IFileData> = Renderers[asEnum(template?.type, FileType)] ?? DocumentRenderer
-    
     try {
         return file?.id && <Renderer.fileRenderer file={file}/>
     } catch (error: unknown) {

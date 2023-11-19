@@ -371,7 +371,7 @@ class DebugInterface
                 age: addIfExists('$metadata.age'),
                 height: addIfExists('$metadata.height'),
                 weight: addIfExists('$metadata.weight'),
-                raceText: addIfExists('$metadata.raceText'),
+                raceName: addIfExists('$metadata.raceName'),
                 occupation: addIfExists('$metadata.occupation'),
                 appearance: addIfExists('$metadata.appearance'),
                 history: addIfExists('$metadata.history'),

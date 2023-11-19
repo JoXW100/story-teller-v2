@@ -1,7 +1,7 @@
 import type { FileType } from "."
 import type { ObjectId, ObjectIdText } from ".."
 import type { IChoice, ModifierBonusTypeProperty } from "./modifier"
-import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import type { AdvantageBinding, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd"
 
 export type EnumChoiceData = { type: "enum", label: string, enum: string, options: string[], num: number }
 export type TextChoiceData = { type: "text", label: string, text: string, options: string[], num: number }
@@ -26,6 +26,7 @@ interface IModifierCollection {
     readonly critRange: number
     readonly maxDEXBonus: number
     readonly spellAttribute: Attribute
+    readonly size: SizeType 
     readonly multiAttack: number
     getACBase: (values: Record<Attribute, number>) => number
     getSenseRange: (sense: Sense) => number

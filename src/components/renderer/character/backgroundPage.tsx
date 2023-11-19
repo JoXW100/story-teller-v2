@@ -14,7 +14,7 @@ const CharacterBackgroundPage = ({ character, appearance, description, history, 
         <>
             {`${character.sizeText} ${character.typeText}, ${character.alignmentText}`}
             <Elements.Line/>
-            <div><Elements.Bold>Race </Elements.Bold>{character.raceText}</div>
+            <div><Elements.Bold>Race </Elements.Bold>{character.raceName}</div>
             <div><Elements.Bold>Gender </Elements.Bold>{character.genderText}</div>
             <div><Elements.Bold>Age </Elements.Bold>{character.age}</div>
             <div><Elements.Bold>Height </Elements.Bold>{character.height}</div>

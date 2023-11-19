@@ -20,7 +20,7 @@
                     },
                     { 
                         "type": "enum", 
-                        "params": { "label": "Size", "key": "size", "type": "creatureSize", "default": "medium" }
+                        "params": { "label": "Size", "key": "size", "type": "size", "default": "medium" }
                     },
                     { 
                         "type": "enum", 
@@ -44,8 +44,14 @@
                         "params": { "label": "Details", "open": true },
                         "content": [
                             { 
+                                "type": "linkInput", 
+                                "default": null,
+                                "params": { "label": "Race", "key": "raceFile", "placeholder": "Race id...", "fileTypes": ["rce"] }
+                            },
+                            { 
                                 "type": "text", 
-                                "params": { "label": "Race", "key": "raceText" }
+                                "params": { "label": "Race Name", "key": "raceName" },
+                                "conditions": [{ "type": "equals", "value": [{ "type": "metadata", "value": "raceFile" }, null] }]
                             },
                             { 
                                 "type": "enum", 

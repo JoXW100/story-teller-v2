@@ -11,7 +11,7 @@ interface IOptionType<T extends Enum> {
 }
 
 const OptionTypes = {
-    "creatureSize": {
+    "size": {
         enum: SizeType,
         default: SizeType.Medium,
         options: {
@@ -575,12 +575,13 @@ const OptionTypes = {
         enum: ModifierSetTypeProperty,
         default: ModifierSetTypeProperty.CritRange,
         options: {
-            [ModifierSetTypeProperty.CritRange]: "Critical Range",
             [ModifierSetTypeProperty.ACBase]: "AC Base",
-            [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
+            [ModifierSetTypeProperty.CritRange]: "Critical Range",
             [ModifierSetTypeProperty.MaxDexBonus]: "Max Dexterity Bonus",
+            [ModifierSetTypeProperty.MultiAttack]: "Multi Attack",
+            [ModifierSetTypeProperty.SpellAttribute]: "Spell Attribute",
             [ModifierSetTypeProperty.Sense]: "Sense",
-            [ModifierSetTypeProperty.MultiAttack]: "Multi Attack"
+            [ModifierSetTypeProperty.Size]: "Size",
         }
     } satisfies IOptionType<typeof ModifierSetTypeProperty>,
     "restType": {

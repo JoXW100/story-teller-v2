@@ -61,6 +61,7 @@ export const FileIcons: Record<FileType, React.FunctionComponent<React.SVGAttrib
     [FileType.Document]: DocumentIcon,
     [FileType.Encounter]: CrossedSwords,
     [FileType.Item]: ShieldIcon,
+    [FileType.Race]: CharacterIcon,
     [FileType.Spell]: SpellIcon,
     [FileType.Folder]: FolderIcon,
     [FileType.LocalFolder]: FolderIcon,

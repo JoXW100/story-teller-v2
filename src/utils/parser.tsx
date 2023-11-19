@@ -65,7 +65,7 @@ abstract class Parser
         let withCalc = withVars.replace(this.matchCalcExpr, (...x) => {
             let body = x[1]
             let result = this.parseCalc(body, metadata.$values)
-            return isNaN(result) ? '' : String(result)
+            return isNaN(result) ? 'X' : String(result)
         });
 
         splits = withCalc.split(this.matchBodyExpr);

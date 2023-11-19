@@ -145,6 +145,7 @@ const fileToContent = (data: Record<string, any>, metadata: IFileMetadata = null
         case FileType.Creature:
         case FileType.Encounter:
         case FileType.Item:
+        case FileType.Race:
         case FileType.Spell:
             return {
                 type: type,

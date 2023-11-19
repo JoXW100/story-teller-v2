@@ -1,6 +1,6 @@
 import CombinedModifierCollection from "./combinedModifierCollection";
 import { ObjectId } from "types/database";
-import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { FileType } from "types/database/files";
 import { ICharacterStorage } from "types/database/files/character";
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType } from "types/database/files/modifier";
@@ -163,6 +163,14 @@ class DynamicModifierCollection implements IModifierCollection {
         return this.modifiers.reduce<Attribute>((prev, modifier) => 
             modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.SpellAttribute && modifier.attribute !== null
                 ? modifier.attribute 
+                : prev
+        , null)
+    }
+
+    public get size(): SizeType {
+        return this.modifiers.reduce<SizeType>((prev, modifier) => 
+            modifier.type === ModifierType.Set && modifier.setProperty === ModifierSetTypeProperty.Size && modifier.size !== null
+                ? modifier.size 
                 : prev
         , null)
     }

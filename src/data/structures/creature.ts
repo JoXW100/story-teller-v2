@@ -1,5 +1,6 @@
 import CreatureStats from "./creatureStats";
 import FileData from "./file";
+import RaceData from "./race";
 import ModifierCollectionData from "./modifierCollection";
 import { getOptionType } from "data/optionData";
 import { RollOptions } from "data/elements/roll";
@@ -17,10 +18,16 @@ import { RollType } from "types/dice";
 import { ModifierBonusTypeProperty } from "types/database/files/modifier";
 
 class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends FileData<T> implements Required<ICreatureMetadata> {
+    public readonly race: RaceData
     public readonly modifiers: IModifierCollection
-    public constructor(metadata: T, modifiers?: IModifierCollection) {
+    public constructor(metadata: T, modifiers?: IModifierCollection, race?: RaceData) {
         super(metadata)
-        this.modifiers = modifiers ?? new ModifierCollectionData([], {});
+        let mods: IModifierCollection = modifiers
+        if (race) {
+            mods = race.getModifiers().join(mods)
+        }
+        this.race = race ?? null
+        this.modifiers = mods ?? new ModifierCollectionData([], {});
     }
 
     public getStats(): CreatureStats {
@@ -128,7 +135,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get type(): CreatureType {
-        return this.metadata.type ?? getOptionType("creatureType").default
+        return this.metadata.type ?? this.race?.type ?? getOptionType("creatureType").default
     }
 
     public get typeText(): string {
@@ -137,11 +144,11 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
 
 
     public get size(): SizeType {
-        return this.metadata.size ?? getOptionType("creatureSize").default
+        return this.modifiers.size ?? this.metadata.size ?? this.race?.size ?? getOptionType("size").default
     }
 
     public get sizeText(): string {
-        return getOptionType("creatureSize").options[this.size]
+        return getOptionType("size").options[this.size]
     }
 
     public get alignment(): Alignment {
@@ -329,36 +336,64 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public get resistances(): string {
-        let splits = (this.metadata.resistances ?? "").split(/ *, */)
+        let splits = [...(this.metadata.resistances ?? "").split(/ *, */), ...(this.race?.resistances ?? "").split(/ *, */)]
         return this.modifiers.modifyResistances(splits).join(', ')
     }
 
     public get advantages(): Partial<Record<AdvantageBinding, string>> {
+        let map: Partial<Record<AdvantageBinding, string>> = {}
+        let advantages = this.metadata.advantages ?? {};
+        for (const binding of Object.values(AdvantageBinding)) {
+            let binds: string[] = []
+            if (advantages[binding]) {
+                binds.push(advantages[binding])
+            }
+            if (this.race?.advantages?.[binding]) {
+                binds.push(this.race.advantages[binding])
+            }
+            if (binds.length > 0) {
+                map[binding] = binds.join(', ')
+            }
+        }
         return this.modifiers.modifyAdvantages(this.metadata.advantages ?? {})
     }
 
     public get disadvantages(): Partial<Record<AdvantageBinding, string>> {
+        let map: Partial<Record<AdvantageBinding, string>> = {}
+        let disadvantages = this.metadata.disadvantages ?? {};
+        for (const binding of Object.values(AdvantageBinding)) {
+            let binds: string[] = []
+            if (disadvantages[binding]) {
+                binds.push(disadvantages[binding])
+            }
+            if (this.race?.disadvantages?.[binding]) {
+                binds.push(this.race.disadvantages[binding])
+            }
+            if (binds.length > 0) {
+                map[binding] = binds.join(', ')
+            }
+        }
         return this.modifiers.modifyDisadvantages(this.metadata.disadvantages ?? {})
     }
 
     public get vulnerabilities(): string {
-        let splits = (this.metadata.vulnerabilities ?? "").split(/ *, */)
+        let splits = [...(this.metadata.vulnerabilities ?? "").split(/ *, */), ...(this.race?.vulnerabilities ?? "").split(/ *, */)]
         return this.modifiers.modifyVulnerabilities(splits).join(', ')
     }
 
     public get dmgImmunities(): string {
-        let splits = (this.metadata.dmgImmunities ?? "").split(/ *, */)
+        let splits = [...(this.metadata.dmgImmunities ?? "").split(/ *, */), ...(this.race?.dmgImmunities ?? "").split(/ *, */)]
         return this.modifiers.modifyDMGImmunities(splits).join(', ')
     }
 
     public get conImmunities(): string {
-        let splits = (this.metadata.conImmunities ?? "").split(/ *, */)
+        let splits = [...(this.metadata.conImmunities ?? "").split(/ *, */), ...(this.race?.conImmunities ?? "").split(/ *, */)]
         return this.modifiers.modifyCONImmunities(splits).join(', ')
     }
 
     public get speed(): Record<MovementType, number> {
         return Object.values(MovementType).reduce<Record<MovementType, number>>((prev, type) => (
-            { ...prev, [type]: (this.metadata.speed?.[type] ?? 0) + this.modifiers.getMovementBonus(type) }
+            { ...prev, [type]: this.getSpeed(type) }
         ), {} as Record<MovementType, number>)
     }
 
@@ -368,6 +403,10 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
         return Object.keys(speed).reduce<string[]>((prev, type: MovementType) => (
             speed[type] > 0 ? [...prev, `${options[type]} ${speed[type]}ft`] : prev
         ), []).join(', ')
+    }
+
+    public getSpeed(type: MovementType) {
+        return (this.metadata.speed?.[type] ?? this.race?.speed?.[type] ?? 0) + this.modifiers.getMovementBonus(type)
     }
 
     public get senses(): Record<Sense, number> {
@@ -385,7 +424,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
 
     public getSenseRange(sense: Sense) {
-        return Math.max(this.modifiers.getSenseRange(sense), this.metadata.senses?.[sense] ?? 0)
+        return Math.max(this.modifiers.getSenseRange(sense), this.metadata.senses?.[sense] ?? 0, this.race?.senses?.[sense] ?? 0)
     }
 
     // Attributes
@@ -508,7 +547,7 @@ class CreatureData<T extends ICreatureMetadata = ICreatureMetadata> extends File
     }
     
     public get proficienciesLanguage(): Language[] {
-        return this.modifiers.modifyProficienciesLanguage(this.metadata.proficienciesLanguage ?? [])
+        return this.modifiers.modifyProficienciesLanguage([...(this.metadata.proficienciesLanguage ?? []), ...(this.race?.proficienciesLanguage ?? [])])
     }
 
     public get proficienciesLanguageText(): string {

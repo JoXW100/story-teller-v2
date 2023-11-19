@@ -336,6 +336,15 @@
                     "params": { "label": "Sense", "key": "sense", "default": "darkVision", "type": "sense" }
                 },
                 
+                { 
+                    "type": "enum", 
+                    "conditions": [
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "type" }, "set"] },
+                        { "type": "equals", "value": [{ "type": "metadata", "value": "setProperty" }, "size"] }
+                    ],
+                    "params": { "label": "Sense", "key": "size", "default": "medium", "type": "size" }
+                },
+                
                 {
                     "type": "number", 
                     "conditions": [

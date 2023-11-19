@@ -19,6 +19,7 @@
         "enc": "#0033ff",
         "spe": "#875dff",
         "ite": "#3366ff",
+        "rce": "#3366ff",
 
         "syntax-function-name": "#3366ff",
         "syntax-function-option": "#3e98ff",

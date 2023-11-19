@@ -1,5 +1,5 @@
 import { getOptionType } from "data/optionData"
-import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, Skill, Tool, WeaponType } from "types/database/dnd"
+import { AdvantageBinding, ArmorClassBase, ArmorType, Attribute, Language, MovementType, ProficiencyLevel, ProficiencyType, Sense, SizeType, Skill, Tool, WeaponType } from "types/database/dnd"
 import { IModifier, ModifierAddRemoveTypeProperty, ModifierBonusTypeProperty, SelectType, ModifierSetTypeProperty, ModifierType, ModifierCondition } from "types/database/files/modifier";
 import { ObjectId } from "types/database";
 import ChoiceData from "./choice";
@@ -153,6 +153,10 @@ class ModifierData implements Required<IModifier>  {
 
     public get skills(): Skill[] {
         return this.metadata.skills ?? []
+    }
+
+    public get size(): SizeType {
+        return this.metadata.size ?? getOptionType('size').default
     }
 
     // Choices

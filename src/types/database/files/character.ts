@@ -13,12 +13,14 @@ interface ICharacterMetadata extends IFileMetadata, ICreatureMetadata {
     age?: string
     height?: string
     weight?: string
-    raceText?: string
+    raceName?: string
     occupation?: string
     // Texts
     appearance?: string
     history?: string
     notes?: string
+    // Race
+    raceFile?: ObjectId
     // Class
     classFile?: ObjectId
 }

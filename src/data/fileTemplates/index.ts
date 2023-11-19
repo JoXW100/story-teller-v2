@@ -4,8 +4,9 @@ import ClassTemplate from './cla.json';
 import CreatureTemplate from './cre.json';
 import DocumentTemplate from './doc.json';
 import EncounterTemplate from './enc.json';
-import SpellTemplate from './spe.json';
 import ItemTemplate from './ite.json';
+import RaceTemplate from './rce.json';
+import SpellTemplate from './spe.json';
 import SubTemplates from './subTemplates';
 import { FileType, RenderedFileTypes } from "types/database/files";
 import { FileTemplate, RootTemplateComponent } from 'types/templates';
@@ -17,11 +18,12 @@ export {
     CreatureTemplate,
     DocumentTemplate,
     EncounterTemplate,
-    SpellTemplate,
-    ItemTemplate
+    ItemTemplate,
+    RaceTemplate,
+    SpellTemplate
 }
 
-const Templates = {
+const Templates: Record<RenderedFileTypes, FileTemplate>  = {
     [FileType.Ability]: AbilityTemplate as FileTemplate,
     [FileType.Character]: CharacterTemplate as FileTemplate,
     [FileType.Class]: ClassTemplate as FileTemplate,
@@ -29,10 +31,11 @@ const Templates = {
     [FileType.Document]: DocumentTemplate as FileTemplate,
     [FileType.Encounter]: EncounterTemplate as FileTemplate,
     [FileType.Item]: ItemTemplate as FileTemplate,
-    [FileType.Spell]: SpellTemplate as FileTemplate,
-} satisfies Record<RenderedFileTypes, FileTemplate>
+    [FileType.Race]: RaceTemplate as FileTemplate,
+    [FileType.Spell]: SpellTemplate as FileTemplate
+}
 
-export const CreateFileOptions = { 
+export const CreateFileOptions: Record<RenderedFileTypes, string> = { 
     [FileType.Ability]: "Ability",
     [FileType.Character]: "Character",
     [FileType.Class]: "Class",
@@ -40,8 +43,9 @@ export const CreateFileOptions = {
     [FileType.Document]: 'Document',
     [FileType.Encounter]: "Encounter",
     [FileType.Item]: "Item",
+    [FileType.Race]: "Race",
     [FileType.Spell]: "Spell"
-} satisfies Record<RenderedFileTypes, string>
+} 
 
 type ExtractTemplate<T> = T extends keyof typeof Templates
   ? typeof Templates[T]

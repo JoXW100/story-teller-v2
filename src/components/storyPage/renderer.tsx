@@ -21,7 +21,7 @@ const Renderer = ({ template }: RendererProps): JSX.Element => {
     const render = useRenderer(template, context?.file)
 
     const changeZoom = (delta: number) => {
-        setZoom((val) => Math.min(Math.max(val + delta, 0), 500))
+        setZoom((val) => Math.min(Math.max(val + delta, 10), 500))
     }
 
     return (

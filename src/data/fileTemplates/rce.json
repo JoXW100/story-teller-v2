@@ -1,0 +1,99 @@
+{
+    "editor": {
+        "type": "root",
+        "content": [
+            {
+                "type": "group",
+                "params": { "label": "Metadata", "open": true },
+                "content": [
+                    {
+                        "type": "text", 
+                        "params": { "label": "Name", "key": "name", "default": "Name" }
+                    },
+                    { 
+                        "type": "publish", 
+                        "params": { "label": "Publish" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Type", "key": "type", "type": "creatureType", "default": "none" }
+                    },
+                    { 
+                        "type": "enum", 
+                        "params": { "label": "Size", "key": "size", "type": "size", "default": "medium" }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Stats" },
+                "content": [
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Resistances", "key": "resistances", "type": "string" }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "Vulnerabilities", "key": "vulnerabilities", "type": "string" }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "DMG Immunities", "key": "dmgImmunities", "type": "string" }
+                    },
+                    { 
+                        "type": "text", 
+                        "params": { "label": "COND Immunities", "key": "conImmunities", "type": "string" }
+                    },
+                    { 
+                        "type": "selectionInput", 
+                        "params": { "label": "Advantages", "key": "advantages", "enum":  "advantageBinding", "type": "string" }
+                    },
+                    { 
+                        "type": "selectionInput", 
+                        "params": { "label": "Disadvantages", "key": "disadvantages", "enum":  "advantageBinding", "type": "string" }
+                    },
+                    { 
+                        "type": "selectionInput", 
+                        "params": { "label": "Speed", "key": "speed", "enum": "movement", "type": "number", "default": 0 }
+                    },
+                    { 
+                        "type": "selectionInput", 
+                        "params": { "label": "Senses", "key": "senses", "enum": "sense", "type": "number", "default": 0 }
+                    },
+                    { 
+                        "type": "selection", 
+                        "params": { "label": "Languages", "key": "proficienciesLanguage", "enum": "language" }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Modifiers", "open": true },
+                "content": [
+                    {
+                        "type": "itemList",
+                        "params": { 
+                            "label": "Modifiers", 
+                            "key": "modifiers", 
+                            "prompt": "Edit",
+                            "placeholder": "Name...",
+                            "template": "modifier",
+                            "fill": true
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "group",
+                "params": { "label": "Content", "open": true, "fill": true },
+                "content": [
+                    {
+                        "type": "textarea",
+                        "params": { "label": "Description", "key": "description", "fill": true, "useSyntaxEditor": false  }
+                    }
+                ]
+            }
+        ]
+    },
+    "renderer": { "type": "rce" }
+}
