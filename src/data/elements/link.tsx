@@ -128,7 +128,7 @@ export const LinkContentElement = ({ options = {}, metadata }: ElementParams<Lin
     const linkOptions = new Options(options)
     const href = linkOptions.fileURL
     const file = metadata.$queries[linkOptions.fileId]
-    const Renderer = Renderers[file.type] ?? DocumentRenderer
+    const Renderer = Renderers[file?.type] ?? DocumentRenderer
 
     return href && file ? (
         <LinkComponent 
